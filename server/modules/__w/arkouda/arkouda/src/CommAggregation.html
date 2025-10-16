@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CommAggregation &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -125,7 +122,7 @@
            <div itemprop="articleBody">
              
   <section id="commaggregation">
-<span id="module-CommAggregation"></span><h1>CommAggregation<a class="headerlink" href="#commaggregation" title="Link to this heading">¶</a></h1>
+<span id="module-CommAggregation"></span><h1>CommAggregation<a class="headerlink" href="#commaggregation" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">CommAggregation</span><span class="p">;</span>
 </pre></div>
@@ -142,19 +139,19 @@
 </div>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommAggregation.newDstAggregator">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">newDstAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">useUnorderedCopy</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newDstAggregator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">newDstAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">useUnorderedCopy</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newDstAggregator" title="Link to this definition"></a></dt>
 <dd><p>Creates a new destination aggregator (dst/lhs will be remote).</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommAggregation.newSrcAggregator">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">newSrcAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">useUnorderedCopy</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newSrcAggregator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">newSrcAggregator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">useUnorderedCopy</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newSrcAggregator" title="Link to this definition"></a></dt>
 <dd><p>Creates a new source aggregator (src/rhs will be remote).</p>
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">DstAggregator</span></span><a class="headerlink" href="#CommAggregation.DstAggregator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">DstAggregator</span></span><a class="headerlink" href="#CommAggregation.DstAggregator" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Aggregates copy(ref dst, src). Optimized for when src is local.</p></li>
 <li><p>Not parallel safe and is expected to be created on a per-task basis</p></li>
@@ -162,105 +159,105 @@
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.elemType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.DstAggregator.elemType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.DstAggregator.elemType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.aggType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">(c_ptr(elemType),</span> <span class="pre">elemType)</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.aggType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">(c_ptr(elemType),</span> <span class="pre">elemType)</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.aggType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.bufferSize">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">dstBuffSize</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.bufferSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">dstBuffSize</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.bufferSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.myLocaleSpace">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.myLocaleSpace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.myLocaleSpace" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.lastLocale">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.lastLocale" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.lastLocale" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.opsUntilYield">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.opsUntilYield" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.opsUntilYield" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.lBuffers">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lBuffers</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.lBuffers" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lBuffers</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.lBuffers" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.rBuffers">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rBuffers</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.rBuffers" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rBuffers</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.rBuffers" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.bufferIdxs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.bufferIdxs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#CommAggregation.DstAggregator.bufferIdxs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.postinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.postinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.postinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.deinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.flush">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.flush" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.flush" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.copy">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">in</span> <span class="pre">srcVal:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.copy" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">in</span> <span class="pre">srcVal:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.copy" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstAggregator.flushBuffer">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.flushBuffer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.flushBuffer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">DstUnorderedAggregator</span></span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">DstUnorderedAggregator</span></span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator" title="Link to this definition"></a></dt>
 <dd><p>“Aggregator” that uses unordered copy instead of actually aggregating</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.elemType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.elemType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.elemType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.deinit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.flush">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.flush" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.flush" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.DstUnorderedAggregator.copy">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">in</span> <span class="pre">srcVal:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.copy" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">in</span> <span class="pre">srcVal:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstUnorderedAggregator.copy" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcAggregator</span></span><a class="headerlink" href="#CommAggregation.SrcAggregator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcAggregator</span></span><a class="headerlink" href="#CommAggregation.SrcAggregator" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Aggregates copy(ref dst, const ref src). Only works when dst is local.</p></li>
 <li><p>Not parallel safe and is expected to be created on a per task basis</p></li>
@@ -268,163 +265,163 @@
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.elemType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.SrcAggregator.elemType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.SrcAggregator.elemType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.aggType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">c_ptr(elemType)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.aggType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">c_ptr(elemType)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.aggType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.bufferSize">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">srcBuffSize</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.bufferSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">srcBuffSize</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.bufferSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.myLocaleSpace">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.myLocaleSpace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.myLocaleSpace" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.lastLocale">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.lastLocale" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.lastLocale" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.opsUntilYield">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.opsUntilYield" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.opsUntilYield" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.dstAddrs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dstAddrs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.dstAddrs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dstAddrs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.dstAddrs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.lSrcAddrs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcAddrs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcAddrs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcAddrs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcAddrs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.lSrcVals">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcVals</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">[0..#bufferSize]</span> <span class="pre">elemType</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcVals" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcVals</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">[0..#bufferSize]</span> <span class="pre">elemType</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcVals" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.rSrcAddrs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcAddrs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcAddrs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcAddrs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcAddrs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.rSrcVals">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcVals</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(elemType)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcVals" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcVals</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(elemType)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcVals" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.bufferIdxs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.bufferIdxs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#CommAggregation.SrcAggregator.bufferIdxs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.postinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.postinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.postinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.deinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.flush">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.flush" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.flush" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.copy">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.copy" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.copy" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcAggregator.flushBuffer">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.flushBuffer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.flushBuffer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcUnorderedAggregator</span></span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcUnorderedAggregator</span></span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator" title="Link to this definition"></a></dt>
 <dd><p>“Aggregator” that uses unordered copy instead of actually aggregating</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.elemType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.elemType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.elemType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.deinit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.flush">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.flush" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.flush" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.SrcUnorderedAggregator.copy">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.copy" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">elemType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcUnorderedAggregator.copy" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">remoteBuffer</span></span><a class="headerlink" href="#CommAggregation.remoteBuffer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">remoteBuffer</span></span><a class="headerlink" href="#CommAggregation.remoteBuffer" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.elemType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.remoteBuffer.elemType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">elemType</span></span><a class="headerlink" href="#CommAggregation.remoteBuffer.elemType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.loc">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">loc</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.loc" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">loc</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.loc" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.data">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">data</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(elemType)</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.data" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">data</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(elemType)</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.data" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.cachedAlloc">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">cachedAlloc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(elemType)</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.cachedAlloc" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">cachedAlloc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(elemType)</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.cachedAlloc" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl itermethod">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.localIter">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">localIter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data:</span> <span class="pre">c_ptr(elemType)</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">ref</span></em><em class="property"> <span class="pre">:</span> <span class="pre">elemType</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.localIter" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">localIter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data:</span> <span class="pre">c_ptr(elemType)</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">ref</span></em><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">elemType</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.localIter" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.localFree">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">localFree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data:</span> <span class="pre">c_ptr(elemType)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.localFree" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">localFree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data:</span> <span class="pre">c_ptr(elemType)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.localFree" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.markFreed">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">markFreed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.markFreed" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">markFreed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.markFreed" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.PUT">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">PUT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lArr:</span> <span class="pre">[]</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">lArr.isDefaultRectangular()</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.PUT" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">PUT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lArr:</span> <span class="pre">[]</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">lArr.isDefaultRectangular()</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.PUT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -434,19 +431,19 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.GET">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">GET</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">lArr:</span> <span class="pre">[]</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">lArr.isDefaultRectangular()</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.GET" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">GET</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">lArr:</span> <span class="pre">[]</span> <span class="pre">elemType</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">lArr.isDefaultRectangular()</span></em><a class="headerlink" href="#CommAggregation.remoteBuffer.GET" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="CommAggregation.remoteBuffer.deinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="CommAggregation.bufferIdxAlloc">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bufferIdxAlloc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.bufferIdxAlloc" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bufferIdxAlloc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.bufferIdxAlloc" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

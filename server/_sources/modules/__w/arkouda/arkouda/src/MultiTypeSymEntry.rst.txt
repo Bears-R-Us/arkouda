@@ -94,6 +94,13 @@ or
       * All concrete classes should override this method
       
 
+   .. method:: proc removeDependents(st: borrowed SymTab) throws
+
+      *
+      * When a SegStringSymEntry is removed from the ST, need to remove
+      * its "offsets" and "values". Otherwise nothing to do.
+      
+
    .. method:: proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 
       *
@@ -320,13 +327,15 @@ or
 
    .. attribute:: type etype = string
 
-   .. attribute:: var offsetsEntry: shared SymEntry(int, 1)
+   .. attribute:: const offsetsEntry: shared SymEntry(int, 1)
 
-   .. attribute:: var bytesEntry: shared SymEntry(uint(8), 1)
+   .. attribute:: const bytesEntry: shared SymEntry(uint(8), 1)
 
    .. method:: proc init(offsetsSymEntry: shared SymEntry(int), bytesSymEntry: shared SymEntry(uint(8)), type etype)
 
    .. method:: override proc getSizeEstimate(): int
+
+   .. method:: override proc removeDependents(st: borrowed SymTab) throws
 
    .. method:: override proc entry__str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
 

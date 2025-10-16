@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="Chapel API Reference" href="../../../server/index.html" /><link rel="prev" title="arkouda.sparsematrix" href="../sparsematrix/index.html" />
+<link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="Chapel API Reference" href="../../../server/index.html"><link rel="prev" title="arkouda.security" href="../security/index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.testing - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -25,14 +25,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -147,14 +147,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -164,8 +160,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -173,8 +168,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -182,8 +176,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -204,7 +197,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -213,14 +206,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
@@ -238,12 +231,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">arkouda</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -258,29 +251,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -294,7 +279,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -308,9 +293,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -323,16 +309,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">arkouda.testing</a></li>
 </ul>
 </li>
@@ -340,7 +324,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -376,8 +360,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -385,8 +368,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -404,22 +386,22 @@
 <td><p>Check that two objects are approximately equal.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.testing.assert_arkouda_array_equal" title="arkouda.testing.assert_arkouda_array_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_arkouda_array_equal</span></code></a>(→ None)</p></td>
-<td><p>Check that 'ak.pdarray' or 'ak.Strings', 'ak.Categorical', or 'ak.SegArray' is equivalent.</p></td>
+<td><p>Check that two Arkouda arrays are equivalent. Supports pdarray, Strings,</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.testing.assert_arkouda_array_equivalent" title="arkouda.testing.assert_arkouda_array_equivalent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_arkouda_array_equivalent</span></code></a>(→ None)</p></td>
 <td><p>Check that two Arkouda-compatible arrays are equal.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.testing.assert_arkouda_pdarray_equal" title="arkouda.testing.assert_arkouda_pdarray_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_arkouda_pdarray_equal</span></code></a>(→ None)</p></td>
-<td><p>Check that the two 'ak.pdarray's are equivalent.</p></td>
+<td><p>Check that two Arkouda pdarray objects are equivalent.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.testing.assert_arkouda_segarray_equal" title="arkouda.testing.assert_arkouda_segarray_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_arkouda_segarray_equal</span></code></a>(→ None)</p></td>
-<td><p>Check that the two 'ak.SegArray's are equivalent.</p></td>
+<td><p>Check that two Arkouda SegArray objects are equivalent.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.testing.assert_arkouda_strings_equal" title="arkouda.testing.assert_arkouda_strings_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_arkouda_strings_equal</span></code></a>(→ None)</p></td>
-<td><p>Check that 'ak.Strings' is equivalent.</p></td>
+<td><p>Check that two <cite>ak.Strings</cite> arrays are equivalent.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.testing.assert_attr_equal" title="arkouda.testing.assert_attr_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_attr_equal</span></code></a>(→ None)</p></td>
-<td><p>Check attributes are equal. Both objects must have attribute.</p></td>
+<td><p>Check that attributes are equal. Both objects must have the given attribute.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.testing.assert_categorical_equal" title="arkouda.testing.assert_categorical_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_categorical_equal</span></code></a>(→ None)</p></td>
 <td><p>Test that Categoricals are equivalent.</p></td>
@@ -437,7 +419,7 @@
 <td><p>Assert that two dictionaries are equal.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.testing.assert_equal" title="arkouda.testing.assert_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_equal</span></code></a>(→ None)</p></td>
-<td><p>Wrapper for tm.assert_*_equal to dispatch to the appropriate test function.</p></td>
+<td><p>Wrap tm.assert_*_equal to dispatch to the appropriate test function.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.testing.assert_equivalent" title="arkouda.testing.assert_equivalent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_equivalent</span></code></a>(→ None)</p></td>
 <td><p>Dispatch to the appropriate assertion function depending on object types.</p></td>
@@ -533,18 +515,23 @@ because it converts pdarrays to numpy arrays and calls np.allclose.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_arkouda_array_equal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_arkouda_array_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">arkouda.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><span class="pre">arkouda.SegArray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">arkouda.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><span class="pre">arkouda.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">arkouda.Categorical</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><span class="pre">arkouda.SegArray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_same</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pdarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_arkouda_array_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_arkouda_array_equal" title="Link to this definition">¶</a></dt>
-<dd><p>Check that ‘ak.pdarray’ or ‘ak.Strings’, ‘ak.Categorical’, or ‘ak.SegArray’ is equivalent.</p>
+<dd><p>Check that two Arkouda arrays are equivalent. Supports pdarray, Strings,
+Categorical, and SegArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The two arrays to be compared.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The two arrays to be compared.</p></li>
-<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Check dtype if both a and b are ak.pdarray.</p></li>
-<li><p><strong>err_msg</strong> (<em>str</em><em>, </em><em>default None</em>) – If provided, used as assertion message.</p></li>
-<li><p><strong>check_same</strong> (<em>None</em><em>|</em><em>'copy'</em><em>|</em><em>'same'</em><em>, </em><em>default None</em>) – Ensure left and right refer/do not refer to the same memory area.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'numpy array'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
-<li><p><strong>index_values</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em> | </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>arkouda.pdarray</em></a><em>, </em><em>default None</em>) – optional index (shared by both left and right), used in output.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The first array to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The second array to compare.</p></li>
+<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check dtype if both <cite>left</cite> and <cite>right</cite> are ak.pdarray.
+Defaults to True.</p></li>
+<li><p><strong>err_msg</strong> (<em>str</em><em> or </em><em>None</em>) – Custom assertion message, if provided. Defaults to None.</p></li>
+<li><p><strong>check_same</strong> (<em>{'copy'</em><em>, </em><em>'same'}</em><em> or </em><em>None</em>) – If not None, assert whether <cite>left</cite> and <cite>right</cite> share the same memory.
+- <cite>‘copy’</cite>: assert that they do <strong>not</strong> share memory.
+- <cite>‘same’</cite>: assert that they <strong>do</strong> share memory.
+Defaults to None.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – Object name used in assertion error messages. Defaults to ‘pdarray’.</p></li>
+<li><p><strong>index_values</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>None</em>) – Optional index shared by both <cite>left</cite> and <cite>right</cite>, used to enhance
+output in error messages. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -560,13 +547,13 @@ assertion message.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a><em>, </em><em>np.ndarray</em><em>, or </em><em>pd.Categorical</em>) – First array to compare.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a><em>, </em><em>np.ndarray</em><em>, or </em><em>pd.Categorical</em>) – Second array to compare.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a><em>, </em><em>np.ndarray</em><em>, or </em><em>pd.Categorical</em>) – First array to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a><em>, </em><em>np.ndarray</em><em>, or </em><em>pd.Categorical</em>) – Second array to compare.</p></li>
 <li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to verify that dtypes match. Default is True.</p></li>
 <li><p><strong>err_msg</strong> (<em>str</em><em> or </em><em>None</em>) – Optional message to display on failure.</p></li>
 <li><p><strong>check_same</strong> (<em>None</em><em> or </em><em>{&quot;copy&quot;</em><em>, </em><em>&quot;same&quot;}</em>) – Whether to ensure identity or separation in memory. Default is None.</p></li>
 <li><p><strong>obj</strong> (<em>str</em>) – Object label for error messages. Default is “pdarray”.</p></li>
-<li><p><strong>index_values</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Shared index used in error output. Default is None.</p></li>
+<li><p><strong>index_values</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Shared index used in error output. Default is None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -594,18 +581,22 @@ assertion message.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_arkouda_pdarray_equal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_arkouda_pdarray_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">arkouda.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">arkouda.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_same</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pdarray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_arkouda_pdarray_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_arkouda_pdarray_equal" title="Link to this definition">¶</a></dt>
-<dd><p>Check that the two ‘ak.pdarray’s are equivalent.</p>
+<dd><p>Check that two Arkouda pdarray objects are equivalent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>arkouda.pdarray</em></a>) – The two arrays to be compared.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>arkouda.pdarray</em></a>) – The two arrays to be compared.</p></li>
-<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Check dtype if both a and b are ak.pdarray.</p></li>
-<li><p><strong>err_msg</strong> (<em>str</em><em>, </em><em>default None</em>) – If provided, used as assertion message.</p></li>
-<li><p><strong>check_same</strong> (<em>None</em><em>|</em><em>'copy'</em><em>|</em><em>'same'</em><em>, </em><em>default None</em>) – Ensure left and right refer/do not refer to the same memory area.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'pdarray'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
-<li><p><strong>index_values</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em> | </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>arkouda.pdarray</em></a><em>, </em><em>default None</em>) – optional index (shared by both left and right), used in output.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The first array to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The second array to compare.</p></li>
+<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check dtype if both arrays are pdarrays. Defaults to True.</p></li>
+<li><p><strong>err_msg</strong> (<em>str</em><em> or </em><em>None</em>) – Custom assertion message to display on failure. Defaults to None.</p></li>
+<li><p><strong>check_same</strong> (<em>{'copy'</em><em>, </em><em>'same'}</em><em> or </em><em>None</em>) – If not None, asserts whether <cite>left</cite> and <cite>right</cite> share the same memory:
+- ‘copy’: assert they do <strong>not</strong> share memory
+- ‘same’: assert they <strong>do</strong> share memory
+Defaults to None.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – A name for the object being compared, used in assertion messages.
+Defaults to ‘pdarray’.</p></li>
+<li><p><strong>index_values</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>None</em>) – Optional index shared by both arrays, used to enhance output on failure.
+Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -614,17 +605,20 @@ assertion message.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_arkouda_segarray_equal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_arkouda_segarray_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><span class="pre">arkouda.SegArray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><span class="pre">arkouda.SegArray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_same</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segarray'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_arkouda_segarray_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_arkouda_segarray_equal" title="Link to this definition">¶</a></dt>
-<dd><p>Check that the two ‘ak.SegArray’s are equivalent.</p>
+<dd><p>Check that two Arkouda SegArray objects are equivalent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>arkouda.numpy.SegArray</em></a>) – The two segarrays to be compared.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>arkouda.numpy.SegArray</em></a>) – The two segarrays to be compared.</p></li>
-<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Check dtype if both a and b are ak.pdarray.</p></li>
-<li><p><strong>err_msg</strong> (<em>str</em><em>, </em><em>default None</em>) – If provided, used as assertion message.</p></li>
-<li><p><strong>check_same</strong> (<em>None</em><em>|</em><em>'copy'</em><em>|</em><em>'same'</em><em>, </em><em>default None</em>) – Ensure left and right refer/do not refer to the same memory area.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'pdarray'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The first SegArray to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – The second SegArray to compare.</p></li>
+<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check dtype if both arrays contain pdarrays. Defaults to True.</p></li>
+<li><p><strong>err_msg</strong> (<em>str</em><em> or </em><em>None</em>) – Custom assertion message. Defaults to None.</p></li>
+<li><p><strong>check_same</strong> (<em>{'copy'</em><em>, </em><em>'same'}</em><em> or </em><em>None</em>) – If not None, asserts whether <cite>left</cite> and <cite>right</cite> share the same memory.
+- ‘copy’: assert that they do <strong>not</strong> share memory.
+- ‘same’: assert that they <strong>do</strong> share memory.
+Defaults to None.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – Name of the object being compared (used in assertion messages).
+Defaults to ‘segarray’.</p></li>
 </ul>
 </dd>
 </dl>
@@ -633,17 +627,20 @@ assertion message.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_arkouda_strings_equal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_arkouda_strings_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_same</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Strings'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_arkouda_strings_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_arkouda_strings_equal" title="Link to this definition">¶</a></dt>
-<dd><p>Check that ‘ak.Strings’ is equivalent.</p>
+<dd><p>Check that two <cite>ak.Strings</cite> arrays are equivalent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>arkouda.numpy.Strings</em></a>) – The two Strings to be compared.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>arkouda.numpy.Strings</em></a>) – The two Strings to be compared.</p></li>
-<li><p><strong>err_msg</strong> (<em>str</em><em>, </em><em>default None</em>) – If provided, used as assertion message.</p></li>
-<li><p><strong>check_same</strong> (<em>None</em><em>|</em><em>'copy'</em><em>|</em><em>'same'</em><em>, </em><em>default None</em>) – Ensure left and right refer/do not refer to the same memory area.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'Strings'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
-<li><p><strong>index_values</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em> | </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>arkouda.pdarray</em></a><em>, </em><em>default None</em>) – optional index (shared by both left and right), used in output.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The first Strings object to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The second Strings object to compare.</p></li>
+<li><p><strong>err_msg</strong> (<em>str</em><em> or </em><em>None</em>) – Custom assertion message. Defaults to None.</p></li>
+<li><p><strong>check_same</strong> (<em>{'copy'</em><em>, </em><em>'same'}</em><em> or </em><em>None</em>) – If not None, assert whether <cite>left</cite> and <cite>right</cite> share the same memory.
+- ‘copy’: assert that they do <strong>not</strong> share memory
+- ‘same’: assert that they <strong>do</strong> share memory
+Defaults to None.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – A name for the object being compared, used in assertion messages.
+Defaults to ‘Strings’.</p></li>
+<li><p><strong>index_values</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em> or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>None</em>) – Optional index shared by both arrays, used in output. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -652,15 +649,15 @@ assertion message.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_attr_equal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_attr_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Attributes'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_attr_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_attr_equal" title="Link to this definition">¶</a></dt>
-<dd><p>Check attributes are equal. Both objects must have attribute.</p>
+<dd><p>Check that attributes are equal. Both objects must have the given attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>attr</strong> (<em>str</em>) – Attribute name being compared.</p></li>
-<li><p><strong>left</strong> (<em>object</em>)</p></li>
-<li><p><strong>right</strong> (<em>object</em>)</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'Attributes'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message</p></li>
+<li><p><strong>attr</strong> (<em>str</em>) – The name of the attribute being compared.</p></li>
+<li><p><strong>left</strong> (<em>object</em>) – The first object to compare.</p></li>
+<li><p><strong>right</strong> (<em>object</em>) – The second object to compare.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – A name for the object being compared, used in assertion messages.
+Defaults to ‘Attributes’.</p></li>
 </ul>
 </dd>
 </dl>
@@ -673,15 +670,15 @@ assertion message</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../categorical/index.html#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Check that integer dtype of the codes are the same.</p></li>
-<li><p><strong>check_category_order</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether the order of the categories should be compared, which
-implies identical integer codes.  If False, only the resulting
-values are compared.  The ordered attribute is
-checked regardless.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'Categorical'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The first Categorical to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The second Categorical to compare.</p></li>
+<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that the integer dtype of the codes is the same.
+Defaults to True.</p></li>
+<li><p><strong>check_category_order</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare the order of the categories (which implies identical integer codes).
+If False, only the resulting values are compared. The <cite>ordered</cite> attribute is
+always checked. Defaults to True.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – A name for the object being compared, used in assertion messages.
+Defaults to ‘Categorical’.</p></li>
 </ul>
 </dd>
 </dl>
@@ -696,18 +693,22 @@ assertion message.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_contains_all">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_contains_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_contains_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_contains_all" title="Link to this definition">¶</a></dt>
-<dd><p>Assert that a dictionary contains all the elements of an iterable.
-:param iterable:
-:type iterable: iterable
-:param dic:
-:type dic: dict</p>
+<dd><p>Assert that a dictionary contains all the elements of an iterable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterable</strong> (<em>iterable</em>)</p></li>
+<li><p><strong>dic</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_copy">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iter1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iter2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">eql_kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_copy" title="Link to this definition">¶</a></dt>
-<dd><p>Check that the elements are equal, but not the same object.
-(Does not check that items in sequences are also not the same object.)</p>
+<dd><p>Check that the elements are equal, but not the same object.</p>
+<p>Does not check that items in sequences are also not the same object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -721,29 +722,29 @@ assertion message.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_dict_equal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_dict_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compare_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_dict_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_dict_equal" title="Link to this definition">¶</a></dt>
-<dd><p>Assert that two dictionaries are equal.
-Values must be arkouda objects.
-:param left: The dictionaries to be compared.
-:type left: dict
-:param right: The dictionaries to be compared.
-:type right: dict
-:param compare_keys: Whether to compare the keys.</p>
-<blockquote>
-<div><p>If False, only the values are compared.</p>
-</div></blockquote>
+<dd><p>Assert that two dictionaries are equal.</p>
+<p>Values must be arkouda objects.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>dict</em>) – The dictionaries to be compared.</p></li>
+<li><p><strong>right</strong> (<em>dict</em>) – The dictionaries to be compared.</p></li>
+<li><p><strong>compare_keys</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare the keys. Defaults to True.
+If False, only the values are compared.</p></li>
+</ul>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_equal">
 <span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_equal" title="Link to this definition">¶</a></dt>
-<dd><p>Wrapper for tm.assert_*_equal to dispatch to the appropriate test function.</p>
+<dd><p>Wrap tm.assert_*_equal to dispatch to the appropriate test function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The two items to be compared.</p></li>
 <li><p><strong>**kwargs</strong> – All keyword arguments are passed through to the underlying assert method.</p></li>
 </ul>
 </dd>
@@ -779,7 +780,7 @@ Values must be arkouda objects.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.testing.assert_frame_equal">
-<span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_frame_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">arkouda.DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">arkouda.DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_index_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_column_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_frame_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_exact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_categorical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_like</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DataFrame'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_frame_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_frame_equal" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.testing.</span></span><span class="sig-name descname"><span class="pre">assert_frame_equal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">arkouda.DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../usage/dataframe.html#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">arkouda.DataFrame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_index_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_column_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'equiv'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'equiv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_frame_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_exact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_categorical</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_like</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DataFrame'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/testing/_asserters.html#assert_frame_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.testing.assert_frame_equal" title="Link to this definition">¶</a></dt>
 <dd><p>Check that left and right DataFrame are equal.</p>
 <p>This function is intended to compare two DataFrames and output any
 differences. It is mostly intended for use in unit tests.
@@ -790,24 +791,24 @@ equality checks performed.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>left</strong> (<a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a>) – First DataFrame to compare.</p></li>
 <li><p><strong>right</strong> (<a class="reference internal" href="../pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a>) – Second DataFrame to compare.</p></li>
-<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the DataFrame dtype is identical.</p></li>
-<li><p><strong>check_index_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – Whether to check the Index class, dtype and inferred_type
-are identical.</p></li>
-<li><p><strong>check_column_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em> or </em><em>{'equiv'}</em><em>, </em><em>default 'equiv'</em>) – Whether to check the columns class, dtype and inferred_type
-are identical. Is passed as the <code class="docutils literal notranslate"><span class="pre">exact</span></code> argument of
-<a class="reference internal" href="#arkouda.testing.assert_index_equal" title="arkouda.testing.assert_index_equal"><code class="xref py py-func docutils literal notranslate"><span class="pre">assert_index_equal()</span></code></a>.</p></li>
-<li><p><strong>check_frame_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the DataFrame class is identical.</p></li>
-<li><p><strong>check_names</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check that the <cite>names</cite> attribute for both the <cite>index</cite>
-and <cite>column</cite> attributes of the DataFrame is identical.</p></li>
-<li><p><strong>check_exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – Whether to compare number exactly.</p></li>
-<li><p><strong>check_categorical</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to compare internal Categorical exactly.</p></li>
-<li><p><strong>check_like</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – If True, ignore the order of index &amp; columns.
-Note: index labels must match their respective rows
-(same as in columns) - same labels must be with the same data.</p></li>
-<li><p><strong>rtol</strong> (<em>float</em><em>, </em><em>default 1e-5</em>) – Relative tolerance. Only used when check_exact is False.</p></li>
-<li><p><strong>atol</strong> (<em>float</em><em>, </em><em>default 1e-8</em>) – Absolute tolerance. Only used when check_exact is False.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'DataFrame'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
+<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the DataFrame dtype is identical. Defaults to True.</p></li>
+<li><p><strong>check_index_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the Index class, dtype, and inferred_type are identical.
+Defaults to True.</p></li>
+<li><p><strong>check_column_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em> or </em><em>{'equiv'}</em>) – Whether to check the column class, dtype, and inferred_type are identical.
+Passed as the <code class="docutils literal notranslate"><span class="pre">exact</span></code> argument of <a class="reference internal" href="#arkouda.testing.assert_index_equal" title="arkouda.testing.assert_index_equal"><code class="xref py py-func docutils literal notranslate"><span class="pre">assert_index_equal()</span></code></a>.
+Defaults to ‘equiv’.</p></li>
+<li><p><strong>check_frame_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the DataFrame class is identical. Defaults to True.</p></li>
+<li><p><strong>check_names</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that the <cite>names</cite> attribute for both the <cite>index</cite>
+and <cite>column</cite> attributes of the DataFrame is identical. Defaults to True.</p></li>
+<li><p><strong>check_exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare numbers exactly. Defaults to False.</p></li>
+<li><p><strong>check_categorical</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare internal Categoricals exactly. Defaults to True.</p></li>
+<li><p><strong>check_like</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, ignore the order of index and columns.
+Note: index labels must match their respective rows (as in columns);
+same labels must be with the same data. Defaults to False.</p></li>
+<li><p><strong>rtol</strong> (<em>float</em>) – Relative tolerance. Only used when <cite>check_exact</cite> is False. Defaults to 1e-5.</p></li>
+<li><p><strong>atol</strong> (<em>float</em>) – Absolute tolerance. Only used when <cite>check_exact</cite> is False. Defaults to 1e-8.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – A name for the object being compared, used in assertion messages.
+Defaults to ‘DataFrame’.</p></li>
 </ul>
 </dd>
 </dl>
@@ -898,20 +899,23 @@ Default is False.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
-<li><p><strong>exact</strong> (<em>True</em>) – Whether to check the Index class, dtype and inferred_type
-are identical.</p></li>
-<li><p><strong>check_names</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the names attribute.</p></li>
-<li><p><strong>check_exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to compare number exactly.</p></li>
-<li><p><strong>check_categorical</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to compare internal Categorical exactly.</p></li>
-<li><p><strong>check_order</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to compare the order of index entries as well as their values.
+<li><p><strong>left</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a>) – The first Index to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a>) – The second Index to compare.</p></li>
+<li><p><strong>exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that the Index class, dtype, and inferred_type
+are identical. Defaults to True.</p></li>
+<li><p><strong>check_names</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the <cite>name</cite> attribute. Defaults to True.</p></li>
+<li><p><strong>check_exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare numbers exactly. Defaults to True.</p></li>
+<li><p><strong>check_categorical</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare internal Categorical values exactly. Defaults to True.</p></li>
+<li><p><strong>check_order</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare the order of index entries as well as their values.
 If True, both indexes must contain the same elements, in the same order.
-If False, both indexes must contain the same elements, but in any order.</p></li>
-<li><p><strong>rtol</strong> (<em>float</em><em>, </em><em>default 1e-5</em>) – Relative tolerance. Only used when check_exact is False.</p></li>
-<li><p><strong>atol</strong> (<em>float</em><em>, </em><em>default 1e-8</em>) – Absolute tolerance. Only used when check_exact is False.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'Index'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
+If False, both indexes must contain the same elements, but in any order.
+Defaults to True.</p></li>
+<li><p><strong>rtol</strong> (<em>float</em>) – Relative tolerance. Only used when <cite>check_exact</cite> is False.
+Defaults to 1e-5.</p></li>
+<li><p><strong>atol</strong> (<em>float</em>) – Absolute tolerance. Only used when <cite>check_exact</cite> is False.
+Defaults to 1e-8.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – A name for the object being compared, used in assertion messages.
+Defaults to ‘Index’.</p></li>
 </ul>
 </dd>
 </dl>
@@ -934,8 +938,8 @@ Then assert_index_equal is applied to the result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em> or </em><em>pd.Index</em>) – First Index to compare.</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em> or </em><em>pd.Index</em>) – Second Index to compare.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em> or </em><em>pd.Index</em>) – First Index to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em> or </em><em>pd.Index</em>) – Second Index to compare.</p></li>
 <li><p><strong>exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that class, dtype, and inferred type are identical. Default is True.</p></li>
 <li><p><strong>check_names</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the names attribute. Default is True.</p></li>
 <li><p><strong>check_exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare values exactly. Default is True.</p></li>
@@ -978,23 +982,22 @@ Then assert_index_equal is applied to the result.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>)</p></li>
-<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>)</p></li>
-<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the Series dtype is identical.</p></li>
-<li><p><strong>check_index_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the Index class, dtype and inferred_type
-are identical.</p></li>
-<li><p><strong>check_series_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the Series class is identical.</p></li>
-<li><p><strong>check_names</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check the Series and Index names attribute.</p></li>
-<li><p><strong>check_exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – Whether to compare number exactly.</p></li>
-<li><p><strong>check_categorical</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to compare internal Categorical exactly.</p></li>
-<li><p><strong>check_category_order</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to compare category order of internal Categoricals.</p></li>
-<li><p><strong>rtol</strong> (<em>float</em><em>, </em><em>default 1e-5</em>) – Relative tolerance. Only used when check_exact is False.</p></li>
-<li><p><strong>atol</strong> (<em>float</em><em>, </em><em>default 1e-8</em>) – Absolute tolerance. Only used when check_exact is False.</p></li>
-<li><p><strong>obj</strong> (<em>str</em><em>, </em><em>default 'Series'</em>) – Specify object name being compared, internally used to show appropriate
-assertion message.</p></li>
-<li><p><strong>check_index</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to check index equivalence. If False, then compare only values.</p></li>
-<li><p><strong>check_like</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – If True, ignore the order of the index. Must be False if check_index is False.
-Note: same labels must be with the same data.</p></li>
+<li><p><strong>left</strong> (<a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – First Series to compare.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – Second Series to compare.</p></li>
+<li><p><strong>check_dtype</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the Series dtype is identical. Defaults to True.</p></li>
+<li><p><strong>check_index_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the Index class, dtype, and inferred_type are identical. Defaults to True.</p></li>
+<li><p><strong>check_series_type</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check that the Series class is identical. Defaults to True.</p></li>
+<li><p><strong>check_names</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check the Series and Index <cite>name</cite> attribute. Defaults to True.</p></li>
+<li><p><strong>check_exact</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare numbers exactly. Defaults to False.</p></li>
+<li><p><strong>check_categorical</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare internal Categoricals exactly. Defaults to True.</p></li>
+<li><p><strong>check_category_order</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to compare the category order of internal Categoricals. Defaults to True.</p></li>
+<li><p><strong>rtol</strong> (<em>float</em>) – Relative tolerance. Only used when <cite>check_exact</cite> is False. Defaults to 1e-5.</p></li>
+<li><p><strong>atol</strong> (<em>float</em>) – Absolute tolerance. Only used when <cite>check_exact</cite> is False. Defaults to 1e-8.</p></li>
+<li><p><strong>obj</strong> (<em>str</em>) – Name of the object being compared, used in assertion messages. Defaults to ‘Series’.</p></li>
+<li><p><strong>check_index</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to check index equivalence. If False, only the values are compared. Defaults to True.</p></li>
+<li><p><strong>check_like</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, ignore the order of the index.
+Must be False if <cite>check_index</cite> is False.
+Note: same labels must be with the same data. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1071,14 +1074,14 @@ Note: identical labels must still correspond to the same data. Default is False.
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../sparsematrix/index.html">
+          <a class="prev-page" href="../security/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">arkouda.sparsematrix</div>
+                <div class="title">arkouda.security</div>
                 
               </div>
             </a>

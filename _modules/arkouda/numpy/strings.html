@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.numpy.strings - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -203,7 +196,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -212,14 +205,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
@@ -237,12 +230,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -257,29 +250,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -293,7 +278,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -307,9 +292,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -322,16 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -339,7 +323,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -369,8 +353,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -378,8 +361,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -389,32 +371,23 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">codecs</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Literal</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-    <span class="n">cast</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">npdtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.infoclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">list_symbol_table</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaLogger</span><span class="p">,</span> <span class="n">getArkoudaLogger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span> <span class="n">bool_scalars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">resolve_scalar_dtype</span><span class="p">,</span> <span class="n">str_scalars</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">resolve_scalar_dtype</span><span class="p">,</span> <span class="n">str_scalars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistrationError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">parse_single_value</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.match</span><span class="w"> </span><span class="kn">import</span> <span class="n">Match</span><span class="p">,</span> <span class="n">MatchType</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -645,7 +618,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Strings does not support iteration. To force data transfer from server, use to_ndarray&quot;</span>
+            <span class="s2">&quot;Strings does not support iteration. To force data transfer from server, use to_ndarray.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -685,7 +658,7 @@
 <span class="sd">            encapsulating the results of the requested binop</span>
 
 <span class="sd">        Raises</span>
-<span class="sd">        -----</span>
+<span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            Raised if (1) the op is not in the self.BinOps set, or (2) if the</span>
 <span class="sd">            sizes of this and the other instance don&#39;t match, or (3) the other</span>
@@ -727,10 +700,20 @@
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="s2">&quot;==&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">other</span><span class="p">),</span> <span class="s2">&quot;!=&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ak_array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">other</span><span class="p">),</span> <span class="s2">&quot;!=&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
+
+            <span class="k">return</span> <span class="n">ak_array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -785,21 +768,22 @@
                 <span class="p">},</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="c1"># convert numpy array to pdarray</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported pdarray index type </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npdtype</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the dtype object of the underlying data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dtype object of the underlying data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">npdtype</span><span class="p">(</span><span class="s2">&quot;&lt;U&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">inferred_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a string of the type inferred from the values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string of the type inferred from the values.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;string&quot;</span>
 
 <div class="viewcode-block" id="Strings.copy">
@@ -949,7 +933,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `toEncoding`, expecting that the</span>
-<span class="sd">        current Strings is encoded in `fromEncoding`</span>
+<span class="sd">        current Strings is encoded in `fromEncoding`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1011,7 +995,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromEncoding</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">toEncoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new strings object in `fromEncoding`, expecting that the</span>
-<span class="sd">        current Strings is encoded in `toEncoding`</span>
+<span class="sd">        current Strings is encoded in `toEncoding`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1040,7 +1024,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">lower</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new Strings with all uppercase characters from the original replaced with</span>
-<span class="sd">        their lowercase equivalent</span>
+<span class="sd">        their lowercase equivalent.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1080,7 +1064,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">upper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new Strings with all lowercase characters from the original replaced with</span>
-<span class="sd">        their uppercase equivalent</span>
+<span class="sd">        their uppercase equivalent.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1307,7 +1291,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">islower</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a boolean pdarray where index i indicates whether string i of the</span>
-<span class="sd">        Strings is entirely lowercase</span>
+<span class="sd">        Strings is entirely lowercase.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1349,7 +1333,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">isupper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a boolean pdarray where index i indicates whether string i of the</span>
-<span class="sd">        Strings is entirely uppercase</span>
+<span class="sd">        Strings is entirely uppercase.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1391,7 +1375,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">istitle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a boolean pdarray where index i indicates whether string i of the</span>
-<span class="sd">        Strings is titlecase</span>
+<span class="sd">        Strings is titlecase.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1623,7 +1607,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">isspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a boolean pdarray where index i indicates whether string i has all</span>
-<span class="sd">        whitespace characters (‘ ’, ‘\\\\t’, ‘\\\\n’, ‘\\\\v’, ‘\\\\f’, ‘\\\\r’).</span>
+<span class="sd">        whitespace characters (‘ ’, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1652,7 +1636,8 @@
 <span class="sd">&#39;u000B&#39;, &#39;u000C&#39;, &#39;u000D&#39;, &#39; u0009nu000Bu000Cu000D&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.isspace()</span>
 <span class="sd">        array([False False False True True True True True True True])</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D301</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
@@ -1715,9 +1700,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.cached_regex_patterns">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cached_regex_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the regex patterns for which Match objects have been cached</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the regex patterns for which Match objects have been cached.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_regex_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
@@ -1725,9 +1708,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.purge_cached_regex_patterns">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">purge_cached_regex_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        purges cached regex patterns</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Purges cached regex patterns.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_regex_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
 
 
@@ -1740,9 +1721,7 @@
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_matcher</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">create</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        internal function to fetch cached Matcher objects</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal function to fetch cached Matcher objects.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.matcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matcher</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
@@ -1764,9 +1743,9 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.find_locations">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds pattern matches and returns pdarrays containing the number, start postitions,</span>
-<span class="sd">        and lengths of matches</span>
+<span class="sd">        and lengths of matches.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1819,7 +1798,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a match object with the first location in each element where pattern produces a match.</span>
-<span class="sd">        Elements match if any part of the string matches the regular expression pattern</span>
+<span class="sd">        Elements match if any part of the string matches the regular expression pattern.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1849,7 +1828,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a match object where elements match only if the beginning of the string matches the</span>
-<span class="sd">        regular expression pattern</span>
+<span class="sd">        regular expression pattern.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1879,7 +1858,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">fullmatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Match</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a match object where elements match only if the whole string matches the</span>
-<span class="sd">        regular expression pattern</span>
+<span class="sd">        regular expression pattern.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1911,7 +1890,8 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a new Strings split by the occurrences of pattern.</span>
-<span class="sd">        If maxsplit is nonzero, at most maxsplit splits occur</span>
+
+<span class="sd">        If maxsplit is nonzero, at most maxsplit splits occur.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1950,7 +1930,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">return_match_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a new Strings containg all non-overlapping matches of pattern</span>
+<span class="sd">        Return a new Strings containg all non-overlapping matches of pattern.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1987,6 +1967,7 @@
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.findall(&#39;_+&#39;, return_match_origins=True)</span>
 <span class="sd">        (array([&#39;_&#39;, &#39;___&#39;, &#39;____&#39;, &#39;__&#39;, &#39;___&#39;, &#39;____&#39;, &#39;___&#39;]), array([0 0 1 3 3 3 3]))</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_matcher</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">return_match_origins</span><span class="p">)</span></div>
 
@@ -2000,7 +1981,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return new Strings obtained by replacing non-overlapping occurrences of pattern with the</span>
 <span class="sd">        replacement repl.</span>
-<span class="sd">        If count is nonzero, at most count substitutions occur</span>
+
+<span class="sd">        If count is nonzero, at most count substitutions occur.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2036,6 +2018,7 @@
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.sub(pattern=&#39;_+&#39;, repl=&#39;-&#39;, count=2)</span>
 <span class="sd">        array([&#39;1-2-&#39;, &#39;-&#39;, &#39;3&#39;, &#39;-4-5____6___7&#39;, &#39;&#39;])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repl</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">repl</span> <span class="o">=</span> <span class="n">repl</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -2049,7 +2032,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">repl</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)</span>
+<span class="sd">        Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2088,6 +2071,7 @@
 <span class="sd">        &gt;&gt;&gt; strings = ak.array([&#39;1_2___&#39;, &#39;____&#39;, &#39;3&#39;, &#39;__4___5____6___7&#39;, &#39;&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings.subn(pattern=&#39;_+&#39;, repl=&#39;-&#39;, count=2)</span>
 <span class="sd">        (array([&#39;1-2-&#39;, &#39;-&#39;, &#39;3&#39;, &#39;-4-5____6___7&#39;, &#39;&#39;]), array([2 1 0 2 0]))</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repl</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">repl</span> <span class="o">=</span> <span class="n">repl</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -2098,7 +2082,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.contains">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether each element contains the given substring.</span>
 
 <span class="sd">        Parameters</span>
@@ -2138,6 +2122,7 @@
 <span class="sd">        array([True True True True True])</span>
 <span class="sd">        &gt;&gt;&gt; strings.contains(&#39;string \\d&#39;, regex=True)</span>
 <span class="sd">        array([True True True True True])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
@@ -2161,7 +2146,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.startswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">startswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether each element starts with the given substring.</span>
 
 <span class="sd">        Parameters</span>
@@ -2204,6 +2189,7 @@
 <span class="sd">        array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings_start.startswith(&#39;\\d str&#39;, regex = True)</span>
 <span class="sd">        array([True True True True True])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">substr</span> <span class="o">=</span> <span class="n">substr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -2221,7 +2207,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.endswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">endswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether each element ends with the given substring.</span>
 
 <span class="sd">        Parameters</span>
@@ -2264,6 +2250,7 @@
 <span class="sd">        array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; strings_end.endswith(&#39;ing \\d&#39;, regex = True)</span>
 <span class="sd">        array([True True True True True])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">substr</span> <span class="o">=</span> <span class="n">substr</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -2667,7 +2654,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">return_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the n-long prefix of each string, where possible</span>
+<span class="sd">        Return the n-long prefix of each string, where possible.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2722,7 +2709,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">return_origins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">proper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the n-long suffix of each string, where possible</span>
+<span class="sd">        Return the n-long suffix of each string, where possible.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2957,8 +2944,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_comp_to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comp</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is an internal helper function to perform the to_ndarray for one</span>
-<span class="sd">        of the string components.</span>
+<span class="sd">        Return a NumPy ndarray representing one component of the string structure.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2976,6 +2962,7 @@
 <span class="sd">            Raised if there is a server-side error thrown, if the pdarray size</span>
 <span class="sd">            exceeds the built-in client.maxTransferBytes size limit, or if the bytes</span>
 <span class="sd">            received does not match expected number of bytes</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,</span>
@@ -3026,7 +3013,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.astype">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Cast values of Strings object to provided dtype</span>
+<span class="sd">        Cast values of Strings object to provided dtype.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -3039,7 +3026,7 @@
 <span class="sd">            An arkouda pdarray with values converted to the specified data type</span>
 
 <span class="sd">        Notes</span>
-<span class="sd">        _____</span>
+<span class="sd">        -----</span>
 <span class="sd">        This is essentially shorthand for ak.cast(x, &#39;&lt;dtype&gt;&#39;) where x is a pdarray.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
@@ -3061,6 +3048,7 @@
 <span class="sd">        one file per locale of the arkouda server, where each filename starts</span>
 <span class="sd">        with prefix_path. Each locale saves its chunk of the array to its</span>
 <span class="sd">        corresponding file.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
@@ -3082,6 +3070,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown saving the pdarray</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        - The prefix_path must be visible to the arkouda server and the user must</span>
@@ -3157,6 +3146,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown saving the pdarray</span>
+
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        - Parquet files do not store the segments, only the values.</span>
@@ -3175,8 +3165,9 @@
 <span class="sd">          dataset with the same name already exists, a ``RuntimeError`` will result.</span>
 <span class="sd">        - Any file extension can be used.The file I/O does not rely on the extension to</span>
 <span class="sd">          determine the file format.</span>
+
 <span class="sd">        See Also</span>
-<span class="sd">        ---------</span>
+<span class="sd">        --------</span>
 <span class="sd">        to_hdf</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -3210,8 +3201,9 @@
         <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Overwrite the dataset with the name provided with this Strings object. If</span>
-<span class="sd">        the dataset does not exist it is added</span>
+<span class="sd">        Overwrite the dataset with the name provided with this Strings object.</span>
+
+<span class="sd">        If the dataset does not exist it is added.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -3231,28 +3223,23 @@
 <span class="sd">            file sizes to expand.</span>
 
 <span class="sd">        Returns</span>
-<span class="sd">        --------</span>
+<span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            success message if successful</span>
 
 <span class="sd">        Raises</span>
-<span class="sd">        -------</span>
+<span class="sd">        ------</span>
 <span class="sd">        RuntimeError</span>
 <span class="sd">            Raised if a server-side error is thrown saving the Strings object</span>
 
 <span class="sd">        Notes</span>
-<span class="sd">        ------</span>
+<span class="sd">        -----</span>
 <span class="sd">        - If file does not contain File_Format attribute to indicate how it was saved,</span>
 <span class="sd">          the file name is checked for _LOCALE#### to determine if it is distributed.</span>
 <span class="sd">        - If the dataset provided does not exist, it will be added</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-            <span class="n">_file_type_to_int</span><span class="p">,</span>
-            <span class="n">_get_hdf_filetype</span><span class="p">,</span>
-            <span class="n">_mode_str_to_int</span><span class="p">,</span>
-            <span class="n">_repack_hdf</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_get_hdf_filetype</span><span class="p">,</span> <span class="n">_mode_str_to_int</span><span class="p">,</span> <span class="n">_repack_hdf</span>
 
         <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
@@ -3288,7 +3275,7 @@
         <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Write Strings to CSV file(s). File will contain a single column with the Strings data.</span>
 <span class="sd">        All CSV Files written by Arkouda include a header denoting data types of the columns.</span>
 <span class="sd">        Unlike other file formats, CSV files store Strings as their UTF-8 format instead of storing</span>
@@ -3309,7 +3296,7 @@
 <span class="sd">            be overwritten. If False, an error will be returned if existing files are found.</span>
 
 <span class="sd">        Returns</span>
-<span class="sd">        --------</span>
+<span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            response message</span>
 
@@ -3326,7 +3313,7 @@
 <span class="sd">            Raised if we receive an unknown arkouda_type returned from the server</span>
 
 <span class="sd">        Notes</span>
-<span class="sd">        ------</span>
+<span class="sd">        -----</span>
 <span class="sd">        - CSV format is not currently supported by load/load_all operations</span>
 <span class="sd">        - The column delimiter is expected to be the same for column names and data</span>
 <span class="sd">        - Be sure that column delimiters are not found within your data.</span>
@@ -3354,7 +3341,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_list_component_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a list of all component names</span>
+<span class="sd">        Return a list of all component names.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -3367,7 +3354,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a JSON formatted string containing information about all components of self</span>
+<span class="sd">        Return a JSON formatted string containing information about all components of self.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -3390,7 +3377,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this Strings object with a user defined name in the arkouda server</span>
-<span class="sd">        so it can be attached to later using Strings.attach()</span>
+<span class="sd">        so it can be attached to later using Strings.attach().</span>
+
 <span class="sd">        This is an in-place operation, registering a Strings object more than once will</span>
 <span class="sd">        update the name in the registry and remove the previously registered name.</span>
 <span class="sd">        A name can only be registered to one object at a time.</span>
@@ -3426,6 +3414,7 @@
 <span class="sd">        -----</span>
 <span class="sd">        Registered names/Strings objects in the server are immune to deletion</span>
 <span class="sd">        until they are unregistered.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
@@ -3448,7 +3437,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister a Strings object in the arkouda server which was previously</span>
-<span class="sd">        registered using register() and/or attached to using attach()</span>
+<span class="sd">        registered using register() and/or attached to using attach().</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -3477,7 +3466,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return True iff the object is contained in the registry</span>
+<span class="sd">        Return True iff the object is contained in the registry.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -3620,6 +3609,44 @@
 
         <span class="n">sorted_array</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">sorted_array</span> <span class="k">if</span> <span class="n">ascending</span> <span class="k">else</span> <span class="n">flip</span><span class="p">(</span><span class="n">sorted_array</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Strings.take">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/strings/index.html#arkouda.Strings.take">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">axis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take elements from the array along an axis.</span>
+
+<span class="sd">        When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays</span>
+<span class="sd">        using arrays); however, it can be easier to use if you need elements along a given axis.</span>
+<span class="sd">        A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        indices : numeric_scalars or pdarray</span>
+<span class="sd">            The indices of the values to extract. Also allow scalars for indices.</span>
+<span class="sd">        axis : int, optional</span>
+<span class="sd">            The axis over which to select values. By default, the flattened input array is used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            The returned array has the same type as `a`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.array([&quot;a&quot;,&quot;b&quot;,&quot;c&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; indices = [0, 1]</span>
+<span class="sd">        &gt;&gt;&gt; a.take(indices)</span>
+<span class="sd">        array([&#39;a&#39;, &#39;b&#39;])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">take</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">take</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)]</span></div>
 </div>
 
 </pre></div>

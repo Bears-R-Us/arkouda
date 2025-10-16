@@ -9,6 +9,7 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.array_api.statistical_functions.cumulative_prod
    arkouda.array_api.statistical_functions.cumulative_sum
    arkouda.array_api.statistical_functions.max
    arkouda.array_api.statistical_functions.mean
@@ -22,6 +23,37 @@ Functions
 
 Module Contents
 ---------------
+
+.. py:function:: cumulative_prod(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[int] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, include_initial: bool = False) -> arkouda.array_api.array_object.Array
+
+   Compute the cumulative product of the elements of an array along a given axis.
+
+   :param x: The array to compute the cumulative product of
+   :type x: Array
+   :param axis: The axis along which to compute the cumulative product. If x is 1D, this argument is optional,
+                otherwise it is required.
+   :type axis: int, optional
+   :param dtype: The dtype of the returned array. If None, the dtype of the input array is used.
+   :type dtype: Dtype, optional
+   :param include_initial: Whether to include the initial value as the first element of the output.
+   :type include_initial: bool, optional
+
+   :returns: A new array holding the result of the cumulative prod along the given axis.
+   :rtype: Array
+
+   :raises ValueError: Raised if x is multi-dim and no axis was supplied.
+   :raises IndexError: Raised if axis is invalid for the given array.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray((1 + ak.arange(6,dtype=ak.float64).reshape(2,3)))
+   >>> xp.cumulative_prod(a,axis=0,include_initial=True)
+   Arkouda Array ((3, 3), float64)[[1.0 1.0 1.0] [1.0 2.0 3.0] [4.0 10.0 18.0]]
+   >>> xp.cumulative_prod(a,axis=1,include_initial=False)
+   Arkouda Array ((2, 3), float64)[[1.0 2.0 6.0] [4.0 20.0 120.0]]
+
 
 .. py:function:: cumulative_sum(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[int] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, include_initial: bool = False) -> arkouda.array_api.array_object.Array
 
@@ -37,6 +69,22 @@ Module Contents
    :param include_initial: Whether to include the initial value as the first element of the output.
    :type include_initial: bool, optional
 
+   :returns: A new array holding the result of the cumulative sum along the given axis.
+   :rtype: Array
+
+   :raises ValueError: Raised if x is multi-dim and no axis was supplied.
+   :raises IndexError: Raised if axis is invalid for the given array.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+   >>> xp.cumulative_sum(a,axis=0,include_initial=True)
+   Arkouda Array ((3, 5), float64)[[0.0 0.0 0.0 0.0 0.0] [1.0 2.0 3.0 4.0 5.0] [7.0 9.0 11.0 13.0 15.0]]
+   >>> xp.cumulative_sum(a,axis=1,include_initial=False)
+   Arkouda Array ((2, 5), float64)[[1.0 3.0 6.0 10.0 15.0] [6.0 13.0 21.0 30.0 40.0]]
+
 
 .. py:function:: max(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
@@ -50,6 +98,25 @@ Module Contents
    :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
    :type keepdims: bool, optional
 
+   :returns: An array with the maximum values along the given axis, or a one-element
+             array with the maximum value, if no axis is given.
+   :rtype: Array
+
+   :raises TypeError: Raised if x is not real numeric.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
+   >>> xp.max(a)
+   Arkouda Array ((), float64)9.0
+   >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
+   >>> xp.max(a,axis=0)
+   Arkouda Array ((5,), float64)[5.0 6.0 7.0 8.0 9.0]
+   >>> xp.max(a,axis=1)
+   Arkouda Array ((2,), float64)[4.0 9.0]
+
 
 .. py:function:: mean(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
@@ -62,6 +129,26 @@ Module Contents
    :type axis: int or Tuple[int, ...], optional
    :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
    :type keepdims: bool, optional
+
+   :returns: The mean calculated from the pda sum and size, along the axis/axes if
+             those are given.
+   :rtype: Array
+
+   :raises IndexError: Raised if axis is not valid for the given array.
+   :raises TypeError: Raised if x is not real numeric.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
+   >>> xp.mean(a)
+   Arkouda Array ((1,), float64)[4.5]
+   >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
+   >>> xp.mean(a,axis=0)
+   Arkouda Array ((5,), float64)[2.5 3.5 4.5 5.5 6.5]
+   >>> xp.mean(a,axis=1)
+   Arkouda Array ((2,), float64)[2.0 7.0]
 
 
 .. py:function:: mean_shim(x: arkouda.array_api.array_object.Array, axis=None, dtype=None, out=None, keepdims=False)
@@ -78,6 +165,25 @@ Module Contents
    :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
    :type keepdims: bool, optional
 
+   :returns: An array with the minimum values along the given axis, or a one-element
+             array with the minimum value, if no axis is given.
+   :rtype: Array
+
+   :raises TypeError: Raised if x is not real numeric.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray(ak.arange(10,dtype=ak.float64))
+   >>> xp.min(a)
+   Arkouda Array ((), float64)0.0
+   >>> a = xp.asarray(ak.arange(10,dtype=ak.float64).reshape(2,5))
+   >>> xp.min(a,axis=0)
+   Arkouda Array ((5,), float64)[0.0 1.0 2.0 3.0 4.0]
+   >>> xp.min(a,axis=1)
+   Arkouda Array ((2,), float64)[0.0 5.0]
+
 
 .. py:function:: prod(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
@@ -92,6 +198,25 @@ Module Contents
    :type dtype: Dtype, optional
    :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
    :type keepdims: bool, optional
+
+   :returns: An array with the product along the given axis, or a one-element
+             array with the product of the entire array, if no axis is given.
+   :rtype: Array
+
+   :raises TypeError: Raised if x._array is not real numeric, or can't be cast to a pdarray.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray(1 + ak.arange(10,dtype=ak.float64))
+   >>> xp.prod(a)
+   Arkouda Array ((), float64)3628800.0
+   >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+   >>> xp.prod(a,axis=0)
+   Arkouda Array ((5,), float64)[6.0 14.0 24.0 36.0 50.0]
+   >>> xp.prod(a,axis=1)
+   Arkouda Array ((2,), float64)[120.0 30240.0]
 
 
 .. py:function:: std(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, correction: Union[int, float] = 0.0, keepdims: bool = False) -> arkouda.array_api.array_object.Array
@@ -108,6 +233,27 @@ Module Contents
    :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
    :type keepdims: bool, optional
 
+   :returns: An array with the standard deviation along the given axis, or a one-element
+             array with the std of the entire array, if no axis is given.
+   :rtype: Array
+
+   :raises TypeError: Raised if x is not floating point.
+   :raises ValueError: Raised if correction is negative.
+   :raises IndexError: Raised if axis is not valid for given Array.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)))
+   >>> xp.std(a)
+   Arkouda Array ((1,), float64)[2.87228]
+   >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+   >>> xp.std(a,axis=0)
+   Arkouda Array ((5,), float64)[2.5 2.5 2.5 2.5 2.5]
+   >>> xp.std(a,axis=1)
+   Arkouda Array ((2,), float64)[1.41421 1.41421]
+
 
 .. py:function:: sum(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, dtype: Optional[arkouda.array_api._typing.Dtype] = None, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
@@ -123,6 +269,25 @@ Module Contents
    :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
    :type keepdims: bool, optional
 
+   :returns: An array with the sum along the given axis, or a one-element
+             array with the sum of the entire array, if no axis is given.
+   :rtype: Array
+
+   :raises TypeError: Raised if x is not numeric.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray(1 + ak.arange(10,dtype=ak.float64))
+   >>> xp.sum(a)
+   Arkouda Array ((), float64)55.0
+   >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+   >>> xp.sum(a,axis=0)
+   Arkouda Array ((5,), float64)[7.0 9.0 11.0 13.0 15.0]
+   >>> xp.sum(a,axis=1)
+   Arkouda Array ((2,), float64)[15.0 40.0]
+
 
 .. py:function:: var(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, correction: Union[int, float] = 0.0, keepdims: bool = False) -> arkouda.array_api.array_object.Array
 
@@ -137,5 +302,26 @@ Module Contents
    :type correction: int or float, optional
    :param keepdims: Whether to keep the singleton dimension(s) along `axis` in the result.
    :type keepdims: bool, optional
+
+   :returns: An array with the variance along the given axis, or a one-element
+             array with the var of the entire array, if no axis is given.
+   :rtype: Array
+
+   :raises TypeError: Raised if x is not floating point.
+   :raises ValueError: Raised if correction is negative.
+   :raises IndexError: Raised if axis is not valid for given Array.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)))
+   >>> xp.var(a)
+   Arkouda Array ((1,), float64)[8.25]
+   >>> a = xp.asarray((1 + ak.arange(10,dtype=ak.float64)).reshape(2,5))
+   >>> xp.var(a,axis=0)
+   Arkouda Array ((5,), float64)[6.25 6.25 6.25 6.25 6.25]
+   >>> xp.var(a,axis=1)
+   Arkouda Array ((2,), float64)[2.0 2.0]
 
 

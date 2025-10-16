@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BigIntegerAggregation &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -126,7 +123,7 @@
            <div itemprop="articleBody">
              
   <section id="bigintegeraggregation">
-<span id="module-BigIntegerAggregation"></span><h1>BigIntegerAggregation<a class="headerlink" href="#bigintegeraggregation" title="Link to this heading">¶</a></h1>
+<span id="module-BigIntegerAggregation"></span><h1>BigIntegerAggregation<a class="headerlink" href="#bigintegeraggregation" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">CommAggregation</span><span class="p">.</span><span class="nx">BigIntegerAggregation</span><span class="p">;</span>
 </pre></div>
@@ -137,175 +134,175 @@
 </div>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.bigint.serializedSize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">bigint.</span></span><span class="sig-name descname"><span class="pre">serializedSize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.bigint.serializedSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">bigint.</span></span><span class="sig-name descname"><span class="pre">serializedSize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.bigint.serializedSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.bigint.serializeInto">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">bigint.</span></span><span class="sig-name descname"><span class="pre">serializeInto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x:</span> <span class="pre">c_ptr(uint(8))</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.bigint.serializeInto" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">bigint.</span></span><span class="sig-name descname"><span class="pre">serializeInto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x:</span> <span class="pre">c_ptr(uint(8))</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.bigint.serializeInto" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.bigint.deserializeFrom">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">bigint.</span></span><span class="sig-name descname"><span class="pre">deserializeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x:</span> <span class="pre">c_ptr(uint(8))</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.bigint.deserializeFrom" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">bigint.</span></span><span class="sig-name descname"><span class="pre">deserializeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x:</span> <span class="pre">c_ptr(uint(8))</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.bigint.deserializeFrom" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">DstAggregatorBigint</span></span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">DstAggregatorBigint</span></span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.aggType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">uint(8)</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.aggType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">uint(8)</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.aggType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.bufferSize">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">dstBuffSize</span> <span class="pre">*</span> <span class="pre">(c_sizeof(c_ptr(bigint))</span> <span class="pre">+</span> <span class="pre">c_sizeof(mp_size_t)</span> <span class="pre">+</span> <span class="pre">c_sizeof(mp_limb_t))</span></em><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.bufferSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">dstBuffSize</span> <span class="pre">*</span> <span class="pre">(c_sizeof(c_ptr(bigint))</span> <span class="pre">+</span> <span class="pre">c_sizeof(mp_size_t)</span> <span class="pre">+</span> <span class="pre">c_sizeof(mp_limb_t)):</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.bufferSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.myLocaleSpace">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.myLocaleSpace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.myLocaleSpace" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.lastLocale">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.lastLocale" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.lastLocale" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.opsUntilYield">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.opsUntilYield" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.opsUntilYield" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.lBuffers">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lBuffers</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.lBuffers" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lBuffers</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.lBuffers" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.rBuffers">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rBuffers</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.rBuffers" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rBuffers</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.rBuffers" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.bufferIdxs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.bufferIdxs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.bufferIdxs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.postinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.postinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.postinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.deinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.flush">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.flush" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.flush" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.copy">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.copy" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.copy" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.DstAggregatorBigint.flushBuffer">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.flushBuffer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.DstAggregatorBigint.flushBuffer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcAggregatorBigint</span></span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">SrcAggregatorBigint</span></span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.aggType">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">c_ptr(bigint)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.aggType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">aggType</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">c_ptr(bigint)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.aggType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.bufferSize">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">srcBuffSize</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.bufferSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bufferSize</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">srcBuffSize</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.bufferSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.uintBufferSize">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">uintBufferSize</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">srcBuffSize</span> <span class="pre">*</span> <span class="pre">(c_sizeof(mp_size_t)</span> <span class="pre">+</span> <span class="pre">c_sizeof(mp_limb_t))</span></em><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.uintBufferSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">uintBufferSize</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">srcBuffSize</span> <span class="pre">*</span> <span class="pre">(c_sizeof(mp_size_t)</span> <span class="pre">+</span> <span class="pre">c_sizeof(mp_limb_t)):</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.uintBufferSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.myLocaleSpace">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.myLocaleSpace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">myLocaleSpace</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0..&lt;numLocales</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.myLocaleSpace" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.lastLocale">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.lastLocale" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lastLocale</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.lastLocale" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.opsUntilYield">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.opsUntilYield" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">opsUntilYield</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">yieldFrequency</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.opsUntilYield" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.dstAddrs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dstAddrs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.dstAddrs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dstAddrs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.dstAddrs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.lSrcAddrs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcAddrs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.lSrcAddrs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcAddrs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(c_ptr(aggType))</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.lSrcAddrs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.lSrcVals">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcVals</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">[0..#uintBufferSize]</span> <span class="pre">uint(8)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.lSrcVals" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lSrcVals</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">[0..#uintBufferSize]</span> <span class="pre">uint(8)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.lSrcVals" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.rSrcAddrs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcAddrs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.rSrcAddrs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcAddrs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(aggType)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.rSrcAddrs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.rSrcVals">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcVals</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(uint(8))</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.rSrcVals" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">rSrcVals</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[myLocaleSpace]</span> <span class="pre">remoteBuffer(uint(8))</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.rSrcVals" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.bufferIdxs">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.bufferIdxs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bufferIdxs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(int)</span></em><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.bufferIdxs" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.postinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.postinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">postinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.postinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.deinit">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.flush">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.flush" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.flush" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.copy">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.copy" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">dst:</span> <span class="pre">bigint</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">src:</span> <span class="pre">bigint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.copy" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="BigIntegerAggregation.SrcAggregatorBigint.flushBuffer">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.flushBuffer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">flushBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">bufferIdx</span></em>, <em class="sig-param"><span class="pre">freeData</span></em><span class="sig-paren">)</span><a class="headerlink" href="#BigIntegerAggregation.SrcAggregatorBigint.flushBuffer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

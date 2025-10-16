@@ -32,7 +32,7 @@ Module Contents
 
 .. py:function:: arange(start: Union[int, float], /, stop: Optional[Union[int, float]] = None, step: Union[int, float] = 1, *, dtype: Optional[arkouda.array_api._typing.Dtype] = None, device: Optional[arkouda.array_api._typing.Device] = None) -> arkouda.array_api.array_object.Array
 
-   Return a 1D of array of evenly spaced values within the half-open interval [start, stop)
+   Return a 1D of array of evenly spaced values within the half-open interval [start, stop).
 
    :param start: If `stop` is None, this is the stop value and start is 0. Otherwise,
                  this is the start value (inclusive).
@@ -53,7 +53,7 @@ Module Contents
    - a sequence of scalar values (not yet implemented)
    - a buffer (not yet implemented)
    - an arkouda class:`~arkouda.numpy.pdarrayclass.pdarray`
-   - a numpy ndarray
+   - a numpy ndarray.
 
    :param obj:   sequence of scalars, buffer, pdarray, or numpy.ndarray
                The object to convert to an Array
@@ -133,8 +133,9 @@ Module Contents
 
 .. py:function:: tril(x: arkouda.array_api.array_object.Array, /, *, k: int = 0) -> arkouda.array_api.array_object.Array
 
-   Create a new array with the values from `x` below the `k`-th diagonal, and
-   all other elements zero.
+   Return a copy of `x` with elements above the k-th diagonal zeroed.
+
+   Values on or below the `k`-th diagonal are preserved.
 
 
 .. py:function:: triu(x: arkouda.array_api.array_object.Array, /, *, k: int = 0) -> arkouda.array_api.array_object.Array

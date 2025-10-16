@@ -11,7 +11,9 @@ Functions
 
    arkouda.numpy.util.attach
    arkouda.numpy.util.attach_all
+   arkouda.numpy.util.broadcast_arrays
    arkouda.numpy.util.broadcast_dims
+   arkouda.numpy.util.broadcast_shapes
    arkouda.numpy.util.convert_bytes
    arkouda.numpy.util.convert_if_categorical
    arkouda.numpy.util.copy
@@ -24,9 +26,11 @@ Functions
    arkouda.numpy.util.is_numeric
    arkouda.numpy.util.is_registered
    arkouda.numpy.util.map
+   arkouda.numpy.util.may_share_memory
    arkouda.numpy.util.register
    arkouda.numpy.util.register_all
    arkouda.numpy.util.report_mem
+   arkouda.numpy.util.shares_memory
    arkouda.numpy.util.sparse_sum_help
    arkouda.numpy.util.unregister
    arkouda.numpy.util.unregister_all
@@ -94,6 +98,30 @@ Module Contents
    >>> ak.unregister_all(["arr1", "arr2"])
 
 
+.. py:function:: broadcast_arrays(*arrays: arkouda.numpy.pdarrayclass.pdarray) -> List[arkouda.numpy.pdarrayclass.pdarray]
+
+   Broadcast arrays to a common shape.
+
+   :param arrays: The arrays to broadcast. Must be broadcastable to a common shape.
+   :type arrays: pdarray
+
+   :returns: A list whose elements are the given Arrays broadcasted to the common shape.
+   :rtype: List
+
+   :raises ValueError: Raised by broadcast_to if a common shape cannot be determined.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.arange(10).reshape(1,2,5)
+   >>> b = ak.arange(20).reshape(4,1,5)
+   >>> c = ak.broadcast_arrays(a,b)
+   >>> c[0][0,:,:]
+   array([array([0 1 2 3 4]) array([5 6 7 8 9])])
+   >>> c[1][:,0,0]
+   array([0 5 10 15])
+
+
 .. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
 
    Determine the broadcasted shape of two arrays given their shapes.
@@ -122,6 +150,30 @@ Module Contents
 
    >>> broadcast_dims((4,), (3, 1))
    (3, 4)
+
+
+.. py:function:: broadcast_shapes(*shapes: Tuple[int, Ellipsis]) -> Tuple[int, Ellipsis]
+
+   Determine a broadcasted shape, given an arbitary number of shapes.
+
+   This function implements the broadcasting rules from the Array API standard
+   to compute the shape resulting from broadcasting two arrays together.
+
+   See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+
+   :param shapes: a list or tuple of the shapes to be broadcast
+   :type shapes: Tuple[int, ...]
+
+   :returns: The broadcasted shape
+   :rtype: Tuple[int, ...]
+
+   :raises ValueError: If the shapes are not compatible for broadcasting.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.broadcast_shapes((1,2,3),(4,1,3),(4,2,1))
+   (4, 2, 3)
 
 
 .. py:function:: convert_bytes(nbytes: arkouda.numpy.dtypes.int_scalars, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> arkouda.numpy.dtypes.numeric_scalars
@@ -229,7 +281,7 @@ Module Contents
    [1 3 0 2]
 
 
-.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
+.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is a float type.
 
@@ -255,7 +307,7 @@ Module Contents
    False
 
 
-.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
+.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is an integer type.
 
@@ -281,7 +333,7 @@ Module Contents
    False
 
 
-.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
+.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is numeric.
 
@@ -377,6 +429,14 @@ Module Contents
    array(['b', 'd', 'b', 'd', 'a'])
 
 
+.. py:function:: may_share_memory(a, b)
+
+   Conservative version akin to numpy.may_share_memory.
+
+   For now it just defers to shares_memory.
+
+
+
 .. py:function:: register(obj, name)
 
    Register an Arkouda object with a user-specified name.
@@ -437,6 +497,24 @@ Module Contents
 
 
 .. py:function:: report_mem(pre='')
+
+.. py:function:: shares_memory(a, b)
+
+   Return True if `a` and `b` share any Arkouda server-side buffers.
+
+   This is an Arkouda analogue of numpy.shares_memory with a simpler definition:
+   it checks for identical backing buffer *identities* (same server object names).
+
+   .. rubric:: Notes
+
+   - Because Arkouda commonly *materializes* results (rather than views),
+     aliasing is rare and usually only true when objects literally reference
+     the same backing buffers.
+   - For compound containers (e.g., SegArray, Strings, Categorical), we check
+     all of their component buffers.
+   - If you introduce true view semantics in the future, teach `_ak_buffer_names`
+     to surface the base buffer name(s) and view descriptors, and compare bases.
+
 
 .. py:function:: sparse_sum_help(idx1: arkouda.numpy.pdarrayclass.pdarray, idx2: arkouda.numpy.pdarrayclass.pdarray, val1: arkouda.numpy.pdarrayclass.pdarray, val2: arkouda.numpy.pdarrayclass.pdarray, merge: bool = True, percent_transfer_limit: int = 100) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 

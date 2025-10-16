@@ -32,12 +32,48 @@ Module Contents
 
    Broadcast arrays to a common shape.
 
-   Throws a ValueError if a common shape cannot be determined.
+   :param arrays: The arrays to broadcast. Must be broadcastable to a common shape.
+   :type arrays: Array
+
+   :returns: A list whose elements are the given Arrays broadcasted to the common shape.
+   :rtype: List
+
+   :raises ValueError: Raised by broadcast_to if a common shape cannot be determined.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray(ak.arange(10).reshape(1,2,5))
+   >>> b = xp.asarray(ak.arange(20).reshape(4,1,5))
+   >>> c = xp.broadcast_arrays(a,b)
+   >>> c[0][0,:,:]
+   Arkouda Array ((2, 5), int64)[[0 1 2 3 4] [5 6 7 8 9]]
+   >>> c[1][:,0,0]
+   Arkouda Array ((4,), int64)[0 5 10 15]
 
 
 .. py:function:: broadcast_to(x: arkouda.array_api.array_object.Array, /, shape: Tuple[int, Ellipsis]) -> arkouda.array_api.array_object.Array
 
    Broadcast the array to the specified shape.
+
+   :param x: The array to be broadcast.
+   :type x: Array
+   :param shape: The shape to which the array is to be broadcast.
+   :type shape: Tuple[int, ...]
+
+   :returns: A new array which is x broadcast to the provided shape.
+   :rtype: Array
+
+   :raises ValueError: Raised server-side if the broadcast fails.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import arkouda.array_api as xp
+   >>> a = xp.asarray(ak.arange(5))
+   >>> xp.broadcast_to(a,(2,5))
+   Arkouda Array ((2, 5), int64)[[0 1 2 3 4] [0 1 2 3 4]]
 
    See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.
 
@@ -52,6 +88,12 @@ Module Contents
                 flattened before concatenation.
    :type axis: int, optional
 
+   :raises IndexError: Raised if axis is not a valid axis for the given arrays.
+   :raises ValueError: Raised if array shapes are incompatible with concat.
+
+   :returns: A new Array which is the concatention of the given Arrays along the given axis.
+   :rtype: Array
+
 
 .. py:function:: expand_dims(x: arkouda.array_api.array_object.Array, /, *, axis: int) -> arkouda.array_api.array_object.Array
 
@@ -63,6 +105,11 @@ Module Contents
                 `[-x.ndim-1, x.ndim]`.
    :type axis: int
 
+   :raises IndexError: Raised if axis is not a valid axis for the given result.
+
+   :returns: A new Array with a new dimension equal to 1, inserted at the given axis.
+   :rtype: Array
+
 
 .. py:function:: flip(x: arkouda.array_api.array_object.Array, /, *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.array_api.array_object.Array
 
@@ -72,6 +119,12 @@ Module Contents
    :type x: Array
    :param axis: The axis or axes along which to flip the array. If None, flip the array along all axes.
    :type axis: int or Tuple[int, ...], optional
+
+   :raises IndexError: Raised if the axis/axes is/are invalid for the given array, or if the flip
+       fails server-side.
+
+   :returns: A copy of x with the results reversed along the given axis or axes.
+   :rtype: Array
 
 
 .. py:function:: moveaxis(x: arkouda.array_api.array_object.Array, source: Union[int, Tuple[int, Ellipsis]], destination: Union[int, Tuple[int, Ellipsis]], /) -> arkouda.array_api.array_object.Array
@@ -87,6 +140,12 @@ Module Contents
                        Values must be unique and fall within the range `[-x.ndim, x.ndim)`.
    :type destination: int or Tuple[int, ...]
 
+   :raises ValueError: Raised if source and destination are not the same type (tuple or int).
+   :raises IndexError: Raised if source, destination, or both are not valid for x.ndim.
+
+   :returns: A new Array with the axes shifted per the givern source, destination.
+   :rtype: Array
+
 
 .. py:function:: permute_dims(x: arkouda.array_api.array_object.Array, /, axes: Tuple[int, Ellipsis]) -> arkouda.array_api.array_object.Array
 
@@ -96,6 +155,11 @@ Module Contents
    :type x: Array
    :param axes: The new order of the dimensions. Must be a permutation of the integers from 0 to `x.ndim-1`.
    :type axes: Tuple[int, ...]
+
+   :raises IndexError: Raised if the given axes are not a valid reordering of the axes of x.
+
+   :returns: A copy of x with the axes permuted as per the axes argument.
+   :rtype: Array
 
 
 .. py:function:: repeat(x: arkouda.array_api.array_object.Array, repeats: Union[int, arkouda.array_api.array_object.Array], /, *, axis: Optional[int] = None) -> arkouda.array_api.array_object.Array
@@ -110,8 +174,14 @@ Module Contents
                     * If axis is not None, must be an integer, or a 1D array of integers whose size matches the
                       number of elements along the specified axis.
    :type repeats: int or Array
-   :param axis: The axis along which to repeat elements. If None, the array is flattened before repeating.
+   :param axis: The axis along which to repeat elements. If None, the array is flattened before repeating,
+                and each element is repeated repeats times.
    :type axis: int, optional
+
+   :raises NotYetImplementedError: Raised if axis arg is used.
+
+   :returns: A new 1D array with each element of x repeated repeats times.
+   :rtype: Array
 
 
 .. py:function:: reshape(x: arkouda.array_api.array_object.Array, /, shape: Tuple[int, Ellipsis], *, copy: Optional[bool] = None) -> arkouda.array_api.array_object.Array
@@ -125,6 +195,11 @@ Module Contents
    :param copy: Whether to create a copy of the array.
                 WARNING: currently always creates a copy, ignoring the value of this parameter.
    :type copy: bool, optional
+
+   :raises ValueError: Raised if the given shape is invalid, or if more than one unknown dimension is specified.
+
+   :returns: A reshaped version of x, as specified in shape.
+   :rtype: Array
 
 
 .. py:function:: roll(x: arkouda.array_api.array_object.Array, /, shift: Union[int, Tuple[int, Ellipsis]], *, axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None) -> arkouda.array_api.array_object.Array
@@ -143,6 +218,12 @@ Module Contents
                 rolling.
    :type axis: int or Tuple[int, ...], optional
 
+   :raises IndexError: Raised if the axis/axes aren't valid for the given array, or if axis and shift are both
+       tuples but not of the same length, or if roll fails server-side.
+
+   :returns: An array with the same shape as x, but with elements shifted as per axis and shift.
+   :rtype: Array
+
 
 .. py:function:: squeeze(x: arkouda.array_api.array_object.Array, /, axis: Union[int, Tuple[int, Ellipsis]]) -> arkouda.array_api.array_object.Array
 
@@ -152,6 +233,9 @@ Module Contents
    :type x: Array
    :param axis: The axis or axes to squeeze (must have a size of one).
    :type axis: int or Tuple[int, ...]
+
+   :returns: The input array, but with the axes specified in axis (which must be of length 1) removed.
+   :rtype: Array
 
 
 .. py:function:: stack(arrays: Union[Tuple[arkouda.array_api.array_object.Array, Ellipsis], List[arkouda.array_api.array_object.Array]], /, *, axis: int = 0) -> arkouda.array_api.array_object.Array
@@ -167,6 +251,12 @@ Module Contents
                 of dimensions in the input arrays. The default is 0.
    :type axis: int, optional
 
+   :raises ValueError: Raised if the arrays aren't all the same shape.
+   :raises IndexError: Raised if axis isn't valid for the given arrays.
+
+   :returns: A stacked array with rank 1 greater than the input arrays.
+   :rtype: Array
+
 
 .. py:function:: tile(x: arkouda.array_api.array_object.Array, repetitions: Tuple[int, Ellipsis], /) -> arkouda.array_api.array_object.Array
 
@@ -177,8 +267,11 @@ Module Contents
    :param repetitions: The number of repetitions along each dimension. If there are more repetitions than array
                        dimensions, singleton dimensions are prepended to the array to make it match the number of
                        repetitions. If there are more array dimensions than repetitions, ones are prepended to the
-                       repetitions tuple to make it's length match the number of array dimensions.
+                       repetitions tuple to make its length match the number of array dimensions.
    :type repetitions: Tuple[int, ...]
+
+   :returns: The tiled output array.
+   :rtype: Array
 
 
 .. py:function:: unstack(x: arkouda.array_api.array_object.Array, /, *, axis: int = 0) -> Tuple[arkouda.array_api.array_object.Array, Ellipsis]
@@ -189,5 +282,10 @@ Module Contents
    :type x: Array
    :param axis: The axis along which to unstack the array. The default is 0.
    :type axis: int, optional
+
+   :raises IndexError: Raised if the axis is not valid for the given Array.
+
+   :returns: A Tuple of unstacked Arrays.
+   :rtype: Tuple
 
 

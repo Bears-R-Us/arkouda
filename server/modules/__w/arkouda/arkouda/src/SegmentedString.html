@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SegmentedString &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="segmentedstring">
-<span id="module-SegmentedString"></span><h1>SegmentedString<a class="headerlink" href="#segmentedstring" title="Link to this heading">¶</a></h1>
+<span id="module-SegmentedString"></span><h1>SegmentedString<a class="headerlink" href="#segmentedstring" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">SegmentedString</span><span class="p">;</span>
 </pre></div>
@@ -133,42 +130,42 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SegmentedString.ssLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ssLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#SegmentedString.ssLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ssLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#SegmentedString.ssLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SegmentedString.SegmentedStringUseHash">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">SegmentedStringUseHash</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">useHash</span></em><a class="headerlink" href="#SegmentedString.SegmentedStringUseHash" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">SegmentedStringUseHash</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">useHash</span></em><a class="headerlink" href="#SegmentedString.SegmentedStringUseHash" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="SegmentedString.Fixes">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Fixes</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">prefixes,</span> <span class="pre">suffixes</span> <span class="pre">}</span></em><a class="headerlink" href="#SegmentedString.Fixes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Fixes</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">prefixes,</span> <span class="pre">suffixes</span> <span class="pre">}</span></em><a class="headerlink" href="#SegmentedString.Fixes" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedString.Fixes.prefixes">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">prefixes</span></span><a class="headerlink" href="#SegmentedString.Fixes.prefixes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">prefixes</span></span><a class="headerlink" href="#SegmentedString.Fixes.prefixes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedString.Fixes.suffixes">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">suffixes</span></span><a class="headerlink" href="#SegmentedString.Fixes.suffixes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">suffixes</span></span><a class="headerlink" href="#SegmentedString.Fixes.suffixes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SegmentedString.NULL_STRINGS_VALUE">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">NULL_STRINGS_VALUE</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><em class="property"> <span class="pre">:</span> <span class="pre">uint(8)</span></em><a class="headerlink" href="#SegmentedString.NULL_STRINGS_VALUE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">NULL_STRINGS_VALUE</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0:</span> <span class="pre">uint(8)</span></em><a class="headerlink" href="#SegmentedString.NULL_STRINGS_VALUE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.getSegString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.getSegString" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.getSegString" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd><ul class="simple">
 <li><p>This version of the getSegString method takes segments and values arrays as</p></li>
 <li><p>inputs, generates the SymEntry objects for each and passes the</p></li>
@@ -178,17 +175,17 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.assembleSegStringFromParts">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">assembleSegStringFromParts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsets:</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.assembleSegStringFromParts" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">assembleSegStringFromParts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsets:</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.assembleSegStringFromParts" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">assembleSegStringFromParts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsets:</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">SymEntry(uint(8))</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">assembleSegStringFromParts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsets:</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">SymEntry(uint(8))</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">SegString</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegString</span></span><a class="headerlink" href="#SegmentedString.SegString" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegString</span></span><a class="headerlink" href="#SegmentedString.SegString" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Represents an array of strings, implemented as a segmented array of bytes.</p></li>
@@ -199,17 +196,17 @@
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.name">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.SegString.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.SegString.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.composite">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">composite</span></span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SegStringSymEntry</span></em><a class="headerlink" href="#SegmentedString.SegString.composite" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">composite</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SegStringSymEntry</span></em><a class="headerlink" href="#SegmentedString.SegString.composite" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.offsets">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">offsets</span></span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int,</span> <span class="pre">1)</span></em><a class="headerlink" href="#SegmentedString.SegString.offsets" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">offsets</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int,</span> <span class="pre">1)</span></em><a class="headerlink" href="#SegmentedString.SegString.offsets" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>The pdarray containing the offsets, which are the start indices of</p></li>
@@ -219,7 +216,7 @@
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.values">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">values</span></span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8),</span> <span class="pre">1)</span></em><a class="headerlink" href="#SegmentedString.SegString.values" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">values</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8),</span> <span class="pre">1)</span></em><a class="headerlink" href="#SegmentedString.SegString.values" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>The pdarray containing the complete byte array composed of bytes</p></li>
@@ -230,7 +227,7 @@
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegmentedString.SegString.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegmentedString.SegString.size" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>The number of strings in the segmented array</p></li>
@@ -239,7 +236,7 @@
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.nBytes">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">nBytes</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegmentedString.SegString.nBytes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">nBytes</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegmentedString.SegString.nBytes" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>The total number of bytes in the entire segmented array including</p></li>
@@ -250,7 +247,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entryName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">SegStringSymEntry</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.SegString.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entryName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">SegStringSymEntry</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.SegString.init" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>This method should not be called directly. Instead, call one of the</p></li>
 <li><p>getSegString factory methods.</p></li>
@@ -259,12 +256,12 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.show">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">3</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.show" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">3</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.show" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.this">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint</span></em><a class="headerlink" href="#SegmentedString.SegString.this" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint</span></em><a class="headerlink" href="#SegmentedString.SegString.this" title="Link to this definition"></a></dt>
 <dd><p>Retrieve one string from the array</p>
 </dd></dl>
 
@@ -296,14 +293,14 @@ and bytes of the gathered strings.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.siphash">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">siphash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.siphash" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">siphash</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.siphash" title="Link to this definition"></a></dt>
 <dd><p>Apply a hash function to all strings. This is useful for grouping
 and set membership. The hash used is SipHash128.</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.argGroup">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">argGroup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.argGroup" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">argGroup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.argGroup" title="Link to this definition"></a></dt>
 <dd><p>Return a permutation that groups the strings. Because hashing is used,
 this permutation will not sort the strings, but all equivalent strings
 will fall in one contiguous block.</p>
@@ -311,27 +308,27 @@ will fall in one contiguous block.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.getLengths">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLengths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.getLengths" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLengths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.getLengths" title="Link to this definition"></a></dt>
 <dd><p>Return lengths of all strings, including null terminator.</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.lower">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.lower" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.lower" title="Link to this definition"></a></dt>
 <dd><p>Given a SegString, return a new SegString with all uppercase characters from the original replaced with their lowercase equivalent
 :returns: Strings – Substrings with uppercase characters replaced with lowercase equivalent</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.upper">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.upper" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.upper" title="Link to this definition"></a></dt>
 <dd><p>Given a SegString, return a new SegString with all lowercase characters from the original replaced with their uppercase equivalent
 :returns: Strings – Substrings with lowercase characters replaced with uppercase equivalent</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.title">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.title" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.title" title="Link to this definition"></a></dt>
 <dd><p>Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
 and the remaining characters replaced with their lowercase equivalent.  The first character following a space character will be uppercase.
 :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
@@ -340,21 +337,21 @@ their lowercase equivalent.  The first character following a space character wil
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isDecimal">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isDecimal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isDecimal" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isDecimal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isDecimal" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is a decimal
 :returns: [domain] bool where index i indicates whether the string i of the SegString is a decimal</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isNumeric">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumeric</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isNumeric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumeric</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isNumeric" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is numeric
 :returns: [domain] bool where index i indicates whether the string i of the SegString is numeric</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.capitalize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">capitalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.capitalize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">capitalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.capitalize" title="Link to this definition"></a></dt>
 <dd><p>Given a SegString, return a new SegString with first character of each original element replaced with its uppercase equivalent
 and the remaining characters replaced with their lowercase equivalent
 :returns: Strings – Substrings with first characters replaced with uppercase equivalent and remaining characters replaced with
@@ -363,73 +360,73 @@ their lowercase equivalent</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isLower">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isLower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isLower" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isLower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isLower" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is entirely lowercase
 :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely lowercase</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isUpper">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isUpper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isUpper" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isUpper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isUpper" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is entirely uppercase
 :returns: [domain] bool where index i indicates whether the string i of the SegString is entirely uppercase</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isTitle">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isTitle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isTitle" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isTitle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isTitle" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is titlecase
 :returns: [domain] bool where index i indicates whether the string i of the SegString is titlecase</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isalnum">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isalnum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isalnum" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isalnum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isalnum" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is alphanumeric
 :returns: [domain] bool where index i indicates whether the string i of the SegString is alphanumeric</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isalpha">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isalpha</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isalpha" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isalpha</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isalpha" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is alphabetic
 :returns: [domain] bool where index i indicates whether the string i of the SegString is alphabetic</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isdigit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isdigit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isdigit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isdigit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isdigit" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is digits
 :returns: [domain] bool where index i indicates whether the string i of the SegString is digits</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isempty">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isempty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isempty" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isempty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isempty" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is empty
 :returns: [domain] bool where index i indicates whether the string i of the SegString is empty</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isspace">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isspace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isspace" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the string i of the SegString is whitespace
 :returns: [domain] bool where index i indicates whether the string i of the SegString is whitespace</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.bytesToUintArr">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bytesToUintArr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">max_bytes:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">lens:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.bytesToUintArr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bytesToUintArr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">max_bytes:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">lens:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.bytesToUintArr" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.findSubstringInBytes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findSubstringInBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">substr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.findSubstringInBytes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findSubstringInBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">substr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.findSubstringInBytes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.findMatchLocations">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findMatchLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">groupNum:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.findMatchLocations" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findMatchLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">groupNum:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.findMatchLocations" title="Link to this definition"></a></dt>
 <dd><p>Given a SegString, finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
 :arg pattern: The regex pattern used to find matches
 :type pattern: string
@@ -440,7 +437,7 @@ their lowercase equivalent</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.findAllMatches">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findAllMatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">numMatchesEntry:</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">startsEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">lensEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">indicesEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">returnMatchOrig:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int,</span> <span class="pre">1)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(bool,</span> <span class="pre">1)</span></em><a class="headerlink" href="#SegmentedString.SegString.findAllMatches" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findAllMatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">numMatchesEntry:</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">startsEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">lensEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">indicesEntry:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int</span></em>, <em class="sig-param"><span class="pre">1)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">returnMatchOrig:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(int,</span> <span class="pre">1)</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(bool,</span> <span class="pre">1)</span></em><a class="headerlink" href="#SegmentedString.SegString.findAllMatches" title="Link to this definition"></a></dt>
 <dd><p>Given a SegString, return a new SegString only containing matches of the regex pattern,
 If returnMatchOrig is set to True, return a pdarray containing the index of the original string each pattern match is from
 :arg numMatchesEntry: For each string in SegString, the number of pattern matches
@@ -456,7 +453,7 @@ If returnMatchOrig is set to True, return a pdarray containing the index of the 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.sub">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">replStr:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">initCount:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">returnNumSubs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.sub" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pattern:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">replStr:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">initCount:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">returnNumSubs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.sub" title="Link to this definition"></a></dt>
 <dd><p>Substitute pattern matches with repl. If count is nonzero, at most count substitutions occur
 If returnNumSubs is set to True, the number of substitutions per string will be returned</p>
 <dl class="field-list simple">
@@ -476,7 +473,7 @@ If returnNumSubs is set to True, the number of substitutions per string will be 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.segStrWhere">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segStrWhere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">otherStr:</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">condition:</span> <span class="pre">[]</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">newLens:</span> <span class="pre">[]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.SegString.segStrWhere" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segStrWhere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">otherStr:</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">condition:</span> <span class="pre">[]</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">newLens:</span> <span class="pre">[]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.SegString.segStrWhere" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -486,7 +483,7 @@ If returnNumSubs is set to True, the number of substitutions per string will be 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.strip">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">strip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">chars:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.strip" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">strip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">chars:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.strip" title="Link to this definition"></a></dt>
 <dd><p>Strip out all of the leading and trailing characters of each element of a segstring that are
 called out in the “chars” argument.</p>
 <dl class="field-list simple">
@@ -501,7 +498,7 @@ called out in the “chars” argument.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.substringSearch">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">substringSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.substringSearch" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">substringSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.substringSearch" title="Link to this definition"></a></dt>
 <dd><p>Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>
 <p>Note: the regular expression engine used, re2, does not support lookahead/lookbehind</p>
 <dl class="field-list simple">
@@ -516,7 +513,7 @@ called out in the “chars” argument.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.peelRegex">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">peelRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">delimiter:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">times:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">includeDelimiter:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">keepPartial:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">left:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.peelRegex" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">peelRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">delimiter:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">times:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">includeDelimiter:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">keepPartial:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">left:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.peelRegex" title="Link to this definition"></a></dt>
 <dd><p>Peel off one or more fields matching the regular expression, delimiter, from each string (similar
 to string.partition), returning two new arrays of strings.
 <em>Warning</em>: This function is experimental and not guaranteed to work.</p>
@@ -542,51 +539,51 @@ such strings are returned in the second array.</p></li>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.peel">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">peel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">delimiter:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">times:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">includeDelimiter:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">keepPartial:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">left:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.peel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">peel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">delimiter:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">times:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">includeDelimiter:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">keepPartial:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">left:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.peel" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.stick">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">delim:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">right:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.stick" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">other:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">delim:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">right:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.stick" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.ediff">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ediff</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[offsets.a.domain]</span> <span class="pre">int</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.ediff" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ediff</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[offsets.a.domain]</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.ediff" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.isSorted">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSorted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isSorted" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSorted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.isSorted" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.argsort">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">checkSorted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[offsets.a.domain]</span> <span class="pre">int</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.argsort" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">checkSorted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[offsets.a.domain]</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.argsort" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegmentedString.SegString.getFixes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">kind:</span> <span class="pre">Fixes</span></em>, <em class="sig-param"><span class="pre">proper:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.getFixes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">kind:</span> <span class="pre">Fixes</span></em>, <em class="sig-param"><span class="pre">proper:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.SegString.getFixes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.memcmp">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">memcmp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">x:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">xinds</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">y:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">yinds</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegmentedString.memcmp" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">memcmp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">x:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">xinds</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">y:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">yinds</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegmentedString.memcmp" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.==">
-<em class="property"><span class="pre">operator</span> </em><span class="sig-name descname"><span class="pre">==</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">rss:</span> <span class="pre">SegString</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.==" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">operator</span> </em><span class="sig-name descname"><span class="pre">==</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">rss:</span> <span class="pre">SegString</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.==" title="Link to this definition"></a></dt>
 <dd><p>Test for equality between two same-length arrays of strings. Returns
 a boolean vector of the same length.</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.!=">
-<em class="property"><span class="pre">operator</span> </em><span class="sig-name descname"><span class="pre">!=</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">rss:</span> <span class="pre">SegString</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.!=" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">operator</span> </em><span class="sig-name descname"><span class="pre">!=</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">rss:</span> <span class="pre">SegString</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.!=" title="Link to this definition"></a></dt>
 <dd><p>Test for inequality between two same-length arrays of strings. Returns
 a boolean vector of the same length.</p>
 </dd></dl>
@@ -607,17 +604,17 @@ vector the same size as the array.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringCompareLiteralEq">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringCompareLiteralEq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">testStr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.stringCompareLiteralEq" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringCompareLiteralEq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">testStr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.stringCompareLiteralEq" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringCompareLiteralNeq">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringCompareLiteralNeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">testStr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.stringCompareLiteralNeq" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringCompareLiteralNeq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">testStr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.stringCompareLiteralNeq" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.compare">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">testStr:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">function:</span> <span class="pre">SegFunction</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.compare" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">testStr:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">function:</span> <span class="pre">SegFunction</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.compare" title="Link to this definition"></a></dt>
 <dd><p>Element-wise comparison of an arrays of string against a target string.
 The polarity parameter determines whether the comparison checks for
 equality (polarity=true, result is true where elements equal target)
@@ -627,95 +624,95 @@ target).</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.checkCompile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkCompile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bytes</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.checkCompile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkCompile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bytes</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.checkCompile" title="Link to this definition"></a></dt>
 <dd><p>Returns Regexp.compile if pattern can be compiled without an error</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.unsafeCompileRegex">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unsafeCompileRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bytes</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.unsafeCompileRegex" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unsafeCompileRegex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">pattern:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bytes</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.unsafeCompileRegex" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringSearch">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">myRegex</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringSearch" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">myRegex</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringSearch" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsLower">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsLower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsLower" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsLower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsLower" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isLower</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsUpper">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsUpper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsUpper" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsUpper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsUpper" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isUpper</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsTitle">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsTitle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsTitle" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsTitle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsTitle" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isTitle</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsAlphaNumeric">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsAlphaNumeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsAlphaNumeric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsAlphaNumeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsAlphaNumeric" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isalnum</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsAlphabetic">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsAlphabetic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsAlphabetic" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsAlphabetic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsAlphabetic" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isalpha</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsDecimal">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsDecimal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsDecimal" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsDecimal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsDecimal" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isdecimal, using isDigit</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsNumeric">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsNumeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsNumeric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsNumeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsNumeric" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isnumeric</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsDigit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsDigit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsDigit" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isdigit</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsEmpty">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsEmpty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsEmpty" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsEmpty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsEmpty" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isempty</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringIsSpace">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsSpace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringIsSpace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringIsSpace" title="Link to this definition"></a></dt>
 <dd><p>The SegFunction called by computeOnSegments for isspace</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.stringBytesToUintArr">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringBytesToUintArr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringBytesToUintArr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringBytesToUintArr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.stringBytesToUintArr" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.in1d">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mainStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">testStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">invert</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">useHash</span></em><a class="headerlink" href="#SegmentedString.in1d" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mainStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">testStr:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">invert</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">useHash</span></em><a class="headerlink" href="#SegmentedString.in1d" title="Link to this definition"></a></dt>
 <dd><p>Test array of strings for membership in another array (set) of strings. Returns
 a boolean vector the same size as the first array.</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.concat">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s1:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">v1:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">s2:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">v2:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.concat" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s1:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">v1:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">s2:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">v2:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.concat" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -725,12 +722,12 @@ a boolean vector the same size as the first array.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.segStrFull">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segStrFull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arrSize:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fillValue:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.segStrFull" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">segStrFull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arrSize:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">fillValue:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedString.segStrFull" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.interpretAsString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">interpretAsString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">bytearray:</span> <span class="pre">[?D]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range(?)</span></em>, <em class="sig-param"><span class="pre">borrow</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.interpretAsString" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">interpretAsString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">bytearray:</span> <span class="pre">[?D]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range(?)</span></em>, <em class="sig-param"><span class="pre">borrow</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#SegmentedString.interpretAsString" title="Link to this definition"></a></dt>
 <dd><p>Interpret a region of a byte array as a Chapel string. If <cite>borrow=false</cite> a
 new string is returned, otherwise the string borrows memory from the array
 (reduces memory allocations if the string isn’t needed after array)</p>
@@ -738,18 +735,18 @@ new string is returned, otherwise the string borrows memory from the array
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.interpretAsBytes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">interpretAsBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">bytearray:</span> <span class="pre">[?D]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range(?)</span></em>, <em class="sig-param"><span class="pre">borrow</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><a class="headerlink" href="#SegmentedString.interpretAsBytes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">interpretAsBytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">bytearray:</span> <span class="pre">[?D]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range(?)</span></em>, <em class="sig-param"><span class="pre">borrow</span> <span class="pre">=</span> <span class="pre">false</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><a class="headerlink" href="#SegmentedString.interpretAsBytes" title="Link to this definition"></a></dt>
 <dd><p>Interpret a region of a byte array as bytes. Modeled after interpretAsString</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.isNumericString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumericString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.isNumericString" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumericString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.isNumericString" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedString.isNumericChar">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumericChar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">c:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.isNumericChar" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isNumericChar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">c:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedString.isNumericChar" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

@@ -95,23 +95,28 @@ Package Contents
 
 .. py:function:: assert_arkouda_array_equal(left: arkouda.pdarray | arkouda.Strings | arkouda.Categorical | arkouda.SegArray, right: arkouda.pdarray | arkouda.Strings | arkouda.Categorical | arkouda.SegArray, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'pdarray', index_values=None) -> None
 
-   Check that 'ak.pdarray' or 'ak.Strings', 'ak.Categorical', or 'ak.SegArray' is equivalent.
+   Check that two Arkouda arrays are equivalent. Supports pdarray, Strings,
+   Categorical, and SegArray.
 
-   :param left: The two arrays to be compared.
+   :param left: The first array to compare.
    :type left: pdarray or Strings or Categorical or SegArray
-   :param right: The two arrays to be compared.
+   :param right: The second array to compare.
    :type right: pdarray or Strings or Categorical or SegArray
-   :param check_dtype: Check dtype if both a and b are ak.pdarray.
-   :type check_dtype: bool, default True
-   :param err_msg: If provided, used as assertion message.
-   :type err_msg: str, default None
-   :param check_same: Ensure left and right refer/do not refer to the same memory area.
-   :type check_same: None|'copy'|'same', default None
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'numpy array'
-   :param index_values: optional index (shared by both left and right), used in output.
-   :type index_values: Index | arkouda.pdarray, default None
+   :param check_dtype: Whether to check dtype if both `left` and `right` are ak.pdarray.
+                       Defaults to True.
+   :type check_dtype: bool
+   :param err_msg: Custom assertion message, if provided. Defaults to None.
+   :type err_msg: str or None
+   :param check_same: If not None, assert whether `left` and `right` share the same memory.
+                      - `'copy'`: assert that they do **not** share memory.
+                      - `'same'`: assert that they **do** share memory.
+                      Defaults to None.
+   :type check_same: {'copy', 'same'} or None
+   :param obj: Object name used in assertion error messages. Defaults to 'pdarray'.
+   :type obj: str
+   :param index_values: Optional index shared by both `left` and `right`, used to enhance
+                        output in error messages. Defaults to None.
+   :type index_values: Index or pdarray or None
 
 
 .. py:function:: assert_arkouda_array_equivalent(left: arkouda.pdarray | arkouda.Strings | arkouda.Categorical | arkouda.SegArray | numpy.ndarray | pandas.Categorical, right: arkouda.pdarray | arkouda.Strings | arkouda.Categorical | arkouda.SegArray | numpy.ndarray | pandas.Categorical, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'pdarray', index_values=None) -> None
@@ -154,96 +159,106 @@ Package Contents
 
 .. py:function:: assert_arkouda_pdarray_equal(left: arkouda.pdarray, right: arkouda.pdarray, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'pdarray', index_values=None) -> None
 
-   Check that the two 'ak.pdarray's are equivalent.
+   Check that two Arkouda pdarray objects are equivalent.
 
-   :param left: The two arrays to be compared.
-   :type left: arkouda.pdarray
-   :param right: The two arrays to be compared.
-   :type right: arkouda.pdarray
-   :param check_dtype: Check dtype if both a and b are ak.pdarray.
-   :type check_dtype: bool, default True
-   :param err_msg: If provided, used as assertion message.
-   :type err_msg: str, default None
-   :param check_same: Ensure left and right refer/do not refer to the same memory area.
-   :type check_same: None|'copy'|'same', default None
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'pdarray'
-   :param index_values: optional index (shared by both left and right), used in output.
-   :type index_values: Index | arkouda.pdarray, default None
+   :param left: The first array to compare.
+   :type left: pdarray
+   :param right: The second array to compare.
+   :type right: pdarray
+   :param check_dtype: Whether to check dtype if both arrays are pdarrays. Defaults to True.
+   :type check_dtype: bool
+   :param err_msg: Custom assertion message to display on failure. Defaults to None.
+   :type err_msg: str or None
+   :param check_same: If not None, asserts whether `left` and `right` share the same memory:
+                      - 'copy': assert they do **not** share memory
+                      - 'same': assert they **do** share memory
+                      Defaults to None.
+   :type check_same: {'copy', 'same'} or None
+   :param obj: A name for the object being compared, used in assertion messages.
+               Defaults to 'pdarray'.
+   :type obj: str
+   :param index_values: Optional index shared by both arrays, used to enhance output on failure.
+                        Defaults to None.
+   :type index_values: Index or pdarray or None
 
 
 .. py:function:: assert_arkouda_segarray_equal(left: arkouda.SegArray, right: arkouda.SegArray, check_dtype: bool = True, err_msg=None, check_same=None, obj: str = 'segarray') -> None
 
-   Check that the two 'ak.SegArray's are equivalent.
+   Check that two Arkouda SegArray objects are equivalent.
 
-   :param left: The two segarrays to be compared.
-   :type left: arkouda.numpy.SegArray
-   :param right: The two segarrays to be compared.
-   :type right: arkouda.numpy.SegArray
-   :param check_dtype: Check dtype if both a and b are ak.pdarray.
-   :type check_dtype: bool, default True
-   :param err_msg: If provided, used as assertion message.
-   :type err_msg: str, default None
-   :param check_same: Ensure left and right refer/do not refer to the same memory area.
-   :type check_same: None|'copy'|'same', default None
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'pdarray'
+   :param left: The first SegArray to compare.
+   :type left: SegArray
+   :param right: The second SegArray to compare.
+   :type right: SegArray
+   :param check_dtype: Whether to check dtype if both arrays contain pdarrays. Defaults to True.
+   :type check_dtype: bool
+   :param err_msg: Custom assertion message. Defaults to None.
+   :type err_msg: str or None
+   :param check_same: If not None, asserts whether `left` and `right` share the same memory.
+                      - 'copy': assert that they do **not** share memory.
+                      - 'same': assert that they **do** share memory.
+                      Defaults to None.
+   :type check_same: {'copy', 'same'} or None
+   :param obj: Name of the object being compared (used in assertion messages).
+               Defaults to 'segarray'.
+   :type obj: str
 
 
 .. py:function:: assert_arkouda_strings_equal(left, right, err_msg=None, check_same=None, obj: str = 'Strings', index_values=None) -> None
 
-   Check that 'ak.Strings' is equivalent.
+   Check that two `ak.Strings` arrays are equivalent.
 
-   :param left: The two Strings to be compared.
-   :type left: arkouda.numpy.Strings
-   :param right: The two Strings to be compared.
-   :type right: arkouda.numpy.Strings
-   :param err_msg: If provided, used as assertion message.
-   :type err_msg: str, default None
-   :param check_same: Ensure left and right refer/do not refer to the same memory area.
-   :type check_same: None|'copy'|'same', default None
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'Strings'
-   :param index_values: optional index (shared by both left and right), used in output.
-   :type index_values: Index | arkouda.pdarray, default None
+   :param left: The first Strings object to compare.
+   :type left: Strings
+   :param right: The second Strings object to compare.
+   :type right: Strings
+   :param err_msg: Custom assertion message. Defaults to None.
+   :type err_msg: str or None
+   :param check_same: If not None, assert whether `left` and `right` share the same memory.
+                      - 'copy': assert that they do **not** share memory
+                      - 'same': assert that they **do** share memory
+                      Defaults to None.
+   :type check_same: {'copy', 'same'} or None
+   :param obj: A name for the object being compared, used in assertion messages.
+               Defaults to 'Strings'.
+   :type obj: str
+   :param index_values: Optional index shared by both arrays, used in output. Defaults to None.
+   :type index_values: Index or pdarray or None
 
 
 .. py:function:: assert_attr_equal(attr: str, left, right, obj: str = 'Attributes') -> None
 
-   Check attributes are equal. Both objects must have attribute.
+   Check that attributes are equal. Both objects must have the given attribute.
 
-   :param attr: Attribute name being compared.
+   :param attr: The name of the attribute being compared.
    :type attr: str
-   :param left:
+   :param left: The first object to compare.
    :type left: object
-   :param right:
+   :param right: The second object to compare.
    :type right: object
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message
-   :type obj: str, default 'Attributes'
+   :param obj: A name for the object being compared, used in assertion messages.
+               Defaults to 'Attributes'.
+   :type obj: str
 
 
 .. py:function:: assert_categorical_equal(left, right, check_dtype: bool = True, check_category_order: bool = True, obj: str = 'Categorical') -> None
 
    Test that Categoricals are equivalent.
 
-   :param left:
+   :param left: The first Categorical to compare.
    :type left: Categorical
-   :param right:
+   :param right: The second Categorical to compare.
    :type right: Categorical
-   :param check_dtype: Check that integer dtype of the codes are the same.
-   :type check_dtype: bool, default True
-   :param check_category_order: Whether the order of the categories should be compared, which
-                                implies identical integer codes.  If False, only the resulting
-                                values are compared.  The ordered attribute is
-                                checked regardless.
-   :type check_category_order: bool, default True
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'Categorical'
+   :param check_dtype: Whether to check that the integer dtype of the codes is the same.
+                       Defaults to True.
+   :type check_dtype: bool
+   :param check_category_order: Whether to compare the order of the categories (which implies identical integer codes).
+                                If False, only the resulting values are compared. The `ordered` attribute is
+                                always checked. Defaults to True.
+   :type check_category_order: bool
+   :param obj: A name for the object being compared, used in assertion messages.
+               Defaults to 'Categorical'.
+   :type obj: str
 
 
 .. py:function:: assert_class_equal(left, right, exact: bool = True, obj: str = 'Input') -> None
@@ -254,6 +269,7 @@ Package Contents
 .. py:function:: assert_contains_all(iterable, dic) -> None
 
    Assert that a dictionary contains all the elements of an iterable.
+
    :param iterable:
    :type iterable: iterable
    :param dic:
@@ -263,7 +279,8 @@ Package Contents
 .. py:function:: assert_copy(iter1, iter2, **eql_kwargs) -> None
 
    Check that the elements are equal, but not the same object.
-   (Does not check that items in sequences are also not the same object.)
+
+   Does not check that items in sequences are also not the same object.
 
    :param iter1: Iterables that produce elements comparable with assert_almost_equal.
    :type iter1: iterable
@@ -274,19 +291,21 @@ Package Contents
 .. py:function:: assert_dict_equal(left, right, compare_keys: bool = True) -> None
 
    Assert that two dictionaries are equal.
+
    Values must be arkouda objects.
+
    :param left: The dictionaries to be compared.
    :type left: dict
    :param right: The dictionaries to be compared.
    :type right: dict
-   :param compare_keys: Whether to compare the keys.
+   :param compare_keys: Whether to compare the keys. Defaults to True.
                         If False, only the values are compared.
-   :type compare_keys: bool, default = True
+   :type compare_keys: bool
 
 
 .. py:function:: assert_equal(left, right, **kwargs) -> None
 
-   Wrapper for tm.assert_*_equal to dispatch to the appropriate test function.
+   Wrap tm.assert_*_equal to dispatch to the appropriate test function.
 
    :param left: The two items to be compared.
    :type left: Index, Series, DataFrame, or pdarray
@@ -318,7 +337,7 @@ Package Contents
    >>> assert_equivalent(ak_series, pd_series)
 
 
-.. py:function:: assert_frame_equal(left: arkouda.DataFrame, right: arkouda.DataFrame, check_dtype: bool = True, check_index_type: bool = True, check_column_type: bool = True, check_frame_type: bool = True, check_names: bool = True, check_exact: bool = True, check_categorical: bool = True, check_like: bool = False, rtol: float = 1e-05, atol: float = 1e-08, obj: str = 'DataFrame') -> None
+.. py:function:: assert_frame_equal(left: arkouda.DataFrame, right: arkouda.DataFrame, check_dtype: bool = True, check_index_type: bool = True, check_column_type: bool | Literal['equiv'] = 'equiv', check_frame_type: bool = True, check_names: bool = True, check_exact: bool = True, check_categorical: bool = True, check_like: bool = False, rtol: float = 1e-05, atol: float = 1e-08, obj: str = 'DataFrame') -> None
 
    Check that left and right DataFrame are equal.
 
@@ -331,35 +350,35 @@ Package Contents
    :type left: DataFrame
    :param right: Second DataFrame to compare.
    :type right: DataFrame
-   :param check_dtype: Whether to check the DataFrame dtype is identical.
-   :type check_dtype: bool, default True
-   :param check_index_type: Whether to check the Index class, dtype and inferred_type
-                            are identical.
-   :type check_index_type: bool, default = True
-   :param check_column_type: Whether to check the columns class, dtype and inferred_type
-                             are identical. Is passed as the ``exact`` argument of
-                             :func:`assert_index_equal`.
-   :type check_column_type: bool or {'equiv'}, default 'equiv'
-   :param check_frame_type: Whether to check the DataFrame class is identical.
-   :type check_frame_type: bool, default True
+   :param check_dtype: Whether to check the DataFrame dtype is identical. Defaults to True.
+   :type check_dtype: bool
+   :param check_index_type: Whether to check the Index class, dtype, and inferred_type are identical.
+                            Defaults to True.
+   :type check_index_type: bool
+   :param check_column_type: Whether to check the column class, dtype, and inferred_type are identical.
+                             Passed as the ``exact`` argument of :func:`assert_index_equal`.
+                             Defaults to 'equiv'.
+   :type check_column_type: bool or {'equiv'}
+   :param check_frame_type: Whether to check the DataFrame class is identical. Defaults to True.
+   :type check_frame_type: bool
    :param check_names: Whether to check that the `names` attribute for both the `index`
-                       and `column` attributes of the DataFrame is identical.
-   :type check_names: bool, default True
-   :param check_exact: Whether to compare number exactly.
-   :type check_exact: bool, default False
-   :param check_categorical: Whether to compare internal Categorical exactly.
-   :type check_categorical: bool, default True
-   :param check_like: If True, ignore the order of index & columns.
-                      Note: index labels must match their respective rows
-                      (same as in columns) - same labels must be with the same data.
-   :type check_like: bool, default False
-   :param rtol: Relative tolerance. Only used when check_exact is False.
-   :type rtol: float, default 1e-5
-   :param atol: Absolute tolerance. Only used when check_exact is False.
-   :type atol: float, default 1e-8
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'DataFrame'
+                       and `column` attributes of the DataFrame is identical. Defaults to True.
+   :type check_names: bool
+   :param check_exact: Whether to compare numbers exactly. Defaults to False.
+   :type check_exact: bool
+   :param check_categorical: Whether to compare internal Categoricals exactly. Defaults to True.
+   :type check_categorical: bool
+   :param check_like: If True, ignore the order of index and columns.
+                      Note: index labels must match their respective rows (as in columns);
+                      same labels must be with the same data. Defaults to False.
+   :type check_like: bool
+   :param rtol: Relative tolerance. Only used when `check_exact` is False. Defaults to 1e-5.
+   :type rtol: float
+   :param atol: Absolute tolerance. Only used when `check_exact` is False. Defaults to 1e-8.
+   :type atol: float
+   :param obj: A name for the object being compared, used in assertion messages.
+               Defaults to 'DataFrame'.
+   :type obj: str
 
    .. seealso::
 
@@ -451,30 +470,33 @@ Package Contents
 
    Check that left and right Index are equal.
 
-   :param left:
+   :param left: The first Index to compare.
    :type left: Index
-   :param right:
+   :param right: The second Index to compare.
    :type right: Index
-   :param exact: Whether to check the Index class, dtype and inferred_type
-                 are identical.
-   :type exact: True
-   :param check_names: Whether to check the names attribute.
-   :type check_names: bool, default True
-   :param check_exact: Whether to compare number exactly.
-   :type check_exact: bool, default True
-   :param check_categorical: Whether to compare internal Categorical exactly.
-   :type check_categorical: bool, default True
+   :param exact: Whether to check that the Index class, dtype, and inferred_type
+                 are identical. Defaults to True.
+   :type exact: bool
+   :param check_names: Whether to check the `name` attribute. Defaults to True.
+   :type check_names: bool
+   :param check_exact: Whether to compare numbers exactly. Defaults to True.
+   :type check_exact: bool
+   :param check_categorical: Whether to compare internal Categorical values exactly. Defaults to True.
+   :type check_categorical: bool
    :param check_order: Whether to compare the order of index entries as well as their values.
                        If True, both indexes must contain the same elements, in the same order.
                        If False, both indexes must contain the same elements, but in any order.
-   :type check_order: bool, default True
-   :param rtol: Relative tolerance. Only used when check_exact is False.
-   :type rtol: float, default 1e-5
-   :param atol: Absolute tolerance. Only used when check_exact is False.
-   :type atol: float, default 1e-8
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'Index'
+                       Defaults to True.
+   :type check_order: bool
+   :param rtol: Relative tolerance. Only used when `check_exact` is False.
+                Defaults to 1e-5.
+   :type rtol: float
+   :param atol: Absolute tolerance. Only used when `check_exact` is False.
+                Defaults to 1e-8.
+   :type atol: float
+   :param obj: A name for the object being compared, used in assertion messages.
+               Defaults to 'Index'.
+   :type obj: str
 
    .. rubric:: Examples
 
@@ -536,37 +558,36 @@ Package Contents
 
    Check that left and right Series are equal.
 
-   :param left:
+   :param left: First Series to compare.
    :type left: Series
-   :param right:
+   :param right: Second Series to compare.
    :type right: Series
-   :param check_dtype: Whether to check the Series dtype is identical.
-   :type check_dtype: bool, default True
-   :param check_index_type: Whether to check the Index class, dtype and inferred_type
-                            are identical.
-   :type check_index_type: bool, default True
-   :param check_series_type: Whether to check the Series class is identical.
-   :type check_series_type: bool, default True
-   :param check_names: Whether to check the Series and Index names attribute.
-   :type check_names: bool, default True
-   :param check_exact: Whether to compare number exactly.
-   :type check_exact: bool, default False
-   :param check_categorical: Whether to compare internal Categorical exactly.
-   :type check_categorical: bool, default True
-   :param check_category_order: Whether to compare category order of internal Categoricals.
-   :type check_category_order: bool, default True
-   :param rtol: Relative tolerance. Only used when check_exact is False.
-   :type rtol: float, default 1e-5
-   :param atol: Absolute tolerance. Only used when check_exact is False.
-   :type atol: float, default 1e-8
-   :param obj: Specify object name being compared, internally used to show appropriate
-               assertion message.
-   :type obj: str, default 'Series'
-   :param check_index: Whether to check index equivalence. If False, then compare only values.
-   :type check_index: bool, default True
-   :param check_like: If True, ignore the order of the index. Must be False if check_index is False.
-                      Note: same labels must be with the same data.
-   :type check_like: bool, default False
+   :param check_dtype: Whether to check the Series dtype is identical. Defaults to True.
+   :type check_dtype: bool
+   :param check_index_type: Whether to check the Index class, dtype, and inferred_type are identical. Defaults to True.
+   :type check_index_type: bool
+   :param check_series_type: Whether to check that the Series class is identical. Defaults to True.
+   :type check_series_type: bool
+   :param check_names: Whether to check the Series and Index `name` attribute. Defaults to True.
+   :type check_names: bool
+   :param check_exact: Whether to compare numbers exactly. Defaults to False.
+   :type check_exact: bool
+   :param check_categorical: Whether to compare internal Categoricals exactly. Defaults to True.
+   :type check_categorical: bool
+   :param check_category_order: Whether to compare the category order of internal Categoricals. Defaults to True.
+   :type check_category_order: bool
+   :param rtol: Relative tolerance. Only used when `check_exact` is False. Defaults to 1e-5.
+   :type rtol: float
+   :param atol: Absolute tolerance. Only used when `check_exact` is False. Defaults to 1e-8.
+   :type atol: float
+   :param obj: Name of the object being compared, used in assertion messages. Defaults to 'Series'.
+   :type obj: str
+   :param check_index: Whether to check index equivalence. If False, only the values are compared. Defaults to True.
+   :type check_index: bool
+   :param check_like: If True, ignore the order of the index.
+                      Must be False if `check_index` is False.
+                      Note: same labels must be with the same data. Defaults to False.
+   :type check_like: bool
 
    .. rubric:: Examples
 

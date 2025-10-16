@@ -264,8 +264,8 @@ Module Contents
 
 .. py:function:: logaddexp(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array) -> arkouda.array_api.array_object.Array
 
-   Compute the element-wise logarithm of the sum of exponentials of two arrays.
-   (i.e., log(exp(x1) + exp(x2)))
+   Compute the element-wise logarithm of the sum of exponentials of two arrays
+   (i.e., log(exp(x1) + exp(x2))).
 
    WARNING: Not yet implemented.
 

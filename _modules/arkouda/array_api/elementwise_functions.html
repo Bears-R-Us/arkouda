@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.array_api.elementwise_functions - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -203,7 +196,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -212,14 +205,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
@@ -237,12 +230,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -257,29 +250,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -293,7 +278,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -307,9 +292,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -322,16 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -339,7 +323,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -369,8 +353,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -378,8 +361,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -388,8 +370,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># _complex_floating_dtypes,</span>
-    <span class="n">_boolean_dtypes</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_floating_dtypes</span><span class="p">,</span>
     <span class="n">_integer_dtypes</span><span class="p">,</span>
     <span class="n">_integer_or_boolean_dtypes</span><span class="p">,</span>
@@ -398,7 +379,9 @@
     <span class="n">_real_numeric_dtypes</span><span class="p">,</span>
     <span class="n">_result_type</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_boolean_dtypes</span>  <span class="c1"># _complex_floating_dtypes,</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.array_object</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
@@ -466,9 +449,7 @@
 <div class="viewcode-block" id="abs">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.abs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise absolute value of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise absolute value of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in abs&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -479,9 +460,7 @@
 <div class="viewcode-block" id="acos">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.acos">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">acos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise arccosine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise arccosine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in acos&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -492,9 +471,7 @@
 <div class="viewcode-block" id="acosh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.acosh">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise hyperbolic arccosine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise hyperbolic arccosine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in acosh&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -504,9 +481,7 @@
 <div class="viewcode-block" id="add">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.add">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise sum of two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise sum of two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in add&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -518,9 +493,7 @@
 <div class="viewcode-block" id="asin">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.asin">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">asin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise arcsine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise arcsine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in asin&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -530,9 +503,7 @@
 <div class="viewcode-block" id="asinh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.asinh">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise hyperbolic arcsine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise hyperbolic arcsine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in asinh&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -542,9 +513,7 @@
 <div class="viewcode-block" id="atan">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.atan">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">atan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise arctangent of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise arctangent of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in atan&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -554,9 +523,7 @@
 <div class="viewcode-block" id="atan2">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.atan2">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">atan2</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise arctangent of x1/x2.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise arctangent of x1/x2.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_floating_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real floating-point dtypes are allowed in atan2&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -568,9 +535,7 @@
 <div class="viewcode-block" id="atanh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.atanh">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise hyperbolic arctangent of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise hyperbolic arctangent of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in atanh&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -580,9 +545,7 @@
 <div class="viewcode-block" id="bitwise_and">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_and">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bitwise_and</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise bitwise AND of two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise bitwise AND of two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer or boolean dtypes are allowed in bitwise_and&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -594,9 +557,7 @@
 <div class="viewcode-block" id="bitwise_left_shift">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_left_shift">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bitwise_left_shift</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise bitwise left shift of x1 by x2.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise bitwise left shift of x1 by x2.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer dtypes are allowed in bitwise_left_shift&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -611,9 +572,7 @@
 <div class="viewcode-block" id="bitwise_invert">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_invert">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bitwise_invert</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise bitwise NOT of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise bitwise NOT of an array.&quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bitwise invert not implemented&quot;</span><span class="p">)</span></div>
 
 
@@ -621,9 +580,7 @@
 <div class="viewcode-block" id="bitwise_or">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_or">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bitwise_or</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise bitwise OR of two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise bitwise OR of two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer or boolean dtypes are allowed in bitwise_or&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -635,9 +592,7 @@
 <div class="viewcode-block" id="bitwise_right_shift">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_right_shift">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bitwise_right_shift</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise bitwise right shift of x1 by x2.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise bitwise right shift of x1 by x2.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer dtypes are allowed in bitwise_right_shift&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -652,9 +607,7 @@
 <div class="viewcode-block" id="bitwise_xor">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.bitwise_xor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bitwise_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise bitwise XOR of two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise bitwise XOR of two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_integer_or_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only integer or boolean dtypes are allowed in bitwise_xor&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -666,9 +619,7 @@
 <div class="viewcode-block" id="ceil">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.ceil">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise ceiling of a floating point array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise ceiling of a floating point array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in ceil&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -690,9 +641,7 @@
 <div class="viewcode-block" id="cos">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.cos">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise cosine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise cosine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in cos&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -702,9 +651,7 @@
 <div class="viewcode-block" id="cosh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.cosh">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise hyperbolic cosine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise hyperbolic cosine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in cosh&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -714,9 +661,7 @@
 <div class="viewcode-block" id="divide">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.divide">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">divide</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise division of x1 by x2.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise division of x1 by x2.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in divide&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -728,9 +673,7 @@
 <div class="viewcode-block" id="equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.equal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise equality of two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise equality of two arrays.&quot;&quot;&quot;</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
     <span class="n">_result_type</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">_array</span> <span class="o">==</span> <span class="n">x2</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span></div>
@@ -740,9 +683,7 @@
 <div class="viewcode-block" id="exp">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.exp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise exponential of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise exponential of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in exp&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -752,9 +693,7 @@
 <div class="viewcode-block" id="expm1">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.expm1">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">expm1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise exponential of x-1.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise exponential of x-1.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in exp&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -764,9 +703,7 @@
 <div class="viewcode-block" id="floor">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.floor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise floor of a floating point array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise floor of a floating point array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in floor&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -776,9 +713,7 @@
 <div class="viewcode-block" id="floor_divide">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.floor_divide">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">floor_divide</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise floor division of x1 by x2.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise floor division of x1 by x2.&quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;exp not implemented&quot;</span><span class="p">)</span></div>
 
 
@@ -786,9 +721,7 @@
 <div class="viewcode-block" id="greater">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.greater">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Apply `&gt;` element-wise to two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply `&gt;` element-wise to two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in greater&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -800,9 +733,7 @@
 <div class="viewcode-block" id="greater_equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.greater_equal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Apply `&gt;=` element-wise to two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply `&gt;=` element-wise to two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in greater_equal&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -826,9 +757,7 @@
 <div class="viewcode-block" id="isfinite">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.isfinite">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determine if an array&#39;s elements are finite.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine if an array&#39;s elements are finite.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in isfinite&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -838,9 +767,7 @@
 <div class="viewcode-block" id="isinf">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.isinf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determine if an array&#39;s elements are infinite.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine if an array&#39;s elements are infinite.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in isinf&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -850,9 +777,7 @@
 <div class="viewcode-block" id="isnan">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.isnan">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determine if an array&#39;s elements are NaN.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine if an array&#39;s elements are NaN.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in isnan&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -862,9 +787,7 @@
 <div class="viewcode-block" id="less">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.less">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">less</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Apply `&lt;` element-wise to two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply `&lt;` element-wise to two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in less&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -876,9 +799,7 @@
 <div class="viewcode-block" id="less_equal">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.less_equal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Apply `&lt;=` element-wise to two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply `&lt;=` element-wise to two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_real_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only real numeric dtypes are allowed in less_equal&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -890,9 +811,7 @@
 <div class="viewcode-block" id="log">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise natural logarithm of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise natural logarithm of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in log&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -902,9 +821,7 @@
 <div class="viewcode-block" id="log1p">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log1p">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">log1p</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise natural logarithm of x+1.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise natural logarithm of x+1.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in log&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -914,9 +831,7 @@
 <div class="viewcode-block" id="log2">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log2">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">log2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise base-2 logarithm of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise base-2 logarithm of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in log&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -926,9 +841,7 @@
 <div class="viewcode-block" id="log10">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.log10">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">log10</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise base-10 logarithm of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise base-10 logarithm of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in log&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -939,8 +852,8 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logaddexp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logaddexp</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise logarithm of the sum of exponentials of two arrays.</span>
-<span class="sd">    (i.e., log(exp(x1) + exp(x2)))</span>
+<span class="sd">    Compute the element-wise logarithm of the sum of exponentials of two arrays</span>
+<span class="sd">    (i.e., log(exp(x1) + exp(x2))).</span>
 
 <span class="sd">    WARNING: Not yet implemented.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -951,9 +864,7 @@
 <div class="viewcode-block" id="logical_and">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_and">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise logical AND of two boolean arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise logical AND of two boolean arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only boolean dtypes are allowed in logical_and&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -965,9 +876,7 @@
 <div class="viewcode-block" id="logical_not">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_not">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise logical NOT of a boolean array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise logical NOT of a boolean array.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="o">~</span><span class="n">x</span></div>
 
 
@@ -975,9 +884,7 @@
 <div class="viewcode-block" id="logical_or">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_or">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logical_or</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise logical OR of two boolean arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise logical OR of two boolean arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only boolean dtypes are allowed in logical_or&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -989,9 +896,7 @@
 <div class="viewcode-block" id="logical_xor">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.logical_xor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise logical XOR of two boolean arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise logical XOR of two boolean arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_boolean_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_boolean_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only boolean dtypes are allowed in logical_xor&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -1003,9 +908,7 @@
 <div class="viewcode-block" id="multiply">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.multiply">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">multiply</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise product of two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise product of two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in multiply&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -1017,9 +920,7 @@
 <div class="viewcode-block" id="negative">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.negative">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">negative</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise negation of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise negation of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in negative&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">)</span></div>
@@ -1086,9 +987,7 @@
 <div class="viewcode-block" id="remainder">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.remainder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise remainder of x1 divided by x2.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise remainder of x1 divided by x2.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
 
 
@@ -1096,9 +995,7 @@
 <div class="viewcode-block" id="round">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.round">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise rounding of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise rounding of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in round&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1108,9 +1005,7 @@
 <div class="viewcode-block" id="sign">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sign">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sign</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise sign of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise sign of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in sign&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1120,9 +1015,7 @@
 <div class="viewcode-block" id="sin">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sin">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise sine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise sine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in sin&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1132,9 +1025,7 @@
 <div class="viewcode-block" id="sinh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sinh">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise hyperbolic sine of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise hyperbolic sine of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in sinh&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1144,9 +1035,7 @@
 <div class="viewcode-block" id="square">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.square">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">square</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise square of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise square of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in sign&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1156,9 +1045,7 @@
 <div class="viewcode-block" id="sqrt">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.sqrt">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise square root of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise square root of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in sqrt&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1168,9 +1055,7 @@
 <div class="viewcode-block" id="subtract">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.subtract">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">subtract</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise difference of two arrays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise difference of two arrays.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_numeric_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only numeric dtypes are allowed in subtract&quot;</span><span class="p">)</span>
     <span class="c1"># Call result type here just to raise on disallowed type combinations</span>
@@ -1182,9 +1067,7 @@
 <div class="viewcode-block" id="tan">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.tan">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">tan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise tangent of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise tangent of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in tan&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1194,9 +1077,7 @@
 <div class="viewcode-block" id="tanh">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.tanh">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise hyperbolic tangent of an array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise hyperbolic tangent of an array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in tanh&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>
@@ -1206,9 +1087,7 @@
 <div class="viewcode-block" id="trunc">
 <a class="viewcode-back" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html#arkouda.array_api.elementwise_functions.trunc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the element-wise truncation of a floating-point array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the element-wise truncation of a floating-point array.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_floating_dtypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only floating-point dtypes are allowed in trunc&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Array</span><span class="o">.</span><span class="n">_new</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">))</span></div>

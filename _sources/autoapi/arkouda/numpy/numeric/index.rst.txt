@@ -38,6 +38,7 @@ Functions
    arkouda.numpy.numeric.exp
    arkouda.numpy.numeric.expm1
    arkouda.numpy.numeric.eye
+   arkouda.numpy.numeric.fabs
    arkouda.numpy.numeric.floor
    arkouda.numpy.numeric.hash
    arkouda.numpy.numeric.histogram
@@ -464,7 +465,7 @@ Module Contents
 
 .. py:function:: clip(pda: arkouda.numpy.pdarrayclass.pdarray, lo: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], hi: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Clip (limit) the values in an array to a given range [lo,hi]
+   Clip (limit) the values in an array to a given range [lo,hi].
 
    Given an array a, values outside the range are clipped to the
    range edges, such that all elements lie in the range.
@@ -571,7 +572,7 @@ Module Contents
    array([1.43308638... 1.06797874... 1.01392106... 1.25516900...])
 
 
-.. py:function:: count_nonzero(pda: arkouda.numpy.pdarrayclass.pdarray) -> numpy.int64
+.. py:function:: count_nonzero(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.dtypes.int_scalars
 
    Compute the nonzero count of a given array. 1D case only, for now.
 
@@ -579,7 +580,7 @@ Module Contents
    :type pda: pdarray
 
    :returns: The nonzero count of the entire pdarray
-   :rtype: np.int64
+   :rtype: int_scalars
 
    :raises TypeError: Raised if the parameter is not a pdarray with numeric, bool, or str datatype
    :raises ValueError: Raised if sum applied to the pdarray doesn't come back with a scalar
@@ -598,7 +599,7 @@ Module Contents
    np.int64(2)
 
 
-.. py:function:: cumprod(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: cumprod(pda: arkouda.numpy.pdarrayclass.pdarray, axis: Optional[Union[int, None]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the cumulative product over the array.
 
@@ -607,12 +608,15 @@ Module Contents
 
    :param pda:
    :type pda: pdarray
+   :param axis: the axis along which to compute the product
+   :type axis: int, optional
 
    :returns: A pdarray containing cumulative products for each element
              of the original pdarray
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+   :raises ValueError: Raised if an invalid axis is given
 
    .. rubric:: Examples
 
@@ -621,11 +625,13 @@ Module Contents
    array([1 2 6 24])
 
    >>> ak.cumprod(ak.uniform(5,1.0,5.0, seed=1))
-   array([4.14859379... 5.54704379... 22.2010913...
-       79.7021268... 298.265515...])
+   array([4.14859379... 5.54704379... 22.20109135... 79.7021268... 298.2655159...])
+
+   >>> ak.cumprod(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
+   array([1 0 0 0 0])
 
 
-.. py:function:: cumsum(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: cumsum(pda: arkouda.numpy.pdarrayclass.pdarray, axis: Optional[Union[int, None]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the cumulative sum over the array.
 
@@ -634,12 +640,14 @@ Module Contents
 
    :param pda:
    :type pda: pdarray
+   :param axis: the axis along which to compute the sum
+   :type axis: int, optional
 
-   :returns: A pdarray containing cumulative sums for each element
-             of the original pdarray
+   :returns: A pdarray containing cumulative sums for each element of the original pdarray
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+   :raises ValueError: Raised if an invalid axis is given
 
    .. rubric:: Examples
 
@@ -650,7 +658,7 @@ Module Contents
    >>> ak.cumsum(ak.uniform(5,1.0,5.0, seed=1))
    array([4.14859379... 5.48568392... 9.48801240... 13.0780218... 16.8202747...])
 
-   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
+   >>> ak.cumsum(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
    array([1 1 2 3 4])
 
 
@@ -762,6 +770,29 @@ Module Contents
 
    if N = M and k = 0, the result is an identity matrix
    Server returns an error if rank of pda < 2
+
+
+.. py:function:: fabs(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Compute the absolute values element-wise, casting to a float beforehand.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing absolute values of the input array elements, casted to float type
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.fabs(ak.arange(-5,-1))
+   array([5.00000000000000000 4.00000000000000000 3.00000000000000000 2.00000000000000000])
+
+   >>> ak.fabs(ak.linspace(-5,-1,5))
+   array([5.00000000... 4.00000000... 3.00000000...
+   2.00000000... 1.00000000...])
 
 
 .. py:function:: floor(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
@@ -892,7 +923,7 @@ Module Contents
 
 .. py:function:: histogram2d(x: arkouda.numpy.pdarrayclass.pdarray, y: arkouda.numpy.pdarrayclass.pdarray, bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10, range: Optional[Tuple[Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars], Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars]]] = None) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
-   Compute the bi-dimensional histogram of two data samples with evenly spaced bins
+   Compute the bi-dimensional histogram of two data samples with evenly spaced bins.
 
    :param x: A pdarray containing the x coordinates of the points to be histogrammed.
    :type x: pdarray
@@ -1550,7 +1581,7 @@ Module Contents
    array([1 4 9 16])
 
 
-.. py:function:: take(a: arkouda.numpy.pdarrayclass.pdarray, indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: take(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings], indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Take elements from an array along an axis.
 
@@ -1627,7 +1658,7 @@ Module Contents
    array([-0.71629787... -0.35107264... 0.16514041... 0.60436777...])
 
 
-.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[int, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Compute the transpose of a matrix.
 
@@ -1660,7 +1691,7 @@ Module Contents
 
 .. py:function:: tril(pda: arkouda.numpy.pdarrayclass.pdarray, diag: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Return a copy of the pda with the upper triangle zeroed out
+   Return a copy of the pda with the upper triangle zeroed out.
 
    :param pda:
    :type pda: pdarray
@@ -1700,7 +1731,7 @@ Module Contents
 
 .. py:function:: triu(pda: arkouda.numpy.pdarrayclass.pdarray, diag: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Return a copy of the pda with the lower triangle zeroed out
+   Return a copy of the pda with the lower triangle zeroed out.
 
    :param pda:
    :type pda: pdarray
@@ -1822,7 +1853,7 @@ Module Contents
 
    This matches the behavior of numpy vecdot, but as commented above, it is not the
    behavior of the deprecated vecdot, which calls the chapel-side vecdot function.
-   This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the
+   This function only uses broadcast_to, broadcast_shapes, ak.sum, and the
    binops pdarray multiplication function.  The last dimension of x1 and x2 must
    match, and it must be possible to broadcast them to a compatible shape.
    The deprecated vecdot can be computed via ak.vecdot(a,b,axis=0) on pdarrays

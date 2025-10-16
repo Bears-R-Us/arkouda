@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.numpy.pdarraycreation - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -203,7 +196,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -212,14 +205,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
@@ -237,12 +230,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -257,29 +250,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -293,7 +278,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -307,9 +292,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -322,16 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -339,7 +323,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -369,8 +353,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -378,25 +361,13 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.pdarraycreation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-    <span class="n">cast</span><span class="p">,</span>
-    <span class="n">overload</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -408,10 +379,8 @@
     <span class="n">NumericDTypes</span><span class="p">,</span>
     <span class="n">SeriesDTypes</span><span class="p">,</span>
     <span class="n">bigint</span><span class="p">,</span>
+    <span class="n">bool_scalars</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">get_byteorder</span><span class="p">,</span> <span class="n">get_server_byteorder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">int_scalars</span><span class="p">,</span>
     <span class="n">isSupportedInt</span><span class="p">,</span>
@@ -420,9 +389,13 @@
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
     <span class="n">str_</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">get_byteorder</span><span class="p">,</span> <span class="n">get_server_byteorder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_array_ranks</span>
@@ -440,6 +413,7 @@
     <span class="s2">&quot;full_like&quot;</span><span class="p">,</span>
     <span class="s2">&quot;arange&quot;</span><span class="p">,</span>
     <span class="s2">&quot;linspace&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logspace&quot;</span><span class="p">,</span>
     <span class="s2">&quot;randint&quot;</span><span class="p">,</span>
     <span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;standard_normal&quot;</span><span class="p">,</span>
@@ -551,6 +525,16 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_deepcopy</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;deepcopy&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="array">
 <a class="viewcode-back" href="../../../usage/IO.html#arkouda.array">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">array</span><span class="p">(</span>
@@ -632,24 +616,26 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_array_ranks</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
 
-    <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dtype</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="n">a</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dtype</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_deepcopy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">a</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="s2">&quot;str_&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot cast Strings to dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> in ak.array&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">a</span><span class="p">[:]</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">Strings</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">a</span><span class="p">[:]</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">a</span>
+        <span class="p">)</span>
 
-    <span class="c1"># If a is already a pdarray, do nothing</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">casted</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:]</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">akcast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+        <span class="n">casted</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>  <span class="c1"># the &quot;dtype is None&quot; case was covered above</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span> <span class="ow">and</span> <span class="n">max_bits</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">casted</span><span class="o">.</span><span class="n">max_bits</span> <span class="o">=</span> <span class="n">max_bits</span>
         <span class="k">return</span> <span class="n">casted</span>
+
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">maxTransferBytes</span>
 
     <span class="c1"># If a is not already a numpy.ndarray, convert it</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">bigint</span><span class="p">:</span>
@@ -720,12 +706,8 @@
             <span class="n">payload</span><span class="o">=</span><span class="n">_array_memview</span><span class="p">(</span><span class="n">encoded_np</span><span class="p">),</span>
             <span class="n">send_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">Strings</span><span class="o">.</span><span class="n">from_parts</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">akcast</span><span class="p">(</span><span class="n">Strings</span><span class="o">.</span><span class="n">from_parts</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">strings</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">strings</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">akcast</span><span class="p">(</span><span class="n">strings</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
 
     <span class="c1"># If not strings, then check that dtype is supported in arkouda</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DTypes</span><span class="p">:</span>
@@ -736,6 +718,8 @@
             <span class="c1"># attempt to break bigint into multiple uint64 arrays</span>
             <span class="c1"># early out if we would have more uint arrays than can fit in max_bits</span>
             <span class="n">early_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_bits</span> <span class="o">//</span> <span class="mi">64</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">max_bits</span> <span class="o">%</span> <span class="mi">64</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">max_bits</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bigint</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
             <span class="k">while</span> <span class="nb">any</span><span class="p">(</span><span class="n">a</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">uint_arrays</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">early_out</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                     <span class="n">low</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="o">**</span><span class="mi">64</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="o">**</span><span class="mi">64</span>
@@ -774,7 +758,11 @@
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;array&lt;</span><span class="si">{</span><span class="n">a_</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">a_</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a_</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="s2">&quot;seg_string&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="n">a_</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a_</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+                <span class="s2">&quot;seg_string&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">},</span>
             <span class="n">payload</span><span class="o">=</span><span class="n">aview</span><span class="p">,</span>
             <span class="n">send_binary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -993,9 +981,7 @@
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-        <span class="n">_infer_shape_from_size</span><span class="p">,</span>  <span class="c1"># placed here to avoid circ import</span>
-    <span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>  <span class="c1"># placed here to avoid circ import</span>
 
     <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
 
@@ -1079,8 +1065,8 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">full</span><span class="p">(</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">fill_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fill_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1146,9 +1132,7 @@
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-        <span class="n">_infer_shape_from_size</span><span class="p">,</span>  <span class="c1"># placed here to avoid circ import</span>
-    <span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>  <span class="c1"># placed here to avoid circ import</span>
 
     <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
 
@@ -1173,7 +1157,8 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.scalar_array">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">scalar_array</span><span class="p">(</span>
-    <span class="n">value</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">bool_scalars</span><span class="p">],</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a pdarray from a single scalar value.</span>
@@ -1182,6 +1167,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    value: numeric_scalars</span>
 <span class="sd">        Value to create pdarray from</span>
+<span class="sd">    dtype: np.dtype, type, str, bigint, or None</span>
+<span class="sd">        The data type of the created array.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1428,10 +1415,11 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;# noqa: DAR102</span>
-<span class="sd">    arange([start,] stop[, step,] dtype=int64)</span>
-
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a pdarray of consecutive integers within the interval [start, stop).</span>
+
+<span class="sd">    Called as: arange([start,] stop[, step,] dtype=int64).</span>
+
 <span class="sd">    If only one arg is given then arg is the stop parameter. If two args are</span>
 <span class="sd">    given, then the first arg is start and second is stop. If three args are</span>
 <span class="sd">    given, then the first arg is start, second is stop, third is step.</span>
@@ -1539,7 +1527,8 @@
             <span class="n">stop</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">+</span> <span class="mi">2</span>
 
         <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;arange&lt;</span><span class="si">{</span><span class="n">arg_dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">}</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;arange&lt;</span><span class="si">{</span><span class="n">arg_dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">arr</span> <span class="k">if</span> <span class="n">aktype</span> <span class="o">==</span> <span class="n">akint64</span> <span class="k">else</span> <span class="n">akcast</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">aktype</span><span class="p">)</span>
@@ -1548,61 +1537,261 @@
 
 
 
-<div class="viewcode-block" id="linspace">
-<a class="viewcode-back" href="../../../usage/creation.html#arkouda.linspace">[docs]</a>
+<div class="viewcode-block" id="logspace">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.logspace">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logspace</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">num</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">base</span><span class="p">:</span> <span class="n">numeric_scalars</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a pdarray of linearly-spaced floats in a closed interval.</span>
+<span class="sd">    Create a pdarray of numbers evenly spaced on a log scale.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    start : numeric_scalars</span>
-<span class="sd">        Start of interval (inclusive)</span>
-<span class="sd">    stop : numeric_scalars</span>
-<span class="sd">        End of interval (inclusive)</span>
-<span class="sd">    length : int_scalars</span>
-<span class="sd">        Number of points</span>
+<span class="sd">    start : Union[numeric_scalars, pdarray]</span>
+<span class="sd">        The starting value of the sequence.</span>
+<span class="sd">    stop : Union[numeric_scalars, pdarray]</span>
+<span class="sd">        The end value of the sequence, unless `endpoint` is set to False.</span>
+<span class="sd">        In that case, the sequence consists of all but the last of ``num + 1``</span>
+<span class="sd">        evenly spaced samples, so that `stop` is excluded.  Note that the step</span>
+<span class="sd">        size changes when `endpoint` is False.</span>
+<span class="sd">    num : int, optional</span>
+<span class="sd">        Number of samples to generate. Default is 50. Must be non-negative.</span>
+<span class="sd">    base : numeric_scalars, optional</span>
+<span class="sd">        the base of the log space, defaults to 10.0.</span>
+<span class="sd">    endpoint : bool, optional</span>
+<span class="sd">        If True, `stop` is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    dtype : Union[None, float64]</span>
+<span class="sd">        allowed for compatibility with numpy, but ignored.  Outputs are always float</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis in the result to store the samples.  Relevant only if start</span>
+<span class="sd">        or stop are array-like.  By default (0), the samples will be along a</span>
+<span class="sd">        new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        Array of evenly spaced float values along the interval</span>
+<span class="sd">        There are `num` equally spaced (logarithmically) samples in the closed interval</span>
+<span class="sd">        base**``[start, stop]`` or the half-open interval base**``[start, stop)``</span>
+<span class="sd">        (depending on whether `endpoint` is True or False).</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if start or stop is not a float or int or if length is not an int</span>
+<span class="sd">        Raised if start or stop is not a float or a pdarray, or if num</span>
+<span class="sd">        is not an int, or if endpoint is not a bool, or if dtype is anything</span>
+<span class="sd">        other than None or float64, or axis is not an integer.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if axis is not a valid axis for the given data, or if base &lt; 0.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    arange</span>
+<span class="sd">    linspace</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If that start is greater than stop, the pdarray values are generated</span>
+<span class="sd">    If start is greater than stop, the pdarray values are generated</span>
 <span class="sd">    in descending order.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.linspace(0, 1, 5)</span>
-<span class="sd">    array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])</span>
-
-<span class="sd">    &gt;&gt;&gt; ak.linspace(start=1, stop=0, length=5)</span>
-<span class="sd">    array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])</span>
-
-<span class="sd">    &gt;&gt;&gt; ak.linspace(start=-5, stop=0, length=5)</span>
-<span class="sd">    array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(2,3,3,4)</span>
+<span class="sd">    array([16.00000000000000000 32.00000000000000000 64.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(2,3,3,4,endpoint=False)</span>
+<span class="sd">    array([16.00000000000000000 25.398416831491197 40.317473596635935])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(0,1,3,4)</span>
+<span class="sd">    array([1.00000000000000000 2.00000000000000000 4.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(1,0,3,4)</span>
+<span class="sd">    array([4.00000000000000000 2.00000000000000000 1.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(0,1,3,endpoint=False)</span>
+<span class="sd">    array([1.00000000000000000 2.1544346900318838 4.6415888336127784])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(0,ak.array([2,3]),3,base=2)</span>
+<span class="sd">    array([array([1.00000000000000000 1.00000000000000000])</span>
+<span class="sd">        array([2.00000000000000000 2.8284271247461903])</span>
+<span class="sd">        array([4.00000000000000000 8.00000000000000000])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(ak.array([0,1]),3,3,base=3)</span>
+<span class="sd">    array([array([1.00000000000000000 3.00000000000000000])</span>
+<span class="sd">        array([5.196152422706632 9.00000000000000000])</span>
+<span class="sd">        array([27.00000000000000000 27.00000000000000000])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logspace(ak.array([0,1]),ak.array([2,3]),3,base=4)</span>
+<span class="sd">    array([array([1.00000000000000000 4.00000000000000000])</span>
+<span class="sd">        array([4.00000000000000000 16.00000000000000000])</span>
+<span class="sd">        array([16.00000000000000000 64.00000000000000000])])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">float64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;dtype must be None or float64&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;base must be positive&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">stop</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;both start and stop must be an int, np.int64, float, or np.float64&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;length must be an int or int64&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;linspace&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span> <span class="s2">&quot;len&quot;</span><span class="p">:</span> <span class="n">length</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">base</span> <span class="o">**</span> <span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float64</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="linspace">
+<a class="viewcode-back" href="../../../usage/creation.html#arkouda.linspace">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">linspace</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span>
+    <span class="n">num</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">endpoint</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return evenly spaced numbers over a specified interval.</span>
+
+<span class="sd">    Returns `num` evenly spaced samples, calculated over the</span>
+<span class="sd">    interval [`start`, `stop`].</span>
+
+<span class="sd">    The endpoint of the interval can optionally be excluded.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : Union[numeric_scalars, pdarray]</span>
+<span class="sd">        The starting value of the sequence.</span>
+<span class="sd">    stop : Union[numeric_scalars, pdarray]</span>
+<span class="sd">        The end value of the sequence, unless `endpoint` is set to False.</span>
+<span class="sd">        In that case, the sequence consists of all but the last of ``num + 1``</span>
+<span class="sd">        evenly spaced samples, so that `stop` is excluded.  Note that the step</span>
+<span class="sd">        size changes when `endpoint` is False.</span>
+<span class="sd">    num : int, optional</span>
+<span class="sd">        Number of samples to generate. Default is 50. Must be non-negative.</span>
+<span class="sd">    endpoint : bool, optional</span>
+<span class="sd">        If True, `stop` is the last sample. Otherwise, it is not included.</span>
+<span class="sd">        Default is True.</span>
+<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">        Allowed for compatibility with numpy linspace, but anything entered</span>
+<span class="sd">        is ignored.  The output is always ak.float64.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis in the result to store the samples.  Relevant only if start</span>
+<span class="sd">        or stop are array-like.  By default (0), the samples will be along a</span>
+<span class="sd">        new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        There are `num` equally spaced samples in the closed interval</span>
+<span class="sd">        ``[start, stop]`` or the half-open interval ``[start, stop)``</span>
+<span class="sd">        (depending on whether `endpoint` is True or False).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if start or stop is not a float or a pdarray, or if num</span>
+<span class="sd">        is not an int, or if endpoint is not a bool, or if dtype is anything</span>
+<span class="sd">        other than None or float64, or axis is not an integer.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if axis is not a valid axis for the given data.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.linspace(0,1,3)</span>
+<span class="sd">    array([0.00000000000000000 0.5 1.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.linspace(1,0,3)</span>
+<span class="sd">    array([1.00000000000000000 0.5 0.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.linspace(0,1,3,endpoint=False)</span>
+<span class="sd">    array([0.00000000000000000 0.33333333333333331 0.66666666666666663])</span>
+<span class="sd">    &gt;&gt;&gt; ak.linspace(0,ak.array([2,3]),3)</span>
+<span class="sd">    array([array([0.00000000000000000 0.00000000000000000])</span>
+<span class="sd">        array([1.00000000000000000 1.5]) array([2.00000000000000000 3.00000000000000000])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.linspace(ak.array([0,1]),3,3)</span>
+<span class="sd">    array([array([0.00000000000000000 1.00000000000000000])</span>
+<span class="sd">        array([1.5 2.00000000000000000]) array([3.00000000000000000 3.00000000000000000])])</span>
+<span class="sd">    &gt;&gt;&gt; ak.linspace(ak.array([0,1]),ak.array([2,3]),3)</span>
+<span class="sd">    array([array([0.00000000000000000 1.00000000000000000])</span>
+<span class="sd">        array([1.00000000000000000 2.00000000000000000])</span>
+<span class="sd">        array([2.00000000000000000 3.00000000000000000])])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">newaxis</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpose</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">tile</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_integer_axis_validation</span><span class="p">,</span> <span class="n">broadcast_shapes</span><span class="p">,</span> <span class="n">broadcast_to</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">float64</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;dtype must be None or float64&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">start_</span> <span class="o">=</span> <span class="n">start</span>
+    <span class="n">stop_</span> <span class="o">=</span> <span class="n">stop</span>
+
+    <span class="c1">#   First make sure everything&#39;s a float.</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">start_</span> <span class="o">=</span> <span class="n">start_</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">start_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start_</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">stop_</span> <span class="o">=</span> <span class="n">stop_</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">stop_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stop_</span><span class="p">)</span>
+
+    <span class="c1">#   Determine whether this is all scalars, or if vectors are involved.</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="c1">#  they must be broadcast to a matching shape</span>
+        <span class="k">if</span> <span class="n">start_</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">stop_</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">newshape</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">start_</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">stop_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">start_</span> <span class="o">=</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">newshape</span><span class="p">)</span>
+            <span class="n">stop_</span> <span class="o">=</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">newshape</span><span class="p">)</span>
+
+    <span class="c1">#   If one is a scalar and other a vector, we use full_like to &quot;promote&quot; the scalar one.</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">stop_</span><span class="p">):</span>
+            <span class="n">stop_</span> <span class="o">=</span> <span class="n">full_like</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">stop_</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">start_</span><span class="p">):</span>
+            <span class="n">start_</span> <span class="o">=</span> <span class="n">full_like</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">start_</span><span class="p">)</span>
+
+    <span class="n">divisor</span> <span class="o">=</span> <span class="n">num</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="n">num</span>
+
+    <span class="c1">#   In the vector case, by the time we reach here, start_ and stop_ are the same</span>
+    <span class="c1">#   shape.  They are tiled by num (the size of the linspace), the delta is</span>
+    <span class="c1">#   computed, and a solution is calculated involving start_ plus arange(num)</span>
+    <span class="c1">#   multipled by delta.</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">pad</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">start_</span> <span class="o">=</span> <span class="n">tile</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num</span><span class="p">,)</span> <span class="o">+</span> <span class="n">start_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">stop_</span> <span class="o">=</span> <span class="n">tile</span><span class="p">(</span><span class="n">stop_</span><span class="p">,</span> <span class="n">pad</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num</span><span class="p">,)</span> <span class="o">+</span> <span class="n">stop_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">delta_</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop_</span> <span class="o">-</span> <span class="n">start_</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">start_</span> <span class="o">+</span> <span class="n">arange</span><span class="p">(</span><span class="n">num</span><span class="p">)[(</span><span class="o">...</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="n">newaxis</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta_</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">delta_</span>
+
+        <span class="c1"># Handle the axis parameter if needed</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">valid</span><span class="p">,</span> <span class="n">axis_</span> <span class="o">=</span> <span class="n">_integer_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis for the result of linspace.&quot;</span><span class="p">)</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis_</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes</span><span class="p">))</span>
+
+    <span class="c1">#   Scalar case is pretty straightforward.</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop_</span> <span class="o">-</span> <span class="n">start_</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">start_</span><span class="p">)</span> <span class="o">+</span> <span class="n">arange</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float64</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;axis should not be supplied when start and stop are scalars.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 
@@ -1664,7 +1853,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 3, seed=1701, dtype=ak.float64)</span>
 <span class="sd">    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.randint(0, 1, 5, seed=1701, dtype=ak.bool_)</span>
+<span class="sd">    &gt;&gt;&gt; ak.randint(0, 2, 5, seed=1701, dtype=ak.bool_)</span>
 <span class="sd">    array([False True False True False])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">randint</span>
@@ -1677,7 +1866,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.uniform">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span>
-    <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span>
     <span class="n">low</span><span class="p">:</span> <span class="n">numeric_scalars</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span>
     <span class="n">high</span><span class="p">:</span> <span class="n">numeric_scalars</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1688,12 +1877,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    size : Union[int_scalars, Tuple[int_scalars]</span>
+<span class="sd">        The length or shape of the returned array</span>
 <span class="sd">    low : float_scalars</span>
 <span class="sd">        The low value (inclusive) of the range, defaults to 0.0</span>
 <span class="sd">    high : float_scalars</span>
 <span class="sd">        The high value (inclusive) of the range, defaults to 1.0</span>
-<span class="sd">    size : int_scalars</span>
-<span class="sd">        The length of the returned array</span>
 <span class="sd">    seed : int_scalars, optional</span>
 <span class="sd">        Value used to initialize the random number generator</span>
 
@@ -1724,7 +1913,17 @@
 <span class="sd">    &gt;&gt;&gt; ak.uniform(size=3,low=0,high=5,seed=0)</span>
 <span class="sd">    array([0.30013431967121934 0.47383036230759112 1.0441791878997098])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+
+    <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">else</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">full_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1732,7 +1931,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html#arkouda.standard_normal">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draw real numbers from the standard normal distribution.</span>
 
 <span class="sd">    Parameters</span>
@@ -1857,7 +2056,7 @@
     <span class="n">characters</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;uppercase&quot;</span><span class="p">,</span>
     <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate random strings with log-normally distributed lengths and</span>
 <span class="sd">    with characters drawn from a specified set.</span>
 

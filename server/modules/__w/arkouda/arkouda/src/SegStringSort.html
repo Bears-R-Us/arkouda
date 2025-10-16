@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SegStringSort &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="segstringsort">
-<span id="module-SegStringSort"></span><h1>SegStringSort<a class="headerlink" href="#segstringsort" title="Link to this heading">¶</a></h1>
+<span id="module-SegStringSort"></span><h1>SegStringSort<a class="headerlink" href="#segstringsort" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">SegStringSort</span><span class="p">;</span>
 </pre></div>
@@ -133,47 +130,47 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SegStringSort.ssLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ssLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#SegStringSort.ssLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ssLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#SegStringSort.ssLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="SegStringSort.StringIntComparator">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">StringIntComparator</span></span><em class="property"> <span class="pre">:</span> <span class="pre">keyPartComparator</span></em><a class="headerlink" href="#SegStringSort.StringIntComparator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">StringIntComparator</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">keyPartComparator</span></em><a class="headerlink" href="#SegStringSort.StringIntComparator" title="Link to this definition"></a></dt>
 <dd><dl class="chpl method">
 <dt class="sig sig-object chpl" id="SegStringSort.StringIntComparator.keyPart">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">keyPart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">(a0</span></em>, <em class="sig-param"><span class="pre">_):</span> <span class="pre">(string</span></em>, <em class="sig-param"><span class="pre">int)</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">i:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegStringSort.StringIntComparator.keyPart" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">keyPart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">(a0</span></em>, <em class="sig-param"><span class="pre">_):</span> <span class="pre">(string</span></em>, <em class="sig-param"><span class="pre">int)</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">i:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegStringSort.StringIntComparator.keyPart" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegStringSort.twoPhaseStringSort">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">twoPhaseStringSort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ss:</span> <span class="pre">SegString</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[ss.offsets.a.domain]</span> <span class="pre">int</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.twoPhaseStringSort" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">twoPhaseStringSort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ss:</span> <span class="pre">SegString</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[ss.offsets.a.domain]</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.twoPhaseStringSort" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegStringSort.getPivot">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPivot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lengths:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">2*(int)</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.getPivot" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPivot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lengths:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">2*(int)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.getPivot" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegStringSort.gatherLongStrings">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">gatherLongStrings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">lengths:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">longInds:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">(string,</span> <span class="pre">int)</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.gatherLongStrings" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">gatherLongStrings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ss:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">lengths:</span> <span class="pre">[]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">longInds:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">(string,</span> <span class="pre">int)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.gatherLongStrings" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegStringSort.calcBlock">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">calcBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">task:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">low:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">high:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegStringSort.calcBlock" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">calcBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">task:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">low:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">high:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SegStringSort.calcBlock" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegStringSort.calcGlobalIndex">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">calcGlobalIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bucket:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">task:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegStringSort.calcGlobalIndex" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">calcGlobalIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bucket:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">loc:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">task:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#SegStringSort.calcGlobalIndex" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegStringSort.radixSortLSD_raw">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">radixSortLSD_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">offsets:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">lengths:</span> <span class="pre">[aD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">inds:</span> <span class="pre">[aD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">pivot:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[aD]</span> <span class="pre">int</span> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.radixSortLSD_raw" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">radixSortLSD_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">offsets:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">lengths:</span> <span class="pre">[aD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">values:</span> <span class="pre">[]</span> <span class="pre">uint(8)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">inds:</span> <span class="pre">[aD]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">pivot:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[aD]</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegStringSort.radixSortLSD_raw" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

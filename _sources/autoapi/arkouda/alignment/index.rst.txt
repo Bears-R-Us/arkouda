@@ -308,8 +308,8 @@ Module Contents
    >>> revkeys = values
    >>> revindices = ak.arange(values.size)
    >>> revargs = ak.array([24, 21, 22])
-   >>> idx = ak.lookup(revkeys, revindices, revargs)
-   >>> keys1[idx], keys2[idx]
+   >>> indx = ak.lookup(revkeys, revindices, revargs)
+   >>> keys1[indx], keys2[indx]
    (array(['twenty', 'twenty', 'twenty']),
    array(['four', 'one', 'two']))
 

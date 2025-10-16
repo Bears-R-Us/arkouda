@@ -76,14 +76,15 @@ Module Contents
       :param axis: The axis to concatenate along:
                    - 0 = vertical (stack series into one)
                    - 1 = horizontal (align by index and produce a DataFrame)
-      :type axis: int, default=0
+                   Defaults to 0.
+      :type axis: int
       :param index_labels: Column name(s) to label the index when axis=1.
-      :type index_labels: List of str or None, optional
+      :type index_labels: List[str] or None, optional
       :param value_labels: Column names to label the values of each Series.
-      :type value_labels: List of str or None, optional
+      :type value_labels: List[str] or None, optional
       :param ordered: Unused parameter. Reserved for future support of deterministic
-                      vs. performance-optimized concatenation.
-      :type ordered: bool, default=False
+                      vs. performance-optimized concatenation. Defaults to False.
+      :type ordered: bool
 
       :returns:
 
@@ -126,74 +127,43 @@ Module Contents
 
       >>> import arkouda as ak
       >>> from arkouda import Series
+      >>> import numpy as np
 
       >>> data = ak.Series([1, np.nan, 3, np.nan, 5])
       >>> data
-
-      +----+-------+
-      |    |   0   |
-      +====+=======+
-      |  0 |   1.0 |
-      +----+-------+
-      |  1 |   nan |
-      +----+-------+
-      |  2 |   3.0 |
-      +----+-------+
-      |  3 |   nan |
-      +----+-------+
-      |  4 |   5.0 |
-      +----+-------+
+      0    1.0
+      1    NaN
+      2    3.0
+      3    NaN
+      4    5.0
+      dtype: float64
 
       >>> fill_values1 = ak.ones(5)
       >>> data.fillna(fill_values1)
-
-      +----+-------+
-      |    |   0   |
-      +====+=======+
-      |  0 |   1.0 |
-      +----+-------+
-      |  1 |   1.0 |
-      +----+-------+
-      |  2 |   3.0 |
-      +----+-------+
-      |  3 |   1.0 |
-      +----+-------+
-      |  4 |   5.0 |
-      +----+-------+
+      0    1.0
+      1    1.0
+      2    3.0
+      3    1.0
+      4    5.0
+      dtype: float64
 
       >>> fill_values2 = Series(ak.ones(5))
       >>> data.fillna(fill_values2)
-
-      +----+-------+
-      |    |   0   |
-      +====+=======+
-      |  0 |   1.0 |
-      +----+-------+
-      |  1 |   1.0 |
-      +----+-------+
-      |  2 |   3.0 |
-      +----+-------+
-      |  3 |   1.0 |
-      +----+-------+
-      |  4 |   5.0 |
-      +----+-------+
+      0    1.0
+      1    1.0
+      2    3.0
+      3    1.0
+      4    5.0
+      dtype: float64
 
       >>> fill_values3 = 100.0
       >>> data.fillna(fill_values3)
-
-      +----+---------+
-      |    |     0   |
-      +====+=========+
-      |  0 |     1.0 |
-      +----+---------+
-      |  1 |   100.0 |
-      +----+---------+
-      |  2 |     3.0 |
-      +----+---------+
-      |  3 |   100.0 |
-      +----+---------+
-      |  4 |     5.0 |
-      +----+---------+
+      0      1.0
+      1    100.0
+      2      3.0
+      3    100.0
+      4      5.0
+      dtype: float64
 
 
 
@@ -202,17 +172,18 @@ Module Contents
 
 
       Return a Series instance pointing to components created by the arkouda server.
+
       The user should not call this function directly.
 
       :param repMsg:
-                     + delimited string containing the values and indexes
-      :type repMsg: str
+                     + delimited string containing the values and indexes.
+      :type repMsg: builtin_str
 
-      :returns: A Series representing a set of pdarray components on the server
+      :returns: A Series representing a set of pdarray components on the server.
       :rtype: Series
 
       :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
-          the Series instance
+          the Series instance.
 
 
 
@@ -236,27 +207,20 @@ Module Contents
 
       >>> s = ak.Series(ak.array([1, 2, 3, np.nan]))
       >>> s
-
-      +----+-------+
-      |    |   0   |
-      +====+=======+
-      |  0 |   1.0 |
-      +----+-------+
-      |  1 |   2.0 |
-      +----+-------+
-      |  2 |   3.0 |
-      +----+-------+
-      |  3 |   nan |
-      +----+-------+
+      0    1.0
+      1    2.0
+      2    3.0
+      3    NaN
+      dtype: float64
 
       >>> s.hasnans()
-      True
+      np.True_
 
 
 
    .. py:method:: head(n: int = 10) -> Series
 
-      Return the first n values of the series
+      Return the first n values of the series.
 
 
 
@@ -282,7 +246,7 @@ Module Contents
 
    .. py:method:: is_registered() -> bool
 
-       Return True iff the object is contained in the registry or is a component of a
+      Return True iff the object is contained in the registry or is a component of a
        registered object.
 
       :returns: Indicates if the object is contained in the registry
@@ -333,16 +297,10 @@ Module Contents
 
       >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
       >>> s.isna()
-
-      +----+---------+
-      |    |   0     |
-      +====+=========+
-      |  1 |   False |
-      +----+---------+
-      |  2 |   False |
-      +----+---------+
-      |  4 |   True  |
-      +----+---------+
+      1    False
+      2    False
+      4     True
+      dtype: bool
 
 
 
@@ -369,16 +327,10 @@ Module Contents
 
       >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
       >>> s.isnull()
-
-      +----+---------+
-      |    |   0     |
-      +====+=========+
-      |  1 |   False |
-      +----+---------+
-      |  2 |   False |
-      +----+---------+
-      |  4 |   True  |
-      +----+---------+
+      1    False
+      2    False
+      4     True
+      dtype: bool
 
 
 
@@ -431,53 +383,29 @@ Module Contents
       >>> import arkouda as ak
       >>> s = ak.Series(ak.array([2, 3, 2, 3, 4]))
       >>> s
-
-      +----+-----+
-      |    | 0   |
-      +====+=====+
-      |  0 | 2   |
-      +----+-----+
-      |  1 | 3   |
-      +----+-----+
-      |  2 | 2   |
-      +----+-----+
-      |  3 | 3   |
-      +----+-----+
-      |  4 | 4   |
-      +----+-----+
+      0    2
+      1    3
+      2    2
+      3    3
+      4    4
+      dtype: int64
 
       >>> s.map({4: 25.0, 2: 30.0, 1: 7.0, 3: 5.0})
-
-      +----+-----+
-      |    | 0   |
-      +====+=====+
-      |  0 | 30.0|
-      +----+-----+
-      |  1 | 5.0 |
-      +----+-----+
-      |  2 | 30.0|
-      +----+-----+
-      |  3 | 5.0 |
-      +----+-----+
-      |  4 | 25.0|
-      +----+-----+
+      0    30.0
+      1     5.0
+      2    30.0
+      3     5.0
+      4    25.0
+      dtype: float64
 
       >>> s2 = ak.Series(ak.array(["a","b","c","d"]), index = ak.array([4,2,1,3]))
       >>> s.map(s2)
-
-      +----+-----+
-      |    | 0   |
-      +====+=====+
-      |  0 | b   |
-      +----+-----+
-      |  1 | d   |
-      +----+-----+
-      |  2 | b   |
-      +----+-----+
-      |  3 | d   |
-      +----+-----+
-      |  4 | a   |
-      +----+-----+
+      0    b
+      1    d
+      2    b
+      3    d
+      4    a
+      dtype: object
 
 
 
@@ -489,9 +417,10 @@ Module Contents
       the index.
 
       :param index: Specifies whether to include the memory usage of the Series index.
-      :type index: bool, default=True
-      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
-      :type unit: {"B", "KB", "MB", "GB"}, default = "B"
+                    Defaults to True.
+      :type index: bool
+      :param unit: Unit to return. One of {'B', 'KB', 'MB', 'GB'}. Defaults to "B".
+      :type unit: {"B", "KB", "MB", "GB"}
 
       :returns: Bytes of memory consumed.
       :rtype: int
@@ -546,16 +475,10 @@ Module Contents
 
       >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
       >>> s.notna()
-
-      +----+---------+
-      |    |   0     |
-      +====+=========+
-      |  1 |   True  |
-      +----+---------+
-      |  2 |   True  |
-      +----+---------+
-      |  4 |   False |
-      +----+---------+
+      1     True
+      2     True
+      4    False
+      dtype: bool
 
 
 
@@ -582,16 +505,10 @@ Module Contents
 
       >>> s = Series(ak.array([1, 2, np.nan]), index = ak.array([1, 2, 4]))
       >>> s.notnull()
-
-      +----+---------+
-      |    |   0     |
-      +====+=========+
-      |  1 |   True  |
-      +----+---------+
-      |  2 |   True  |
-      +----+---------+
-      |  4 |   False |
-      +----+---------+
+      1     True
+      2     True
+      4    False
+      dtype: bool
 
 
 
@@ -618,7 +535,8 @@ Module Contents
       :param axis: The axis along which to concatenate:
                    - 0 = vertical (stack into a Series)
                    - 1 = horizontal (align by index into a DataFrame)
-      :type axis: int, default=0
+                   Defaults to 0.
+      :type axis: int
       :param labels: Names to assign to the resulting columns in the DataFrame.
       :type labels: Strings or None, optional
 
@@ -632,11 +550,11 @@ Module Contents
 
    .. py:method:: register(user_defined_name: str)
 
-      Register this Series object and underlying components with the Arkouda server
+      Register this Series object and underlying components with the Arkouda server.
 
-      :param user_defined_name: user defined name the Series is to be registered under,
-                                this will be the root name for underlying components
-      :type user_defined_name: str
+      :param user_defined_name: User-defined name the Series is to be registered under.
+                                This will be the root name for the underlying components.
+      :type user_defined_name: builtin_str
 
       :returns: The same Series which is now registered with the arkouda server and has an updated name.
                 This is an in-place modification, the original is returned to support
@@ -675,7 +593,8 @@ Module Contents
       Sort the Series by its index.
 
       :param ascending: Whether to sort the index in ascending (default) or descending order.
-      :type ascending: bool, default=True
+                        Defaults to True.
+      :type ascending: bool
 
       :returns: A new Series sorted by index.
       :rtype: Series
@@ -687,7 +606,8 @@ Module Contents
       Sort the Series by its values.
 
       :param ascending: Whether to sort values in ascending (default) or descending order.
-      :type ascending: bool, default=True
+                        Defaults to True.
+      :type ascending: bool
 
       :returns: A new Series sorted by its values.
       :rtype: Series
@@ -699,7 +619,7 @@ Module Contents
 
    .. py:method:: tail(n: int = 10) -> Series
 
-      Return the last n values of the series
+      Return the last n values of the series.
 
 
 
@@ -745,15 +665,20 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
+
       >>> s = ak.Series(["elk", "pig", "dog", "quetzal"], name="animal")
       >>> print(s.to_markdown())
+      +----+----------+
       |    | animal   |
-      |---:|:---------|
+      +====+==========+
       |  0 | elk      |
+      +----+----------+
       |  1 | pig      |
+      +----+----------+
       |  2 | dog      |
+      +----+----------+
       |  3 | quetzal  |
+      +----+----------+
 
       Output markdown with a tabulate option.
 
@@ -777,7 +702,7 @@ Module Contents
 
    .. py:method:: to_pandas() -> pandas.Series
 
-      Convert the series to a local PANDAS series
+      Convert the series to a local PANDAS series.
 
 
 
@@ -788,8 +713,8 @@ Module Contents
 
       Return the top values of the Series.
 
-      :param n: Number of values to return. The default of 10 returns the top 10 values.
-      :type n: int, default=10
+      :param n: Number of values to return. Defaults to 10.
+      :type n: int
 
       :returns: A new Series containing the top `n` values.
       :rtype: Series
@@ -799,7 +724,7 @@ Module Contents
    .. py:method:: unregister()
 
       Unregister this Series object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
@@ -813,9 +738,10 @@ Module Contents
 
 
 
-   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
+   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
 
       Validate type requirements for keys when reading or writing the Series.
+
       Also converts list and tuple arguments into pdarrays.
 
       :param key: The key or container of keys that might be used to index into the Series.
@@ -834,6 +760,7 @@ Module Contents
    .. py:method:: validate_val(val: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, supported_scalars, List]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, supported_scalars]
 
       Validate type requirements for values being written into the Series.
+
       Also converts list and tuple arguments into pdarrays.
 
       :param val: The value or container of values that might be assigned into the Series.
@@ -853,8 +780,8 @@ Module Contents
       Return a Series containing counts of unique values.
 
       :param sort: Whether to sort the result by count in descending order. If False,
-                   the order of the results is not guaranteed.
-      :type sort: bool, default=True
+                   the order of the results is not guaranteed. Defaults to True.
+      :type sort: bool
 
       :returns: A Series where the index contains the unique values and the values are
                 their counts in the original Series.

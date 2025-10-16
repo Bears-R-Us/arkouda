@@ -1,0 +1,69 @@
+arkouda.scipy.sparsematrix
+==========================
+
+.. py:module:: arkouda.scipy.sparsematrix
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.scipy.sparsematrix.create_sparse_matrix
+   arkouda.scipy.sparsematrix.random_sparse_matrix
+   arkouda.scipy.sparsematrix.sparse_matrix_matrix_mult
+
+
+Module Contents
+---------------
+
+.. py:function:: create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray, layout: str) -> sparray
+
+   Create a sparse matrix from three pdarrays representing the row indices,
+   column indices, and values of the non-zero elements of the matrix.
+
+   :param rows: The row indices of the non-zero elements
+   :type rows: pdarray
+   :param cols: The column indices of the non-zero elements
+   :type cols: pdarray
+   :param vals: The values of the non-zero elements
+   :type vals: pdarray
+
+   :returns: A sparse matrix with the specified row and column indices and values
+   :rtype: sparray
+
+
+.. py:function:: random_sparse_matrix(size: int, density: float, layout: str, dtype: Union[type, str] = numpy.int64) -> sparray
+
+   Create a random sparse matrix with the specified number of rows and columns
+   and the specified density. The density is the fraction of non-zero elements
+   in the matrix. The non-zero elements are uniformly distributed random
+   numbers in the range [0,1).
+
+   :param size: The number of rows in the matrix, columns are equal to rows right now
+   :type size: int
+   :param density: The fraction of non-zero elements in the matrix
+   :type density: float
+   :param dtype: The dtype of the elements in the matrix (default is int64)
+   :type dtype: Union[DTypes, str]
+
+   :returns: A sparse matrix with the specified number of rows and columns
+             and the specified density
+   :rtype: sparray
+
+   :raises ValueError: Raised if density is not in the range [0,1]
+
+
+.. py:function:: sparse_matrix_matrix_mult(A, B: sparray) -> sparray
+
+   Multiply two sparse matrices.
+
+   :param A: The left-hand sparse matrix
+   :type A: sparray
+   :param B: The right-hand sparse matrix
+   :type B: sparray
+
+   :returns: The product of the two sparse matrices
+   :rtype: sparray
+
+

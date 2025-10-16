@@ -1,6 +1,0 @@
-arkouda.sparrayclass
-====================
-
-.. py:module:: arkouda.sparrayclass
-
-

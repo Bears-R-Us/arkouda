@@ -34,12 +34,21 @@ Module Contents
    :returns: An array with the entries of axis reversed.
    :rtype: pdarray, Strings, or Categorical
 
+   :raises IndexError: Raised if operation fails server-side.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.arange(12)
+   >>> ak.flip(a)
+   array([11 10 9 8 7 6 5 4 3 2 1 0])
+
    .. note:: This differs from numpy as it actually reverses the data, rather than presenting a view.
 
 
 .. py:function:: repeat(a: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], repeats: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], axis: Union[None, int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Repeat each element of an array after themselves
+   Repeat each element of an array after themselves.
 
    :param a: Input array.
    :type a: int, Sequence of int, or pdarray
@@ -52,6 +61,14 @@ Module Contents
 
    :returns: Output array which has the same shape as `a`, except along the given axis.
    :rtype: pdarray
+
+   :raises ValueError: Raised if repeats is not an int or a 1-dimensional array, or if it contains
+       negative values, if its size does not match the input arrays size along
+       axis.
+   :raises RuntimeError: Raised if the operation fails server-side.
+   :raises TypeError: Raised if axis anything but None or int, or if either a or repeats is invalid
+       (the a and repeat cases should be impossible).
+   :raises IndexError: Raised if axis is invalid for the given rank.
 
    .. rubric:: Examples
 
@@ -79,6 +96,8 @@ Module Contents
 
    :returns: A copy of x with the dimensions specified in the axis argument removed.
    :rtype: pdarray
+
+   :raises RuntimeError: Raised if operation fails server-side.
 
    .. rubric:: Examples
 

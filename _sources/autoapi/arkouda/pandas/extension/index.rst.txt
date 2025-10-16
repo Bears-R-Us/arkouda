@@ -1,0 +1,1745 @@
+arkouda.pandas.extension
+========================
+
+.. py:module:: arkouda.pandas.extension
+
+.. autoapi-nested-parse::
+
+   Experimental pandas extension types backed by Arkouda arrays.
+
+   This subpackage provides experimental implementations of
+   :pandas:`pandas.api.extensions.ExtensionArray` and corresponding
+   extension dtypes that wrap Arkouda distributed arrays.
+
+   These classes make it possible to use Arkouda arrays inside pandas
+   objects such as ``Series`` and ``DataFrame``. They aim to provide
+   familiar pandas semantics while leveraging Arkouda's distributed,
+   high-performance backend.
+
+   .. warning::
+      This module is **experimental**. The API is not stable and may
+      change without notice between releases. Use with caution in
+      production environments.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.pandas.extension.ArkoudaArray
+   arkouda.pandas.extension.ArkoudaBigintDtype
+   arkouda.pandas.extension.ArkoudaBoolDtype
+   arkouda.pandas.extension.ArkoudaCategoricalArray
+   arkouda.pandas.extension.ArkoudaCategoricalDtype
+   arkouda.pandas.extension.ArkoudaFloat64Dtype
+   arkouda.pandas.extension.ArkoudaInt64Dtype
+   arkouda.pandas.extension.ArkoudaStringArray
+   arkouda.pandas.extension.ArkoudaStringDtype
+   arkouda.pandas.extension.ArkoudaUint64Dtype
+   arkouda.pandas.extension.ArkoudaUint8Dtype
+
+
+Package Contents
+----------------
+
+.. py:class:: ArkoudaArray(data)
+
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+
+
+   Abstract base class for custom 1-D array types.
+
+   pandas will recognize instances of this class as proper arrays
+   with a custom type and will not attempt to coerce them to objects. They
+   may be stored directly inside a :class:`DataFrame` or :class:`Series`.
+
+   .. attribute:: dtype
+
+
+
+   .. attribute:: nbytes
+
+
+
+   .. attribute:: ndim
+
+
+
+   .. attribute:: shape
+
+
+
+   .. method:: argsort
+
+   .. method:: astype
+
+   .. method:: copy
+
+   .. method:: dropna
+
+   .. method:: duplicated
+
+   .. method:: factorize
+
+   .. method:: fillna
+
+   .. method:: equals
+
+   .. method:: insert
+
+   .. method:: interpolate
+
+   .. method:: isin
+
+   .. method:: isna
+
+   .. method:: ravel
+
+   .. method:: repeat
+
+   .. method:: searchsorted
+
+   .. method:: shift
+
+   .. method:: take
+
+   .. method:: tolist
+
+   .. method:: unique
+
+   .. method:: view
+
+   .. method:: _accumulate
+
+   .. method:: _concat_same_type
+
+   .. method:: _explode
+
+   .. method:: _formatter
+
+   .. method:: _from_factorized
+
+   .. method:: _from_sequence
+
+   .. method:: _from_sequence_of_strings
+
+   .. method:: _hash_pandas_object
+
+   .. method:: _pad_or_backfill
+
+   .. method:: _reduce
+
+   .. method:: _values_for_argsort
+
+   .. method:: _values_for_factorize
+
+
+
+   .. rubric:: Notes
+
+   The interface includes the following abstract methods that must be
+   implemented by subclasses:
+
+   * _from_sequence
+   * _from_factorized
+   * __getitem__
+   * __len__
+   * __eq__
+   * dtype
+   * nbytes
+   * isna
+   * take
+   * copy
+   * _concat_same_type
+   * interpolate
+
+   A default repr displaying the type, (truncated) data, length,
+   and dtype is provided. It can be customized or replaced by
+   by overriding:
+
+   * __repr__ : A default repr for the ExtensionArray.
+   * _formatter : Print scalars inside a Series or DataFrame.
+
+   Some methods require casting the ExtensionArray to an ndarray of Python
+   objects with ``self.astype(object)``, which may be expensive. When
+   performance is a concern, we highly recommend overriding the following
+   methods:
+
+   * fillna
+   * _pad_or_backfill
+   * dropna
+   * unique
+   * factorize / _values_for_factorize
+   * argsort, argmax, argmin / _values_for_argsort
+   * searchsorted
+   * map
+
+   The remaining methods implemented on this class should be performant,
+   as they only compose abstract methods. Still, a more efficient
+   implementation may be available, and these methods can be overridden.
+
+   One can implement methods to handle array accumulations or reductions.
+
+   * _accumulate
+   * _reduce
+
+   One can implement methods to handle parsing from strings that will be used
+   in methods such as ``pandas.io.parsers.read_csv``.
+
+   * _from_sequence_of_strings
+
+   This class does not inherit from 'abc.ABCMeta' for performance reasons.
+   Methods and properties required by the interface raise
+   ``pandas.errors.AbstractMethodError`` and no ``register`` method is
+   provided for registering virtual subclasses.
+
+   ExtensionArrays are limited to 1 dimension.
+
+   They may be backed by none, one, or many NumPy arrays. For example,
+   ``pandas.Categorical`` is an extension array backed by two arrays,
+   one for codes and one for categories. An array of IPv6 address may
+   be backed by a NumPy structured array with two fields, one for the
+   lower 64 bits and one for the upper 64 bits. Or they may be backed
+   by some other storage type, like Python lists. Pandas makes no
+   assumptions on how the data are stored, just that it can be converted
+   to a NumPy array.
+   The ExtensionArray interface does not impose any rules on how this data
+   is stored. However, currently, the backing data cannot be stored in
+   attributes called ``.values`` or ``._values`` to ensure full compatibility
+   with pandas internals. But other names as ``.data``, ``._data``,
+   ``._items``, ... can be freely used.
+
+   If implementing NumPy's ``__array_ufunc__`` interface, pandas expects
+   that
+
+   1. You defer by returning ``NotImplemented`` when any Series are present
+      in `inputs`. Pandas will extract the arrays and call the ufunc again.
+   2. You define a ``_HANDLED_TYPES`` tuple as an attribute on the class.
+      Pandas inspect this to determine whether the ufunc is valid for the
+      types present.
+
+   See :ref:`extending.extension.ufunc` for more.
+
+   By default, ExtensionArrays are not hashable.  Immutable subclasses may
+   override this behavior.
+
+   .. rubric:: Examples
+
+   Please see the following:
+
+   https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
+
+
+   .. py:method:: argsort(ascending=True)
+
+      Return the indices that would sort this array.
+
+      :param ascending: Whether the indices should result in an ascending
+                        or descending sort.
+      :type ascending: bool, default True
+      :param kind: Sorting algorithm.
+      :type kind: {'quicksort', 'mergesort', 'heapsort', 'stable'}, optional
+      :param na_position: If ``'first'``, put ``NaN`` values at the beginning.
+                          If ``'last'``, put ``NaN`` values at the end.
+      :type na_position: {'first', 'last'}, default 'last'
+      :param \*args: Passed through to :func:`numpy.argsort`.
+      :param \*\*kwargs: Passed through to :func:`numpy.argsort`.
+
+      :returns: Array of indices that sort ``self``. If NaN values are contained,
+                NaN values are placed at the end.
+      :rtype: np.ndarray[np.intp]
+
+      .. seealso::
+
+         :py:obj:`numpy.argsort`
+             Sorting implementation used internally.
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([3, 1, 2, 5, 4])
+      >>> arr.argsort()
+      array([1, 2, 0, 4, 3])
+
+
+
+   .. py:method:: astype(dtype, copy: bool = False)
+
+      Cast to a NumPy array or ExtensionArray with 'dtype'.
+
+      :param dtype: Typecode or data-type to which the array is cast.
+      :type dtype: str or dtype
+      :param copy: Whether to copy the data, even if not necessary. If False,
+                   a copy is made only if the old dtype does not match the
+                   new dtype.
+      :type copy: bool, default True
+
+      :returns: An ``ExtensionArray`` if ``dtype`` is ``ExtensionDtype``,
+                otherwise a Numpy ndarray with ``dtype`` for its dtype.
+      :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, 3])
+      >>> arr
+      <IntegerArray>
+      [1, 2, 3]
+      Length: 3, dtype: Int64
+
+      Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
+
+      >>> arr1 = arr.astype('Float64')
+      >>> arr1
+      <FloatingArray>
+      [1.0, 2.0, 3.0]
+      Length: 3, dtype: Float64
+      >>> arr1.dtype
+      Float64Dtype()
+
+      Otherwise, we will get a Numpy ndarray:
+
+      >>> arr2 = arr.astype('float64')
+      >>> arr2
+      array([1., 2., 3.])
+      >>> arr2.dtype
+      dtype('float64')
+
+
+
+   .. py:method:: copy()
+
+      Return a copy of the array.
+
+      :rtype: ExtensionArray
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, 3])
+      >>> arr2 = arr.copy()
+      >>> arr[0] = 2
+      >>> arr2
+      <IntegerArray>
+      [1, 2, 3]
+      Length: 3, dtype: Int64
+
+
+
+   .. py:attribute:: default_fill_value
+      :value: -1
+
+
+
+   .. py:property:: dtype
+
+      An instance of ExtensionDtype.
+
+      .. rubric:: Examples
+
+      >>> pd.array([1, 2, 3]).dtype
+      Int64Dtype()
+
+
+   .. py:method:: equals(other)
+
+      Return if another array is equivalent to this array.
+
+      Equivalent means that both arrays have the same shape and dtype, and
+      all values compare equal. Missing values in the same location are
+      considered equal (in contrast with normal equality).
+
+      :param other: Array to compare to this Array.
+      :type other: ExtensionArray
+
+      :returns: Whether the arrays are equivalent.
+      :rtype: boolean
+
+      .. rubric:: Examples
+
+      >>> arr1 = pd.array([1, 2, np.nan])
+      >>> arr2 = pd.array([1, 2, np.nan])
+      >>> arr1.equals(arr2)
+      True
+
+
+
+   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
+
+      Encode the extension array as an enumerated type.
+
+      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
+                              NaN values will be encoded as non-negative integers and will not drop the
+                              NaN from the uniques of the values.
+
+                              .. versionadded:: 1.5.0
+      :type use_na_sentinel: bool, default True
+
+      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
+                  ExtensionArray.
+                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
+
+                  .. note::
+
+                     uniques will *not* contain an entry for the NA value of
+                     the ExtensionArray if there are any missing values present
+                     in `self`.
+
+      .. seealso::
+
+         :py:obj:`factorize`
+             Top-level factorize method that dispatches here.
+
+      .. rubric:: Notes
+
+      :meth:`pandas.factorize` offers a `sort` keyword as well.
+
+      .. rubric:: Examples
+
+      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
+      ...                       "2014-03", "2014-03"], freq="M")
+      >>> arr, idx = idx1.factorize()
+      >>> arr
+      array([0, 0, 1, 1, 2, 2])
+      >>> idx
+      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
+
+
+
+   .. py:method:: isna() -> pandas.api.extensions.ExtensionArray | numpy.ndarray[Any, Any]
+
+      A 1-D array indicating if each value is missing.
+
+      :returns: In most cases, this should return a NumPy ndarray. For
+                exceptional cases like ``SparseArray``, where returning
+                an ndarray would be expensive, an ExtensionArray may be
+                returned.
+      :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
+
+      .. rubric:: Notes
+
+      If returning an ExtensionArray, then
+
+      * ``na_values._is_boolean`` should be True
+      * `na_values` should implement :func:`ExtensionArray._reduce`
+      * ``na_values.any`` and ``na_values.all`` should be implemented
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, np.nan, np.nan])
+      >>> arr.isna()
+      array([False, False,  True,  True])
+
+
+
+   .. py:property:: nbytes
+
+      The number of bytes needed to store this object in memory.
+
+      .. rubric:: Examples
+
+      >>> pd.array([1, 2, 3]).nbytes
+      27
+
+
+.. py:class:: ArkoudaBigintDtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Arkouda-backed arbitrary-precision integer dtype.
+
+   This dtype integrates Arkouda's server-backed ``pdarray<bigint>`` with
+   the pandas ExtensionArray interface via :class:`ArkoudaArray`. It enables
+   pandas objects (Series, DataFrame) to hold and operate on very large
+   integers that exceed 64-bit precision, while keeping the data distributed
+   on the Arkouda server.
+
+   .. method:: construct_array_type()
+
+      Returns the :class:`ArkoudaArray` class used for storage.
+
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the ExtensionArray subclass that handles storage for this dtype.
+
+      :returns: The :class:`ArkoudaArray` class associated with this dtype.
+      :rtype: type
+
+
+
+   .. py:attribute:: kind
+      :value: 'O'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+      :value: -1
+
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'bigint'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+
+.. py:class:: ArkoudaBoolDtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Arkouda-backed boolean dtype.
+
+   This dtype integrates Arkouda's server-backed `pdarray<bool>` with
+   the pandas ExtensionArray interface via :class:`ArkoudaArray`. It allows
+   pandas objects (Series, DataFrame) to store and manipulate distributed
+   boolean arrays without materializing them on the client.
+
+   .. method:: construct_array_type()
+
+      Returns the :class:`ArkoudaArray` class used for storage.
+
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the ExtensionArray subclass that handles storage for this dtype.
+
+      :returns: The :class:`ArkoudaArray` class associated with this dtype.
+      :rtype: type
+
+
+
+   .. py:attribute:: kind
+      :value: 'b'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+      :value: False
+
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'bool_'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+
+.. py:class:: ArkoudaCategoricalArray(data)
+
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+
+
+   Abstract base class for custom 1-D array types.
+
+   pandas will recognize instances of this class as proper arrays
+   with a custom type and will not attempt to coerce them to objects. They
+   may be stored directly inside a :class:`DataFrame` or :class:`Series`.
+
+   .. attribute:: dtype
+
+
+
+   .. attribute:: nbytes
+
+
+
+   .. attribute:: ndim
+
+
+
+   .. attribute:: shape
+
+
+
+   .. method:: argsort
+
+   .. method:: astype
+
+   .. method:: copy
+
+   .. method:: dropna
+
+   .. method:: duplicated
+
+   .. method:: factorize
+
+   .. method:: fillna
+
+   .. method:: equals
+
+   .. method:: insert
+
+   .. method:: interpolate
+
+   .. method:: isin
+
+   .. method:: isna
+
+   .. method:: ravel
+
+   .. method:: repeat
+
+   .. method:: searchsorted
+
+   .. method:: shift
+
+   .. method:: take
+
+   .. method:: tolist
+
+   .. method:: unique
+
+   .. method:: view
+
+   .. method:: _accumulate
+
+   .. method:: _concat_same_type
+
+   .. method:: _explode
+
+   .. method:: _formatter
+
+   .. method:: _from_factorized
+
+   .. method:: _from_sequence
+
+   .. method:: _from_sequence_of_strings
+
+   .. method:: _hash_pandas_object
+
+   .. method:: _pad_or_backfill
+
+   .. method:: _reduce
+
+   .. method:: _values_for_argsort
+
+   .. method:: _values_for_factorize
+
+
+
+   .. rubric:: Notes
+
+   The interface includes the following abstract methods that must be
+   implemented by subclasses:
+
+   * _from_sequence
+   * _from_factorized
+   * __getitem__
+   * __len__
+   * __eq__
+   * dtype
+   * nbytes
+   * isna
+   * take
+   * copy
+   * _concat_same_type
+   * interpolate
+
+   A default repr displaying the type, (truncated) data, length,
+   and dtype is provided. It can be customized or replaced by
+   by overriding:
+
+   * __repr__ : A default repr for the ExtensionArray.
+   * _formatter : Print scalars inside a Series or DataFrame.
+
+   Some methods require casting the ExtensionArray to an ndarray of Python
+   objects with ``self.astype(object)``, which may be expensive. When
+   performance is a concern, we highly recommend overriding the following
+   methods:
+
+   * fillna
+   * _pad_or_backfill
+   * dropna
+   * unique
+   * factorize / _values_for_factorize
+   * argsort, argmax, argmin / _values_for_argsort
+   * searchsorted
+   * map
+
+   The remaining methods implemented on this class should be performant,
+   as they only compose abstract methods. Still, a more efficient
+   implementation may be available, and these methods can be overridden.
+
+   One can implement methods to handle array accumulations or reductions.
+
+   * _accumulate
+   * _reduce
+
+   One can implement methods to handle parsing from strings that will be used
+   in methods such as ``pandas.io.parsers.read_csv``.
+
+   * _from_sequence_of_strings
+
+   This class does not inherit from 'abc.ABCMeta' for performance reasons.
+   Methods and properties required by the interface raise
+   ``pandas.errors.AbstractMethodError`` and no ``register`` method is
+   provided for registering virtual subclasses.
+
+   ExtensionArrays are limited to 1 dimension.
+
+   They may be backed by none, one, or many NumPy arrays. For example,
+   ``pandas.Categorical`` is an extension array backed by two arrays,
+   one for codes and one for categories. An array of IPv6 address may
+   be backed by a NumPy structured array with two fields, one for the
+   lower 64 bits and one for the upper 64 bits. Or they may be backed
+   by some other storage type, like Python lists. Pandas makes no
+   assumptions on how the data are stored, just that it can be converted
+   to a NumPy array.
+   The ExtensionArray interface does not impose any rules on how this data
+   is stored. However, currently, the backing data cannot be stored in
+   attributes called ``.values`` or ``._values`` to ensure full compatibility
+   with pandas internals. But other names as ``.data``, ``._data``,
+   ``._items``, ... can be freely used.
+
+   If implementing NumPy's ``__array_ufunc__`` interface, pandas expects
+   that
+
+   1. You defer by returning ``NotImplemented`` when any Series are present
+      in `inputs`. Pandas will extract the arrays and call the ufunc again.
+   2. You define a ``_HANDLED_TYPES`` tuple as an attribute on the class.
+      Pandas inspect this to determine whether the ufunc is valid for the
+      types present.
+
+   See :ref:`extending.extension.ufunc` for more.
+
+   By default, ExtensionArrays are not hashable.  Immutable subclasses may
+   override this behavior.
+
+   .. rubric:: Examples
+
+   Please see the following:
+
+   https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
+
+
+   .. py:method:: astype(x, dtype)
+      :abstractmethod:
+
+
+      Cast to a NumPy array or ExtensionArray with 'dtype'.
+
+      :param dtype: Typecode or data-type to which the array is cast.
+      :type dtype: str or dtype
+      :param copy: Whether to copy the data, even if not necessary. If False,
+                   a copy is made only if the old dtype does not match the
+                   new dtype.
+      :type copy: bool, default True
+
+      :returns: An ``ExtensionArray`` if ``dtype`` is ``ExtensionDtype``,
+                otherwise a Numpy ndarray with ``dtype`` for its dtype.
+      :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, 3])
+      >>> arr
+      <IntegerArray>
+      [1, 2, 3]
+      Length: 3, dtype: Int64
+
+      Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
+
+      >>> arr1 = arr.astype('Float64')
+      >>> arr1
+      <FloatingArray>
+      [1.0, 2.0, 3.0]
+      Length: 3, dtype: Float64
+      >>> arr1.dtype
+      Float64Dtype()
+
+      Otherwise, we will get a Numpy ndarray:
+
+      >>> arr2 = arr.astype('float64')
+      >>> arr2
+      array([1., 2., 3.])
+      >>> arr2.dtype
+      dtype('float64')
+
+
+
+   .. py:method:: copy()
+
+      Return a copy of the array.
+
+      :rtype: ExtensionArray
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, 3])
+      >>> arr2 = arr.copy()
+      >>> arr[0] = 2
+      >>> arr2
+      <IntegerArray>
+      [1, 2, 3]
+      Length: 3, dtype: Int64
+
+
+
+   .. py:attribute:: default_fill_value
+      :type:  str
+      :value: ''
+
+
+
+   .. py:property:: dtype
+
+      An instance of ExtensionDtype.
+
+      .. rubric:: Examples
+
+      >>> pd.array([1, 2, 3]).dtype
+      Int64Dtype()
+
+
+   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
+
+      Encode the extension array as an enumerated type.
+
+      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
+                              NaN values will be encoded as non-negative integers and will not drop the
+                              NaN from the uniques of the values.
+
+                              .. versionadded:: 1.5.0
+      :type use_na_sentinel: bool, default True
+
+      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
+                  ExtensionArray.
+                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
+
+                  .. note::
+
+                     uniques will *not* contain an entry for the NA value of
+                     the ExtensionArray if there are any missing values present
+                     in `self`.
+
+      .. seealso::
+
+         :py:obj:`factorize`
+             Top-level factorize method that dispatches here.
+
+      .. rubric:: Notes
+
+      :meth:`pandas.factorize` offers a `sort` keyword as well.
+
+      .. rubric:: Examples
+
+      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
+      ...                       "2014-03", "2014-03"], freq="M")
+      >>> arr, idx = idx1.factorize()
+      >>> arr
+      array([0, 0, 1, 1, 2, 2])
+      >>> idx
+      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
+
+
+
+   .. py:method:: isna()
+
+      A 1-D array indicating if each value is missing.
+
+      :returns: In most cases, this should return a NumPy ndarray. For
+                exceptional cases like ``SparseArray``, where returning
+                an ndarray would be expensive, an ExtensionArray may be
+                returned.
+      :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
+
+      .. rubric:: Notes
+
+      If returning an ExtensionArray, then
+
+      * ``na_values._is_boolean`` should be True
+      * `na_values` should implement :func:`ExtensionArray._reduce`
+      * ``na_values.any`` and ``na_values.all`` should be implemented
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, np.nan, np.nan])
+      >>> arr.isna()
+      array([False, False,  True,  True])
+
+
+
+.. py:class:: ArkoudaCategoricalDtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Arkouda-backed categorical dtype.
+
+   This dtype integrates Arkouda's distributed ``Categorical`` type with
+   the pandas ExtensionArray interface via :class:`ArkoudaCategoricalArray`.
+   It enables pandas objects (Series, DataFrame) to hold categorical data
+   stored and processed on the Arkouda server, while exposing familiar
+   pandas APIs.
+
+   .. method:: construct_array_type()
+
+      Returns the :class:`ArkoudaCategoricalArray` used as the storage class.
+
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the ExtensionArray subclass that handles storage for this dtype.
+
+      :returns: The :class:`ArkoudaCategoricalArray` class associated with this dtype.
+      :rtype: type
+
+
+
+   .. py:attribute:: kind
+      :value: 'O'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+      :value: -1
+
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'category'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+
+.. py:class:: ArkoudaFloat64Dtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Arkouda-backed 64-bit floating-point dtype.
+
+   This dtype integrates Arkouda's server-backed `pdarray<float64>` with
+   the pandas ExtensionArray interface via :class:`ArkoudaArray`. It allows
+   pandas objects (Series, DataFrame) to store and manipulate large
+   distributed float64 arrays without materializing them on the client.
+
+   .. method:: construct_array_type()
+
+      Returns the :class:`ArkoudaArray` class used for storage.
+
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the ExtensionArray subclass that handles storage for this dtype.
+
+      :returns: The :class:`ArkoudaArray` class associated with this dtype.
+      :rtype: type
+
+
+
+   .. py:attribute:: kind
+      :value: 'f'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'float64'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+
+.. py:class:: ArkoudaInt64Dtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Extension dtype for Arkouda-backed 64-bit integers.
+
+   This dtype allows seamless use of Arkouda's distributed ``int64``
+   arrays inside pandas objects (``Series``, ``Index``, ``DataFrame``).
+   It is backed by :class:`arkouda.pdarray` with ``dtype='int64'``
+   and integrates with pandas via the
+   :class:`~arkouda.pandas.extension._arkouda_array.ArkoudaArray`
+   extension array.
+
+   .. method:: construct_array_type()
+
+      Return the associated extension array class
+      (:class:`ArkoudaArray`).
+
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the associated pandas ExtensionArray type.
+
+      This is part of the pandas ExtensionDtype interface and is used
+      internally by pandas when constructing arrays of this dtype.
+      It ensures that operations like ``Series(..., dtype=ArkoudaInt64Dtype())``
+      produce the correct Arkouda-backed extension array.
+
+      :returns: The :class:`ArkoudaArray` class that implements the storage
+                and behavior for this dtype.
+      :rtype: type
+
+      .. rubric:: Notes
+
+      - This hook tells pandas which ExtensionArray to instantiate
+        whenever this dtype is requested.
+      - All Arkouda dtypes defined in this module will return
+        :class:`ArkoudaArray` (or a subclass thereof).
+
+      .. rubric:: Examples
+
+      >>> from arkouda.pandas.extension import ArkoudaInt64Dtype
+      >>> ArkoudaInt64Dtype.construct_array_type()
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+
+
+   .. py:attribute:: kind
+      :value: 'i'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+      :value: -1
+
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'int64'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+
+.. py:class:: ArkoudaStringArray(data)
+
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+
+
+   Abstract base class for custom 1-D array types.
+
+   pandas will recognize instances of this class as proper arrays
+   with a custom type and will not attempt to coerce them to objects. They
+   may be stored directly inside a :class:`DataFrame` or :class:`Series`.
+
+   .. attribute:: dtype
+
+
+
+   .. attribute:: nbytes
+
+
+
+   .. attribute:: ndim
+
+
+
+   .. attribute:: shape
+
+
+
+   .. method:: argsort
+
+   .. method:: astype
+
+   .. method:: copy
+
+   .. method:: dropna
+
+   .. method:: duplicated
+
+   .. method:: factorize
+
+   .. method:: fillna
+
+   .. method:: equals
+
+   .. method:: insert
+
+   .. method:: interpolate
+
+   .. method:: isin
+
+   .. method:: isna
+
+   .. method:: ravel
+
+   .. method:: repeat
+
+   .. method:: searchsorted
+
+   .. method:: shift
+
+   .. method:: take
+
+   .. method:: tolist
+
+   .. method:: unique
+
+   .. method:: view
+
+   .. method:: _accumulate
+
+   .. method:: _concat_same_type
+
+   .. method:: _explode
+
+   .. method:: _formatter
+
+   .. method:: _from_factorized
+
+   .. method:: _from_sequence
+
+   .. method:: _from_sequence_of_strings
+
+   .. method:: _hash_pandas_object
+
+   .. method:: _pad_or_backfill
+
+   .. method:: _reduce
+
+   .. method:: _values_for_argsort
+
+   .. method:: _values_for_factorize
+
+
+
+   .. rubric:: Notes
+
+   The interface includes the following abstract methods that must be
+   implemented by subclasses:
+
+   * _from_sequence
+   * _from_factorized
+   * __getitem__
+   * __len__
+   * __eq__
+   * dtype
+   * nbytes
+   * isna
+   * take
+   * copy
+   * _concat_same_type
+   * interpolate
+
+   A default repr displaying the type, (truncated) data, length,
+   and dtype is provided. It can be customized or replaced by
+   by overriding:
+
+   * __repr__ : A default repr for the ExtensionArray.
+   * _formatter : Print scalars inside a Series or DataFrame.
+
+   Some methods require casting the ExtensionArray to an ndarray of Python
+   objects with ``self.astype(object)``, which may be expensive. When
+   performance is a concern, we highly recommend overriding the following
+   methods:
+
+   * fillna
+   * _pad_or_backfill
+   * dropna
+   * unique
+   * factorize / _values_for_factorize
+   * argsort, argmax, argmin / _values_for_argsort
+   * searchsorted
+   * map
+
+   The remaining methods implemented on this class should be performant,
+   as they only compose abstract methods. Still, a more efficient
+   implementation may be available, and these methods can be overridden.
+
+   One can implement methods to handle array accumulations or reductions.
+
+   * _accumulate
+   * _reduce
+
+   One can implement methods to handle parsing from strings that will be used
+   in methods such as ``pandas.io.parsers.read_csv``.
+
+   * _from_sequence_of_strings
+
+   This class does not inherit from 'abc.ABCMeta' for performance reasons.
+   Methods and properties required by the interface raise
+   ``pandas.errors.AbstractMethodError`` and no ``register`` method is
+   provided for registering virtual subclasses.
+
+   ExtensionArrays are limited to 1 dimension.
+
+   They may be backed by none, one, or many NumPy arrays. For example,
+   ``pandas.Categorical`` is an extension array backed by two arrays,
+   one for codes and one for categories. An array of IPv6 address may
+   be backed by a NumPy structured array with two fields, one for the
+   lower 64 bits and one for the upper 64 bits. Or they may be backed
+   by some other storage type, like Python lists. Pandas makes no
+   assumptions on how the data are stored, just that it can be converted
+   to a NumPy array.
+   The ExtensionArray interface does not impose any rules on how this data
+   is stored. However, currently, the backing data cannot be stored in
+   attributes called ``.values`` or ``._values`` to ensure full compatibility
+   with pandas internals. But other names as ``.data``, ``._data``,
+   ``._items``, ... can be freely used.
+
+   If implementing NumPy's ``__array_ufunc__`` interface, pandas expects
+   that
+
+   1. You defer by returning ``NotImplemented`` when any Series are present
+      in `inputs`. Pandas will extract the arrays and call the ufunc again.
+   2. You define a ``_HANDLED_TYPES`` tuple as an attribute on the class.
+      Pandas inspect this to determine whether the ufunc is valid for the
+      types present.
+
+   See :ref:`extending.extension.ufunc` for more.
+
+   By default, ExtensionArrays are not hashable.  Immutable subclasses may
+   override this behavior.
+
+   .. rubric:: Examples
+
+   Please see the following:
+
+   https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
+
+
+   .. py:method:: astype(dtype, copy: bool = False)
+
+      Cast to a NumPy array or ExtensionArray with 'dtype'.
+
+      :param dtype: Typecode or data-type to which the array is cast.
+      :type dtype: str or dtype
+      :param copy: Whether to copy the data, even if not necessary. If False,
+                   a copy is made only if the old dtype does not match the
+                   new dtype.
+      :type copy: bool, default True
+
+      :returns: An ``ExtensionArray`` if ``dtype`` is ``ExtensionDtype``,
+                otherwise a Numpy ndarray with ``dtype`` for its dtype.
+      :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, 3])
+      >>> arr
+      <IntegerArray>
+      [1, 2, 3]
+      Length: 3, dtype: Int64
+
+      Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
+
+      >>> arr1 = arr.astype('Float64')
+      >>> arr1
+      <FloatingArray>
+      [1.0, 2.0, 3.0]
+      Length: 3, dtype: Float64
+      >>> arr1.dtype
+      Float64Dtype()
+
+      Otherwise, we will get a Numpy ndarray:
+
+      >>> arr2 = arr.astype('float64')
+      >>> arr2
+      array([1., 2., 3.])
+      >>> arr2.dtype
+      dtype('float64')
+
+
+
+   .. py:method:: copy()
+
+      Return a copy of the array.
+
+      :rtype: ExtensionArray
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, 3])
+      >>> arr2 = arr.copy()
+      >>> arr[0] = 2
+      >>> arr2
+      <IntegerArray>
+      [1, 2, 3]
+      Length: 3, dtype: Int64
+
+
+
+   .. py:attribute:: default_fill_value
+      :value: ''
+
+
+
+   .. py:property:: dtype
+
+      An instance of ExtensionDtype.
+
+      .. rubric:: Examples
+
+      >>> pd.array([1, 2, 3]).dtype
+      Int64Dtype()
+
+
+   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
+
+      Encode the extension array as an enumerated type.
+
+      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
+                              NaN values will be encoded as non-negative integers and will not drop the
+                              NaN from the uniques of the values.
+
+                              .. versionadded:: 1.5.0
+      :type use_na_sentinel: bool, default True
+
+      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
+                  ExtensionArray.
+                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
+
+                  .. note::
+
+                     uniques will *not* contain an entry for the NA value of
+                     the ExtensionArray if there are any missing values present
+                     in `self`.
+
+      .. seealso::
+
+         :py:obj:`factorize`
+             Top-level factorize method that dispatches here.
+
+      .. rubric:: Notes
+
+      :meth:`pandas.factorize` offers a `sort` keyword as well.
+
+      .. rubric:: Examples
+
+      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
+      ...                       "2014-03", "2014-03"], freq="M")
+      >>> arr, idx = idx1.factorize()
+      >>> arr
+      array([0, 0, 1, 1, 2, 2])
+      >>> idx
+      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
+
+
+
+   .. py:method:: isna()
+
+      A 1-D array indicating if each value is missing.
+
+      :returns: In most cases, this should return a NumPy ndarray. For
+                exceptional cases like ``SparseArray``, where returning
+                an ndarray would be expensive, an ExtensionArray may be
+                returned.
+      :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
+
+      .. rubric:: Notes
+
+      If returning an ExtensionArray, then
+
+      * ``na_values._is_boolean`` should be True
+      * `na_values` should implement :func:`ExtensionArray._reduce`
+      * ``na_values.any`` and ``na_values.all`` should be implemented
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1, 2, np.nan, np.nan])
+      >>> arr.isna()
+      array([False, False,  True,  True])
+
+
+
+.. py:class:: ArkoudaStringDtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Arkouda-backed string dtype.
+
+   This dtype integrates Arkouda's distributed ``Strings`` type with the
+   pandas ExtensionArray interface via :class:`ArkoudaStringArray`. It
+   enables pandas objects (Series, DataFrame) to hold large, server-backed
+   string columns without converting to NumPy or Python objects.
+
+   .. method:: construct_array_type()
+
+      Returns the :class:`ArkoudaStringArray` used as the storage class.
+
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the ExtensionArray subclass that handles storage for this dtype.
+
+      :returns: The :class:`ArkoudaStringArray` class associated with this dtype.
+      :rtype: type
+
+
+
+   .. py:attribute:: kind
+      :value: 'O'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+      :value: ''
+
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'string'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+
+.. py:class:: ArkoudaUint64Dtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Arkouda-backed unsigned 64-bit integer dtype.
+
+   This dtype integrates Arkouda’s ``uint64`` arrays with pandas,
+   allowing users to create :class:`pandas.Series` or
+   :class:`pandas.DataFrame` objects that store their data on
+   the Arkouda server while still conforming to the pandas
+   ExtensionArray API.
+
+   .. method:: construct_array_type()
+
+      Return the :class:`ArkoudaArray` class used as the storage
+      container for this dtype.
+
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> import pandas as pd
+   >>> from arkouda.pandas.extension import ArkoudaUint64Dtype, ArkoudaArray
+
+   >>> arr = ArkoudaArray(ak.array([1, 2, 3], dtype="uint64"))
+   >>> s = pd.Series(arr, dtype=ArkoudaUint64Dtype())
+   >>> s
+   0    1
+   1    2
+   2    3
+   dtype: uint64
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the ExtensionArray class associated with this dtype.
+
+      This is required by the pandas ExtensionDtype API. It tells pandas
+      which :class:`~pandas.api.extensions.ExtensionArray` subclass should
+      be used to hold data of this dtype inside a :class:`pandas.Series`
+      or :class:`pandas.DataFrame`.
+
+      :returns: The :class:`ArkoudaArray` class, which implements the storage
+                and operations for Arkouda-backed arrays.
+      :rtype: type
+
+
+
+   .. py:attribute:: kind
+      :value: 'u'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+      :value: -1
+
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'uint64'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+
+.. py:class:: ArkoudaUint8Dtype
+
+   Bases: :py:obj:`_ArkoudaBaseDtype`
+
+
+   Arkouda-backed unsigned 8-bit integer dtype.
+
+   This dtype integrates Arkouda's ``uint8`` arrays with the pandas
+   ExtensionArray API, allowing pandas ``Series`` and ``DataFrame``
+   objects to store and operate on Arkouda-backed unsigned 8-bit
+   integers. The underlying storage is an Arkouda ``pdarray<uint8>``,
+   exposed through the :class:`ArkoudaArray` extension array.
+
+   .. method:: construct_array_type()
+
+      Returns the :class:`ArkoudaArray` type that provides the storage
+      and behavior for this dtype.
+
+
+
+   .. py:method:: construct_array_type()
+      :classmethod:
+
+
+      Return the ExtensionArray subclass that handles storage for this dtype.
+
+      This method is required by the pandas ExtensionDtype interface.
+      It tells pandas which ExtensionArray class to use when creating
+      arrays of this dtype (for example, when calling
+      ``Series(..., dtype="arkouda.uint8")``).
+
+      :returns: The :class:`ArkoudaArray` class associated with this dtype.
+      :rtype: type
+
+
+
+   .. py:attribute:: kind
+      :value: 'u'
+
+
+      A character code (one of 'biufcmMOSUV'), default 'O'
+
+      This should match the NumPy dtype used when the array is
+      converted to an ndarray, which is probably 'O' for object if
+      the extension type cannot be represented as a built-in NumPy
+      type.
+
+      .. seealso:: :py:obj:`numpy.dtype.kind`
+
+
+   .. py:attribute:: na_value
+      :value: -1
+
+
+      Default NA value to use for this type.
+
+      This is used in e.g. ExtensionArray.take. This should be the
+      user-facing "boxed" version of the NA value, not the physical NA value
+      for storage.  e.g. for JSONArray, this is an empty dictionary.
+
+
+   .. py:attribute:: name
+      :value: 'uint8'
+
+
+      A string identifying the data type.
+
+      Will be used for display in, e.g. ``Series.dtype``
+
+
+   .. py:attribute:: type
+
+      The scalar type for the array, e.g. ``int``
+
+      It's expected ``ExtensionArray[item]`` returns an instance
+      of ``ExtensionDtype.type`` for scalar ``item``, assuming
+      that value is valid (not NA). NA values do not need to be
+      instances of `type`.
+
+

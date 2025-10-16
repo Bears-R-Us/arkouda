@@ -19,6 +19,8 @@ or
 
 .. data:: const biLogger = new Logger(logLevel, logChannel)
 
+.. function:: proc bigIntNBytesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == bigint
+
 .. function:: proc bigIntCreationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == bigint
 
 .. function:: proc bigintToUintArraysMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == bigint

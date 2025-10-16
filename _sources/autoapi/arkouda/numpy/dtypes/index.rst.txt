@@ -102,6 +102,7 @@ Functions
    arkouda.numpy.dtypes.can_cast
    arkouda.numpy.dtypes.cast
    arkouda.numpy.dtypes.dtype
+   arkouda.numpy.dtypes.dtype_for_chapel
    arkouda.numpy.dtypes.get_byteorder
    arkouda.numpy.dtypes.get_server_byteorder
    arkouda.numpy.dtypes.isSupportedBool
@@ -1547,6 +1548,19 @@ Module Contents
    :rtype: type
 
 
+.. py:function:: dtype_for_chapel(type_name: str)
+
+   Returns dtype() for the given Chapel type.
+
+   :param type_name: The name of the Chapel type, with or without the bit width
+   :type type_name: str
+
+   :returns: The corresponding Arkouda dtype object
+   :rtype: dtype
+
+   :raises TypeError: Raised if Arkouda does not have a type that corresponds to `type_name`
+
+
 .. py:class:: float16
 
    Bases: :py:obj:`numpy.floating`
@@ -1753,7 +1767,7 @@ Module Contents
 
 .. py:function:: get_server_byteorder() -> str
 
-   Get the server's byteorder
+   Get the server's byteorder.
 
    :returns: Returns "little" for little endian and "big" for big endian.
    :rtype: str

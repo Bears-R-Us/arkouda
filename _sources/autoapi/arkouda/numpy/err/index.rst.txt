@@ -1,0 +1,166 @@
+arkouda.numpy.err
+=================
+
+.. py:module:: arkouda.numpy.err
+
+.. autoapi-nested-parse::
+
+   Floating-point error state management for Arkouda.
+
+   This module provides a NumPy-like API for controlling how Arkouda handles
+   floating-point errors such as divide-by-zero, overflow, underflow, and
+   invalid operations. The design mirrors `numpy.errstate`, `numpy.seterr`,
+   and related functions, so users familiar with NumPy can expect similar
+   semantics.
+
+   Unlike NumPy, Arkouda computations occur in a distributed backend, so
+   this module currently acts as a lightweight *scaffold*: it records user
+   preferences and dispatches to Python-side handlers when explicitly
+   invoked by front-end code. By default, there is **no performance cost**,
+   since core numerical kernels do not consult this state unless explicitly
+   wired to do so.
+
+   Available error modes
+   ---------------------
+   Each error category ('divide', 'over', 'under', 'invalid') may be set to
+   one of the following modes:
+
+   - ``"ignore"`` : silently ignore the error (default).
+   - ``"warn"``   : issue a Python ``RuntimeWarning``.
+   - ``"raise"``  : raise a ``FloatingPointError`` exception.
+   - ``"call"``   : invoke a user-supplied callable (see :func:`seterrcall`).
+   - ``"print"``  : write a message to standard output.
+   - ``"log"``    : log a message via Arkouda's logger.
+
+   API
+   ---
+   - :func:`geterr`       : return the current error handling settings.
+   - :func:`seterr`       : set global error handling, returning the old settings.
+   - :func:`geterrcall`   : get the callable used for ``"call"`` mode.
+   - :func:`seterrcall`   : set the callable used for ``"call"`` mode.
+   - :func:`errstate`     : context manager to temporarily change settings.
+   - :func:`handle`       : route an error condition through the current policy.
+
+   .. rubric:: Example
+
+   >>> import arkouda as ak
+   >>> ak.geterr()
+   {'divide': 'ignore', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}
+
+   >>> with ak.errstate(divide="warn"):
+   ...     out = ak.array([1.0]) / 0
+
+   >>> def myhandler(kind, msg): print(f"[ak] {kind}: {msg}")
+   >>> ak.seterr(divide="call")
+   {'divide': 'ignore', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}
+   >>> ak.seterrcall(myhandler)
+   >>> out = ak.array([1.0]) / 0
+   [ak] divide: divide by zero encountered
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.numpy.err.errstate
+   arkouda.numpy.err.geterr
+   arkouda.numpy.err.geterrcall
+   arkouda.numpy.err.seterr
+   arkouda.numpy.err.seterrcall
+
+
+Module Contents
+---------------
+
+.. py:function:: errstate(*, divide: Optional[_ErrorMode] = None, over: Optional[_ErrorMode] = None, under: Optional[_ErrorMode] = None, invalid: Optional[_ErrorMode] = None, call: Optional[Callable[[str, str], None]] = None) -> Iterator[None]
+
+   Context manager to temporarily set floating-point error handling.
+
+   :param divide: Temporary behavior within the context.
+   :type divide: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param over: Temporary behavior within the context.
+   :type over: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param under: Temporary behavior within the context.
+   :type under: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param invalid: Temporary behavior within the context.
+   :type invalid: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param call: Temporary callable used if any category is set to 'call'.
+                Signature: (errtype: str, message: str) -> None.
+   :type call: callable or None, optional
+
+   :Yields: *None* -- This context manager does not return a value. Code inside the ``with``
+            block will be executed with the temporary error handling settings.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.geterr()
+   {'divide': 'call', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}
+   >>> with ak.errstate(divide='warn'):
+   ...     _ = ak.array([1.0]) / 0  # gives a warning
+   >>> ak.geterr()['divide']   # doctest: +SKIP
+   'ignore'
+
+   .. rubric:: Notes
+
+   This affects only stored policy; it does not add runtime checks by itself.
+
+
+.. py:function:: geterr() -> Dict[str, _ErrorMode]
+
+   Get the current Arkouda floating-point error handling settings.
+
+   :returns: Mapping of {'divide', 'over', 'under', 'invalid'} to one of
+             {'ignore', 'warn', 'raise', 'call', 'print', 'log'}.
+   :rtype: dict
+
+
+.. py:function:: geterrcall() -> Optional[Callable[[str, str], None]]
+
+   Get the current callable used when error mode is 'call'.
+
+   :returns: A function of signature (errtype: str, message: str) -> None, or None.
+   :rtype: callable or None
+
+
+.. py:function:: seterr(**kwargs: _ErrorMode) -> Dict[str, _ErrorMode]
+
+   Set how Arkouda handles floating-point errors.
+
+   :param divide: Behavior for the corresponding error category.
+   :type divide: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param over: Behavior for the corresponding error category.
+   :type over: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param under: Behavior for the corresponding error category.
+   :type under: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param invalid: Behavior for the corresponding error category.
+   :type invalid: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+
+   :returns: The previous settings.
+   :rtype: dict
+
+   .. rubric:: Notes
+
+   This is a *scaffold* API. It does not change backend behavior yet; it only
+   records the desired policy so future operations can consult it.
+
+
+.. py:function:: seterrcall(func: Optional[Callable[[str, str], None]]) -> Optional[Callable[[str, str], None]]
+
+   Set the callable invoked when an error category is set to 'call'.
+
+   :param func: Function of signature (errtype: str, message: str) -> None.
+                Pass None to clear.
+   :type func: callable or None
+
+   :returns: The previous callable.
+   :rtype: callable or None
+
+   .. rubric:: Notes
+
+   This is a *stub* for API compatibility. Arkouda does not currently invoke
+   this callable; it is stored for future use.
+
+

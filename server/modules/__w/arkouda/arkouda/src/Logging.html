@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Logging &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="logging">
-<span id="module-Logging"></span><h1>Logging<a class="headerlink" href="#logging" title="Link to this heading">¶</a></h1>
+<span id="module-Logging"></span><h1>Logging<a class="headerlink" href="#logging" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Logging</span><span class="p">;</span>
 </pre></div>
@@ -133,41 +130,41 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="Logging.LogLevel">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">LogLevel</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">DEBUG,</span> <span class="pre">INFO,</span> <span class="pre">WARN,</span> <span class="pre">ERROR,</span> <span class="pre">CRITICAL</span> <span class="pre">}</span></em><a class="headerlink" href="#Logging.LogLevel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">LogLevel</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">DEBUG,</span> <span class="pre">INFO,</span> <span class="pre">WARN,</span> <span class="pre">ERROR,</span> <span class="pre">CRITICAL</span> <span class="pre">}</span></em><a class="headerlink" href="#Logging.LogLevel" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The LogLevel enum is used to provide a strongly-typed means of</p></li>
 <li><p>configuring the logging level of a Logger object</p></li>
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Logging.LogLevel.DEBUG">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DEBUG</span></span><a class="headerlink" href="#Logging.LogLevel.DEBUG" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DEBUG</span></span><a class="headerlink" href="#Logging.LogLevel.DEBUG" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Logging.LogLevel.INFO">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">INFO</span></span><a class="headerlink" href="#Logging.LogLevel.INFO" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">INFO</span></span><a class="headerlink" href="#Logging.LogLevel.INFO" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Logging.LogLevel.WARN">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">WARN</span></span><a class="headerlink" href="#Logging.LogLevel.WARN" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">WARN</span></span><a class="headerlink" href="#Logging.LogLevel.WARN" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Logging.LogLevel.ERROR">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#Logging.LogLevel.ERROR" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#Logging.LogLevel.ERROR" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Logging.LogLevel.CRITICAL">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CRITICAL</span></span><a class="headerlink" href="#Logging.LogLevel.CRITICAL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CRITICAL</span></span><a class="headerlink" href="#Logging.LogLevel.CRITICAL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="Logging.LogChannel">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">LogChannel</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">CONSOLE,</span> <span class="pre">FILE</span> <span class="pre">}</span></em><a class="headerlink" href="#Logging.LogChannel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">LogChannel</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">CONSOLE,</span> <span class="pre">FILE</span> <span class="pre">}</span></em><a class="headerlink" href="#Logging.LogChannel" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The LogChannel enum is used to provide a strongly-typed means of</p></li>
 <li><p>configuring the channel such as stdout or file where log messages</p></li>
@@ -175,67 +172,67 @@
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Logging.LogChannel.CONSOLE">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CONSOLE</span></span><a class="headerlink" href="#Logging.LogChannel.CONSOLE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CONSOLE</span></span><a class="headerlink" href="#Logging.LogChannel.CONSOLE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Logging.LogChannel.FILE">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">FILE</span></span><a class="headerlink" href="#Logging.LogChannel.FILE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">FILE</span></span><a class="headerlink" href="#Logging.LogChannel.FILE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="Logging.OutputHandler">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">OutputHandler</span></span><a class="headerlink" href="#Logging.OutputHandler" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">OutputHandler</span></span><a class="headerlink" href="#Logging.OutputHandler" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The OutputHandler class defines the interface for all derived</p></li>
 <li><p>classes that write log messages to various channels.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.OutputHandler.write">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">message:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.OutputHandler.write" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">message:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.OutputHandler.write" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="Logging.ConsoleOutputHandler">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ConsoleOutputHandler</span></span><em class="property"> <span class="pre">:</span> <span class="pre">OutputHandler</span></em><a class="headerlink" href="#Logging.ConsoleOutputHandler" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ConsoleOutputHandler</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">OutputHandler</span></em><a class="headerlink" href="#Logging.ConsoleOutputHandler" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The ConsoleOutputHandler writes log messages to the Arkouda console.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.ConsoleOutputHandler.write">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">message:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.ConsoleOutputHandler.write" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">message:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.ConsoleOutputHandler.write" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="Logging.FileOutputHandler">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">FileOutputHandler</span></span><em class="property"> <span class="pre">:</span> <span class="pre">OutputHandler</span></em><a class="headerlink" href="#Logging.FileOutputHandler" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">FileOutputHandler</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">OutputHandler</span></em><a class="headerlink" href="#Logging.FileOutputHandler" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The FileOutputHandler writes log messages to the configured filePath.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Logging.FileOutputHandler.filePath">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">filePath</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Logging.FileOutputHandler.filePath" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">filePath</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Logging.FileOutputHandler.filePath" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.FileOutputHandler.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.FileOutputHandler.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.FileOutputHandler.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.FileOutputHandler.write">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">message:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.FileOutputHandler.write" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">message:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.FileOutputHandler.write" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.FileOutputHandler.writeToFile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.FileOutputHandler.writeToFile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Logging.FileOutputHandler.writeToFile" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Writes to file, creating file if it does not exist</p></li>
 </ul>
@@ -245,7 +242,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Logging.getOutputHandler">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getOutputHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel:</span> <span class="pre">LogChannel</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">OutputHandler</span></em><a class="headerlink" href="#Logging.getOutputHandler" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getOutputHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel:</span> <span class="pre">LogChannel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">OutputHandler</span></em><a class="headerlink" href="#Logging.getOutputHandler" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>getOutputHandler is a factory method for OutputHandler implementations.</p></li>
 </ul>
@@ -253,29 +250,29 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="Logging.Logger">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Logger</span></span><a class="headerlink" href="#Logging.Logger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Logger</span></span><a class="headerlink" href="#Logging.Logger" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The Logger class provides structured log messages at various levels</p></li>
 <li><p>of logging sensitivity analogous to other languages such as Python.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Logging.Logger.level">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">level</span></span><em class="property"> <span class="pre">:</span> <span class="pre">LogLevel</span> <span class="pre">=</span> <span class="pre">LogLevel.INFO</span></em><a class="headerlink" href="#Logging.Logger.level" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">level</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">LogLevel</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">LogLevel.INFO</span></em><a class="headerlink" href="#Logging.Logger.level" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Logging.Logger.printDate">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">printDate</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">true</span></em><a class="headerlink" href="#Logging.Logger.printDate" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">printDate</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">true</span></em><a class="headerlink" href="#Logging.Logger.printDate" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Logging.Logger.outputHandler">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">outputHandler</span></span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">OutputHandler</span> <span class="pre">=</span> <span class="pre">getOutputHandler(LogChannel.CONSOLE)</span></em><a class="headerlink" href="#Logging.Logger.outputHandler" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">outputHandler</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">owned</span> <span class="pre">OutputHandler</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">getOutputHandler(LogChannel.CONSOLE)</span></em><a class="headerlink" href="#Logging.Logger.outputHandler" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -290,47 +287,47 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.emit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.emit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.emit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.report">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">level:</span> <span class="pre">LogLevel</span></em>, <em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.report" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">level:</span> <span class="pre">LogLevel</span></em>, <em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.report" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.debug">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.debug" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.debug" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.info">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.info" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.info" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.warn">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">warn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.warn" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">warn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.warn" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.error">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.error" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.error" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.critical">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">critical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.critical" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">critical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName</span></em>, <em class="sig-param"><span class="pre">routineName</span></em>, <em class="sig-param"><span class="pre">lineNumber</span></em>, <em class="sig-param"><span class="pre">msg</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.critical" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.generateLogMessage">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateLogMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">level:</span> <span class="pre">LogLevel</span></em>, <em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.generateLogMessage" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateLogMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">level:</span> <span class="pre">LogLevel</span></em>, <em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.generateLogMessage" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Logging.Logger.generateDateTimeString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateDateTimeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tail</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.generateDateTimeString" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateDateTimeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tail</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Logging.Logger.generateDateTimeString" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NumPyDType &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="numpydtype">
-<span id="module-NumPyDType"></span><h1>NumPyDType<a class="headerlink" href="#numpydtype" title="Link to this heading">¶</a></h1>
+<span id="module-NumPyDType"></span><h1>NumPyDType<a class="headerlink" href="#numpydtype" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">NumPyDType</span><span class="p">;</span>
 </pre></div>
@@ -133,94 +130,94 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="NumPyDType.DType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">DType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">UInt8,</span> <span class="pre">UInt16,</span> <span class="pre">UInt32,</span> <span class="pre">UInt64,</span> <span class="pre">Int8,</span> <span class="pre">Int16,</span> <span class="pre">Int32,</span> <span class="pre">Int64,</span> <span class="pre">Float32,</span> <span class="pre">Float64,</span> <span class="pre">Complex64,</span> <span class="pre">Complex128,</span> <span class="pre">Bool,</span> <span class="pre">BigInt,</span> <span class="pre">Strings,</span> <span class="pre">UNDEF</span> <span class="pre">}</span></em><a class="headerlink" href="#NumPyDType.DType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">DType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">UInt8,</span> <span class="pre">UInt16,</span> <span class="pre">UInt32,</span> <span class="pre">UInt64,</span> <span class="pre">Int8,</span> <span class="pre">Int16,</span> <span class="pre">Int32,</span> <span class="pre">Int64,</span> <span class="pre">Float32,</span> <span class="pre">Float64,</span> <span class="pre">Complex64,</span> <span class="pre">Complex128,</span> <span class="pre">Bool,</span> <span class="pre">BigInt,</span> <span class="pre">Strings,</span> <span class="pre">UNDEF</span> <span class="pre">}</span></em><a class="headerlink" href="#NumPyDType.DType" title="Link to this definition"></a></dt>
 <dd><p>In chapel the types int and real default to int(64) and real(64).
 We also need other types like float32, int32, etc</p>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.UInt8">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt8</span></span><a class="headerlink" href="#NumPyDType.DType.UInt8" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt8</span></span><a class="headerlink" href="#NumPyDType.DType.UInt8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.UInt16">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt16</span></span><a class="headerlink" href="#NumPyDType.DType.UInt16" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt16</span></span><a class="headerlink" href="#NumPyDType.DType.UInt16" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.UInt32">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt32</span></span><a class="headerlink" href="#NumPyDType.DType.UInt32" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt32</span></span><a class="headerlink" href="#NumPyDType.DType.UInt32" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.UInt64">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt64</span></span><a class="headerlink" href="#NumPyDType.DType.UInt64" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UInt64</span></span><a class="headerlink" href="#NumPyDType.DType.UInt64" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Int8">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int8</span></span><a class="headerlink" href="#NumPyDType.DType.Int8" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int8</span></span><a class="headerlink" href="#NumPyDType.DType.Int8" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Int16">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int16</span></span><a class="headerlink" href="#NumPyDType.DType.Int16" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int16</span></span><a class="headerlink" href="#NumPyDType.DType.Int16" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Int32">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int32</span></span><a class="headerlink" href="#NumPyDType.DType.Int32" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int32</span></span><a class="headerlink" href="#NumPyDType.DType.Int32" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Int64">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int64</span></span><a class="headerlink" href="#NumPyDType.DType.Int64" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Int64</span></span><a class="headerlink" href="#NumPyDType.DType.Int64" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Float32">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float32</span></span><a class="headerlink" href="#NumPyDType.DType.Float32" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float32</span></span><a class="headerlink" href="#NumPyDType.DType.Float32" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Float64">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float64</span></span><a class="headerlink" href="#NumPyDType.DType.Float64" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float64</span></span><a class="headerlink" href="#NumPyDType.DType.Float64" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Complex64">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex64</span></span><a class="headerlink" href="#NumPyDType.DType.Complex64" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex64</span></span><a class="headerlink" href="#NumPyDType.DType.Complex64" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Complex128">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex128</span></span><a class="headerlink" href="#NumPyDType.DType.Complex128" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex128</span></span><a class="headerlink" href="#NumPyDType.DType.Complex128" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Bool">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Bool</span></span><a class="headerlink" href="#NumPyDType.DType.Bool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Bool</span></span><a class="headerlink" href="#NumPyDType.DType.Bool" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.BigInt">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BigInt</span></span><a class="headerlink" href="#NumPyDType.DType.BigInt" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BigInt</span></span><a class="headerlink" href="#NumPyDType.DType.BigInt" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.Strings">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Strings</span></span><a class="headerlink" href="#NumPyDType.DType.Strings" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Strings</span></span><a class="headerlink" href="#NumPyDType.DType.Strings" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DType.UNDEF">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNDEF</span></span><a class="headerlink" href="#NumPyDType.DType.UNDEF" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNDEF</span></span><a class="headerlink" href="#NumPyDType.DType.UNDEF" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.whichDtype">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">whichDtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.whichDtype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">whichDtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.whichDtype" title="Link to this definition"></a></dt>
 <dd><p>Take a chapel type and return the matching DType</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -234,7 +231,7 @@ We also need other types like float32, int32, etc</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.dtypeSize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtypeSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#NumPyDType.dtypeSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtypeSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#NumPyDType.dtypeSize" title="Link to this definition"></a></dt>
 <dd><p>Returns the size in bytes of a DType</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -248,12 +245,12 @@ We also need other types like float32, int32, etc</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.typeSize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">typeSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#NumPyDType.typeSize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">typeSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#NumPyDType.typeSize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.str2dtype">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">str2dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dstr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.str2dtype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">str2dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dstr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.str2dtype" title="Link to this definition"></a></dt>
 <dd><p>Turns a dtype string in pythonland into a DType</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -267,7 +264,7 @@ We also need other types like float32, int32, etc</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.dtype2str">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtype2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.dtype2str" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dtype2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.dtype2str" title="Link to this definition"></a></dt>
 <dd><p>Turns a DType into a dtype string in pythonland</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -281,27 +278,27 @@ We also need other types like float32, int32, etc</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.type2str">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">type2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.type2str" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">type2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.type2str" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.type2fmt">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">type2fmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.type2fmt" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">type2fmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.type2fmt" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.bool2str">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bool2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">b:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.bool2str" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bool2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">b:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#NumPyDType.bool2str" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bool2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">b:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bool</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">bool2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">b:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bool</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.commonDType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">commonDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.commonDType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">commonDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.commonDType" title="Link to this definition"></a></dt>
 <dd><p>Return the dtype that can store the result of
 an operation between two dtypes for the following
 operations: <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">**</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>, <code class="docutils literal notranslate"><span class="pre">%</span></code>,
@@ -312,7 +309,7 @@ operations: <code class="docutils literal notranslate"><span class="pre">+</span
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="NumPyDType.divDType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">divDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.divDType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">divDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#NumPyDType.divDType" title="Link to this definition"></a></dt>
 <dd><p>Return the dtype that can store the result of
 a division operation between two dtypes
 (following Numpy’s rules for type promotion)</p>
@@ -320,30 +317,30 @@ a division operation between two dtypes
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="NumPyDType.DTK">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">DTK</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">Integer,</span> <span class="pre">Float,</span> <span class="pre">Complex,</span> <span class="pre">Bool,</span> <span class="pre">Other</span> <span class="pre">}</span></em><a class="headerlink" href="#NumPyDType.DTK" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">DTK</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">Integer,</span> <span class="pre">Float,</span> <span class="pre">Complex,</span> <span class="pre">Bool,</span> <span class="pre">Other</span> <span class="pre">}</span></em><a class="headerlink" href="#NumPyDType.DTK" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DTK.Integer">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Integer</span></span><a class="headerlink" href="#NumPyDType.DTK.Integer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Integer</span></span><a class="headerlink" href="#NumPyDType.DTK.Integer" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DTK.Float">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float</span></span><a class="headerlink" href="#NumPyDType.DTK.Float" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Float</span></span><a class="headerlink" href="#NumPyDType.DTK.Float" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DTK.Complex">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex</span></span><a class="headerlink" href="#NumPyDType.DTK.Complex" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Complex</span></span><a class="headerlink" href="#NumPyDType.DTK.Complex" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DTK.Bool">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Bool</span></span><a class="headerlink" href="#NumPyDType.DTK.Bool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Bool</span></span><a class="headerlink" href="#NumPyDType.DTK.Bool" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="NumPyDType.DTK.Other">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Other</span></span><a class="headerlink" href="#NumPyDType.DTK.Other" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">Other</span></span><a class="headerlink" href="#NumPyDType.DTK.Other" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

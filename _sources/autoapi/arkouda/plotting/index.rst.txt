@@ -39,10 +39,14 @@ arkouda.plotting
    >>> import numpy as np
    >>> from arkouda.plotting import hist_all, plot_dist
    >>> df = ak.DataFrame({'x': ak.array(np.random.randn(100))})
-   >>> hist_all(df)
 
+   Save the figure to disk:
+   >>> fig, axes = hist_all(df)
+   >>> fig.savefig("hist_all.png")
    >>> b, h = ak.histogram(ak.arange(10), 3)
    >>> plot_dist(b.to_ndarray(), h[:-1].to_ndarray())
+   (<Figure size 1200x500 with 2 Axes>, array([<Axes: title={'center': 'distribution'}>,
+          <Axes: title={'center': 'cumulative distribution'}>], dtype=object))
    >>> import matplotlib.pyplot as plt
    >>> plt.show()
 
@@ -62,15 +66,18 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: hist_all(ak_df: arkouda.dataframe.DataFrame, cols: list = [])
+.. py:function:: hist_all(ak_df: arkouda.dataframe.DataFrame, cols: Optional[list[str]] = None)
 
    Create a grid of histograms for numeric columns in an Arkouda DataFrame.
 
    :param ak_df: An Arkouda DataFrame containing the data to visualize.
-   :type ak_df: ak.DataFrame
-   :param cols: A list of column names to plot. If empty or not provided, all columns in
-                the DataFrame are considered.
-   :type cols: list of str, optional
+   :type ak_df: DataFrame
+   :param cols: A list of column names to plot. If empty or not provided, all
+                columns in the DataFrame are considered.
+   :type cols: list, optional
+
+   :returns: A tuple containing the matplotlib Figure and an array of Axes objects.
+   :rtype: tuple[matplotlib.figure.Figure, numpy.ndarray]
 
    .. rubric:: Notes
 
@@ -80,6 +87,7 @@ Module Contents
 
    .. rubric:: Examples
 
+   Basic usage with all columns:
    >>> import arkouda as ak
    >>> import numpy as np
    >>> from arkouda.plotting import hist_all
@@ -89,40 +97,53 @@ Module Contents
    ...     "c": ak.array(np.random.randn(100)),
    ...     "d": ak.array(np.random.randn(100))
    ... })
-   >>> hist_all(ak_df)
+   >>> fig, axes = hist_all(ak_df)
+
+   Save the figure to disk:
+   >>> fig, axes = hist_all(ak_df, cols=["a", "b"])
+   >>> fig.savefig("hist_all.png")
 
 
-.. py:function:: plot_dist(b, h, log=True, xlabel=None, newfig=True)
+.. py:function:: plot_dist(b: arkouda.pdarrayclass.pdarray | numpy.typing.NDArray[numpy.floating], h: arkouda.pdarrayclass.pdarray | numpy.typing.NDArray[numpy.floating], *, log: bool = True, xlabel: Optional[str] = None, newfig: bool = True, show: bool = False) -> Tuple[matplotlib.figure.Figure, numpy.ndarray]
 
-   Plot the distribution and cumulative distribution of histogram Data.
+   Plot the distribution and cumulative distribution of histogram data.
 
-   :param b: Bin edges
-   :type b: np.ndarray
-   :param h: Histogram data
-   :type h: np.ndarray
-   :param log: use log to scale y
-   :type log: bool
-   :param xlabel: Label for the x axis of the graph
-   :type xlabel: str
-   :param newfig: Generate a new figure or not
-   :type newfig: bool
+   :param b: Histogram bin edges (length N+1) or bin centers (length N).
+   :type b: arkouda.pdarray or numpy.ndarray
+   :param h: Histogram counts. Accepts length N or N+1 (Arkouda-like extra last bin).
+   :type h: arkouda.pdarray or numpy.ndarray
+   :param log: If True, use a log scale for the y-axis of the distribution plot.
+   :type log: bool, default True
+   :param xlabel: Label for the x-axis.
+   :type xlabel: str, optional
+   :param newfig: If True, create a new figure; otherwise draw into the current figure.
+   :type newfig: bool, default True
+   :param show: If True, call ``plt.show()`` before returning.
+   :type show: bool, default False
+
+   :returns: (fig, axes) where axes[0] is the distribution, axes[1] the cumulative.
+   :rtype: tuple[matplotlib.figure.Figure, numpy.ndarray]
 
    .. rubric:: Notes
 
-   This function does not return or display the plot. A user must have matplotlib imported in
-   addition to arkouda to display plots. This could be updated to return the object or have a
-   flag to show the resulting plots.
-   See Examples Below.
+   If ``h`` is one element longer than expected (as with ``ak.histogram``),
+   the final element is dropped automatically.
 
    .. rubric:: Examples
 
+   Using Arkouda's histogram:
    >>> import arkouda as ak
+   >>> import numpy as np
    >>> from matplotlib import pyplot as plt
-   >>> b, h = ak.histogram(ak.arange(10), 3)
-   >>> h = h[:-1]
-   >>> ak.plot_dist(b.to_ndarray(), h.to_ndarray())
+   >>> from arkouda.plotting import plot_dist
+   >>> edges, counts = ak.histogram(ak.arange(10), 3)
+   >>> fig, axes = plot_dist(edges, counts)
+   >>> fig.savefig("dist.png")
 
-   Show the plot:
+   Using NumPy's histogram:
+   >>> data = np.random.randn(1000)
+   >>> counts, edges = np.histogram(data, bins=20)
+   >>> fig, axes = plot_dist(edges, counts, xlabel="Value")
    >>> plt.show()
 
 

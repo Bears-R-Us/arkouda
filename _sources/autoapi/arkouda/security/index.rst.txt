@@ -95,7 +95,7 @@ Module Contents
    authentication enabled.
 
    :param token: The token to be used to access arkouda server
-   :type token: string
+   :type token: str
 
    :returns: The JSON-formatted string encapsulating username and token
    :rtype: str

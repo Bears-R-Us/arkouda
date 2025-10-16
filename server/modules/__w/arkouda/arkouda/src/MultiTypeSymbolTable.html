@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MultiTypeSymbolTable &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="multitypesymboltable">
-<span id="module-MultiTypeSymbolTable"></span><h1>MultiTypeSymbolTable<a class="headerlink" href="#multitypesymboltable" title="Link to this heading">¶</a></h1>
+<span id="module-MultiTypeSymbolTable"></span><h1>MultiTypeSymbolTable<a class="headerlink" href="#multitypesymboltable" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">MultiTypeSymbolTable</span><span class="p">;</span>
 </pre></div>
@@ -133,51 +130,51 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.mtLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">mtLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MultiTypeSymbolTable.mtLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">mtLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MultiTypeSymbolTable.mtLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SymTab</span></span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SymTab</span></span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab" title="Link to this definition"></a></dt>
 <dd><p>symbol table</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.registry">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">registry</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">owned</span> <span class="pre">RegTab()</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.registry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">registry</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">owned</span> <span class="pre">RegTab()</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.registry" title="Link to this definition"></a></dt>
 <dd><p>Similar to the Symbol Table but for register object tracking</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.tab">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">tab</span></span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">shared</span> <span class="pre">AbstractSymEntry)</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.tab" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">tab</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">shared</span> <span class="pre">AbstractSymEntry)</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.tab" title="Link to this definition"></a></dt>
 <dd><p>Map indexed by strings</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.serverid">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverid</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;id_&quot;</span> <span class="pre">+</span> <span class="pre">generateToken(8)</span> <span class="pre">+</span> <span class="pre">&quot;_&quot;</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.serverid" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverid</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;id_&quot;</span> <span class="pre">+</span> <span class="pre">generateToken(8)</span> <span class="pre">+</span> <span class="pre">&quot;_&quot;</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.serverid" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.nid">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">nid</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.nid" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">nid</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.nid" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.nextName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">nextName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.nextName" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">nextName</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.nextName" title="Link to this definition"></a></dt>
 <dd><p>Gives out symbol names.</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.insert">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">symbol:</span> <span class="pre">shared</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.insert" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">symbol:</span> <span class="pre">shared</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.insert" title="Link to this definition"></a></dt>
 <dd><p>Insert a symbol into the table.</p>
 <p>Returns a symbol-creation message with the symbol’s attributes</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.addEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(t,</span> <span class="pre">N)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.addEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(t,</span> <span class="pre">N)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.addEntry" title="Link to this definition"></a></dt>
 <dd><p>Takes args and creates a new SymEntry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -195,12 +192,12 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?ND*int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(t,</span> <span class="pre">ND)</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?ND*int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SymEntry(t,</span> <span class="pre">ND)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">entry:</span> <span class="pre">shared</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">entry:</span> <span class="pre">shared</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd><p>Takes an already created AbstractSymEntry and creates a new AbstractSymEntry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -217,7 +214,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?ND</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?ND</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd><p>Creates a symEntry from array name, length, and DType</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -235,12 +232,12 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?ND*int</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?ND*int</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.deleteEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.deleteEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.deleteEntry" title="Link to this definition"></a></dt>
 <dd><p>Removes an unregistered entry from the symTable</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -254,24 +251,24 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.clear">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.clear" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.clear" title="Link to this definition"></a></dt>
 <dd><p>Clears all unregistered entries from the symTable</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.this">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.this" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.this" title="Link to this definition"></a></dt>
 <dd><p>Get a symbol from the table. Throw an error if the symbol is not found.</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">ParameterObj</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">ParameterObj</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.checkTable">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">calling_func</span> <span class="pre">=</span> <span class="pre">&quot;check&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.checkTable" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">checkTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">calling_func</span> <span class="pre">=</span> <span class="pre">&quot;check&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.checkTable" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>checks to see if a symbol is defined if it is not it throws an exception</p></li>
@@ -280,7 +277,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.pretty">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">pretty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.pretty" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">pretty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.pretty" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Prints the SymTable in a pretty format (name,SymTable[name])</p></li>
@@ -289,7 +286,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.memUsed">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">memUsed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.memUsed" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">memUsed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.memUsed" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><dl class="field-list simple">
@@ -303,7 +300,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.dump">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.dump" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.dump" title="Link to this definition"></a></dt>
 <dd><p>Attempts to format and return sym entries mapped to the provided string into JSON format.
 Pass __AllSymbols__ to process the entire sym table.</p>
 <dl class="field-list simple">
@@ -315,7 +312,7 @@ Pass __AllSymbols__ to process the entire sym table.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.info">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">names:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.info" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">names:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.info" title="Link to this definition"></a></dt>
 <dd><p>Returns verbose attributes of the sym entries at the given string, if the string is a JSON formmated list of entry names.
 Pass __AllSymbols__ to process all sym entries in the sym table.
 Pass __RegisteredSymbols__ to process all registered sym entries.</p>
@@ -332,7 +329,7 @@ Pass __RegisteredSymbols__ to process all registered sym entries.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.parseJson">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">names:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.parseJson" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseJson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">names:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.parseJson" title="Link to this definition"></a></dt>
 <dd><p>Convert JSON formmated list of entry names into a [] string object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -346,7 +343,7 @@ Pass __RegisteredSymbols__ to process all registered sym entries.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.getEntries">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">infoList</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.getEntries" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">infoList</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.getEntries" title="Link to this definition"></a></dt>
 <dd><p>Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -360,7 +357,7 @@ Pass __RegisteredSymbols__ to process all registered sym entries.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">infoList:</span> <span class="pre">map(string</span></em>, <em class="sig-param"><span class="pre">shared</span> <span class="pre">AbstractSymEntry)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">infoList:</span> <span class="pre">map(string</span></em>, <em class="sig-param"><span class="pre">shared</span> <span class="pre">AbstractSymEntry)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd><p>Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -374,7 +371,7 @@ Pass __RegisteredSymbols__ to process all registered sym entries.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.formatEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">abstractEntry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.formatEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">abstractEntry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.formatEntry" title="Link to this definition"></a></dt>
 <dd><p>Returns formatted string for an info entry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -391,12 +388,12 @@ Pass __RegisteredSymbols__ to process all registered sym entries.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.attrib">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.attrib" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.attrib" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.datastr">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">datastr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datastr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">datastr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datastr" title="Link to this definition"></a></dt>
 <dd><p>Attempts to find a sym entry mapped to the provided string, then
 returns the data in the entry up to the specified threshold.
 Arrays of size less than threshold will be printed in their entirety.
@@ -416,7 +413,7 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.datarepr">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">datarepr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datarepr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">datarepr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datarepr" title="Link to this definition"></a></dt>
 <dd><p>Attempts to find a sym entry mapped to the provided string, then
 returns the data in the entry up to the specified threshold.
 This method returns the data in form “array([&lt;DATA&gt;])”.
@@ -437,7 +434,7 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.contains">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.contains" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.contains" title="Link to this definition"></a></dt>
 <dd><p>Attempts to find a sym entry mapped to the provided string, then
 returns a boolean value signfying the provided string’s sym entry
 existance</p>
@@ -453,7 +450,7 @@ existance</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.SymTab.findAll">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pattern:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.findAll" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">findAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pattern:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.findAll" title="Link to this definition"></a></dt>
 <dd><p>Attempts to find all sym entries that match the provided regex string, then
 returns a string array of matching names</p>
 <dl class="field-list simple">
@@ -470,7 +467,7 @@ returns a string array of matching names</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.getGenericTypedArrayEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGenericTypedArrayEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.getGenericTypedArrayEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGenericTypedArrayEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.getGenericTypedArrayEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Convenience proc to retrieve GenSymEntry from SymTab</p></li>
@@ -481,12 +478,12 @@ returns a string array of matching names</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGenericTypedArrayEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">ParameterObj</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGenericTypedArrayEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">ParameterObj</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.getSegStringEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegStringEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SegStringSymEntry</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.getSegStringEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSegStringEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">SegStringSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.getSegStringEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Convenience proc to retrieve SegStringSymEntry from SymTab</p></li>
@@ -497,7 +494,7 @@ returns a string array of matching names</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymbolTable.getGenericSparseArrayEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGenericSparseArrayEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">GenSparseSymEntry</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.getGenericSparseArrayEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getGenericSparseArrayEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">GenSparseSymEntry</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymbolTable.getGenericSparseArrayEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Convenience proc to retrieve GenSparseSymEntry from SymTab</p></li>

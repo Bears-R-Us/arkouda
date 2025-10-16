@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="arkouda.numpy.timeclass" href="../timeclass/index.html" /><link rel="prev" title="arkouda.numpy.sorting" href="../sorting/index.html" />
+<link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.numpy.timeclass" href="../timeclass/index.html"><link rel="prev" title="arkouda.numpy.sorting" href="../sorting/index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.numpy.strings - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -25,14 +25,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -147,14 +147,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -164,8 +160,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -173,8 +168,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -182,8 +176,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -204,7 +197,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -213,14 +206,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/creation.html">Creating Arrays</a></li>
@@ -238,12 +231,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">arkouda</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -258,29 +251,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">arkouda.numpy</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -294,7 +279,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -308,9 +293,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -323,16 +309,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -340,7 +324,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -376,8 +360,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -385,8 +368,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -528,7 +510,7 @@ raw bytes of all strings, delimited by nulls.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.astype">
 <span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.astype" title="Link to this definition">¶</a></dt>
-<dd><p>Cast values of Strings object to provided dtype</p>
+<dd><p>Cast values of Strings object to provided dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dtype</strong> (<em>np.dtype</em><em> or </em><em>str</em>) – Dtype to cast to</p>
@@ -547,7 +529,7 @@ raw bytes of all strings, delimited by nulls.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.cached_regex_patterns">
 <span class="sig-name descname"><span class="pre">cached_regex_patterns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><span class="pre">List</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.cached_regex_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.cached_regex_patterns" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the regex patterns for which Match objects have been cached</p>
+<dd><p>Returns the regex patterns for which Match objects have been cached.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -637,7 +619,7 @@ Note: only handles regular expressions supported by re2
 <span class="go">array([&#39;1 string 1&#39;, &#39;2 string 2&#39;, &#39;3 string 3&#39;, &#39;4 string 4&#39;, &#39;5 string 5&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
 <span class="go">array([True True True True True])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;string \d&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;string </span><span class="se">\\</span><span class="s1">d&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
@@ -661,7 +643,7 @@ Note: only handles regular expressions supported by re2
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.decode">
 <span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fromEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'UTF-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.decode" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new strings object in <cite>fromEncoding</cite>, expecting that the
-current Strings is encoded in <cite>toEncoding</cite></p>
+current Strings is encoded in <cite>toEncoding</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -692,7 +674,7 @@ default to UTF-8</p></li>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.encode">
 <span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromEncoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'UTF-8'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.encode" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new strings object in <cite>toEncoding</cite>, expecting that the
-current Strings is encoded in <cite>fromEncoding</cite></p>
+current Strings is encoded in <cite>fromEncoding</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -754,7 +736,7 @@ Note: only handles regular expressions supported by re2
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span>
 <span class="go">array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;ing \d&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_end</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;ing </span><span class="se">\\</span><span class="s1">d&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 <span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
@@ -797,7 +779,7 @@ Note: only handles regular expressions supported by re2
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.find_locations">
 <span class="sig-name descname"><span class="pre">find_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.find_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.find_locations" title="Link to this definition">¶</a></dt>
 <dd><p>Finds pattern matches and returns pdarrays containing the number, start postitions,
-and lengths of matches</p>
+and lengths of matches.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – The regex pattern used to find matches</p>
@@ -831,7 +813,7 @@ and lengths of matches</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">lens</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">find_locations</span><span class="p">(</span><span class="s1">&#39;\d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">lens</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">find_locations</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">d&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span>
 <span class="go">array([2 2 2 2 2])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span>
@@ -845,7 +827,7 @@ and lengths of matches</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.findall">
 <span class="sig-name descname"><span class="pre">findall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_match_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.findall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.findall" title="Link to this definition">¶</a></dt>
-<dd><p>Return a new Strings containg all non-overlapping matches of pattern</p>
+<dd><p>Return a new Strings containg all non-overlapping matches of pattern.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -983,7 +965,7 @@ True</p>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.fullmatch">
 <span class="sig-name descname"><span class="pre">fullmatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../pandas/match/index.html#arkouda.pandas.match.Match" title="arkouda.pandas.match.Match"><span class="pre">arkouda.pandas.match.Match</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.fullmatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.fullmatch" title="Link to this definition">¶</a></dt>
 <dd><p>Return a match object where elements match only if the whole string matches the
-regular expression pattern</p>
+regular expression pattern.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
@@ -993,7 +975,7 @@ regular expression pattern</p>
 regular expression pattern</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../match/index.html#arkouda.match.Match" title="arkouda.match.Match">Match</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../pandas/match/index.html#arkouda.pandas.match.Match" title="arkouda.pandas.match.Match">Match</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1068,7 +1050,7 @@ regular expression pattern</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.get_prefixes">
 <span class="sig-name descname"><span class="pre">get_prefixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.get_prefixes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.get_prefixes" title="Link to this definition">¶</a></dt>
-<dd><p>Return the n-long prefix of each string, where possible</p>
+<dd><p>Return the n-long prefix of each string, where possible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1100,7 +1082,7 @@ an n-character prefix, False otherwise.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.get_suffixes">
 <span class="sig-name descname"><span class="pre">get_suffixes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.get_suffixes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.get_suffixes" title="Link to this definition">¶</a></dt>
-<dd><p>Return the n-long suffix of each string, where possible</p>
+<dd><p>Return the n-long suffix of each string, where possible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1191,7 +1173,7 @@ values is negligible.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.info">
 <span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.info" title="Link to this definition">¶</a></dt>
-<dd><p>Return a JSON formatted string containing information about all components of self</p>
+<dd><p>Return a JSON formatted string containing information about all components of self.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>JSON string containing information about all components of self</p>
@@ -1205,7 +1187,7 @@ values is negligible.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.is_registered">
 <span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.bool_</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.is_registered" title="Link to this definition">¶</a></dt>
-<dd><p>Return True iff the object is contained in the registry</p>
+<dd><p>Return True iff the object is contained in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
@@ -1406,7 +1388,7 @@ Strings is empty.</p>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.islower">
 <span class="sig-name descname"><span class="pre">islower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.islower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.islower" title="Link to this definition">¶</a></dt>
 <dd><p>Return a boolean pdarray where index i indicates whether string i of the
-Strings is entirely lowercase</p>
+Strings is entirely lowercase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True for elements that are entirely lowercase, False otherwise</p>
@@ -1482,24 +1464,26 @@ enclosed in parens, “vulgar fractions,” and more.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.isspace">
 <span class="sig-name descname"><span class="pre">isspace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.isspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.isspace" title="Link to this definition">¶</a></dt>
-<dd><p>Return a boolean pdarray where index i indicates whether string i has all
-whitespace characters (‘ ’, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True for elements that are whitespace, False otherwise</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
+<dd><blockquote>
+<div><p>Return a boolean pdarray where index i indicates whether string i has all
+whitespace characters (‘ ’, ‘   ’, ‘</p>
+</div></blockquote>
+<p>’, ‘
+’, ‘
+’, ‘
+’).</p>
+<blockquote>
+<div><dl class="simple">
+<dt>pdarray</dt><dd><p>True for elements that are whitespace, False otherwise</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.numpy.strings.Strings.islower" title="arkouda.numpy.strings.Strings.islower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.islower</span></code></a>, <a class="reference internal" href="#arkouda.numpy.strings.Strings.isupper" title="arkouda.numpy.strings.Strings.isupper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.isupper</span></code></a>, <a class="reference internal" href="#arkouda.numpy.strings.Strings.istitle" title="arkouda.numpy.strings.Strings.istitle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.istitle</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
+<dl class="simple">
+<dt>RuntimeError</dt><dd><p>Raised if there is a server-side error thrown</p>
+</dd>
+</dl>
+<p>Strings.islower
+Strings.isupper
+Strings.istitle</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">not_space</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;Strings </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">space</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\v</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\f</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; </span><span class="se">\t\n\v\f\r</span><span class="s1">&#39;</span><span class="p">])</span>
@@ -1510,13 +1494,14 @@ whitespace characters (‘ ’, ‘\t’, ‘\n’, ‘\v’, ‘\f’, ‘\r’
 <span class="go">array([False False False True True True True True True True])</span>
 </pre></div>
 </div>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.istitle">
 <span class="sig-name descname"><span class="pre">istitle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.istitle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.istitle" title="Link to this definition">¶</a></dt>
 <dd><p>Return a boolean pdarray where index i indicates whether string i of the
-Strings is titlecase</p>
+Strings is titlecase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True for elements that are titlecase, False otherwise</p>
@@ -1549,7 +1534,7 @@ Strings is titlecase</p>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.isupper">
 <span class="sig-name descname"><span class="pre">isupper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.isupper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.isupper" title="Link to this definition">¶</a></dt>
 <dd><p>Return a boolean pdarray where index i indicates whether string i of the
-Strings is entirely uppercase</p>
+Strings is entirely uppercase.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True for elements that are entirely uppercase, False otherwise</p>
@@ -1587,7 +1572,7 @@ Strings is entirely uppercase</p>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.lower">
 <span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.lower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.lower" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new Strings with all uppercase characters from the original replaced with
-their lowercase equivalent</p>
+their lowercase equivalent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Strings with all uppercase characters from the original replaced with
@@ -1660,7 +1645,7 @@ or if the other parameter is not a Strings instance</p></li>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.match">
 <span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../pandas/match/index.html#arkouda.pandas.match.Match" title="arkouda.pandas.match.Match"><span class="pre">arkouda.pandas.match.Match</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.match" title="Link to this definition">¶</a></dt>
 <dd><p>Return a match object where elements match only if the beginning of the string matches the
-regular expression pattern</p>
+regular expression pattern.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
@@ -1670,7 +1655,7 @@ regular expression pattern</p>
 regular expression pattern</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../match/index.html#arkouda.match.Match" title="arkouda.match.Match">Match</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../pandas/match/index.html#arkouda.pandas.match.Match" title="arkouda.pandas.match.Match">Match</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1774,14 +1759,14 @@ fromRight is not bool</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.purge_cached_regex_patterns">
 <span class="sig-name descname"><span class="pre">purge_cached_regex_patterns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.purge_cached_regex_patterns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.purge_cached_regex_patterns" title="Link to this definition">¶</a></dt>
-<dd><p>purges cached regex patterns</p>
+<dd><p>Purges cached regex patterns.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.regex_split">
 <span class="sig-name descname"><span class="pre">regex_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsplit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.regex_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.regex_split" title="Link to this definition">¶</a></dt>
-<dd><p>Return a new Strings split by the occurrences of pattern.
-If maxsplit is nonzero, at most maxsplit splits occur</p>
+<dd><p>Return a new Strings split by the occurrences of pattern.</p>
+<p>If maxsplit is nonzero, at most maxsplit splits occur.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1819,8 +1804,8 @@ in the return array</p>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.register" title="Link to this definition">¶</a></dt>
 <dd><p>Register this Strings object with a user defined name in the arkouda server
-so it can be attached to later using Strings.attach()
-This is an in-place operation, registering a Strings object more than once will
+so it can be attached to later using Strings.attach().</p>
+<p>This is an in-place operation, registering a Strings object more than once will
 update the name in the registry and remove the previously registered name.
 A name can only be registered to one object at a time.</p>
 <dl class="field-list simple">
@@ -1926,7 +1911,7 @@ if times is not int64</p></li>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.search">
 <span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../pandas/match/index.html#arkouda.pandas.match.Match" title="arkouda.pandas.match.Match"><span class="pre">arkouda.pandas.match.Match</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.search" title="Link to this definition">¶</a></dt>
 <dd><p>Return a match object with the first location in each element where pattern produces a match.
-Elements match if any part of the string matches the regular expression pattern</p>
+Elements match if any part of the string matches the regular expression pattern.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pattern</strong> (<em>bytes</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.str_scalars" title="arkouda.str_scalars"><em>str_scalars</em></a>) – Regex used to find matches</p>
@@ -1936,7 +1921,7 @@ Elements match if any part of the string matches the regular expression pattern<
 regular expression pattern</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../match/index.html#arkouda.match.Match" title="arkouda.match.Match">Match</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../pandas/match/index.html#arkouda.pandas.match.Match" title="arkouda.pandas.match.Match">Match</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -2051,7 +2036,7 @@ Note: only handles regular expressions supported by re2
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> string&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span>
 <span class="go">array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;\d str&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings_start</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">d str&#39;</span><span class="p">,</span> <span class="n">regex</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 <span class="go">array([True True True True True])</span>
 </pre></div>
 </div>
@@ -2143,8 +2128,8 @@ the chars argument removed</p>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.sub">
 <span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">repl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.sub" title="Link to this definition">¶</a></dt>
 <dd><p>Return new Strings obtained by replacing non-overlapping occurrences of pattern with the
-replacement repl.
-If count is nonzero, at most count substitutions occur</p>
+replacement repl.</p>
+<p>If count is nonzero, at most count substitutions occur.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2184,7 +2169,7 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.subn">
 <span class="sig-name descname"><span class="pre">subn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">repl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><span class="pre">arkouda.numpy.dtypes.str_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.subn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.subn" title="Link to this definition">¶</a></dt>
-<dd><p>Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)</p>
+<dd><p>Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2223,6 +2208,37 @@ The default count=0 replaces all occurences of pattern with repl</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">subn</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s1">&#39;_+&#39;</span><span class="p">,</span> <span class="n">repl</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="go">(array([&#39;1-2-&#39;, &#39;-&#39;, &#39;3&#39;, &#39;-4-5____6___7&#39;, &#39;&#39;]), array([2 1 0 2 0]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.take">
+<span class="sig-name descname"><span class="pre">take</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.take"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.take" title="Link to this definition">¶</a></dt>
+<dd><p>Take elements from the array along an axis.</p>
+<p>When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+using arrays); however, it can be easier to use if you need elements along a given axis.
+A call such as <code class="docutils literal notranslate"><span class="pre">np.take(arr,</span> <span class="pre">indices,</span> <span class="pre">axis=3)</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">arr[:,:,:,indices,...]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em> or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The indices of the values to extract. Also allow scalars for indices.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis over which to select values. By default, the flattened input array is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The returned array has the same type as <cite>a</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+<span class="go">array([&#39;a&#39;, &#39;b&#39;])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2298,7 +2314,7 @@ from the server.</p></li>
 <li><p>CSV format is not currently supported by load/load_all operations</p></li>
 <li><p>The column delimiter is expected to be the same for column names and data</p></li>
 <li><p>Be sure that column delimiters are not found within your data.</p></li>
-<li><p>All CSV files must delimit rows using newline (<code class="docutils literal notranslate"><span class="pre">\n</span></code>) at this time.</p></li>
+<li><p>All CSV files must delimit rows using newline (<code class="docutils literal notranslate"><span class="pre">\\n</span></code>) at this time.</p></li>
 </ul>
 </dd></dl>
 
@@ -2400,18 +2416,16 @@ value, but proceed with caution.</p>
 <dd><p>Save the Strings object to Parquet. The result is a collection of files,
 one file per locale of the arkouda server, where each filename starts
 with prefix_path. Each locale saves its chunk of the array to its
-corresponding file.
-:param prefix_path: Directory and filename prefix that all output files share
-:type prefix_path: str
-:param dataset: Name of the dataset to create in files (must not already exist)
-:type dataset: str, default=”strings_array”
-:param mode: By default, truncate (overwrite) output files, if they exist.</p>
-<blockquote>
-<div><p>If ‘append’, attempt to create new dataset in existing files.</p>
-</div></blockquote>
+corresponding file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>compression</strong> (<em>{&quot;snappy&quot;</em><em>, </em><em>&quot;gzip&quot;</em><em>, </em><em>&quot;brotli&quot;</em><em>, </em><em>&quot;zstd&quot;</em><em>, </em><em>&quot;lz4&quot;}</em><em>, </em><em>optional</em>) – Sets the compression type used with Parquet files</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em><em>, </em><em>default=&quot;strings_array&quot;</em>) – Name of the dataset to create in files (must not already exist)</p></li>
+<li><p><strong>mode</strong> (<em>{&quot;truncate&quot;</em><em>, </em><em>&quot;append&quot;}</em><em>, </em><em>default = &quot;truncate&quot;</em>) – By default, truncate (overwrite) output files, if they exist.
+If ‘append’, attempt to create new dataset in existing files.</p></li>
+<li><p><strong>compression</strong> (<em>{&quot;snappy&quot;</em><em>, </em><em>&quot;gzip&quot;</em><em>, </em><em>&quot;brotli&quot;</em><em>, </em><em>&quot;zstd&quot;</em><em>, </em><em>&quot;lz4&quot;}</em><em>, </em><em>optional</em>) – Sets the compression type used with Parquet files</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>string message indicating result of save operation</p>
@@ -2517,7 +2531,7 @@ a supported dtype</p></li>
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.unregister">
 <span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.unregister" title="Link to this definition">¶</a></dt>
 <dd><p>Unregister a Strings object in the arkouda server which was previously
-registered using register() and/or attached to using attach()</p>
+registered using register() and/or attached to using attach().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
@@ -2535,8 +2549,8 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.update_hdf">
 <span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.update_hdf" title="Link to this definition">¶</a></dt>
-<dd><p>Overwrite the dataset with the name provided with this Strings object. If
-the dataset does not exist it is added</p>
+<dd><p>Overwrite the dataset with the name provided with this Strings object.</p>
+<p>If the dataset does not exist it is added.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -2574,7 +2588,7 @@ the file name is checked for _LOCALE#### to determine if it is distributed.</p><
 <dt class="sig sig-object py" id="arkouda.numpy.strings.Strings.upper">
 <span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/strings.html#Strings.upper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.strings.Strings.upper" title="Link to this definition">¶</a></dt>
 <dd><p>Return a new Strings with all lowercase characters from the original replaced with
-their uppercase equivalent</p>
+their uppercase equivalent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Strings with all lowercase characters from the original replaced with
@@ -2736,6 +2750,7 @@ their uppercase equivalent</p>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.strip"><code class="docutils literal notranslate"><span class="pre">Strings.strip()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.sub"><code class="docutils literal notranslate"><span class="pre">Strings.sub()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.subn"><code class="docutils literal notranslate"><span class="pre">Strings.subn()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.strings.Strings.take"><code class="docutils literal notranslate"><span class="pre">Strings.take()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.title"><code class="docutils literal notranslate"><span class="pre">Strings.title()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_csv"><code class="docutils literal notranslate"><span class="pre">Strings.to_csv()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.strings.Strings.to_hdf"><code class="docutils literal notranslate"><span class="pre">Strings.to_hdf()</span></code></a></li>

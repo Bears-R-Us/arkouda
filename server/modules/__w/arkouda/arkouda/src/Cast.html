@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cast &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="cast">
-<span id="module-Cast"></span><h1>Cast<a class="headerlink" href="#cast" title="Link to this heading">¶</a></h1>
+<span id="module-Cast"></span><h1>Cast<a class="headerlink" href="#cast" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Cast</span><span class="p">;</span>
 </pre></div>
@@ -133,57 +130,57 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="Cast.castLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">castLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span></em><a class="headerlink" href="#Cast.castLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">castLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel)</span></em><a class="headerlink" href="#Cast.castLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Cast.castGenSymEntryToString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castGenSymEntryToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">fromType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.castGenSymEntryToString" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castGenSymEntryToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">fromType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.castGenSymEntryToString" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="Cast.ErrorMode">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ErrorMode</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">strict,</span> <span class="pre">ignore,</span> <span class="pre">return_validity</span> <span class="pre">}</span></em><a class="headerlink" href="#Cast.ErrorMode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ErrorMode</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">strict,</span> <span class="pre">ignore,</span> <span class="pre">return_validity</span> <span class="pre">}</span></em><a class="headerlink" href="#Cast.ErrorMode" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Cast.ErrorMode.strict">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">strict</span></span><a class="headerlink" href="#Cast.ErrorMode.strict" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">strict</span></span><a class="headerlink" href="#Cast.ErrorMode.strict" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Cast.ErrorMode.ignore">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ignore</span></span><a class="headerlink" href="#Cast.ErrorMode.ignore" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ignore</span></span><a class="headerlink" href="#Cast.ErrorMode.ignore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Cast.ErrorMode.return_validity">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">return_validity</span></span><a class="headerlink" href="#Cast.ErrorMode.return_validity" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">return_validity</span></span><a class="headerlink" href="#Cast.ErrorMode.return_validity" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Cast.stringToNumericStrict">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericStrict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">toType</span> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.stringToNumericStrict" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericStrict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">toType</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.stringToNumericStrict" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Cast.stringToNumericIgnore">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericIgnore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">toType</span></em><a class="headerlink" href="#Cast.stringToNumericIgnore" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericIgnore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">toType</span></em><a class="headerlink" href="#Cast.stringToNumericIgnore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Cast.stringToNumericReturnValidity">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericReturnValidity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(toType,</span> <span class="pre">bool)</span></em><a class="headerlink" href="#Cast.stringToNumericReturnValidity" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">stringToNumericReturnValidity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">values</span></em>, <em class="sig-param"><span class="pre">rng</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(toType,</span> <span class="pre">bool)</span></em><a class="headerlink" href="#Cast.stringToNumericReturnValidity" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Cast.castStringToSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castStringToSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em>, <em class="sig-param"><span class="pre">errors:</span> <span class="pre">ErrorMode</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.castStringToSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castStringToSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">toType</span></em>, <em class="sig-param"><span class="pre">errors:</span> <span class="pre">ErrorMode</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.castStringToSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Cast.castStringToBigInt">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castStringToBigInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">errors:</span> <span class="pre">ErrorMode</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.castStringToBigInt" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">castStringToBigInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">s:</span> <span class="pre">SegString</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em>, <em class="sig-param"><span class="pre">errors:</span> <span class="pre">ErrorMode</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Cast.castStringToBigInt" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

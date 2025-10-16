@@ -32,6 +32,8 @@ or
 
 .. data:: var usedModules: set(string)
 
+.. data:: const requiredModules = new set(string, ["GenSymIO", "MsgProcessing"])
+
 .. function:: proc registerFunction(cmd: string, fcf: f.type, modName: string = "", line: int = -1)
 
    *

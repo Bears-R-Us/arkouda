@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AryUtil &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="aryutil">
-<span id="module-AryUtil"></span><h1>AryUtil<a class="headerlink" href="#aryutil" title="Link to this heading">¶</a></h1>
+<span id="module-AryUtil"></span><h1>AryUtil<a class="headerlink" href="#aryutil" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">AryUtil</span><span class="p">;</span>
 </pre></div>
@@ -133,24 +130,24 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="AryUtil.bitsPerDigit">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">bitsPerDigit</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">RSLSD_bitsPerDigit</span></em><a class="headerlink" href="#AryUtil.bitsPerDigit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">bitsPerDigit</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">RSLSD_bitsPerDigit</span></em><a class="headerlink" href="#AryUtil.bitsPerDigit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="AryUtil.auLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">auLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#AryUtil.auLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">auLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#AryUtil.auLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="AryUtil.printThresh">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">printThresh</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">30</span></em><a class="headerlink" href="#AryUtil.printThresh" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">printThresh</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">30</span></em><a class="headerlink" href="#AryUtil.printThresh" title="Link to this definition"></a></dt>
 <dd><p>Threshold for the amount of data that will be printed.
 Arrays larger than printThresh will print less data.</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.formatAry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatAry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?d]</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.formatAry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">formatAry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?d]</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.formatAry" title="Link to this definition"></a></dt>
 <dd><p>Prints the passed array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -164,12 +161,12 @@ Arrays larger than printThresh will print less data.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.printAry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">printAry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">A</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.printAry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">printAry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">A</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.printAry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.printOwnership">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">printOwnership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.printOwnership" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">printOwnership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.printOwnership" title="Link to this definition"></a></dt>
 <dd><p>1.18 version print out localSubdomains</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -180,7 +177,7 @@ Arrays larger than printThresh will print less data.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.isSorted">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">D.rank</span> <span class="pre">==</span> <span class="pre">1</span></em><a class="headerlink" href="#AryUtil.isSorted" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">D.rank</span> <span class="pre">==</span> <span class="pre">1</span></em><a class="headerlink" href="#AryUtil.isSorted" title="Link to this definition"></a></dt>
 <dd><p>Determines if the passed array is sorted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -191,7 +188,7 @@ Arrays larger than printThresh will print less data.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.isSortedOver">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSortedOver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">slice</span></em>, <em class="sig-param"><span class="pre">axisIdx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.isSortedOver" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isSortedOver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">slice</span></em>, <em class="sig-param"><span class="pre">axisIdx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.isSortedOver" title="Link to this definition"></a></dt>
 <dd><p>Determines if the passed array is sorted along a given axis,
 within a slice domain.</p>
 <dl class="field-list simple">
@@ -207,7 +204,7 @@ within a slice domain.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.validateNegativeAxes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">int)</span></em><a class="headerlink" href="#AryUtil.validateNegativeAxes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">int)</span></em><a class="headerlink" href="#AryUtil.validateNegativeAxes" title="Link to this definition"></a></dt>
 <dd><p>Modifies an array of (potentially negative) axis arguments to be
 positive and within the range of the number of dimensions, while
 confirming that the axes are valid.</p>
@@ -229,17 +226,17 @@ and the array of modified axes</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">[d]</span> <span class="pre">int)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?d]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">[d]</span> <span class="pre">int)</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axes:</span> <span class="pre">list(int)</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">list(int))</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateNegativeAxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">axes:</span> <span class="pre">list(int)</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(bool,</span> <span class="pre">list(int))</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.domOnAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#AryUtil.domOnAxis" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#AryUtil.domOnAxis" title="Link to this definition"></a></dt>
 <dd><p>Get a domain that selects out the idx’th set of indices along the specified axes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -257,17 +254,17 @@ Then, domOnAxis(D, (1, 1, 25), 0, 1) will return D sliced with {1..10, 1..10, 25
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOnAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">D.rank*int</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.domOffAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#AryUtil.domOffAxis" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?NA</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">NA</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#AryUtil.domOffAxis" title="Link to this definition"></a></dt>
 <dd><p>Get a domain over the set of indices orthogonal to the specified axes</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -284,38 +281,38 @@ Then, domOffAxis(D, 0, 1) will return D sliced with {0..0, 0..0, 1..1000}
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domOffAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl iterfunction">
 <dt class="sig sig-object chpl" id="AryUtil.axisSlices">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.axisSlices" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.axisSlices" title="Link to this definition"></a></dt>
 <dd><p>Iterate over all the slices of a domain along the specified axes</p>
 </dd></dl>
 
 <dl class="chpl iterfunction">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">tag:</span> <span class="pre">iterKind</span></em>, <em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">tag</span> <span class="pre">==</span> <span class="pre">iterKind.standalone</span></em></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">tag:</span> <span class="pre">iterKind</span></em>, <em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">tag</span> <span class="pre">==</span> <span class="pre">iterKind.standalone</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl iterfunction">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl iterfunction">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">tag:</span> <span class="pre">iterKind</span></em>, <em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">tag</span> <span class="pre">==</span> <span class="pre">iterKind.standalone</span> <span class="pre">&amp;&amp;</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">axisSlices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">tag:</span> <span class="pre">iterKind</span></em>, <em class="sig-param"><span class="pre">D:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(domain(?),</span> <span class="pre">D.rank*int)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">tag</span> <span class="pre">==</span> <span class="pre">iterKind.standalone</span> <span class="pre">&amp;&amp;</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.subDomChunk">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">subDomChunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dom:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">chunkIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><a class="headerlink" href="#AryUtil.subDomChunk" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">subDomChunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dom:</span> <span class="pre">domain(?)</span></em>, <em class="sig-param"><span class="pre">chunkIdx:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">nChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">domain(?)</span></em><a class="headerlink" href="#AryUtil.subDomChunk" title="Link to this definition"></a></dt>
 <dd><p>Create a domain over a chunk of the input domain</p>
 <p>Chunks are created by splitting the 0th dimension of the input domain
 into ‘nChunks’ roughly equal-sized chunks, and then taking the
@@ -327,7 +324,7 @@ the entire set of indices)</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.reducedShape">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span></em><a class="headerlink" href="#AryUtil.reducedShape" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">[]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span></em><a class="headerlink" href="#AryUtil.reducedShape" title="Link to this definition"></a></dt>
 <dd><p>Modify an array shape by making the specified axes degenerate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -344,17 +341,17 @@ the entire set of indices)</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">reducedShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axes:</span> <span class="pre">list(int)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.aStats">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">aStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">int,</span> <span class="pre">real,</span> <span class="pre">real,</span> <span class="pre">real)</span></em><a class="headerlink" href="#AryUtil.aStats" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">aStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">int,</span> <span class="pre">real,</span> <span class="pre">real,</span> <span class="pre">real)</span></em><a class="headerlink" href="#AryUtil.aStats" title="Link to this definition"></a></dt>
 <dd><p>Returns stats on a given array in form (int,int,real,real,real).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -368,25 +365,25 @@ the entire set of indices)</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.fillUniform">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillUniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">a_min:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">a_max:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">seed:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">241</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.fillUniform" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">fillUniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">a_min:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">a_max:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">seed:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">241</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.fillUniform" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.concatArrays">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">concatArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">[?bD]</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">ordered</span> <span class="pre">=</span> <span class="pre">true</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.concatArrays" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">concatArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">b:</span> <span class="pre">[?bD]</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">ordered</span> <span class="pre">=</span> <span class="pre">true</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.concatArrays" title="Link to this definition"></a></dt>
 <dd><p>Concatenate 2 arrays and return the result.</p>
 </dd></dl>
 
 <dl class="chpl iterfunction">
 <dt class="sig sig-object chpl" id="AryUtil.offset">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ind</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">isRange(ind)</span> <span class="pre">||</span> <span class="pre">isDomain(ind)</span></em><a class="headerlink" href="#AryUtil.offset" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ind</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">isRange(ind)</span> <span class="pre">||</span> <span class="pre">isDomain(ind)</span></em><a class="headerlink" href="#AryUtil.offset" title="Link to this definition"></a></dt>
 <dd><p>Iterate over indices (range/domain) <code class="docutils literal notranslate"><span class="pre">ind</span></code> but in an offset manner based
 on the locale id. Can be used to avoid doing communication in lockstep.</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.contiguousIndices">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contiguousIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[]</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><a class="headerlink" href="#AryUtil.contiguousIndices" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contiguousIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[]</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><a class="headerlink" href="#AryUtil.contiguousIndices" title="Link to this definition"></a></dt>
 <dd><p>Determines if the passed array array maps contiguous indices to
 contiguous memory.</p>
 <dl class="field-list simple">
@@ -398,7 +395,7 @@ contiguous memory.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.validateArraysSameLength">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateArraysSameLength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">names:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">types:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.validateArraysSameLength" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">validateArraysSameLength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">names:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">types:</span> <span class="pre">[]</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.validateArraysSameLength" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Takes a variable number of array names from a command message and</p></li>
 <li><p>validates them, checking that they all exist and are the same length</p></li>
@@ -434,72 +431,72 @@ contiguous memory.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.getBitWidth">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em><a class="headerlink" href="#AryUtil.getBitWidth" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em><a class="headerlink" href="#AryUtil.getBitWidth" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">uint</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">uint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">real</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">(uint</span></em>, <em class="sig-param"><span class="pre">uint)</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">(uint</span></em>, <em class="sig-param"><span class="pre">uint)</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">isHomogeneousTuple(t)</span> <span class="pre">&amp;&amp;</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">t.size</span> <span class="pre">*</span> <span class="pre">uint(bitsPerDigit)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBitWidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?aD]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(int,</span> <span class="pre">bool)</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">isHomogeneousTuple(t)</span> <span class="pre">&amp;&amp;</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">t.size</span> <span class="pre">*</span> <span class="pre">uint(bitsPerDigit)</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.getDigit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#AryUtil.getDigit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#AryUtil.getDigit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">uint</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">uint</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">key:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">key:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">2*(uint)</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">2*(uint)</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">_tuple</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">isHomogeneousTuple(key)</span> <span class="pre">&amp;&amp;</span> <span class="pre">key.type</span> <span class="pre">==</span> <span class="pre">key.size</span> <span class="pre">*</span> <span class="pre">uint(bitsPerDigit)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDigit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">_tuple</span></em>, <em class="sig-param"><span class="pre">rshift:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">last:</span> <span class="pre">bool</span></em>, <em class="sig-param"><span class="pre">negs:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">isHomogeneousTuple(key)</span> <span class="pre">&amp;&amp;</span> <span class="pre">key.type</span> <span class="pre">==</span> <span class="pre">key.size</span> <span class="pre">*</span> <span class="pre">uint(bitsPerDigit)</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.getNumDigitsNumericArrays">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumDigitsNumericArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">names</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.getNumDigitsNumericArrays" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumDigitsNumericArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">names</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.getNumDigitsNumericArrays" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.mergeNumericArrays">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">mergeNumericArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">numDigits</span></em>, <em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">totalDigits</span></em>, <em class="sig-param"><span class="pre">bitWidths</span></em>, <em class="sig-param"><span class="pre">negs</span></em>, <em class="sig-param"><span class="pre">names</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.mergeNumericArrays" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">mergeNumericArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">numDigits</span></em>, <em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">totalDigits</span></em>, <em class="sig-param"><span class="pre">bitWidths</span></em>, <em class="sig-param"><span class="pre">negs</span></em>, <em class="sig-param"><span class="pre">names</span></em>, <em class="sig-param"><span class="pre">st</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.mergeNumericArrays" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">lowLevelLocalizingSlice</span></span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">lowLevelLocalizingSlice</span></span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice" title="Link to this definition"></a></dt>
 <dd><p>A localized “slice” of an array. This is meant to be a low-level
 alternative to array slice assignment with better performance (fewer
 allocations, especially when the region is local). When the region being
@@ -508,36 +505,36 @@ false. When the region is remote or non-contiguous, memory is copied to
 a local buffer and <cite>isOwned</cite> is true.</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice.t">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">t</span></span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.t" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">t</span></span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.t" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice.ptr">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ptr</span></span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(t)</span> <span class="pre">=</span> <span class="pre">nil</span></em><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.ptr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ptr</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">c_ptr(t)</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">nil</span></em><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.ptr" title="Link to this definition"></a></dt>
 <dd><p>Pointer to localized memory</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice.isOwned">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">isOwned</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.isOwned" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">isOwned</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.isOwned" title="Link to this definition"></a></dt>
 <dd><p>Do we own the memory?</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">A:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range()</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">A:</span> <span class="pre">[]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">region:</span> <span class="pre">range()</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="AryUtil.lowLevelLocalizingSlice.deinit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.deinit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.removeDegenRanks">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeDegenRanks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">N:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#AryUtil.removeDegenRanks" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeDegenRanks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">A:</span> <span class="pre">[?D]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">N:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">D.rank</span></em><a class="headerlink" href="#AryUtil.removeDegenRanks" title="Link to this definition"></a></dt>
 <dd><p>Create a rank ‘N’ array by removing the degenerate ranks from
 ‘A’ and copying it’s contents into the new array</p>
 <p>‘N’ must be equal to ‘A’s rank minus the number of degenerate ranks;
@@ -547,84 +544,84 @@ halts if this condition isn’t met.</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.broadcastShape">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?Na*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?Nb*int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">N:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.broadcastShape" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?Na*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?Nb*int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">N:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">N*int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.broadcastShape" title="Link to this definition"></a></dt>
 <dd><p>Algorithm to determine shape of broadcasted PD array given two array shapes</p>
 <p>see: <a class="reference external" href="https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm">https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm</a></p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?N1*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?N2*int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">N1*int</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N1</span> <span class="pre">&gt;=</span> <span class="pre">N2</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?N1*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?N2*int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">N1*int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N1</span> <span class="pre">&gt;=</span> <span class="pre">N2</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?N1*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?N2*int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">N2*int</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N1</span> <span class="pre">&lt;</span> <span class="pre">N2</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">broadcastShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sa:</span> <span class="pre">?N1*int</span></em>, <em class="sig-param"><span class="pre">sb:</span> <span class="pre">?N2*int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">N2*int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N1</span> <span class="pre">&lt;</span> <span class="pre">N2</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.removeAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(N-1)*int</span></em><a class="headerlink" href="#AryUtil.removeAxis" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(N-1)*int</span></em><a class="headerlink" href="#AryUtil.removeAxis" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.appendAxis">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">value:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(N+1)*int</span> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.appendAxis" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">value:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(N+1)*int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#AryUtil.appendAxis" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">value:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">2*(int)</span> <span class="pre">throws</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendAxis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">axis:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">value:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">2*(int)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.unflatten">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#AryUtil.unflatten" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#AryUtil.unflatten" title="Link to this definition"></a></dt>
 <dd><p>unflatten a 1D array into a multi-dimensional array of the given shape</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unflatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="AryUtil.flatten">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#AryUtil.flatten" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">!=</span> <span class="pre">bigint</span></em><a class="headerlink" href="#AryUtil.flatten" title="Link to this definition"></a></dt>
 <dd><p>flatten a multi-dimensional array into a 1D array</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">const</span> <span class="pre">ref</span> <span class="pre">a:</span> <span class="pre">[?d]</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">bigint</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="AryUtil.orderer">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">orderer</span></span><a class="headerlink" href="#AryUtil.orderer" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">orderer</span></span><a class="headerlink" href="#AryUtil.orderer" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="AryUtil.orderer.rank">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">rank</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#AryUtil.orderer.rank" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">rank</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#AryUtil.orderer.rank" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="AryUtil.orderer.accumRankSizes">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">accumRankSizes</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[0..&lt;rank]</span> <span class="pre">int</span></em><a class="headerlink" href="#AryUtil.orderer.accumRankSizes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">accumRankSizes</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[0..&lt;rank]</span> <span class="pre">int</span></em><a class="headerlink" href="#AryUtil.orderer.accumRankSizes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="AryUtil.orderer.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.orderer.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">?N*int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.orderer.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="AryUtil.orderer.indexToOrder">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">indexToOrder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">rank*?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(64)</span></em><a class="headerlink" href="#AryUtil.orderer.indexToOrder" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">indexToOrder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">rank*?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(64)</span></em><a class="headerlink" href="#AryUtil.orderer.indexToOrder" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">indexToOrder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(64)</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">indexToOrder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">int</span> <span class="pre">||</span> <span class="pre">t</span> <span class="pre">==</span> <span class="pre">uint(64)</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>

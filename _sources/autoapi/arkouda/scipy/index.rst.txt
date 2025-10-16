@@ -10,6 +10,8 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/arkouda/scipy/sparrayclass/index
+   /autoapi/arkouda/scipy/sparsematrix/index
    /autoapi/arkouda/scipy/special/index
    /autoapi/arkouda/scipy/stats/index
 

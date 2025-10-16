@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.numpy.random.generator - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -203,7 +196,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -212,14 +205,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/creation.html">Creating Arrays</a></li>
@@ -237,12 +230,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -257,29 +250,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -293,7 +278,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -307,9 +292,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -322,16 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -339,7 +323,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -369,8 +353,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -378,8 +361,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -387,14 +369,17 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np_random</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_registration_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_val_isinstance_of_union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">to_numpy_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype_for_chapel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float_scalars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;Generator&quot;</span><span class="p">,</span>
@@ -416,13 +401,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    seed : int</span>
-<span class="sd">        Seed to allow for reproducible random number generation.</span>
-
 <span class="sd">    name_dict: dict</span>
 <span class="sd">        Dictionary mapping the server side names associated with</span>
 <span class="sd">        the generators for each dtype.</span>
-
+<span class="sd">    seed : int</span>
+<span class="sd">        Seed to allow for reproducible random number generation.</span>
 <span class="sd">    state: int</span>
 <span class="sd">        The current state we are in the random number generation stream.</span>
 <span class="sd">        This information makes it so calls to any dtype generator</span>
@@ -448,6 +431,14 @@
         <span class="c1"># be sure to update if we add support for non-pcg generators</span>
         <span class="n">_str</span> <span class="o">+=</span> <span class="s2">&quot;(PCG64)&quot;</span>
         <span class="k">return</span> <span class="n">_str</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># suppress errors in __del__</span>
+            <span class="k">pass</span>
 
 <div class="viewcode-block" id="Generator.choice">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/index.html#arkouda.numpy.random.generator.Generator.choice">[docs]</a>
@@ -604,20 +595,20 @@
 
         <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;standardExponential&lt;</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;standardExponential&lt;</span><span class="si">{</span><span class="mi">1</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)],</span>
-                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">full_size</span><span class="p">,</span>
                 <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
                 <span class="s2">&quot;has_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">full_size</span> <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;INV&quot;</span> <span class="k">else</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span> <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.integers">
@@ -659,11 +650,12 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng(seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; rng.integers(5, 20, 10)</span>
-<span class="sd">        array([15, 13, 10, 8, 5, 18, 16, 14, 7, 13])  # random</span>
+<span class="sd">        array([7 19 5 16 19 11 18 15 10 5])</span>
 <span class="sd">        &gt;&gt;&gt; rng.integers(5, size=10)</span>
-<span class="sd">        array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random</span>
+<span class="sd">        array([4 2 5 5 3 5 5 2 2 2])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
@@ -685,8 +677,8 @@
             <span class="n">high</span> <span class="o">=</span> <span class="n">high</span> <span class="o">-</span> <span class="mi">1</span>
 
         <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uniformGenerator&lt;</span><span class="si">{</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -700,6 +692,30 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">full_size</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
+
+
+    <span class="c1">#   An arkouda Generator object automatically includes rngs for all data types, so</span>
+    <span class="c1">#   those generators must be destroyed individually before the python-side Generator</span>
+    <span class="c1">#   is destroyed.  This is not strictly necessary, but should prevent memory creep in</span>
+    <span class="c1">#   the event of reseeding the global Generator repeatedly.</span>
+
+<div class="viewcode-block" id="Generator.destructor">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/index.html#arkouda.numpy.random.generator.Generator.destructor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">destructor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+        <span class="k">for</span> <span class="n">chapel_dt</span> <span class="ow">in</span> <span class="n">get_registration_config</span><span class="p">()[</span><span class="s2">&quot;parameter_classes&quot;</span><span class="p">][</span><span class="s2">&quot;array&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">chapel_dt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_supported_chapel_types</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">dtype_for_chapel</span><span class="p">(</span><span class="n">chapel_dt</span><span class="p">)</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;delGenerator&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">dt</span><span class="p">],</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__del__</span><span class="p">()</span>
+        <span class="k">return</span></div>
 
 
 <div class="viewcode-block" id="Generator.logistic">
@@ -833,7 +849,8 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).lognormal(3, 2.5, 3)</span>
-<span class="sd">        array([7.3866978126031091 106.20159494048757 4.5424399190667666])</span>
+<span class="sd">        array([75.587346973566639 9.4194790331678568 1.0996120079897966])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">exp</span>
 
@@ -845,7 +862,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/index.html#arkouda.numpy.random.generator.Generator.normal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Draw samples from a normal (Gaussian) distribution</span>
+<span class="sd">        Draw samples from a normal (Gaussian) distribution.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -886,7 +903,8 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; ak.random.default_rng(17).normal(3, 2.5, 3)</span>
-<span class="sd">        array([2.3673425816523577 4.0532529435624589 2.0598322696795694])</span>
+<span class="sd">        array([4.3252889011033728 2.2427797827243081 0.09495739757471533])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
@@ -929,11 +947,12 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng(seed=17)</span>
 <span class="sd">        &gt;&gt;&gt; rng.random()</span>
-<span class="sd">        0.47108547995356098 # random</span>
+<span class="sd">        0.8450747927979015</span>
 <span class="sd">        &gt;&gt;&gt; rng.random(3)</span>
-<span class="sd">        array([0.055256829926011691, 0.62511314008006458, 0.16400145561571539]) # random</span>
+<span class="sd">        array([0.8059711747202466 0.71958748004486961 0.72539618972095954])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
@@ -973,11 +992,12 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng(seed=17)</span>
 <span class="sd">        &gt;&gt;&gt; rng.standard_gamma(1)</span>
-<span class="sd">        0.8729704388729135 # random</span>
+<span class="sd">        1.5654448696305245</span>
 <span class="sd">        &gt;&gt;&gt; rng.standard_gamma(1, size=3)</span>
-<span class="sd">        array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random</span>
+<span class="sd">        array([0.016990291286171716 0.21612542775489499 0.49600147238356695])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: W605</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
@@ -992,7 +1012,7 @@
 
         <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;standardGamma&lt;</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1043,11 +1063,12 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng(seed=17)</span>
 <span class="sd">        &gt;&gt;&gt; rng.standard_normal()</span>
-<span class="sd">        2.1923875335537315 # random</span>
+<span class="sd">        1.101262453505847</span>
 <span class="sd">        &gt;&gt;&gt; rng.standard_normal(3)</span>
-<span class="sd">        array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random</span>
+<span class="sd">        array([0.53011556044134911 -0.30288808691027669 -1.1620170409701138])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
@@ -1058,7 +1079,7 @@
 
         <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;standardNormalGenerator&lt;</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -1077,33 +1098,136 @@
 
 <div class="viewcode-block" id="Generator.shuffle">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/index.html#arkouda.numpy.random.generator.Generator.shuffle">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shuffle</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FisherYates&quot;</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">feistel_rounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="n">feistel_key</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Randomly shuffle a pdarray in place.</span>
+<span class="sd">        Randomly shuffle the elements of a `pdarray` in place.</span>
+
+<span class="sd">        This method performs a reproducible in-place shuffle of the array `x`</span>
+<span class="sd">        using the specified strategy. Three methods are available:</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        x: pdarray</span>
-<span class="sd">            shuffle the elements of x randomly in place</span>
+<span class="sd">        x : pdarray</span>
+<span class="sd">            The array to be shuffled in place. Must be a one-dimensional Arkouda array.</span>
 
+<span class="sd">        method : {&quot;FisherYates&quot;,&quot;MergeShuffle&quot;,&quot;Feistel&quot;}, optional</span>
+<span class="sd">            - &quot;FisherYates&quot;: A **serial, global** Fisher–Yates shuffle implemented in Chapel.</span>
+<span class="sd">              Simple and fast for small/medium arrays, but **not distributed** — the entire</span>
+<span class="sd">              array must fit on one locale.</span>
+<span class="sd">            - &quot;MergeShuffle&quot;: A **fully distributed** shuffle that combines local randomization</span>
+<span class="sd">              and cross-locale probabilistic merging. Scales to large datasets and maintains</span>
+<span class="sd">              good statistical uniformity across locales.</span>
+<span class="sd">            - &quot;Feistel&quot;: A **keyed permutation** of indices via a Feistel PRP over [0, N),</span>
+<span class="sd">              then applies that permutation to `x`. Works for any `N` (uses cycle-walking</span>
+<span class="sd">              when N is not a power of two). **Distributed-friendly** and reproducible.</span>
+<span class="sd">              Not intended for cryptographic security.</span>
+
+<span class="sd">            Default is &quot;FisherYates&quot;.</span>
+
+<span class="sd">        feistel_rounds : int, optional (keyword-only)</span>
+<span class="sd">            Number of Feistel rounds (default 16). Higher may cost more time.</span>
+
+<span class="sd">        feistel_key : int or None, optional (keyword-only)</span>
+<span class="sd">            64-bit key for the Feistel permutation. If None, the backend should derive</span>
+<span class="sd">            a key from the RNG stream so results remain deterministic given the client RNG state.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If `x` is not a `pdarray`.</span>
+
+<span class="sd">        ValueError</span>
+<span class="sd">            If an unsupported shuffle method is specified, or if `feistel_key` is not a 64-bit integer.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - The shuffle modifies `x` in place.</span>
+<span class="sd">        - The result is deterministic given the client RNG state.</span>
+<span class="sd">        - For `&quot;MergeShuffle&quot;`, reproducibility is guaranteed **only if the number of locales</span>
+<span class="sd">          remains fixed** between runs. Changing locale count will yield different permutations.</span>
+<span class="sd">        - Use `&quot;FisherYates&quot;` only for small arrays or testing.</span>
+<span class="sd">        - Use `&quot;MergeShuffle&quot;` for production-scale distributed shuffling.</span>
+<span class="sd">        - Use `&quot;Feistel&quot;` when you need a keyed, reproducible permutation of indices that</span>
+<span class="sd">          also scales in distributed settings.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng(18)</span>
+<span class="sd">        &gt;&gt;&gt; pda = ak.arange(10)</span>
+<span class="sd">        &gt;&gt;&gt; pda</span>
+<span class="sd">        array([0 1 2 3 4 5 6 7 8 9])</span>
+<span class="sd">        &gt;&gt;&gt; rng.shuffle(pda, method=&quot;FisherYates&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; pda</span>
+<span class="sd">        array([0 8 2 7 9 4 6 3 5 1])</span>
+<span class="sd">        &gt;&gt;&gt; rng.shuffle(pda, method=&quot;MergeShuffle&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; pda</span>
+<span class="sd">        array([5 6 9 3 8 2 7 0 4 1])</span>
+<span class="sd">        &gt;&gt;&gt; rng.shuffle(pda, method=&quot;Feistel&quot;, feistel_rounds=18)</span>
+<span class="sd">        &gt;&gt;&gt; pda</span>
+<span class="sd">        array([8 7 3 2 4 9 0 1 5 6])</span>
+<span class="sd">        &gt;&gt;&gt; rng.shuffle(pda, method=&quot;Feistel&quot;, feistel_key=0x1234_5678_9ABC_DEF0, feistel_rounds=18)</span>
+<span class="sd">        &gt;&gt;&gt; pda</span>
+<span class="sd">        array([6 1 7 3 4 9 2 0 5 8])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;shuffle only accepts a pdarray.&quot;</span><span class="p">)</span>
+
+        <span class="n">method_lower</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">supported</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fisheryates&quot;</span><span class="p">,</span> <span class="s2">&quot;mergeshuffle&quot;</span><span class="p">,</span> <span class="s2">&quot;feistel&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">method_lower</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unsupported shuffle method &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39;. Supported: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">supported</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Validate Feistel options on the client side (cheap sanity checks)</span>
+        <span class="k">if</span> <span class="n">method_lower</span> <span class="o">==</span> <span class="s2">&quot;feistel&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feistel_rounds</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">feistel_rounds</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;feistel_rounds must be a positive integer.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">feistel_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feistel_key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;feistel_key must be an int (64-bit).&quot;</span><span class="p">)</span>
+                <span class="c1"># Enforce 64-bit domain</span>
+                <span class="k">if</span> <span class="n">feistel_key</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">feistel_key</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;feistel_key must fit in 64 bits (0..2^64-1).&quot;</span><span class="p">)</span>
+
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">akint64</span><span class="p">)]</span>
         <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+            <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method_lower</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Method-specific extras</span>
+        <span class="k">if</span> <span class="n">method_lower</span> <span class="o">==</span> <span class="s2">&quot;feistel&quot;</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;feistel_rounds&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">feistel_rounds</span><span class="p">),</span>
+                    <span class="c1"># Pass the key when provided; otherwise omit and let Chapel derive from RNG</span>
+                    <span class="o">**</span><span class="p">({</span><span class="s2">&quot;feistel_key&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">feistel_key</span><span class="p">)}</span> <span class="k">if</span> <span class="n">feistel_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;shuffle&lt;</span><span class="si">{</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
-                <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-                <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
-            <span class="p">},</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span></div>
+        <span class="k">if</span> <span class="n">method_lower</span> <span class="o">!=</span> <span class="s2">&quot;feistel&quot;</span> <span class="ow">or</span> <span class="n">feistel_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="Generator.permutation">
@@ -1123,6 +1247,7 @@
 
 <span class="sd">            If &#39;Argsort&#39; is selected, the permutation will be generated by</span>
 <span class="sd">            an argsort performed on randomly generated floats.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pdarray</span>
@@ -1215,15 +1340,21 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng(seed=17)</span>
 <span class="sd">        &gt;&gt;&gt; rng.poisson(lam=3, size=5)</span>
-<span class="sd">        array([5 3 2 2 3])  # random</span>
+<span class="sd">        array([1 2 3 2 5])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
 
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_generator</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+        <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
 
         <span class="n">is_single_lambda</span><span class="p">,</span> <span class="n">lam</span> <span class="o">=</span> <span class="n">float_array_or_scalar_helper</span><span class="p">(</span><span class="s2">&quot;poisson&quot;</span><span class="p">,</span> <span class="s2">&quot;lam&quot;</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">lam</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -1235,14 +1366,14 @@
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)],</span>
                 <span class="s2">&quot;lam&quot;</span><span class="p">:</span> <span class="n">lam</span><span class="p">,</span>
                 <span class="s2">&quot;is_single_lambda&quot;</span><span class="p">:</span> <span class="n">is_single_lambda</span><span class="p">,</span>
-                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">full_size</span><span class="p">,</span>
                 <span class="s2">&quot;has_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="c1"># we only generate one val using the generator in the symbol table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span> <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Generator.uniform">
@@ -1264,8 +1395,8 @@
 <span class="sd">            Upper boundary of the output interval. All values generated will be less than high.</span>
 <span class="sd">            high must be greater than or equal to low. The default value is 1.0.</span>
 
-<span class="sd">        size: numeric_scalars, optional</span>
-<span class="sd">            Output shape. Default is None, in which case a single value is returned.</span>
+<span class="sd">        size: int, tuple(int), None, optional</span>
+<span class="sd">            Output size or shape. Default is None, in which case a single value is returned.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1280,9 +1411,10 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng()</span>
+<span class="sd">        &gt;&gt;&gt; rng = ak.random.default_rng(seed=17)</span>
 <span class="sd">        &gt;&gt;&gt; rng.uniform(-1, 1, 3)</span>
-<span class="sd">        array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random</span>
+<span class="sd">        array([0.61194234944049319 0.43917496008973922 0.45079237944191908])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
@@ -1293,7 +1425,7 @@
 
         <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt; 0&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
 
         <span class="n">dt</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -1312,8 +1444,11 @@
 
 
 
+<span class="n">_supported_chapel_types</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;int(64)&quot;</span><span class="p">,</span> <span class="s2">&quot;uint&quot;</span><span class="p">,</span> <span class="s2">&quot;uint(64)&quot;</span><span class="p">,</span> <span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;real(64)&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">))</span>
+
+
 <div class="viewcode-block" id="default_rng">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/generator/index.html#arkouda.numpy.random.generator.default_rng">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/index.html#arkouda.numpy.random.generator.default_rng">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a new Generator.</span>
@@ -1350,7 +1485,10 @@
     <span class="c1"># we declare a generator for each type and fast-forward the state</span>
 
     <span class="n">name_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;int64&quot;</span><span class="p">),</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;uint64&quot;</span><span class="p">),</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">),</span> <span class="n">akdtype</span><span class="p">(</span><span class="s2">&quot;bool&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">chapel_dt</span> <span class="ow">in</span> <span class="n">get_registration_config</span><span class="p">()[</span><span class="s2">&quot;parameter_classes&quot;</span><span class="p">][</span><span class="s2">&quot;array&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">chapel_dt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_supported_chapel_types</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">dtype_for_chapel</span><span class="p">(</span><span class="n">chapel_dt</span><span class="p">)</span>
         <span class="n">name_dict</span><span class="p">[</span><span class="n">dt</span><span class="p">]</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;createGenerator&lt;</span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;has_seed&quot;</span><span class="p">:</span> <span class="n">has_seed</span><span class="p">,</span> <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">seed</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">},</span>

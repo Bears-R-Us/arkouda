@@ -52,10 +52,10 @@ Module Contents
 
    Inner-join on equality between two integer arrays where the time-window predicate is also true.
 
-   :param a1: pdarray to be joined
-   :type a1: pdarray, int64
-   :param a2: pdarray to be joined
-   :type a2: pdarray, int64
+   :param a1: Values to join (must be int64 dtype).
+   :type a1: pdarray
+   :param a2: Values to join (must be int64 dtype).
+   :type a2: pdarray
    :param t1: timestamps in millis corresponding to the a1 pdarray
    :type t1: pdarray
    :param t2: timestamps in millis corresponding to the a2 pdarray

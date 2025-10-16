@@ -58,13 +58,6 @@ arkouda server config param and config const
 
    .. enumconstant:: enum constant MULTIINDEX = 13
 
-.. data:: config param MaxArrayDims: int = 1
-
-   
-   maximum array dimensionality supported by the server
-   set in 'registration-config.json'
-   
-
 .. data:: config const deployment = Deployment.STANDARD
 
    

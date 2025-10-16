@@ -75,7 +75,7 @@ Module Contents
       :classmethod:
 
 
-      Concatenate a sequence of SegArrays
+      Concatenate a sequence of SegArrays.
 
       :param x: The SegArrays to concatenate
       :type x: sequence of SegArray
@@ -102,7 +102,7 @@ Module Contents
 
    .. py:method:: filter(filter, discard_empty: bool = False)
 
-      Filter values out of the SegArray object
+      Filter values out of the SegArray object.
 
       :param filter: The value/s to be filtered out of the SegArray
       :type filter: pdarray, list, or value
@@ -212,7 +212,7 @@ Module Contents
 
    .. py:method:: get_prefixes(n, return_origins=True, proper=True)
 
-      Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long)
+      Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long).
 
       :param n: Length of suffix
       :type n: int
@@ -238,7 +238,7 @@ Module Contents
 
    .. py:method:: get_suffixes(n, return_origins=True, proper=True)
 
-      Return the n-long suffix of each sub-array, where possible
+      Return the n-long suffix of each sub-array, where possible.
 
       :param n: Length of suffix
       :type n: int
@@ -306,7 +306,7 @@ Module Contents
 
    .. py:method:: is_registered() -> bool
 
-      Check if the name of the SegArray object is registered in the Symbol Table
+      Check if the name of the SegArray object is registered in the Symbol Table.
 
       :returns: True if SegArray is registered, false if not
       :rtype: bool
@@ -357,7 +357,7 @@ Module Contents
 
 
       Load a saved SegArray from HDF5. All arguments must match what
-      was supplied to SegArray.save()
+      was supplied to SegArray.save().
 
       :param prefix_path: Directory and filename prefix
       :type prefix_path: str
@@ -370,7 +370,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this SegArray object and underlying components with the Arkouda server
+      Register this SegArray object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name which this SegArray object will be registered under
       :type user_defined_name: str
@@ -525,7 +525,7 @@ Module Contents
 
    .. py:method:: to_ndarray()
 
-      Convert the array into a numpy.ndarray containing sub-arrays
+      Convert the array into a numpy.ndarray containing sub-arrays.
 
       :returns: A numpy ndarray with the same sub-arrays (also numpy.ndarray) as this array
       :rtype: np.ndarray
@@ -550,6 +550,7 @@ Module Contents
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the object to its
       corresponding file.
+
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files (must not already exist)
@@ -587,7 +588,7 @@ Module Contents
 
    .. py:method:: tolist()
 
-      Convert the segarray into a list containing sub-arrays
+      Convert the segarray into a list containing sub-arrays.
 
       :returns: A list with the same sub-arrays (also list) as this segarray
       :rtype: list
@@ -678,7 +679,7 @@ Module Contents
    .. py:method:: unregister()
 
       Unregister this SegArray object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
 

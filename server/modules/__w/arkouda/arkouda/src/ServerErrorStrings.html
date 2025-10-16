@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ServerErrorStrings &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="servererrorstrings">
-<span id="module-ServerErrorStrings"></span><h1>ServerErrorStrings<a class="headerlink" href="#servererrorstrings" title="Link to this heading">¶</a></h1>
+<span id="module-ServerErrorStrings"></span><h1>ServerErrorStrings<a class="headerlink" href="#servererrorstrings" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ServerErrorStrings</span><span class="p">;</span>
 </pre></div>
@@ -134,90 +131,90 @@
 <p>error string to return to client… generate consistent error strings for notImplementedError</p>
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.ErrorWithMsg">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ErrorWithMsg</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Error</span></em><a class="headerlink" href="#ServerErrorStrings.ErrorWithMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ErrorWithMsg</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Error</span></em><a class="headerlink" href="#ServerErrorStrings.ErrorWithMsg" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.ErrorWithMsg.msg">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.ErrorWithMsg.msg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.ErrorWithMsg.msg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.notImplementedError">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">op:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">rdtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.notImplementedError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">op:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">rdtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.notImplementedError" title="Link to this definition"></a></dt>
 <dd><p>binary operator is not implemented for DTypes</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">op:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">rdtype:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">op:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">rdtype:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd><p>efunc is not implemented for DType</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ldtype:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">nd:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dt1:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">dt2:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dt1:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">dt2:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd><p>efunc is not implemented for DTypes</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dt1:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">dt2:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">dt3:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">efunc:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dt1:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">dt2:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">dt3:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd><p>algorthm is not implemented for DType</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">arg:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">notImplementedError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">arg:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd><p>proc is not implemented for this kind of argument</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.unrecognizedTypeError">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unrecognizedTypeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">stype:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unrecognizedTypeError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unrecognizedTypeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">stype:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unrecognizedTypeError" title="Link to this definition"></a></dt>
 <dd><p>unrecognized DType</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.unknownSymbolError">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unknownSymbolError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unknownSymbolError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unknownSymbolError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unknownSymbolError" title="Link to this definition"></a></dt>
 <dd><p>name not found in the symbol table</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.unknownError">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unknownError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unknownError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unknownError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unknownError" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.incompatibleArgumentsError">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incompatibleArgumentsError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">reason:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrorStrings.incompatibleArgumentsError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incompatibleArgumentsError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">reason:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrorStrings.incompatibleArgumentsError" title="Link to this definition"></a></dt>
 <dd><p>incompatible arguments</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrorStrings.unsupportedTypeError">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unsupportedTypeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unsupportedTypeError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unsupportedTypeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dtype:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrorStrings.unsupportedTypeError" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unsupportedTypeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">unsupportedTypeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">pname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd></dd></dl>
 
 </section>

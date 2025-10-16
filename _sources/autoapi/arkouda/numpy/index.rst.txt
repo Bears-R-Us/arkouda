@@ -13,6 +13,7 @@ Submodules
    /autoapi/arkouda/numpy/char/index
    /autoapi/arkouda/numpy/ctypeslib/index
    /autoapi/arkouda/numpy/dtypes/index
+   /autoapi/arkouda/numpy/err/index
    /autoapi/arkouda/numpy/exceptions/index
    /autoapi/arkouda/numpy/fft/index
    /autoapi/arkouda/numpy/imports/index
@@ -197,8 +198,10 @@ Functions
    arkouda.numpy.base_repr
    arkouda.numpy.bigint_from_uint_arrays
    arkouda.numpy.binary_repr
+   arkouda.numpy.broadcast_arrays
    arkouda.numpy.broadcast_dims
-   arkouda.numpy.broadcast_to_shape
+   arkouda.numpy.broadcast_shapes
+   arkouda.numpy.broadcast_to
    arkouda.numpy.can_cast
    arkouda.numpy.cast
    arkouda.numpy.ceil
@@ -223,9 +226,11 @@ Functions
    arkouda.numpy.divmod
    arkouda.numpy.dot
    arkouda.numpy.dtype
+   arkouda.numpy.errstate
    arkouda.numpy.exp
    arkouda.numpy.expm1
    arkouda.numpy.eye
+   arkouda.numpy.fabs
    arkouda.numpy.flip
    arkouda.numpy.floor
    arkouda.numpy.fmod
@@ -236,6 +241,8 @@ Functions
    arkouda.numpy.full_like
    arkouda.numpy.get_byteorder
    arkouda.numpy.get_server_byteorder
+   arkouda.numpy.geterr
+   arkouda.numpy.geterrcall
    arkouda.numpy.hash
    arkouda.numpy.histogram
    arkouda.numpy.histogram2d
@@ -261,8 +268,10 @@ Functions
    arkouda.numpy.log10
    arkouda.numpy.log1p
    arkouda.numpy.log2
+   arkouda.numpy.logspace
    arkouda.numpy.matmul
    arkouda.numpy.maxk
+   arkouda.numpy.may_share_memory
    arkouda.numpy.median
    arkouda.numpy.mink
    arkouda.numpy.mod
@@ -290,8 +299,11 @@ Functions
    arkouda.numpy.scalar_array
    arkouda.numpy.searchsorted
    arkouda.numpy.setdiff1d
+   arkouda.numpy.seterr
+   arkouda.numpy.seterrcall
    arkouda.numpy.setxor1d
    arkouda.numpy.shape
+   arkouda.numpy.shares_memory
    arkouda.numpy.sign
    arkouda.numpy.sin
    arkouda.numpy.sinh
@@ -729,7 +741,7 @@ Package Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this Datetime object and underlying components with the Arkouda server
+      Register this Datetime object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the Datetime is to be registered under,
                                 this will be the root name for underlying components
@@ -827,7 +839,7 @@ Package Contents
    .. py:method:: unregister()
 
       Unregister this Datetime object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
@@ -1220,7 +1232,7 @@ Package Contents
    Bases: :py:obj:`Exception`
 
 
-   Error/Exception used when the Arkouda Server cannot register an object
+   Error/Exception used when the Arkouda Server cannot register an object.
 
 
 .. py:class:: ScalarDTypes
@@ -1360,7 +1372,7 @@ Package Contents
       :classmethod:
 
 
-      Concatenate a sequence of SegArrays
+      Concatenate a sequence of SegArrays.
 
       :param x: The SegArrays to concatenate
       :type x: sequence of SegArray
@@ -1387,7 +1399,7 @@ Package Contents
 
    .. py:method:: filter(filter, discard_empty: bool = False)
 
-      Filter values out of the SegArray object
+      Filter values out of the SegArray object.
 
       :param filter: The value/s to be filtered out of the SegArray
       :type filter: pdarray, list, or value
@@ -1497,7 +1509,7 @@ Package Contents
 
    .. py:method:: get_prefixes(n, return_origins=True, proper=True)
 
-      Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long)
+      Return all sub-array prefixes of length n (for sub-arrays that are at least n+1 long).
 
       :param n: Length of suffix
       :type n: int
@@ -1523,7 +1535,7 @@ Package Contents
 
    .. py:method:: get_suffixes(n, return_origins=True, proper=True)
 
-      Return the n-long suffix of each sub-array, where possible
+      Return the n-long suffix of each sub-array, where possible.
 
       :param n: Length of suffix
       :type n: int
@@ -1591,7 +1603,7 @@ Package Contents
 
    .. py:method:: is_registered() -> bool
 
-      Check if the name of the SegArray object is registered in the Symbol Table
+      Check if the name of the SegArray object is registered in the Symbol Table.
 
       :returns: True if SegArray is registered, false if not
       :rtype: bool
@@ -1642,7 +1654,7 @@ Package Contents
 
 
       Load a saved SegArray from HDF5. All arguments must match what
-      was supplied to SegArray.save()
+      was supplied to SegArray.save().
 
       :param prefix_path: Directory and filename prefix
       :type prefix_path: str
@@ -1655,7 +1667,7 @@ Package Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this SegArray object and underlying components with the Arkouda server
+      Register this SegArray object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name which this SegArray object will be registered under
       :type user_defined_name: str
@@ -1810,7 +1822,7 @@ Package Contents
 
    .. py:method:: to_ndarray()
 
-      Convert the array into a numpy.ndarray containing sub-arrays
+      Convert the array into a numpy.ndarray containing sub-arrays.
 
       :returns: A numpy ndarray with the same sub-arrays (also numpy.ndarray) as this array
       :rtype: np.ndarray
@@ -1835,6 +1847,7 @@ Package Contents
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the object to its
       corresponding file.
+
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files (must not already exist)
@@ -1872,7 +1885,7 @@ Package Contents
 
    .. py:method:: tolist()
 
-      Convert the segarray into a list containing sub-arrays
+      Convert the segarray into a list containing sub-arrays.
 
       :returns: A list with the same sub-arrays (also list) as this segarray
       :rtype: list
@@ -1963,7 +1976,7 @@ Package Contents
    .. py:method:: unregister()
 
       Unregister this SegArray object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RuntimeError: Raised if the server could not unregister the SegArray object from the Symbol Table
 
@@ -2203,7 +2216,7 @@ Package Contents
 
    .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> arkouda.numpy.pdarrayclass.pdarray
 
-      Cast values of Strings object to provided dtype
+      Cast values of Strings object to provided dtype.
 
       :param dtype: Dtype to cast to
       :type dtype: np.dtype or str
@@ -2219,7 +2232,7 @@ Package Contents
 
    .. py:method:: cached_regex_patterns() -> List
 
-      Returns the regex patterns for which Match objects have been cached
+      Returns the regex patterns for which Match objects have been cached.
 
 
 
@@ -2289,7 +2302,7 @@ Package Contents
       array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
       >>> strings.contains('string')
       array([True True True True True])
-      >>> strings.contains('string \d', regex=True)
+      >>> strings.contains('string \\d', regex=True)
       array([True True True True True])
 
 
@@ -2306,7 +2319,7 @@ Package Contents
    .. py:method:: decode(fromEncoding: str, toEncoding: str = 'UTF-8') -> Strings
 
       Return a new strings object in `fromEncoding`, expecting that the
-      current Strings is encoded in `toEncoding`
+      current Strings is encoded in `toEncoding`.
 
       :param fromEncoding: The current encoding of the strings object
       :type fromEncoding: str
@@ -2331,7 +2344,7 @@ Package Contents
    .. py:method:: encode(toEncoding: str, fromEncoding: str = 'UTF-8') -> Strings
 
       Return a new strings object in `toEncoding`, expecting that the
-      current Strings is encoded in `fromEncoding`
+      current Strings is encoded in `fromEncoding`.
 
       :param toEncoding: The encoding that the strings will be converted to
       :type toEncoding: str
@@ -2377,7 +2390,7 @@ Package Contents
       >>> strings_end = ak.array([f'string {i}' for i in range(1, 6)])
       >>> strings_end
       array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
-      >>> strings_end.endswith('ing \d', regex = True)
+      >>> strings_end.endswith('ing \\d', regex = True)
       array([True True True True True])
 
 
@@ -2412,7 +2425,7 @@ Package Contents
    .. py:method:: find_locations(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
       Finds pattern matches and returns pdarrays containing the number, start postitions,
-      and lengths of matches
+      and lengths of matches.
 
       :param pattern: The regex pattern used to find matches
       :type pattern: bytes or str_scalars
@@ -2437,7 +2450,7 @@ Package Contents
 
       >>> import arkouda as ak
       >>> strings = ak.array([f'{i} string {i}' for i in range(1, 6)])
-      >>> num_matches, starts, lens = strings.find_locations('\d')
+      >>> num_matches, starts, lens = strings.find_locations('\\d')
       >>> num_matches
       array([2 2 2 2 2])
       >>> starts
@@ -2449,7 +2462,7 @@ Package Contents
 
    .. py:method:: findall(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]
 
-      Return a new Strings containg all non-overlapping matches of pattern
+      Return a new Strings containg all non-overlapping matches of pattern.
 
       :param pattern: Regex used to find matches
       :type pattern: bytes or str_scalars
@@ -2566,7 +2579,7 @@ Package Contents
    .. py:method:: fullmatch(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.pandas.match.Match
 
       Return a match object where elements match only if the whole string matches the
-      regular expression pattern
+      regular expression pattern.
 
       :param pattern: Regex used to find matches
       :type pattern: bytes or str_scalars
@@ -2630,7 +2643,7 @@ Package Contents
 
    .. py:method:: get_prefixes(n: arkouda.numpy.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.numpy.pdarrayclass.pdarray]]
 
-      Return the n-long prefix of each string, where possible
+      Return the n-long prefix of each string, where possible.
 
       :param n: Length of prefix
       :type n: int_scalars
@@ -2656,7 +2669,7 @@ Package Contents
 
    .. py:method:: get_suffixes(n: arkouda.numpy.dtypes.int_scalars, return_origins: bool = True, proper: bool = True) -> Union[Strings, Tuple[Strings, arkouda.numpy.pdarrayclass.pdarray]]
 
-      Return the n-long suffix of each string, where possible
+      Return the n-long suffix of each string, where possible.
 
       :param n: Length of suffix
       :type n: int_scalars
@@ -2731,7 +2744,7 @@ Package Contents
 
    .. py:method:: info() -> str
 
-      Return a JSON formatted string containing information about all components of self
+      Return a JSON formatted string containing information about all components of self.
 
       :returns: JSON string containing information about all components of self
       :rtype: str
@@ -2740,7 +2753,7 @@ Package Contents
 
    .. py:method:: is_registered() -> numpy.bool_
 
-      Return True iff the object is contained in the registry
+      Return True iff the object is contained in the registry.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: bool
@@ -2897,7 +2910,7 @@ Package Contents
    .. py:method:: islower() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return a boolean pdarray where index i indicates whether string i of the
-      Strings is entirely lowercase
+      Strings is entirely lowercase.
 
       :returns: True for elements that are entirely lowercase, False otherwise
       :rtype: pdarray
@@ -2957,33 +2970,48 @@ Package Contents
 
    .. py:method:: isspace() -> arkouda.numpy.pdarrayclass.pdarray
 
-      Return a boolean pdarray where index i indicates whether string i has all
-      whitespace characters (‘ ’, ‘\\t’, ‘\\n’, ‘\\v’, ‘\\f’, ‘\\r’).
+              Return a boolean pdarray where index i indicates whether string i has all
+              whitespace characters (‘ ’, ‘   ’, ‘
+      ’, ‘
+      ’, ‘
+      ’, ‘
+      ’).
 
-      :returns: True for elements that are whitespace, False otherwise
-      :rtype: pdarray
+              Returns
+              -------
+              pdarray
+                  True for elements that are whitespace, False otherwise
 
-      :raises RuntimeError: Raised if there is a server-side error thrown
+              Raises
+              ------
+              RuntimeError
+                  Raised if there is a server-side error thrown
 
-      .. seealso:: :py:obj:`Strings.islower`, :py:obj:`Strings.isupper`, :py:obj:`Strings.istitle`
+              See Also
+              --------
+              Strings.islower
+              Strings.isupper
+              Strings.istitle
 
-      .. rubric:: Examples
+              Examples
+              --------
+              >>> import arkouda as ak
+              >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
+              >>> space = ak.array([' ', '\t', '\n', '\v', '\f', '\r', ' \t\n\v\f\r'])
+              >>> strings = ak.concatenate([not_space, space])
+              >>> strings
+              array(['Strings 0', 'Strings 1', 'Strings 2', ' ', 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
+              >>> strings.isspace()
+              array([False False False True True True True True True True])
 
-      >>> import arkouda as ak
-      >>> not_space = ak.array([f'Strings {i}' for i in range(3)])
-      >>> space = ak.array([' ', '\t', '\n', '\v', '\f', '\r', ' \t\n\v\f\r'])
-      >>> strings = ak.concatenate([not_space, space])
-      >>> strings
-      array(['Strings 0', 'Strings 1', 'Strings 2', ' ', 'u0009', 'n', 'u000B', 'u000C', 'u000D', ' u0009nu000Bu000Cu000D'])
-      >>> strings.isspace()
-      array([False False False True True True True True True True])
+
 
 
 
    .. py:method:: istitle() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return a boolean pdarray where index i indicates whether string i of the
-      Strings is titlecase
+      Strings is titlecase.
 
       :returns: True for elements that are titlecase, False otherwise
       :rtype: pdarray
@@ -3008,7 +3036,7 @@ Package Contents
    .. py:method:: isupper() -> arkouda.numpy.pdarrayclass.pdarray
 
       Return a boolean pdarray where index i indicates whether string i of the
-      Strings is entirely uppercase
+      Strings is entirely uppercase.
 
       :returns: True for elements that are entirely uppercase, False otherwise
       :rtype: pdarray
@@ -3037,7 +3065,7 @@ Package Contents
    .. py:method:: lower() -> Strings
 
       Return a new Strings with all uppercase characters from the original replaced with
-      their lowercase equivalent
+      their lowercase equivalent.
 
       :returns: Strings with all uppercase characters from the original replaced with
                 their lowercase equivalent
@@ -3091,7 +3119,7 @@ Package Contents
    .. py:method:: match(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.pandas.match.Match
 
       Return a match object where elements match only if the beginning of the string matches the
-      regular expression pattern
+      regular expression pattern.
 
       :param pattern: Regex used to find matches
       :type pattern: bytes or str_scalars
@@ -3190,14 +3218,15 @@ Package Contents
 
    .. py:method:: purge_cached_regex_patterns() -> None
 
-      purges cached regex patterns
+      Purges cached regex patterns.
 
 
 
    .. py:method:: regex_split(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], maxsplit: int = 0, return_segments: bool = False) -> Union[Strings, Tuple]
 
       Return a new Strings split by the occurrences of pattern.
-      If maxsplit is nonzero, at most maxsplit splits occur
+
+      If maxsplit is nonzero, at most maxsplit splits occur.
 
       :param pattern: Regex used to split strings into substrings
       :type pattern: bytes or str_scalars
@@ -3229,7 +3258,8 @@ Package Contents
    .. py:method:: register(user_defined_name: str) -> Strings
 
       Register this Strings object with a user defined name in the arkouda server
-      so it can be attached to later using Strings.attach()
+      so it can be attached to later using Strings.attach().
+
       This is an in-place operation, registering a Strings object more than once will
       update the name in the registry and remove the previously registered name.
       A name can only be registered to one object at a time.
@@ -3320,7 +3350,7 @@ Package Contents
    .. py:method:: search(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars]) -> arkouda.pandas.match.Match
 
       Return a match object with the first location in each element where pattern produces a match.
-      Elements match if any part of the string matches the regular expression pattern
+      Elements match if any part of the string matches the regular expression pattern.
 
       :param pattern: Regex used to find matches
       :type pattern: bytes or str_scalars
@@ -3421,7 +3451,7 @@ Package Contents
       >>> strings_start = ak.array([f'{i} string' for i in range(1,6)])
       >>> strings_start
       array(['1 string', '2 string', '3 string', '4 string', '5 string'])
-      >>> strings_start.startswith('\d str', regex = True)
+      >>> strings_start.startswith('\\d str', regex = True)
       array([True True True True True])
 
 
@@ -3495,7 +3525,8 @@ Package Contents
 
       Return new Strings obtained by replacing non-overlapping occurrences of pattern with the
       replacement repl.
-      If count is nonzero, at most count substitutions occur
+
+      If count is nonzero, at most count substitutions occur.
 
       :param pattern: The regex to substitue
       :type pattern: bytes or str_scalars
@@ -3525,7 +3556,7 @@ Package Contents
 
    .. py:method:: subn(pattern: Union[bytes, arkouda.numpy.dtypes.str_scalars], repl: Union[bytes, arkouda.numpy.dtypes.str_scalars], count: int = 0) -> Tuple[Strings, arkouda.numpy.pdarrayclass.pdarray]
 
-      Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions)
+      Perform the same operation as sub(), but return a tuple (new_Strings, number_of_substitions).
 
       :param pattern: The regex to substitue
       :type pattern: bytes or str_scalars
@@ -3555,6 +3586,32 @@ Package Contents
       >>> strings = ak.array(['1_2___', '____', '3', '__4___5____6___7', ''])
       >>> strings.subn(pattern='_+', repl='-', count=2)
       (array(['1-2-', '-', '3', '-4-5____6___7', '']), array([2 1 0 2 0]))
+
+
+
+   .. py:method:: take(indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+      Take elements from the array along an axis.
+
+      When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+      using arrays); however, it can be easier to use if you need elements along a given axis.
+      A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+      :param indices: The indices of the values to extract. Also allow scalars for indices.
+      :type indices: numeric_scalars or pdarray
+      :param axis: The axis over which to select values. By default, the flattened input array is used.
+      :type axis: int, optional
+
+      :returns: The returned array has the same type as `a`.
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.array(["a","b","c"])
+      >>> indices = [0, 1]
+      >>> a.take(indices)
+      array(['a', 'b'])
 
 
 
@@ -3614,7 +3671,7 @@ Package Contents
       - CSV format is not currently supported by load/load_all operations
       - The column delimiter is expected to be the same for column names and data
       - Be sure that column delimiters are not found within your data.
-      - All CSV files must delimit rows using newline (``\n``) at this time.
+      - All CSV files must delimit rows using newline (``\\n``) at this time.
 
 
 
@@ -3705,6 +3762,7 @@ Package Contents
       one file per locale of the arkouda server, where each filename starts
       with prefix_path. Each locale saves its chunk of the array to its
       corresponding file.
+
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
       :param dataset: Name of the dataset to create in files (must not already exist)
@@ -3799,7 +3857,7 @@ Package Contents
    .. py:method:: unregister() -> None
 
       Unregister a Strings object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
@@ -3814,8 +3872,9 @@ Package Contents
 
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'strings_array', save_offsets: bool = True, repack: bool = True) -> str
 
-      Overwrite the dataset with the name provided with this Strings object. If
-      the dataset does not exist it is added
+      Overwrite the dataset with the name provided with this Strings object.
+
+      If the dataset does not exist it is added.
 
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
@@ -3848,7 +3907,7 @@ Package Contents
    .. py:method:: upper() -> Strings
 
       Return a new Strings with all lowercase characters from the original replaced with
-      their uppercase equivalent
+      their uppercase equivalent.
 
       :returns: Strings with all lowercase characters from the original replaced with
                 their uppercase equivalent
@@ -3954,7 +4013,7 @@ Package Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this Timedelta object and underlying components with the Arkouda server
+      Register this Timedelta object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the timedelta is to be registered under,
                                 this will be the root name for underlying components
@@ -3988,7 +4047,7 @@ Package Contents
 
    .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[None, int, tuple]] = None, keepdims: Optional[bool] = False)
 
-      Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std
+      Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std.
 
 
 
@@ -4061,7 +4120,7 @@ Package Contents
    .. py:method:: unregister()
 
       Unregister this timedelta object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
@@ -4292,10 +4351,10 @@ Package Contents
                  arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
                  arange(__arg1: arkouda.numpy.dtypes.int_scalars, __arg2: arkouda.numpy.dtypes.int_scalars, __arg3: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
-   # noqa: DAR102
-   arange([start,] stop[, step,] dtype=int64)
-
    Create a pdarray of consecutive integers within the interval [start, stop).
+
+   Called as: arange([start,] stop[, step,] dtype=int64).
+
    If only one arg is given then arg is the stop parameter. If two args are
    given, then the first arg is start and second is stop. If three args are
    given, then the first arg is start, second is stop, third is step.
@@ -4601,21 +4660,25 @@ Package Contents
    array([7 2 5 3])
 
 
-.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Return the permutation that sorts the array.
+   Return the permutation (indices) that sorts the array.
 
-   :param pda: The array to sort (int64, uint64, or float64)
+   :param pda: The array to sort (supported: int64, uint64, float64 for pdarray).
    :type pda: pdarray, Strings, or Categorical
-   :param algorithm: The algorithm to be used for sorting the array.
-   :type algorithm: SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
-   :param axis: The axis to sort over.
-   :type axis: int_scalars, default=0
+   :param algorithm: The algorithm to use for sorting.
+   :type algorithm: SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+   :param axis: Axis to sort along. Negative values are normalized against the array rank.
+                For 1D types (Strings, Categorical), must be 0.
+   :type axis: int, default 0
+   :param ascending: Sort order.
+   :type ascending: bool, default True
 
-   :returns: The indices such that ``pda[indices]`` is sorted
+   :returns: Indices such that ``pda[indices]`` is sorted.
    :rtype: pdarray
 
-   :raises TypeError: Raised if the parameter is other than a pdarray, Strings or Categorical
+   :raises TypeError: If `pda` is not a pdarray, Strings, or Categorical.
+   :raises ValueError: If `axis` is out of bounds.
 
    .. seealso:: :py:obj:`coargsort`
 
@@ -4630,16 +4693,15 @@ Package Contents
    >>> a = ak.randint(0, 10, 10, seed=1)
    >>> a
    array([7 9 5 1 4 1 8 5 5 0])
-
    >>> perm = ak.argsort(a)
    >>> a[perm]
    array([0 1 1 4 5 5 5 7 8 9])
-
    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
    array([9 3 5 4 2 7 8 0 6 1])
-
    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
    array([9 3 5 4 2 7 8 0 6 1])
+   >>> ak.argsort(a, ascending=False)
+   array([1 6 0 8 7 2 4 5 3 9])
 
 
 .. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, numpy.ndarray, Iterable, arkouda.numpy.strings.Strings], dtype: Union[numpy.dtype, type, str, None] = None, copy: bool = False, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
@@ -5081,6 +5143,30 @@ Package Contents
    .. py:method:: copy_with(params)
 
 
+.. py:function:: broadcast_arrays(*arrays: arkouda.numpy.pdarrayclass.pdarray) -> List[arkouda.numpy.pdarrayclass.pdarray]
+
+   Broadcast arrays to a common shape.
+
+   :param arrays: The arrays to broadcast. Must be broadcastable to a common shape.
+   :type arrays: pdarray
+
+   :returns: A list whose elements are the given Arrays broadcasted to the common shape.
+   :rtype: List
+
+   :raises ValueError: Raised by broadcast_to if a common shape cannot be determined.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.arange(10).reshape(1,2,5)
+   >>> b = ak.arange(20).reshape(4,1,5)
+   >>> c = ak.broadcast_arrays(a,b)
+   >>> c[0][0,:,:]
+   array([array([0 1 2 3 4]) array([5 6 7 8 9])])
+   >>> c[1][:,0,0]
+   array([0 5 10 15])
+
+
 .. py:function:: broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, Ellipsis]
 
    Determine the broadcasted shape of two arrays given their shapes.
@@ -5111,47 +5197,50 @@ Package Contents
    (3, 4)
 
 
-.. py:function:: broadcast_to_shape(pda: pdarray, shape: Tuple[int, Ellipsis]) -> pdarray
+.. py:function:: broadcast_shapes(*shapes: Tuple[int, Ellipsis]) -> Tuple[int, Ellipsis]
 
-   Create a "broadcasted" array (of rank 'nd') by copying an array into an
-   array of the given shape.
+   Determine a broadcasted shape, given an arbitary number of shapes.
 
-   E.g., given the following broadcast:
+   This function implements the broadcasting rules from the Array API standard
+   to compute the shape resulting from broadcasting two arrays together.
 
-   pda    (3d array):  1 x 4 x 1
+   See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
 
-   shape  ( shape  ):  7 x 4 x 2
+   :param shapes: a list or tuple of the shapes to be broadcast
+   :type shapes: Tuple[int, ...]
 
-   Result (3d array):  7 x 4 x 2
+   :returns: The broadcasted shape
+   :rtype: Tuple[int, ...]
 
-   When copying from a singleton dimension, the value is repeated along
-   that dimension (e.g., pda's 1st and 3rd above).
-   For non singleton dimensions, the size of the two arrays must match,
-   and the values are copied into the result array.
-
-   When prepending a new dimension to increase an array's rank, the
-   values from the other dimensions are repeated along the new dimension.
-
-
-   :param pda: the input to be broadcast
-   :type pda: pdarray
-   :param shape: the shape to which pda is to be broadcast
-   :type shape: tuple of int
-
-   :returns: the result of the broadcast operation
-   :rtype: pdarray
+   :raises ValueError: If the shapes are not compatible for broadcasting.
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> a = ak.arange(2).reshape(1,2,1)
-   >>> ak.broadcast_to_shape(a,(2,2,2))
-   array([array([array([0 0]) array([1 1])]) array([array([0 0]) array([1 1])])])
-   >>> a = ak.array([5,19]).reshape(1,2)
-   >>> ak.broadcast_to_shape(a,(2,2,2))
-   array([array([array([5 19]) array([5 19])]) array([array([5 19]) array([5 19])])])
+   >>> ak.broadcast_shapes((1,2,3),(4,1,3),(4,2,1))
+   (4, 2, 3)
 
-   :raises RuntimeError: raised if the pda can't be broadcast to the given shape
+
+.. py:function:: broadcast_to(x: arkouda.numpy.pdarrayclass.pdarray, shape: Tuple[int, Ellipsis]) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Broadcast the array to the specified shape.
+
+   :param x: The array to be broadcast.
+   :type x: pdarray
+   :param shape: The shape to which the array is to be broadcast.
+   :type shape: Tuple[int, ...]
+
+   :returns: A new array which is x broadcast to the provided shape.
+   :rtype: pdarray
+
+   :raises ValueError: Raised server-side if the broadcast fails.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.arange(5)
+   >>> ak.broadcast_to(a,(2,5))
+   array([array([0 1 2 3 4]) array([0 1 2 3 4])])
 
 
 .. py:class:: byte
@@ -5790,7 +5879,7 @@ Package Contents
 
 .. py:function:: clip(pda: arkouda.numpy.pdarrayclass.pdarray, lo: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], hi: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Clip (limit) the values in an array to a given range [lo,hi]
+   Clip (limit) the values in an array to a given range [lo,hi].
 
    Given an array a, values outside the range are clipped to the
    range edges, such that all elements lie in the range.
@@ -6003,7 +6092,7 @@ Package Contents
 
 .. py:function:: corr(x: pdarray, y: pdarray) -> numpy.float64
 
-   Return the correlation between x and y
+   Return the correlation between x and y.
 
    :param x: One of the pdarrays used to calculate correlation
    :type x: pdarray
@@ -6084,7 +6173,7 @@ Package Contents
    array([1.43308638... 1.06797874... 1.01392106... 1.25516900...])
 
 
-.. py:function:: count_nonzero(pda: arkouda.numpy.pdarrayclass.pdarray) -> numpy.int64
+.. py:function:: count_nonzero(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.dtypes.int_scalars
 
    Compute the nonzero count of a given array. 1D case only, for now.
 
@@ -6092,7 +6181,7 @@ Package Contents
    :type pda: pdarray
 
    :returns: The nonzero count of the entire pdarray
-   :rtype: np.int64
+   :rtype: int_scalars
 
    :raises TypeError: Raised if the parameter is not a pdarray with numeric, bool, or str datatype
    :raises ValueError: Raised if sum applied to the pdarray doesn't come back with a scalar
@@ -6113,7 +6202,7 @@ Package Contents
 
 .. py:function:: cov(x: pdarray, y: pdarray) -> numpy.float64
 
-   Return the covariance of x and y
+   Return the covariance of x and y.
 
    :param x: One of the pdarrays used to calculate covariance
    :type x: pdarray
@@ -6181,7 +6270,7 @@ Package Contents
    array([0 0 1 0 2 0 1 0 3 0])
 
 
-.. py:function:: cumprod(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: cumprod(pda: arkouda.numpy.pdarrayclass.pdarray, axis: Optional[Union[int, None]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the cumulative product over the array.
 
@@ -6190,12 +6279,15 @@ Package Contents
 
    :param pda:
    :type pda: pdarray
+   :param axis: the axis along which to compute the product
+   :type axis: int, optional
 
    :returns: A pdarray containing cumulative products for each element
              of the original pdarray
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+   :raises ValueError: Raised if an invalid axis is given
 
    .. rubric:: Examples
 
@@ -6204,11 +6296,13 @@ Package Contents
    array([1 2 6 24])
 
    >>> ak.cumprod(ak.uniform(5,1.0,5.0, seed=1))
-   array([4.14859379... 5.54704379... 22.2010913...
-       79.7021268... 298.265515...])
+   array([4.14859379... 5.54704379... 22.20109135... 79.7021268... 298.2655159...])
+
+   >>> ak.cumprod(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
+   array([1 0 0 0 0])
 
 
-.. py:function:: cumsum(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: cumsum(pda: arkouda.numpy.pdarrayclass.pdarray, axis: Optional[Union[int, None]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the cumulative sum over the array.
 
@@ -6217,12 +6311,14 @@ Package Contents
 
    :param pda:
    :type pda: pdarray
+   :param axis: the axis along which to compute the sum
+   :type axis: int, optional
 
-   :returns: A pdarray containing cumulative sums for each element
-             of the original pdarray
+   :returns: A pdarray containing cumulative sums for each element of the original pdarray
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+   :raises ValueError: Raised if an invalid axis is given
 
    .. rubric:: Examples
 
@@ -6233,7 +6329,7 @@ Package Contents
    >>> ak.cumsum(ak.uniform(5,1.0,5.0, seed=1))
    array([4.14859379... 5.48568392... 9.48801240... 13.0780218... 16.8202747...])
 
-   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool_, seed=1))
+   >>> ak.cumsum(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
    array([1 1 2 3 4])
 
 
@@ -6455,7 +6551,7 @@ Package Contents
    (array([5 6 7 1 9]), array([5 0 7 3 9]))
 
 
-.. py:function:: dot(pda1: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray], pda2: Union[numpy.int64, numpy.float64, numpy.uint64, pdarray]) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
+.. py:function:: dot(pda1: Union[int, numpy.int64, numpy.float64, numpy.uint64, pdarray], pda2: Union[int, numpy.int64, numpy.float64, numpy.uint64, pdarray]) -> Union[arkouda.numpy.dtypes.numeric_scalars, numpy.bool, pdarray]
 
    Computes dot product of two arrays.
 
@@ -6589,6 +6685,40 @@ Package Contents
 .. py:data:: e
    :type:  float
 
+.. py:function:: errstate(*, divide: Optional[_ErrorMode] = None, over: Optional[_ErrorMode] = None, under: Optional[_ErrorMode] = None, invalid: Optional[_ErrorMode] = None, call: Optional[Callable[[str, str], None]] = None) -> Iterator[None]
+
+   Context manager to temporarily set floating-point error handling.
+
+   :param divide: Temporary behavior within the context.
+   :type divide: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param over: Temporary behavior within the context.
+   :type over: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param under: Temporary behavior within the context.
+   :type under: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param invalid: Temporary behavior within the context.
+   :type invalid: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param call: Temporary callable used if any category is set to 'call'.
+                Signature: (errtype: str, message: str) -> None.
+   :type call: callable or None, optional
+
+   :Yields: *None* -- This context manager does not return a value. Code inside the ``with``
+            block will be executed with the temporary error handling settings.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.geterr()
+   {'divide': 'call', 'over': 'ignore', 'under': 'ignore', 'invalid': 'ignore'}
+   >>> with ak.errstate(divide='warn'):
+   ...     _ = ak.array([1.0]) / 0  # gives a warning
+   >>> ak.geterr()['divide']   # doctest: +SKIP
+   'ignore'
+
+   .. rubric:: Notes
+
+   This affects only stored policy; it does not add runtime checks by itself.
+
+
 .. py:data:: euler_gamma
    :type:  float
 
@@ -6675,6 +6805,29 @@ Package Contents
 
    if N = M and k = 0, the result is an identity matrix
    Server returns an error if rank of pda < 2
+
+
+.. py:function:: fabs(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Compute the absolute values element-wise, casting to a float beforehand.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing absolute values of the input array elements, casted to float type
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.fabs(ak.arange(-5,-1))
+   array([5.00000000000000000 4.00000000000000000 3.00000000000000000 2.00000000000000000])
+
+   >>> ak.fabs(ak.linspace(-5,-1,5))
+   array([5.00000000... 4.00000000... 3.00000000...
+   2.00000000... 1.00000000...])
 
 
 .. py:class:: finfo
@@ -6899,6 +7052,15 @@ Package Contents
 
    :returns: An array with the entries of axis reversed.
    :rtype: pdarray, Strings, or Categorical
+
+   :raises IndexError: Raised if operation fails server-side.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.arange(12)
+   >>> ak.flip(a)
+   array([11 10 9 8 7 6 5 4 3 2 1 0])
 
    .. note:: This differs from numpy as it actually reverses the data, rather than presenting a view.
 
@@ -7336,7 +7498,7 @@ Package Contents
    contains strings and sets the dtype to str
 
 
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, str], dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, numpy.bool, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Create a pdarray filled with fill_value.
 
@@ -7430,7 +7592,7 @@ Package Contents
 
 .. py:function:: get_server_byteorder() -> str
 
-   Get the server's byteorder
+   Get the server's byteorder.
 
    :returns: Returns "little" for little endian and "big" for big endian.
    :rtype: str
@@ -7442,6 +7604,23 @@ Package Contents
    >>> import arkouda as ak
    >>> ak.get_server_byteorder()
    'little'
+
+
+.. py:function:: geterr() -> Dict[str, _ErrorMode]
+
+   Get the current Arkouda floating-point error handling settings.
+
+   :returns: Mapping of {'divide', 'over', 'under', 'invalid'} to one of
+             {'ignore', 'warn', 'raise', 'call', 'print', 'log'}.
+   :rtype: dict
+
+
+.. py:function:: geterrcall() -> Optional[Callable[[str, str], None]]
+
+   Get the current callable used when error mode is 'call'.
+
+   :returns: A function of signature (errtype: str, message: str) -> None, or None.
+   :rtype: callable or None
 
 
 .. py:class:: half
@@ -7595,7 +7774,7 @@ Package Contents
 
 .. py:function:: histogram2d(x: arkouda.numpy.pdarrayclass.pdarray, y: arkouda.numpy.pdarrayclass.pdarray, bins: Union[arkouda.numpy.dtypes.int_scalars, Sequence[arkouda.numpy.dtypes.int_scalars]] = 10, range: Optional[Tuple[Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars], Tuple[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.numeric_scalars]]] = None) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
-   Compute the bi-dimensional histogram of two data samples with evenly spaced bins
+   Compute the bi-dimensional histogram of two data samples with evenly spaced bins.
 
    :param x: A pdarray containing the x coordinates of the points to be histogrammed.
    :type x: pdarray
@@ -8582,40 +8761,64 @@ Package Contents
    True
 
 
-.. py:function:: linspace(start: arkouda.numpy.dtypes.numeric_scalars, stop: arkouda.numpy.dtypes.numeric_scalars, length: arkouda.numpy.dtypes.int_scalars) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: linspace(start: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], stop: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], num: arkouda.numpy.dtypes.int_scalars = 50, endpoint: Union[None, bool] = True, dtype: Optional[type] = float64, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Create a pdarray of linearly-spaced floats in a closed interval.
+   Return evenly spaced numbers over a specified interval.
 
-   :param start: Start of interval (inclusive)
-   :type start: numeric_scalars
-   :param stop: End of interval (inclusive)
-   :type stop: numeric_scalars
-   :param length: Number of points
-   :type length: int_scalars
+   Returns `num` evenly spaced samples, calculated over the
+   interval [`start`, `stop`].
 
-   :returns: Array of evenly spaced float values along the interval
+   The endpoint of the interval can optionally be excluded.
+
+   :param start: The starting value of the sequence.
+   :type start: Union[numeric_scalars, pdarray]
+   :param stop: The end value of the sequence, unless `endpoint` is set to False.
+                In that case, the sequence consists of all but the last of ``num + 1``
+                evenly spaced samples, so that `stop` is excluded.  Note that the step
+                size changes when `endpoint` is False.
+   :type stop: Union[numeric_scalars, pdarray]
+   :param num: Number of samples to generate. Default is 50. Must be non-negative.
+   :type num: int, optional
+   :param endpoint: If True, `stop` is the last sample. Otherwise, it is not included.
+                    Default is True.
+   :type endpoint: bool, optional
+   :param dtype: Allowed for compatibility with numpy linspace, but anything entered
+                 is ignored.  The output is always ak.float64.
+   :type dtype: dtype, optional
+   :param axis: The axis in the result to store the samples.  Relevant only if start
+                or stop are array-like.  By default (0), the samples will be along a
+                new axis inserted at the beginning. Use -1 to get an axis at the end.
+   :type axis: int, optional
+
+   :returns: There are `num` equally spaced samples in the closed interval
+             ``[start, stop]`` or the half-open interval ``[start, stop)``
+             (depending on whether `endpoint` is True or False).
    :rtype: pdarray
 
-   :raises TypeError: Raised if start or stop is not a float or int or if length is not an int
-
-   .. seealso:: :py:obj:`arange`
-
-   .. rubric:: Notes
-
-   If that start is greater than stop, the pdarray values are generated
-   in descending order.
+   :raises TypeError: Raised if start or stop is not a float or a pdarray, or if num
+       is not an int, or if endpoint is not a bool, or if dtype is anything
+       other than None or float64, or axis is not an integer.
+   :raises ValueError: Raised if axis is not a valid axis for the given data.
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.linspace(0, 1, 5)
-   array([0.00000000000000000 0.25 0.5 0.75 1.00000000000000000])
-
-   >>> ak.linspace(start=1, stop=0, length=5)
-   array([1.00000000000000000 0.75 0.5 0.25 0.00000000000000000])
-
-   >>> ak.linspace(start=-5, stop=0, length=5)
-   array([-5.00000000000000000 -3.75 -2.5 -1.25 0.00000000000000000])
+   >>> ak.linspace(0,1,3)
+   array([0.00000000000000000 0.5 1.00000000000000000])
+   >>> ak.linspace(1,0,3)
+   array([1.00000000000000000 0.5 0.00000000000000000])
+   >>> ak.linspace(0,1,3,endpoint=False)
+   array([0.00000000000000000 0.33333333333333331 0.66666666666666663])
+   >>> ak.linspace(0,ak.array([2,3]),3)
+   array([array([0.00000000000000000 0.00000000000000000])
+       array([1.00000000000000000 1.5]) array([2.00000000000000000 3.00000000000000000])])
+   >>> ak.linspace(ak.array([0,1]),3,3)
+   array([array([0.00000000000000000 1.00000000000000000])
+       array([1.5 2.00000000000000000]) array([3.00000000000000000 3.00000000000000000])])
+   >>> ak.linspace(ak.array([0,1]),ak.array([2,3]),3)
+   array([array([0.00000000000000000 1.00000000000000000])
+       array([1.00000000000000000 2.00000000000000000])
+       array([2.00000000000000000 3.00000000000000000])])
 
 
 .. py:function:: log(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -8705,6 +8908,75 @@ Package Contents
    >>> a = ak.arange(1,5)
    >>> ak.log2(a)
    array([0.00000000... 1.00000000... 1.58496250... 2.00000000...])
+
+
+.. py:function:: logspace(start: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], stop: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], num: arkouda.numpy.dtypes.int_scalars = 50, base: arkouda.numpy.dtypes.numeric_scalars = 10.0, endpoint: Union[None, bool] = True, dtype: Optional[type] = float64, axis: Union[None, arkouda.numpy.dtypes.int_scalars] = 0) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Create a pdarray of numbers evenly spaced on a log scale.
+
+   :param start: The starting value of the sequence.
+   :type start: Union[numeric_scalars, pdarray]
+   :param stop: The end value of the sequence, unless `endpoint` is set to False.
+                In that case, the sequence consists of all but the last of ``num + 1``
+                evenly spaced samples, so that `stop` is excluded.  Note that the step
+                size changes when `endpoint` is False.
+   :type stop: Union[numeric_scalars, pdarray]
+   :param num: Number of samples to generate. Default is 50. Must be non-negative.
+   :type num: int, optional
+   :param base: the base of the log space, defaults to 10.0.
+   :type base: numeric_scalars, optional
+   :param endpoint: If True, `stop` is the last sample. Otherwise, it is not included.
+                    Default is True.
+   :type endpoint: bool, optional
+   :param dtype: allowed for compatibility with numpy, but ignored.  Outputs are always float
+   :type dtype: Union[None, float64]
+   :param axis: The axis in the result to store the samples.  Relevant only if start
+                or stop are array-like.  By default (0), the samples will be along a
+                new axis inserted at the beginning. Use -1 to get an axis at the end.
+   :type axis: int, optional
+
+   :returns: There are `num` equally spaced (logarithmically) samples in the closed interval
+             base**``[start, stop]`` or the half-open interval base**``[start, stop)``
+             (depending on whether `endpoint` is True or False).
+   :rtype: pdarray
+
+   :raises TypeError: Raised if start or stop is not a float or a pdarray, or if num
+       is not an int, or if endpoint is not a bool, or if dtype is anything
+       other than None or float64, or axis is not an integer.
+   :raises ValueError: Raised if axis is not a valid axis for the given data, or if base < 0.
+
+   .. seealso:: :py:obj:`linspace`
+
+   .. rubric:: Notes
+
+   If start is greater than stop, the pdarray values are generated
+   in descending order.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.logspace(2,3,3,4)
+   array([16.00000000000000000 32.00000000000000000 64.00000000000000000])
+   >>> ak.logspace(2,3,3,4,endpoint=False)
+   array([16.00000000000000000 25.398416831491197 40.317473596635935])
+   >>> ak.logspace(0,1,3,4)
+   array([1.00000000000000000 2.00000000000000000 4.00000000000000000])
+   >>> ak.logspace(1,0,3,4)
+   array([4.00000000000000000 2.00000000000000000 1.00000000000000000])
+   >>> ak.logspace(0,1,3,endpoint=False)
+   array([1.00000000000000000 2.1544346900318838 4.6415888336127784])
+   >>> ak.logspace(0,ak.array([2,3]),3,base=2)
+   array([array([1.00000000000000000 1.00000000000000000])
+       array([2.00000000000000000 2.8284271247461903])
+       array([4.00000000000000000 8.00000000000000000])])
+   >>> ak.logspace(ak.array([0,1]),3,3,base=3)
+   array([array([1.00000000000000000 3.00000000000000000])
+       array([5.196152422706632 9.00000000000000000])
+       array([27.00000000000000000 27.00000000000000000])])
+   >>> ak.logspace(ak.array([0,1]),ak.array([2,3]),3,base=4)
+   array([array([1.00000000000000000 4.00000000000000000])
+       array([4.00000000000000000 16.00000000000000000])
+       array([16.00000000000000000 64.00000000000000000])])
 
 
 .. py:class:: longdouble
@@ -8834,6 +9106,14 @@ Package Contents
    array([7 9 10])
    >>> ak.maxk(A, 4)
    array([5 7 9 10])
+
+
+.. py:function:: may_share_memory(a, b)
+
+   Conservative version akin to numpy.may_share_memory.
+
+   For now it just defers to shares_memory.
+
 
 
 .. py:function:: median(pda: arkouda.numpy.pdarrayclass.pdarray) -> numpy.float64
@@ -9279,6 +9559,7 @@ Package Contents
    .. py:method:: argmaxk(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
       Finds the indices corresponding to the `k` maximum values of an array.
+
       See ``arkouda.argmaxk`` for details.
 
 
@@ -9319,6 +9600,7 @@ Package Contents
    .. py:method:: argmink(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
       Finds the indices corresponding to the `k` minimum values of an array.
+
       See ``arkouda.argmink`` for details.
 
 
@@ -9353,7 +9635,7 @@ Package Contents
 
    .. py:method:: astype(dtype) -> pdarray
 
-      Cast values of pdarray to provided dtype
+      Cast values of pdarray to provided dtype.
 
       :param dtype: Dtype to cast to
       :type dtype: np.dtype or str
@@ -9369,7 +9651,7 @@ Package Contents
       array([1 0])
 
       :returns: An arkouda pdarray with values converted to the specified data type
-      :rtype: ak.pdarray
+      :rtype: pdarray
 
       .. rubric:: Notes
 
@@ -9406,7 +9688,9 @@ Package Contents
 
    .. py:method:: clz() -> pdarray
 
-      Count the number of leading zeros in each element. See `ak.clz`.
+      Count the number of leading zeros in each element.
+
+      See `ak.clz`.
 
 
 
@@ -9422,6 +9706,7 @@ Package Contents
    .. py:method:: corr(y: pdarray) -> numpy.float64
 
       Compute the correlation between self and y using pearson correlation coefficient.
+
       See ``arkouda.corr`` for details.
 
 
@@ -9434,7 +9719,9 @@ Package Contents
 
    .. py:method:: ctz() -> pdarray
 
-      Count the number of trailing zeros in each element. See `ak.ctz`.
+      Count the number of trailing zeros in each element.
+
+      See `ak.ctz`.
 
 
 
@@ -9465,7 +9752,7 @@ Package Contents
 
 
 
-   .. py:method:: fill(value: arkouda.numpy.dtypes.numeric_scalars) -> None
+   .. py:method:: fill(value: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars]) -> None
 
       Fill the array (in place) with a constant value.
 
@@ -9525,7 +9812,7 @@ Package Contents
 
    .. py:method:: is_registered() -> numpy.bool_
 
-      Return True iff the object is contained in the registry
+      Return True iff the object is contained in the registry.
 
       :returns: Indicates if the object is contained in the registry
       :rtype: bool
@@ -9614,7 +9901,9 @@ Package Contents
 
    .. py:method:: maxk(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
-      Compute the maximum "k" values.  See ``arkouda.maxk`` for details.
+      Compute the maximum "k" values.
+
+      See ``arkouda.maxk`` for details.
 
 
 
@@ -9650,8 +9939,8 @@ Package Contents
       >>> ak.mean(a,axis=1)
       array([2.00000000000000000 7.00000000000000000])
 
-      Raises
-          Raised if pda is not a pdarray instance
+      :raises Raised if pda is not a pdarray instance:
+
       RuntimeError
           Raised if there's a server-side error thrown
 
@@ -9692,7 +9981,9 @@ Package Contents
 
    .. py:method:: mink(k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
-      Compute the minimum "k" values.  See ``arkouda.mink`` for details.
+      Compute the minimum "k" values.
+
+      See ``arkouda.mink`` for details.
 
 
 
@@ -9722,13 +10013,17 @@ Package Contents
 
    .. py:method:: parity() -> pdarray
 
-      Find the parity (XOR of all bits) in each element. See `ak.parity`.
+      Find the parity (XOR of all bits) in each element.
+
+      See `ak.parity`.
 
 
 
    .. py:method:: popcount() -> pdarray
 
-      Find the population (number of bits set) in each element. See `ak.popcount`.
+      Find the population (number of bits set) in each element.
+
+      See `ak.popcount`.
 
 
 
@@ -9774,7 +10069,8 @@ Package Contents
    .. py:method:: register(user_defined_name: str) -> pdarray
 
       Register this pdarray with a user defined name in the arkouda server
-      so it can be attached to later using pdarray.attach()
+      so it can be attached to later using pdarray.attach().
+
       This is an in-place operation, registering a pdarray more than once will
       update the name in the registry and remove the previously registered name.
       A name can only be registered to one pdarray at a time.
@@ -10000,6 +10296,32 @@ Package Contents
 
 
 
+   .. py:method:: take(indices: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray
+
+      Take elements from the array along an axis.
+
+      When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+      using arrays); however, it can be easier to use if you need elements along a given axis.
+      A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+      :param indices: The indices of the values to extract. Also allow scalars for indices.
+      :type indices: numeric_scalars or pdarray
+      :param axis: The axis over which to select values. By default, the flattened input array is used.
+      :type axis: int, optional
+
+      :returns: The returned array has the same type as `a`.
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.array([4, 3, 5, 7, 6, 8])
+      >>> indices = [0, 1, 4]
+      >>> a.take(indices)
+      array([4 3 6])
+
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'array', col_delim: str = ',', overwrite: bool = False)
 
       Write pdarry to CSV file(s).  File will contain a single column
@@ -10033,7 +10355,7 @@ Package Contents
       - CSV format is not currently supported by load/load_all operations
       - The column delimiter is expected to be the same for all column names and data
       - Be sure that column delimiters are not found within your data.
-      - All CSV files must delimit rows using newline ("\n") at this time.
+      - All CSV files must delimit rows using newline ("\\n") at this time.
 
 
 
@@ -10285,7 +10607,7 @@ Package Contents
    .. py:method:: unregister() -> None
 
       Unregister a pdarray in the arkouda server which was previously
-      registered using register() and/or attahced to using attach()
+      registered using register() and/or attahced to using attach().
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
@@ -10312,7 +10634,7 @@ Package Contents
    .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
 
       Overwrite the dataset with the name provided with this pdarray. If
-      the dataset does not exist it is added
+      the dataset does not exist it is added.
 
       :param prefix_path: Directory and filename prefix that all output files share
       :type prefix_path: str
@@ -10725,7 +11047,7 @@ Package Contents
    >>> ak.randint(0, 1, 3, seed=1701, dtype=ak.float64)
    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
 
-   >>> ak.randint(0, 1, 5, seed=1701, dtype=ak.bool_)
+   >>> ak.randint(0, 2, 5, seed=1701, dtype=ak.bool_)
    array([False True False True False])
 
 
@@ -10756,9 +11078,9 @@ Package Contents
 
    .. rubric:: Notes
 
-   The lengths of the generated strings are distributed $Lognormal(\mu, \sigma^2)$,
-   with :math:`\mu = logmean` and :math:`\sigma = logstd`. Thus, the strings will
-   have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of
+   The lengths of the generated strings are distributed $Lognormal(\\mu, \\sigma^2)$,
+   with :math:`\\mu = logmean` and :math:`\\sigma = logstd`. Thus, the strings will
+   have an average length of :math:`exp(\\mu + 0.5*\\sigma^2)`, a minimum length of
    zero, and a heavy tail towards longer strings.
 
    .. rubric:: Examples
@@ -10830,7 +11152,7 @@ Package Contents
 
 .. py:function:: repeat(a: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], repeats: Union[int, Sequence[int], arkouda.numpy.pdarrayclass.pdarray], axis: Union[None, int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Repeat each element of an array after themselves
+   Repeat each element of an array after themselves.
 
    :param a: Input array.
    :type a: int, Sequence of int, or pdarray
@@ -10843,6 +11165,14 @@ Package Contents
 
    :returns: Output array which has the same shape as `a`, except along the given axis.
    :rtype: pdarray
+
+   :raises ValueError: Raised if repeats is not an int or a 1-dimensional array, or if it contains
+       negative values, if its size does not match the input arrays size along
+       axis.
+   :raises RuntimeError: Raised if the operation fails server-side.
+   :raises TypeError: Raised if axis anything but None or int, or if either a or repeats is invalid
+       (the a and repeat cases should be impossible).
+   :raises IndexError: Raised if axis is invalid for the given rank.
 
    .. rubric:: Examples
 
@@ -10968,12 +11298,14 @@ Package Contents
    array([1.00000000... 3.00000000... 3.00000000...])
 
 
-.. py:function:: scalar_array(value: arkouda.numpy.dtypes.numeric_scalars, dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: scalar_array(value: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars], dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray from a single scalar value.
 
    :param value: Value to create pdarray from
    :type value: numeric_scalars
+   :param dtype: The data type of the created array.
+   :type dtype: np.dtype, type, str, bigint, or None
 
    :returns: pdarray with a single element
    :rtype: pdarray
@@ -11168,6 +11500,45 @@ Package Contents
    [array([2 4 5]), array([2 4 5]), array([2 4 5])]
 
 
+.. py:function:: seterr(**kwargs: _ErrorMode) -> Dict[str, _ErrorMode]
+
+   Set how Arkouda handles floating-point errors.
+
+   :param divide: Behavior for the corresponding error category.
+   :type divide: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param over: Behavior for the corresponding error category.
+   :type over: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param under: Behavior for the corresponding error category.
+   :type under: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+   :param invalid: Behavior for the corresponding error category.
+   :type invalid: {'ignore', 'warn', 'raise', 'call', 'print', 'log'}, optional
+
+   :returns: The previous settings.
+   :rtype: dict
+
+   .. rubric:: Notes
+
+   This is a *scaffold* API. It does not change backend behavior yet; it only
+   records the desired policy so future operations can consult it.
+
+
+.. py:function:: seterrcall(func: Optional[Callable[[str, str], None]]) -> Optional[Callable[[str, str], None]]
+
+   Set the callable invoked when an error category is set to 'call'.
+
+   :param func: Function of signature (errtype: str, message: str) -> None.
+                Pass None to clear.
+   :type func: callable or None
+
+   :returns: The previous callable.
+   :rtype: callable or None
+
+   .. rubric:: Notes
+
+   This is a *stub* for API compatibility. Arkouda does not currently invoke
+   this callable; it is stored for future use.
+
+
 .. py:function:: setxor1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the set exclusive-or (symmetric difference) of two arrays.
@@ -11232,6 +11603,24 @@ Package Contents
    (1,)
    >>> ak.shape(0)
    ()
+
+
+.. py:function:: shares_memory(a, b)
+
+   Return True if `a` and `b` share any Arkouda server-side buffers.
+
+   This is an Arkouda analogue of numpy.shares_memory with a simpler definition:
+   it checks for identical backing buffer *identities* (same server object names).
+
+   .. rubric:: Notes
+
+   - Because Arkouda commonly *materializes* results (rather than views),
+     aliasing is rare and usually only true when objects literally reference
+     the same backing buffers.
+   - For compound containers (e.g., SegArray, Strings, Categorical), we check
+     all of their component buffers.
+   - If you introduce true view semantics in the future, teach `_ak_buffer_names`
+     to surface the base buffer name(s) and view descriptors, and compare bases.
 
 
 .. py:class:: short
@@ -11494,6 +11883,8 @@ Package Contents
    :returns: A copy of x with the dimensions specified in the axis argument removed.
    :rtype: pdarray
 
+   :raises RuntimeError: Raised if operation fails server-side.
+
    .. rubric:: Examples
 
    >>> import arkouda as ak
@@ -11527,7 +11918,7 @@ Package Contents
 
    .. rubric:: Notes
 
-   For random samples from :math:`N(\mu, \sigma^2)`, use:
+   For random samples from :math:`N(\\mu, \\sigma^2)`, use:
 
    ``(sigma * standard_normal(size)) + mu``
 
@@ -12071,7 +12462,7 @@ Package Contents
    .. py:method:: copy_with(params)
 
 
-.. py:function:: take(a: arkouda.numpy.pdarrayclass.pdarray, indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: take(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings], indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Take elements from an array along an axis.
 
@@ -12234,7 +12625,7 @@ Package Contents
    <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
 
 
-.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[int, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: transpose(pda: arkouda.numpy.pdarrayclass.pdarray, axes: Optional[Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Compute the transpose of a matrix.
 
@@ -12267,7 +12658,7 @@ Package Contents
 
 .. py:function:: tril(pda: arkouda.numpy.pdarrayclass.pdarray, diag: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Return a copy of the pda with the upper triangle zeroed out
+   Return a copy of the pda with the upper triangle zeroed out.
 
    :param pda:
    :type pda: pdarray
@@ -12307,7 +12698,7 @@ Package Contents
 
 .. py:function:: triu(pda: arkouda.numpy.pdarrayclass.pdarray, diag: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Return a copy of the pda with the lower triangle zeroed out
+   Return a copy of the pda with the lower triangle zeroed out.
 
    :param pda:
    :type pda: pdarray
@@ -12639,17 +13030,17 @@ Package Contents
    .. py:method:: bit_count(/)
 
 
-.. py:function:: uniform(size: arkouda.numpy.dtypes.int_scalars, low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: uniform(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]], low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Generate a pdarray with uniformly distributed random float values
    in a specified range.
 
+   :param size: The length or shape of the returned array
+   :type size: Union[int_scalars, Tuple[int_scalars]
    :param low: The low value (inclusive) of the range, defaults to 0.0
    :type low: float_scalars
    :param high: The high value (inclusive) of the range, defaults to 1.0
    :type high: float_scalars
-   :param size: The length of the returned array
-   :type size: int_scalars
    :param seed: Value used to initialize the random number generator
    :type seed: int_scalars, optional
 
@@ -12862,7 +13253,7 @@ Package Contents
 
    This matches the behavior of numpy vecdot, but as commented above, it is not the
    behavior of the deprecated vecdot, which calls the chapel-side vecdot function.
-   This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the
+   This function only uses broadcast_to, broadcast_shapes, ak.sum, and the
    binops pdarray multiplication function.  The last dimension of x1 and x2 must
    match, and it must be possible to broadcast them to a compatible shape.
    The deprecated vecdot can be computed via ak.vecdot(a,b,axis=0) on pdarrays

@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.pandas.categorical - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -203,7 +196,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -212,14 +205,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
@@ -237,12 +230,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -257,29 +250,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -293,7 +278,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -307,9 +292,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -322,16 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -339,7 +323,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -369,8 +353,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -378,8 +361,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -433,21 +415,10 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
-    <span class="n">DefaultDict</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Mapping</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Sequence</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -472,21 +443,27 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">unique</span>
 
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">SortingAlgorithm</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">generic_msg</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;generic_msg&quot;</span><span class="p">)</span>
     <span class="n">akcast</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;akcast&quot;</span><span class="p">)</span>
     <span class="n">where</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;where&quot;</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">SortingAlgorithm</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+        <span class="n">RadixSortLSD</span> <span class="o">=</span> <span class="s2">&quot;RadixSortLSD&quot;</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Categorical&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="Categorical">
-<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.categorical.Categorical">[docs]</a>
+<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.pandas.categorical.Categorical">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Categorical</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents an array of values belonging to named categories.</span>
@@ -578,7 +555,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">_categories_used</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">permutation</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">segments</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;expected Strings, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -588,6 +565,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">segments</span>
                 <span class="c1"># Make a copy because N/A value must be added below</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[:]</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;str_&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;str_&quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="p">(</span><span class="s2">&quot;Categorical: inputs other than &quot;</span> <span class="o">+</span> <span class="s2">&quot;Strings or pd.Categorical not yet supported&quot;</span><span class="p">)</span>
@@ -654,7 +637,7 @@
         <span class="k">return</span> <span class="s2">&quot;categorical&quot;</span>
 
 <div class="viewcode-block" id="Categorical.from_codes">
-<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.categorical.Categorical.from_codes">[docs]</a>
+<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.pandas.categorical.Categorical.from_codes">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_codes</span><span class="p">(</span>
@@ -704,7 +687,7 @@
 
 
 <div class="viewcode-block" id="Categorical.from_return_msg">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -731,7 +714,7 @@
 
 
 <div class="viewcode-block" id="Categorical.standardize_categories">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.standardize_categories">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.standardize_categories">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">standardize_categories</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="s2">&quot;N/A&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -762,7 +745,7 @@
 
 
 <div class="viewcode-block" id="Categorical.equals">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.equals">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.equals">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bool_scalars</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Whether Categoricals are the same size and all entries are equal.</span>
@@ -780,7 +763,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; ak.connect()</span>
+
 <span class="sd">        &gt;&gt;&gt; c = Categorical(ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]))</span>
 <span class="sd">        &gt;&gt;&gt; c_cpy = Categorical(ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]))</span>
 <span class="sd">        &gt;&gt;&gt; c.equals(c_cpy)</span>
@@ -802,7 +785,7 @@
 
 
 <div class="viewcode-block" id="Categorical.set_categories">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.set_categories">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.set_categories">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set categories to user-defined values.</span>
@@ -868,7 +851,7 @@
 
 
 <div class="viewcode-block" id="Categorical.to_ndarray">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the array to a np.ndarray.</span>
@@ -906,7 +889,7 @@
 
 
 <div class="viewcode-block" id="Categorical.to_pandas">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.to_pandas">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.to_pandas">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd_Categorical</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the equivalent Pandas Categorical.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">pd_Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
@@ -916,7 +899,7 @@
 
 
 <div class="viewcode-block" id="Categorical.tolist">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.tolist">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.tolist">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the Categorical to a list.</span>
@@ -947,7 +930,7 @@
 
 
 <div class="viewcode-block" id="Categorical.to_strings">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.to_strings">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.to_strings">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the Categorical to Strings.</span>
@@ -1176,15 +1159,33 @@
             <span class="c1"># Initialization now determines which categories are used</span>
             <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Categorical.copy">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an copy of the given Categorical.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Categorical</span>
+<span class="sd">            A deep copy of the Categorical.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">segs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">permutation</span><span class="o">=</span><span class="n">perm</span><span class="p">,</span> <span class="n">segments</span><span class="o">=</span><span class="n">segs</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Categorical.isna">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.isna">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.isna">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Find where values are missing or null (as defined by self.NAvalue).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span></div>
 
 
 <div class="viewcode-block" id="Categorical.reset_categories">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.reset_categories">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.reset_categories">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reset_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Recompute the category labels, discarding any unused labels.</span>
@@ -1209,7 +1210,7 @@
 
 
 <div class="viewcode-block" id="Categorical.contains">
-<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.categorical.Categorical.contains">[docs]</a>
+<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.pandas.categorical.Categorical.contains">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1254,7 +1255,7 @@
 
 
 <div class="viewcode-block" id="Categorical.startswith">
-<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.categorical.Categorical.startswith">[docs]</a>
+<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.pandas.categorical.Categorical.startswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">startswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1299,10 +1300,10 @@
 
 
 <div class="viewcode-block" id="Categorical.endswith">
-<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.categorical.Categorical.endswith">[docs]</a>
+<a class="viewcode-back" href="../../../usage/categorical.html#arkouda.pandas.categorical.Categorical.endswith">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">endswith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">substr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">],</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check whether each element ends with the given substring.</span>
 
 <span class="sd">        Parameters</span>
@@ -1344,7 +1345,7 @@
 
 
 <div class="viewcode-block" id="Categorical.in1d">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.in1d">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.in1d">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">in1d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1406,7 +1407,7 @@
 
 
 <div class="viewcode-block" id="Categorical.unique">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.unique">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.unique">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the unique category values in the Categorical.</span>
@@ -1424,7 +1425,7 @@
 
 
 <div class="viewcode-block" id="Categorical.hash">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.hash">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.hash">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a 128-bit hash of each element of the Categorical.</span>
@@ -1454,7 +1455,7 @@
 
 
 <div class="viewcode-block" id="Categorical.group">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.group">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.group">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">group</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the permutation that groups the array, placing equivalent categories together.</span>
@@ -1499,26 +1500,68 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Categorical.argsort">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.argsort">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.argsort">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">algorithm</span><span class="p">:</span> <span class="n">SortingAlgorithm</span> <span class="o">=</span> <span class="n">SortingAlgorithm</span><span class="o">.</span><span class="n">RadixSortLSD</span><span class="p">,</span>
+        <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the indices that would sort the Categorical.</span>
+<span class="sd">        Return the permutation of indices that would sort the Categorical.</span>
+
+<span class="sd">        Sorting is based on the order of the Categorical&#39;s `categories`,</span>
+<span class="sd">        not on the underlying codes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        algorithm : SortingAlgorithm, default SortingAlgorithm.RadixSortLSD</span>
+<span class="sd">            The sorting algorithm to use.</span>
+<span class="sd">        ascending : bool, default True</span>
+<span class="sd">            Whether to return indices that would sort the Categorical in ascending</span>
+<span class="sd">            category order. If False, returns indices for descending order.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pdarray</span>
-<span class="sd">            Permutation indices that would sort the values by category label.</span>
+
+<span class="sd">            An array of indices such that `self[index]` is sorted by category order.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+
+<span class="sd">        &gt;&gt;&gt; cat = ak.Categorical(ak.array([&#39;dog&#39;, &#39;cat&#39;, &#39;dog&#39;, &#39;bird&#39;]))</span>
+<span class="sd">        &gt;&gt;&gt; cat.argsort()</span>
+<span class="sd">        array([3, 1, 0, 2])  # &#39;bird&#39; &lt; &#39;cat&#39; &lt; &#39;dog&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; cat.argsort(ascending=False)</span>
+<span class="sd">        array([2, 0, 1, 3])</span>
+
+<span class="sd">        The result can be used to reorder the Categorical:</span>
+<span class="sd">        &gt;&gt;&gt; sorted_cat = cat[cat.argsort()]</span>
+<span class="sd">        &gt;&gt;&gt; sorted_cat</span>
+<span class="sd">        Categorical([&#39;bird&#39;, &#39;cat&#39;, &#39;dog&#39;, &#39;dog&#39;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">idxperm</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
-        <span class="n">inverse</span> <span class="o">=</span> <span class="n">zeros_like</span><span class="p">(</span><span class="n">idxperm</span><span class="p">)</span>
-        <span class="n">inverse</span><span class="p">[</span><span class="n">idxperm</span><span class="p">]</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">idxperm</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-        <span class="n">newvals</span> <span class="o">=</span> <span class="n">inverse</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">argsort</span><span class="p">(</span><span class="n">newvals</span><span class="p">)</span></div>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">zeros_like</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span>
+
+        <span class="c1"># Step 1: Sort categories themselves to get their permutation</span>
+        <span class="n">category_perm</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
+
+        <span class="c1"># Step 2: Build inverse permutation mapping each category to its sorted position</span>
+        <span class="n">inverse_perm</span> <span class="o">=</span> <span class="n">zeros_like</span><span class="p">(</span><span class="n">category_perm</span><span class="p">)</span>
+        <span class="n">inverse_perm</span><span class="p">[</span><span class="n">category_perm</span><span class="p">]</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">category_perm</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="c1"># Step 3: Map codes to their sorted positions</span>
+        <span class="n">mapped_codes</span> <span class="o">=</span> <span class="n">inverse_perm</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
+
+        <span class="c1"># Step 4: Return indices that sort the mapped codes</span>
+        <span class="k">return</span> <span class="n">mapped_codes</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Categorical.sort_values">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.sort_values">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.sort_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a sorted Categorical by category labels.</span>
@@ -1537,7 +1580,7 @@
 
 
 <div class="viewcode-block" id="Categorical.concatenate">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.concatenate">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.concatenate">[docs]</a>
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Categorical</span><span class="p">],</span> <span class="n">ordered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1598,7 +1641,7 @@
 
 
 <div class="viewcode-block" id="Categorical.to_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">,</span>
@@ -1655,7 +1698,7 @@
 
 
 <div class="viewcode-block" id="Categorical.update_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;categorical_array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite the dataset with the name provided with this Categorical object.</span>
@@ -1690,12 +1733,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-            <span class="n">_file_type_to_int</span><span class="p">,</span>
-            <span class="n">_get_hdf_filetype</span><span class="p">,</span>
-            <span class="n">_mode_str_to_int</span><span class="p">,</span>
-            <span class="n">_repack_hdf</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">_file_type_to_int</span><span class="p">,</span> <span class="n">_get_hdf_filetype</span><span class="p">,</span> <span class="n">_mode_str_to_int</span><span class="p">,</span> <span class="n">_repack_hdf</span>
 
         <span class="c1"># determine the format (single/distribute) that the file was saved in</span>
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">_get_hdf_filetype</span><span class="p">(</span><span class="n">prefix_path</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
@@ -1725,7 +1763,7 @@
 
 
 <div class="viewcode-block" id="Categorical.to_parquet">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.to_parquet">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1816,7 +1854,7 @@
 
 
 <div class="viewcode-block" id="Categorical.register">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.register">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.register">[docs]</a>
     <span class="nd">@typechecked</span><span class="p">()</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Categorical</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1874,7 +1912,7 @@
 
 
 <div class="viewcode-block" id="Categorical.unregister">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.unregister">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.unregister">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unregister this Categorical object.</span>
@@ -1907,7 +1945,7 @@
 
 
 <div class="viewcode-block" id="Categorical.is_registered">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.is_registered">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.is_registered">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return True iff the object is contained in the registry or is a component of a registered object.</span>
@@ -1987,7 +2025,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Categorical.info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a JSON formatted string containing information about all components of self.</span>
@@ -2002,7 +2040,7 @@
 
 
 <div class="viewcode-block" id="Categorical.pretty_print_info">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.pretty_print_info">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.pretty_print_info">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print information about all components of self in a human-readable format.&quot;&quot;&quot;</span>
         <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">pretty_print_info</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">_get_components_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
@@ -2010,9 +2048,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@typechecked</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_hdf_categoricals</span><span class="p">(</span>
-        <span class="n">d</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_hdf_categoricals</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse mapping of pdarray and Stings objects from hdf5 files.</span>
 
@@ -2040,32 +2076,50 @@
 <span class="sd">        Categorical.save, load_all</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">removal_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">groups</span><span class="p">:</span> <span class="n">DefaultDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">keys_to_remove</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">grouped</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">full_key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_key</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">base</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">full_key</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">grouped</span><span class="p">[</span><span class="n">base</span><span class="p">][</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">keys_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_key</span><span class="p">)</span>
+
         <span class="n">result_categoricals</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># build dict of str-&gt;list[components]</span>
-            <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
-                <span class="n">groups</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-        <span class="c1"># for each of the groups, find categorical by testing values in the group for &quot;.categories&quot;</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># str-&gt;list[str]</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.categories&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">):</span>  <span class="c1"># we have a categorical</span>
-                <span class="c1"># gather categorical pieces and replace the original mapping with the categorical object</span>
-                <span class="n">cat_parts</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
-                    <span class="n">removal_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>  <span class="c1"># flag it for removal from original</span>
-                    <span class="n">cat_parts</span><span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">part</span><span class="p">]</span>  <span class="c1"># put the part into our categorical parts</span>
-                    <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.categories&quot;</span><span class="p">):</span>
-                        <span class="n">base_name</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.categories&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">base_name</span><span class="p">,</span> <span class="n">parts</span> <span class="ow">in</span> <span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;codes&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parts</span> <span class="ow">or</span> <span class="s2">&quot;categories&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required components in categorical &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
-                <span class="c1"># Construct categorical and add it to the return_categoricals under the parent name</span>
-                <span class="n">result_categoricals</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="o">**</span><span class="n">cat_parts</span><span class="p">)</span>
+            <span class="n">codes</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="s2">&quot;codes&quot;</span><span class="p">]</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="s2">&quot;categories&quot;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">removal_names</span><span class="p">,</span> <span class="n">result_categoricals</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">codes</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;codes&#39; must be a pdarray in &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">categories</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;categories&#39; must be a Strings object in &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">categories</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">categories</span> <span class="o">=</span> <span class="n">Strings</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not convert &#39;categories&#39; to Strings in &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">cat</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
+                <span class="n">codes</span><span class="o">=</span><span class="n">codes</span><span class="p">,</span>
+                <span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">,</span>
+                <span class="n">permutation</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;permutation&quot;</span><span class="p">),</span>
+                <span class="n">segments</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;segments&quot;</span><span class="p">),</span>
+                <span class="n">_akNAcode</span><span class="o">=</span><span class="n">parts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_akNAcode&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">result_categoricals</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cat</span>
+
+        <span class="k">return</span> <span class="n">keys_to_remove</span><span class="p">,</span> <span class="n">result_categoricals</span>
 
 <div class="viewcode-block" id="Categorical.transfer">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.categorical.Categorical.transfer">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.transfer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send a Categorical object to a different Arkouda server.</span>

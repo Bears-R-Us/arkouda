@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.numpy.random.legacy - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -203,7 +196,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -212,14 +205,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../usage/creation.html">Creating Arrays</a></li>
@@ -237,12 +230,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -257,29 +250,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -293,7 +278,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -307,9 +292,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -322,16 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -339,7 +323,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -369,8 +353,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -378,8 +361,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -390,15 +372,79 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span> <span class="n">DTypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.random.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">default_rng</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;choice&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;exponential&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;integers&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logistic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lognormal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;permutation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;poisson&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rand&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;random&quot;</span><span class="p">,</span>
     <span class="s2">&quot;randint&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;seed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;shuffle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;standard_exponential&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;standard_gamma&quot;</span><span class="p">,</span>
     <span class="s2">&quot;standard_normal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+<span class="n">theGenerator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Generator</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># used below to check if generator exists</span>
+
+
+<div class="viewcode-block" id="rand">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.rand">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rand</span><span class="p">(</span><span class="o">*</span><span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a pdarray of float values in the range (0,1).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : int</span>
+<span class="sd">        Dimensions of the returned array. Multiple arguments define a shape tuple.</span>
+
+<span class="sd">    seed : int_scalars, optional</span>
+<span class="sd">        The seed for the random number generator</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Values drawn uniformly from the range (0,1).</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if size is not an int or a sequence of ints, or if seed is not an int</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.rand(3,seed=1701)</span>
+<span class="sd">    array([0.011410423448327005 0.73618171558685619 0.12367222192448891])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">size</span><span class="p">:</span>  <span class="c1"># meaning the tuple is empty, i.e. we are returning a scalar</span>
+        <span class="k">return</span> <span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">uniform</span><span class="p">(</span><span class="n">full_size</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">uniform</span><span class="p">(</span><span class="n">full_size</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="randint">
@@ -423,7 +469,7 @@
 <span class="sd">        The high value (exclusive for int, inclusive for float) of the range</span>
 <span class="sd">    size : int_scalars</span>
 <span class="sd">        The length of the returned array</span>
-<span class="sd">    dtype : Union[int64, float64, bool]</span>
+<span class="sd">    dtype : Union[int64, float_scalar, bool]</span>
 <span class="sd">        The dtype of the array</span>
 <span class="sd">    seed : int_scalars, optional</span>
 <span class="sd">        Seed to allow for reproducible random number generation</span>
@@ -440,7 +486,14 @@
 <span class="sd">        Raised if dtype.name not in DTypes, size is not an int, low or high is</span>
 <span class="sd">        not an int or float, or seed is not an int</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if size &lt; 0 or if high &lt; low</span>
+<span class="sd">        If ``size &lt; 0`` or ``ndim &lt; 1``.</span>
+<span class="sd">        For ``dtype=int64``, if ``low &gt;= high``.</span>
+<span class="sd">        For ``dtype=bool`` (NumPy-compatible), one of:</span>
+<span class="sd">            * ``&quot;high &lt;= 0&quot;`` if ``high &lt;= 0``</span>
+<span class="sd">            * ``&quot;low &lt; 0&quot;`` if ``low &lt; 0``</span>
+<span class="sd">            * ``&quot;high is out of bounds for bool&quot;`` if ``high &gt; 2``</span>
+<span class="sd">            * ``&quot;low &gt;= high&quot;`` if ``low &gt;= high``</span>
+<span class="sd">        For ``dtype=float64``, if ``high &lt; low``.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -485,8 +538,10 @@
         <span class="n">shape</span> <span class="o">=</span> <span class="n">full_size</span>
         <span class="n">ndim</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">high</span> <span class="o">&lt;</span> <span class="n">low</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size must be &gt;= 0, ndim &gt;= 1, and high &gt;= low&quot;</span><span class="p">)</span>
+    <span class="c1"># Only validate size/ndim here; bounds are checked per-dtype below</span>
+    <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size must be &gt;= 0, ndim &gt;= 1&quot;</span><span class="p">)</span>
+
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># normalize dtype</span>
     <span class="c1"># check dtype for error</span>
     <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DTypes</span><span class="p">:</span>
@@ -494,11 +549,33 @@
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">isSupportedFloat</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">:</span>
+    <span class="c1"># Legacy NumPy randint semantics:</span>
+    <span class="c1"># - For integer/boolean output, floats in low/high are truncated toward zero</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">isSupportedFloat</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
             <span class="n">low</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">isSupportedFloat</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
             <span class="n">high</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
+
+    <span class="c1"># NumPy-style validation/error messages</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="c1"># These match numpy.random.RandomState.randint(..., dtype=bool)</span>
+        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;high &lt;= 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">low</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;low &lt; 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;high is out of bounds for bool&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">low</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">high</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;low &gt;= high&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span><span class="p">:</span>
+        <span class="c1"># General integer path: half-open interval requires high &gt; low</span>
+        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">low</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;low &gt;= high&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Float path (Arkouda-specific behavior): still require high &gt; low</span>
+        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cast</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">low</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;low &gt;= high&quot;</span><span class="p">)</span>
 
     <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;randint&lt;</span><span class="si">{</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -520,7 +597,7 @@
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span>
     <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draw real numbers from the standard normal distribution.</span>
 
 <span class="sd">    Parameters</span>
@@ -586,7 +663,7 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.uniform">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">uniform</span><span class="p">(</span>
-    <span class="n">size</span><span class="p">:</span> <span class="n">int_scalars</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">,</span> <span class="o">...</span><span class="p">]],</span>
     <span class="n">low</span><span class="p">:</span> <span class="n">numeric_scalars</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span>
     <span class="n">high</span><span class="p">:</span> <span class="n">numeric_scalars</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="n">seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -597,12 +674,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    size : Union[int_scalars, Tuple[int_scalars]</span>
+<span class="sd">        The length or shape of the returned array</span>
 <span class="sd">    low : float_scalars</span>
 <span class="sd">        The low value (inclusive) of the range, defaults to 0.0</span>
 <span class="sd">    high : float_scalars</span>
 <span class="sd">        The high value (inclusive) of the range, defaults to 1.0</span>
-<span class="sd">    size : int_scalars</span>
-<span class="sd">        The length of the returned array</span>
 <span class="sd">    seed : int_scalars, optional</span>
 <span class="sd">        Value used to initialize the random number generator</span>
 
@@ -633,7 +710,662 @@
 <span class="sd">    &gt;&gt;&gt; ak.uniform(size=3,low=0,high=5,seed=0)</span>
 <span class="sd">    array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
+
+    <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">full_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The size parameter must be &gt;= 0&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">else</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">full_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">globalGeneratorExists</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to determine is a generator has already been created.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    boolean</span>
+<span class="sd">        True if theGenerator is not None</span>
+<span class="sd">        False if theGenerator is None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">theGenerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getGlobalGenerator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to simplify the boilerplate code for each function.&quot;&quot;&quot;</span>
+    <span class="n">seed</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">globalGeneratorExists</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">theGenerator</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">theGenerator</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Default RNG failed to initialize&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="seed">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.seed">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">seed</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements global seed by seeding theGenerator.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seed : int, None</span>
+<span class="sd">        the seed for the global generator.  Can be left out.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Reseeding always causes the destruction of an existing generator, because</span>
+<span class="sd">    there is no way to reseed a chapel randomStream.  The existing generator</span>
+<span class="sd">    is deleted, and the python destructor invokes the chapel-side delGenerator</span>
+<span class="sd">    which removes the generator from the symbol table, deleting it and its</span>
+<span class="sd">    RandomStream.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">theGenerator</span>
+
+    <span class="k">if</span> <span class="n">globalGeneratorExists</span><span class="p">():</span>
+        <span class="n">theGenerator</span><span class="o">.</span><span class="n">destructor</span><span class="p">()</span>
+
+    <span class="n">theGenerator</span> <span class="o">=</span> <span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#   All of the functions below are called as ak.random.function_name.  They</span>
+<span class="c1">#   pass their arguments to the appropriate function method in theGenerator.</span>
+
+
+<div class="viewcode-block" id="integers">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.integers">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return random integers from range (low,high) if endpoint = True, else (low,high].</span>
+
+<span class="sd">    Return random integers from the “discrete uniform” distribution of the specified dtype.</span>
+<span class="sd">    If high is None (the default), then results are from 0 to low.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    low: numeric_scalars</span>
+<span class="sd">        If low and high are both defined, range is low to high.  But if high is none,</span>
+<span class="sd">        the range is 0 to low.</span>
+
+<span class="sd">    high: numeric_scalars</span>
+<span class="sd">        If provided, and endpoint is True, the highest value to be included in the range.</span>
+<span class="sd">        If provided, and endpoint is False, 1 more than the highest value to be included.</span>
+<span class="sd">        See above for behavior if high=None.</span>
+
+<span class="sd">    size: numeric_scalars</span>
+<span class="sd">        If scalar, size = output size.  If tuple, size = output shape. Default is None,</span>
+<span class="sd">        in which case a scalar is returned.</span>
+
+<span class="sd">    dtype: type</span>
+<span class="sd">        The type of the output.</span>
+
+<span class="sd">    endpoint: boolean</span>
+<span class="sd">        if True, high is included in the range.  If False, the range ends at high-1.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, numeric_scalar</span>
+<span class="sd">        Values drawn uniformly from the specified range having the desired dtype.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(1)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.integers(5, 20, 10)</span>
+<span class="sd">    array([7 19 5 16 19 11 18 15 10 5])</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.integers(5, size=10)</span>
+<span class="sd">    array([5 9 7 7 9 9 7 7 8 6])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="choice">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.choice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">choice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a random sample from a.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: int or pdarray</span>
+<span class="sd">        If a is an integer, randomly sample from ak.arange(a).</span>
+<span class="sd">        If a is a pdarray, randomly sample from a.</span>
+
+<span class="sd">    size: int, optional</span>
+<span class="sd">        Number of elements to be sampled</span>
+
+<span class="sd">    replace: bool, optional</span>
+<span class="sd">        If True, sample with replacement. Otherwise sample without replacement.</span>
+<span class="sd">        Defaults to True</span>
+
+<span class="sd">    p: pdarray, optional</span>
+<span class="sd">        p is the probabilities or weights associated with each element of a.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, numeric_scalar</span>
+<span class="sd">        Sample or samples from the input a.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(1701)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.choice(ak.arange(10),size=5,replace=True)</span>
+<span class="sd">    array([6 5 1 6 3])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="exponential">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.exponential">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">exponential</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw samples from an exponential distribution.</span>
+
+<span class="sd">    Its probability density function is</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        f(x; \frac{1}{\beta}) = \frac{1}{\beta} \exp(-\frac{x}{\beta}),</span>
+
+<span class="sd">    for ``x &gt; 0`` and 0 elsewhere. :math:`\beta` is the scale parameter,</span>
+<span class="sd">    which is the inverse of the rate parameter :math:`\lambda = 1/\beta`.</span>
+<span class="sd">    The rate parameter is an alternative, widely used parameterization</span>
+<span class="sd">    of the exponential distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scale: float or pdarray</span>
+<span class="sd">        The scale parameter, :math:`\beta = 1/\lambda`. Must be</span>
+<span class="sd">        non-negative. An array must have the same size as the size argument.</span>
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Either &#39;inv&#39; or &#39;zig&#39;. &#39;inv&#39; uses the default inverse CDF method.</span>
+<span class="sd">        &#39;zig&#39; uses the Ziggurat method.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Drawn samples from the parameterized exponential distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(1701)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.exponential(scale=1.0,size=3,method=&#39;zig&#39;)</span>
+<span class="sd">    array([0.35023958744297734 1.3308542074773211 1.819197246298274])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="standard_exponential">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.standard_exponential">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">standard_exponential</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw samples from the standard exponential distribution.</span>
+
+<span class="sd">    `standard_exponential` is identical to the exponential distribution</span>
+<span class="sd">    with a scale parameter of 1.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Either &#39;inv&#39; or &#39;zig&#39;. &#39;inv&#39; uses the default inverse CDF method.</span>
+<span class="sd">        &#39;zig&#39; uses the Ziggurat method.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Drawn samples from the standard exponential distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(5551212)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.standard_exponential(size=3,method=&quot;zig&quot;)</span>
+<span class="sd">    array([0.0036288331189547511 0.12747464978660919 2.4564938704378503])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">standard_exponential</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="logistic">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.logistic">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">logistic</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw samples from a logistic distribution.</span>
+
+<span class="sd">    Samples are drawn from a logistic distribution with specified parameters,</span>
+<span class="sd">    loc (location or mean, also median), and scale (&gt;0).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    loc: float or pdarray of floats, optional</span>
+<span class="sd">        Parameter of the distribution. Default of 0.</span>
+
+<span class="sd">    scale: float or pdarray of floats, optional</span>
+<span class="sd">        Parameter of the distribution. Must be non-negative. Default is 1.</span>
+
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The probability density for the Logistic distribution is</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}</span>
+
+<span class="sd">    where :math:`\mu` is the location and :math:`s` is the scale.</span>
+
+<span class="sd">    The Logistic distribution is used in Extreme Value problems where it can act</span>
+<span class="sd">    as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)</span>
+<span class="sd">    where it is used in the Elo ranking system, assuming the performance of each player</span>
+<span class="sd">    is a logistically distributed random variable.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Samples drawn from a logistic distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    normal</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(17)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.logistic(3, 2.5, 3)</span>
+<span class="sd">    array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">logistic</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="lognormal">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.lognormal">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lognormal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw samples from a log-normal distribution with specified mean,</span>
+<span class="sd">    standard deviation, and array shape.</span>
+
+<span class="sd">    Note that the mean and standard deviation are not the values for the distribution itself,</span>
+<span class="sd">    but of the underlying normal distribution it is derived from.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mean: float or pdarray of floats, optional</span>
+<span class="sd">        Mean of the distribution. Default of 0.</span>
+
+<span class="sd">    sigma: float or pdarray of floats, optional</span>
+<span class="sd">        Standard deviation of the distribution. Must be non-negative. Default of 1.</span>
+
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Either &#39;box&#39; or &#39;zig&#39;. &#39;box&#39; uses the Box–Muller transform</span>
+<span class="sd">        &#39;zig&#39; uses the Ziggurat method.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A variable `x` has a log-normal distribution if `log(x)` is normally distributed.</span>
+<span class="sd">    The probability density for the log-normal distribution is:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}</span>
+
+<span class="sd">    where :math:`\mu` is the mean and :math:`\sigma` the standard deviation of the normally</span>
+<span class="sd">    distributed logarithm of the variable.</span>
+<span class="sd">    A log-normal distribution results if a random variable is the product of a</span>
+<span class="sd">    large number of independent, identically-distributed variables in the same</span>
+<span class="sd">    way that a normal distribution results if the variable is</span>
+<span class="sd">    the sum of a large number of independent, identically-distributed variables.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Samples drawn from a lognormal distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    normal</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(17)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.lognormal(3, 2.5, 3)</span>
+<span class="sd">    array([75.587346973566639 9.4194790331678568 1.0996120079897966])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="normal">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.normal">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;zig&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw samples from a normal (Gaussian) distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    loc: float or pdarray of floats, optional</span>
+<span class="sd">        Mean of the distribution. Default of 0.</span>
+
+<span class="sd">    scale: float or pdarray of floats, optional</span>
+<span class="sd">        Standard deviation of the distribution. Must be non-negative. Default of 1.</span>
+
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Either &#39;box&#39; or &#39;zig&#39;. &#39;box&#39; uses the Box–Muller transform</span>
+<span class="sd">        &#39;zig&#39; uses the Ziggurat method.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The probability density for the Gaussian distribution is:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       p(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}</span>
+
+<span class="sd">    where :math:`\mu` is the mean and :math:`\sigma` the standard deviation.</span>
+<span class="sd">    The square of the standard deviation, :math:`\sigma^2`, is called the variance.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Samples drawn from a normal distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    standard_normal</span>
+<span class="sd">    uniform</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(17)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.normal(3, 2.5, 3)</span>
+<span class="sd">    array([4.3252889011033728 2.2427797827243081 0.09495739757471533])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="random">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.random">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return random floats in the half-open interval [0.0, 1.0).</span>
+
+<span class="sd">    Results are from the uniform distribution over the stated interval.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Samples drawn from a uniform distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    To sample over `[a,b)`, use uniform or multiply the output of random by `(b - a)` and add `a`:</span>
+
+<span class="sd">     ``(b - a) * random() + a``</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    uniform</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(42)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.random()</span>
+<span class="sd">    0.7739560485559633</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.random(3)</span>
+<span class="sd">    array([0.30447083571882388 0.89653821715718895 0.34737575437149532])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="standard_gamma">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.standard_gamma">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">standard_gamma</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw samples from a standard gamma distribution.</span>
+
+<span class="sd">    Samples are drawn from a Gamma distribution with specified parameters,</span>
+<span class="sd">    shape (sometimes designated “k”) and scale (sometimes designated “theta”),</span>
+<span class="sd">    where both parameters are &gt; 0.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape: numeric_scalars</span>
+<span class="sd">        specified parameter (sometimes designated “k”)</span>
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, float_scalar</span>
+<span class="sd">        Samples drawn from a standard gamma distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The probability density function for the Gamma distribution is</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(16309)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.standard_gamma(1)</span>
+<span class="sd">    0.22445153117925773</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.standard_gamma(1, size=3)</span>
+<span class="sd">    array([0.85277675774402018 3.1253116338237561 0.95808096440750634])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: W605</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="shuffle">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.shuffle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">shuffle</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FisherYates&quot;</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">feistel_rounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="n">feistel_key</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Randomly shuffle the elements of a `pdarray` in place.</span>
+
+<span class="sd">    This method performs a reproducible in-place shuffle of the array `x`</span>
+<span class="sd">    using the specified strategy. Three methods are available:</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : pdarray</span>
+<span class="sd">        The array to be shuffled in place. Must be a one-dimensional Arkouda array.</span>
+
+<span class="sd">    method : {&quot;FisherYates&quot;,&quot;MergeShuffle&quot;,&quot;Feistel&quot;}, optional</span>
+<span class="sd">        - &quot;FisherYates&quot;: A **serial, global** Fisher–Yates shuffle implemented in Chapel.</span>
+<span class="sd">          Simple and fast for small/medium arrays, but **not distributed** — the entire</span>
+<span class="sd">          array must fit on one locale.</span>
+<span class="sd">        - &quot;MergeShuffle&quot;: A **fully distributed** shuffle that combines local randomization</span>
+<span class="sd">          and cross-locale probabilistic merging. Scales to large datasets and maintains</span>
+<span class="sd">          good statistical uniformity across locales.</span>
+<span class="sd">        - &quot;Feistel&quot;: A **keyed permutation** of indices via a Feistel PRP over [0, N),</span>
+<span class="sd">          then applies that permutation to `x`. Works for any `N` (uses cycle-walking</span>
+<span class="sd">          when N is not a power of two). **Distributed-friendly** and reproducible.</span>
+<span class="sd">          Not intended for cryptographic security.</span>
+
+<span class="sd">        Default is &quot;FisherYates&quot;.</span>
+
+<span class="sd">    feistel_rounds : int, optional (keyword-only)</span>
+<span class="sd">        Number of Feistel rounds (default 16). Higher may cost more time.</span>
+
+<span class="sd">    feistel_key : int or None, optional (keyword-only)</span>
+<span class="sd">        64-bit key for the Feistel permutation. If None, the backend should derive</span>
+<span class="sd">        a key from the RNG stream so results remain deterministic given the client RNG state.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If `x` is not a `pdarray`.</span>
+
+<span class="sd">    ValueError</span>
+<span class="sd">        If an unsupported shuffle method is specified, or if `feistel_key` is not a 64-bit integer.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The shuffle modifies `x` in place.</span>
+<span class="sd">    - The result is deterministic given the client RNG state.</span>
+<span class="sd">    - For `&quot;MergeShuffle&quot;`, reproducibility is guaranteed **only if the number of locales</span>
+<span class="sd">      remains fixed** between runs. Changing locale count will yield different permutations.</span>
+<span class="sd">    - Use `&quot;FisherYates&quot;` only for small arrays or testing.</span>
+<span class="sd">    - Use `&quot;MergeShuffle&quot;` for production-scale distributed shuffling.</span>
+<span class="sd">    - Use `&quot;Feistel&quot;` when you need a keyed, reproducible permutation of indices that</span>
+<span class="sd">      also scales in distributed settings.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(18)</span>
+<span class="sd">    &gt;&gt;&gt; pda = ak.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; pda</span>
+<span class="sd">    array([0 1 2 3 4 5 6 7 8 9])</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.shuffle(pda, method=&quot;FisherYates&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; pda</span>
+<span class="sd">    array([0 8 2 7 9 4 6 3 5 1])</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.shuffle(pda, method=&quot;MergeShuffle&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; pda</span>
+<span class="sd">    array([5 6 9 3 8 2 7 0 4 1])</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.shuffle(pda, method=&quot;Feistel&quot;, feistel_rounds=18)</span>
+<span class="sd">    &gt;&gt;&gt; pda</span>
+<span class="sd">    array([4 2 1 6 9 3 0 5 8 7])</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.shuffle(pda, method=&quot;Feistel&quot;, feistel_key=0x1234_5678_9ABC_DEF0, feistel_rounds=18)</span>
+<span class="sd">    &gt;&gt;&gt; pda</span>
+<span class="sd">    array([2 3 6 9 8 5 1 4 7 0])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># It is worth noting that shuffle is unique among the rng functions, in that</span>
+    <span class="c1"># it does not return a value.  The elements of x are shuffled in place.  That&#39;s</span>
+    <span class="c1"># why this function has no return statement.</span>
+
+    <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">feistel_rounds</span><span class="o">=</span><span class="n">feistel_rounds</span><span class="p">,</span> <span class="n">feistel_key</span><span class="o">=</span><span class="n">feistel_key</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="permutation">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.permutation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">permutation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Argsort&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Randomly permute a sequence, or return a permuted range.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: int or pdarray</span>
+<span class="sd">        If x is an integer, randomly permute ak.arange(x). If x is an array,</span>
+<span class="sd">        make a copy and shuffle the elements randomly.</span>
+<span class="sd">    method: str = &#39;Argsort&#39;</span>
+<span class="sd">        The method for generating the permutation.</span>
+<span class="sd">        Allowed values: &#39;FisherYates&#39;, &#39;Argsort&#39;</span>
+
+<span class="sd">        If &#39;Argsort&#39; is selected, the permutation will be generated by</span>
+<span class="sd">        an argsort performed on randomly generated floats.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        pdarray of permuted elements</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        Raised if method is not an allowed value.</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if x is not of type int or pdarray.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(1984)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.permutation(ak.arange(10))</span>
+<span class="sd">    array([4 7 0 2 5 3 6 1 8 9])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="poisson">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/legacy/index.html#arkouda.numpy.random.poisson">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">poisson</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw samples from a Poisson distribution.</span>
+
+<span class="sd">    The Poisson distribution is the limit of the binomial distribution for large N.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lam: float or pdarray</span>
+<span class="sd">        Expected number of events occurring in a fixed-time interval, must be &gt;= 0.</span>
+<span class="sd">        An array must have the same size as the size argument.</span>
+<span class="sd">    size: numeric_scalars, optional</span>
+<span class="sd">        Output shape. Default is None, in which case a single value is returned.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The probability mass function for the Poisson distribution is:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}</span>
+
+<span class="sd">    For events with an expected separation :math:`\lambda`, the Poisson distribution</span>
+<span class="sd">    :math:`f(k; \lambda)` describes the probability of :math:`k` events occurring</span>
+<span class="sd">    within the observed interval :math:`\lambda`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, int_scalar</span>
+<span class="sd">        Samples drawn from a Poisson distribution.</span>
+<span class="sd">        Returned as pdarray if size is provided, else as scalar.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.seed(2525)</span>
+<span class="sd">    &gt;&gt;&gt; ak.random.poisson(lam=3, size=5)</span>
+<span class="sd">    array([3 4 3 3 5])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

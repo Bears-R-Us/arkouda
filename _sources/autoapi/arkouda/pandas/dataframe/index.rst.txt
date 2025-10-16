@@ -341,7 +341,7 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
+
       >>> df1 = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
       >>> df1
           col1  col2
@@ -1616,16 +1616,16 @@ Module Contents
                      Nonexistent names will not raise an error.
                      Uses the value of axis to determine if renaming column or index
       :type mapper: callable or dict-like, Optional
-      :param column: Function or dictionary mapping existing column names to
-                     new column names. Nonexistent names will not raise an
-                     error.
-                     When this is set, axis is ignored.
-      :type column: callable or dict-like, Optional
       :param index: Function or dictionary mapping existing index names to
                     new index names. Nonexistent names will not raise an
                     error.
                     When this is set, axis is ignored.
       :type index: callable or dict-like, Optional
+      :param column: Function or dictionary mapping existing column names to
+                     new column names. Nonexistent names will not raise an
+                     error.
+                     When this is set, axis is ignored.
+      :type column: callable or dict-like, Optional
       :param axis: Indicates which axis to perform the rename.
                    0/"index" - Indexes
                    1/"column" - Columns
@@ -1641,7 +1641,7 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
+
       >>> df = ak.DataFrame({"A": ak.array([1, 2, 3]), "B": ak.array([4, 5, 6])})
       >>> df
          A  B

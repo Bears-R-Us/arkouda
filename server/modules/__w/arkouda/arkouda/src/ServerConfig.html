@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ServerConfig &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="serverconfig">
-<span id="module-ServerConfig"></span><h1>ServerConfig<a class="headerlink" href="#serverconfig" title="Link to this heading">¶</a></h1>
+<span id="module-ServerConfig"></span><h1>ServerConfig<a class="headerlink" href="#serverconfig" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ServerConfig</span><span class="p">;</span>
 </pre></div>
@@ -134,109 +131,102 @@
 <p>arkouda server config param and config const</p>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ServerConfig.Deployment">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Deployment</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">STANDARD,</span> <span class="pre">KUBERNETES</span> <span class="pre">}</span></em><a class="headerlink" href="#ServerConfig.Deployment" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Deployment</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">STANDARD,</span> <span class="pre">KUBERNETES</span> <span class="pre">}</span></em><a class="headerlink" href="#ServerConfig.Deployment" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.Deployment.STANDARD">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STANDARD</span></span><a class="headerlink" href="#ServerConfig.Deployment.STANDARD" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STANDARD</span></span><a class="headerlink" href="#ServerConfig.Deployment.STANDARD" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.Deployment.KUBERNETES">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">KUBERNETES</span></span><a class="headerlink" href="#ServerConfig.Deployment.KUBERNETES" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">KUBERNETES</span></span><a class="headerlink" href="#ServerConfig.Deployment.KUBERNETES" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ObjType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">UNKNOWN</span> <span class="pre">=</span> <span class="pre">-1,</span> <span class="pre">ARRAYVIEW</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">PDARRAY</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">STRINGS</span> <span class="pre">=</span> <span class="pre">2,</span> <span class="pre">SEGARRAY</span> <span class="pre">=</span> <span class="pre">3,</span> <span class="pre">CATEGORICAL</span> <span class="pre">=</span> <span class="pre">4,</span> <span class="pre">GROUPBY</span> <span class="pre">=</span> <span class="pre">5,</span> <span class="pre">DATAFRAME</span> <span class="pre">=</span> <span class="pre">6,</span> <span class="pre">DATETIME</span> <span class="pre">=</span> <span class="pre">7,</span> <span class="pre">TIMEDELTA</span> <span class="pre">=</span> <span class="pre">8,</span> <span class="pre">IPV4</span> <span class="pre">=</span> <span class="pre">9,</span> <span class="pre">BITVECTOR</span> <span class="pre">=</span> <span class="pre">10,</span> <span class="pre">SERIES</span> <span class="pre">=</span> <span class="pre">11,</span> <span class="pre">INDEX</span> <span class="pre">=</span> <span class="pre">12,</span> <span class="pre">MULTIINDEX</span> <span class="pre">=</span> <span class="pre">13</span> <span class="pre">}</span></em><a class="headerlink" href="#ServerConfig.ObjType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ObjType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">UNKNOWN</span> <span class="pre">=</span> <span class="pre">-1,</span> <span class="pre">ARRAYVIEW</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">PDARRAY</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">STRINGS</span> <span class="pre">=</span> <span class="pre">2,</span> <span class="pre">SEGARRAY</span> <span class="pre">=</span> <span class="pre">3,</span> <span class="pre">CATEGORICAL</span> <span class="pre">=</span> <span class="pre">4,</span> <span class="pre">GROUPBY</span> <span class="pre">=</span> <span class="pre">5,</span> <span class="pre">DATAFRAME</span> <span class="pre">=</span> <span class="pre">6,</span> <span class="pre">DATETIME</span> <span class="pre">=</span> <span class="pre">7,</span> <span class="pre">TIMEDELTA</span> <span class="pre">=</span> <span class="pre">8,</span> <span class="pre">IPV4</span> <span class="pre">=</span> <span class="pre">9,</span> <span class="pre">BITVECTOR</span> <span class="pre">=</span> <span class="pre">10,</span> <span class="pre">SERIES</span> <span class="pre">=</span> <span class="pre">11,</span> <span class="pre">INDEX</span> <span class="pre">=</span> <span class="pre">12,</span> <span class="pre">MULTIINDEX</span> <span class="pre">=</span> <span class="pre">13</span> <span class="pre">}</span></em><a class="headerlink" href="#ServerConfig.ObjType" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.UNKNOWN">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNKNOWN</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">-1</span></em><a class="headerlink" href="#ServerConfig.ObjType.UNKNOWN" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNKNOWN</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">-1</span></em><a class="headerlink" href="#ServerConfig.ObjType.UNKNOWN" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.ARRAYVIEW">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ARRAYVIEW</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#ServerConfig.ObjType.ARRAYVIEW" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ARRAYVIEW</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#ServerConfig.ObjType.ARRAYVIEW" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.PDARRAY">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PDARRAY</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#ServerConfig.ObjType.PDARRAY" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PDARRAY</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#ServerConfig.ObjType.PDARRAY" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.STRINGS">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STRINGS</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#ServerConfig.ObjType.STRINGS" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STRINGS</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#ServerConfig.ObjType.STRINGS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.SEGARRAY">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SEGARRAY</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#ServerConfig.ObjType.SEGARRAY" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SEGARRAY</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#ServerConfig.ObjType.SEGARRAY" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.CATEGORICAL">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CATEGORICAL</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#ServerConfig.ObjType.CATEGORICAL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CATEGORICAL</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#ServerConfig.ObjType.CATEGORICAL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.GROUPBY">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GROUPBY</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#ServerConfig.ObjType.GROUPBY" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GROUPBY</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#ServerConfig.ObjType.GROUPBY" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.DATAFRAME">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DATAFRAME</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#ServerConfig.ObjType.DATAFRAME" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DATAFRAME</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#ServerConfig.ObjType.DATAFRAME" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.DATETIME">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DATETIME</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#ServerConfig.ObjType.DATETIME" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DATETIME</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#ServerConfig.ObjType.DATETIME" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.TIMEDELTA">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TIMEDELTA</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#ServerConfig.ObjType.TIMEDELTA" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TIMEDELTA</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#ServerConfig.ObjType.TIMEDELTA" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.IPV4">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">IPV4</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#ServerConfig.ObjType.IPV4" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">IPV4</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#ServerConfig.ObjType.IPV4" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.BITVECTOR">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BITVECTOR</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">10</span></em><a class="headerlink" href="#ServerConfig.ObjType.BITVECTOR" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BITVECTOR</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">10</span></em><a class="headerlink" href="#ServerConfig.ObjType.BITVECTOR" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.SERIES">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SERIES</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">11</span></em><a class="headerlink" href="#ServerConfig.ObjType.SERIES" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SERIES</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">11</span></em><a class="headerlink" href="#ServerConfig.ObjType.SERIES" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.INDEX">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">INDEX</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">12</span></em><a class="headerlink" href="#ServerConfig.ObjType.INDEX" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">INDEX</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">12</span></em><a class="headerlink" href="#ServerConfig.ObjType.INDEX" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ServerConfig.ObjType.MULTIINDEX">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">MULTIINDEX</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">13</span></em><a class="headerlink" href="#ServerConfig.ObjType.MULTIINDEX" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">MULTIINDEX</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">13</span></em><a class="headerlink" href="#ServerConfig.ObjType.MULTIINDEX" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl data">
-<dt class="sig sig-object chpl" id="ServerConfig.MaxArrayDims">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">MaxArrayDims</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#ServerConfig.MaxArrayDims" title="Link to this definition">¶</a></dt>
-<dd><p>maximum array dimensionality supported by the server
-set in ‘registration-config.json’</p>
-</dd></dl>
-
-<dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.deployment">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">deployment</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">Deployment.STANDARD</span></em><a class="headerlink" href="#ServerConfig.deployment" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">deployment</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">Deployment.STANDARD</span></em><a class="headerlink" href="#ServerConfig.deployment" title="Link to this definition"></a></dt>
 <dd><p>Type of deployment, which currently is either STANDARD, meaning
 that Arkouda is deployed bare-metal or within an HPC environment,
 or on Kubernetes, defaults to Deployment.STANDARD</p>
@@ -244,90 +234,90 @@ or on Kubernetes, defaults to Deployment.STANDARD</p>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.trace">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">trace</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">true</span></em><a class="headerlink" href="#ServerConfig.trace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">trace</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">true</span></em><a class="headerlink" href="#ServerConfig.trace" title="Link to this definition"></a></dt>
 <dd><p>Trace logging flag</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.logLevel">
-<em class="property"><span class="pre">config</span> <span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">logLevel</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">LogLevel.INFO</span></em><a class="headerlink" href="#ServerConfig.logLevel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">logLevel</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">LogLevel.INFO</span></em><a class="headerlink" href="#ServerConfig.logLevel" title="Link to this definition"></a></dt>
 <dd><p>Global log level flag that defaults to LogLevel.INFO</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.logChannel">
-<em class="property"><span class="pre">config</span> <span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">logChannel</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">LogChannel.CONSOLE</span></em><a class="headerlink" href="#ServerConfig.logChannel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">logChannel</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">LogChannel.CONSOLE</span></em><a class="headerlink" href="#ServerConfig.logChannel" title="Link to this definition"></a></dt>
 <dd><p>Global log channel flag that defaults to LogChannel.CONSOLE</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.logCommands">
-<em class="property"><span class="pre">config</span> <span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">logCommands</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.logCommands" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">logCommands</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.logCommands" title="Link to this definition"></a></dt>
 <dd><p>Indicates whether arkouda_server commands should be logged.</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.ServerPort">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ServerPort</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">5555</span></em><a class="headerlink" href="#ServerConfig.ServerPort" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ServerPort</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">5555</span></em><a class="headerlink" href="#ServerConfig.ServerPort" title="Link to this definition"></a></dt>
 <dd><p>Port for zeromq</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.perLocaleMemLimit">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">perLocaleMemLimit</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">90</span></em><a class="headerlink" href="#ServerConfig.perLocaleMemLimit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">perLocaleMemLimit</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">90</span></em><a class="headerlink" href="#ServerConfig.perLocaleMemLimit" title="Link to this definition"></a></dt>
 <dd><p>Memory usage limit – percentage of physical memory</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.RSLSD_bitsPerDigit">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">RSLSD_bitsPerDigit</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">16</span></em><a class="headerlink" href="#ServerConfig.RSLSD_bitsPerDigit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">RSLSD_bitsPerDigit</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">16</span></em><a class="headerlink" href="#ServerConfig.RSLSD_bitsPerDigit" title="Link to this definition"></a></dt>
 <dd><p>Bit width of digits for the LSD radix sort and related ops</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.arkoudaVersion">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">arkoudaVersion</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;Please</span> <span class="pre">set</span> <span class="pre">during</span> <span class="pre">compilation&quot;</span></em><a class="headerlink" href="#ServerConfig.arkoudaVersion" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">arkoudaVersion</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;Please</span> <span class="pre">set</span> <span class="pre">during</span> <span class="pre">compilation&quot;</span></em><a class="headerlink" href="#ServerConfig.arkoudaVersion" title="Link to this definition"></a></dt>
 <dd><p>Arkouda version</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.pythonVersion">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">pythonVersion</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;Please</span> <span class="pre">set</span> <span class="pre">during</span> <span class="pre">compilation&quot;</span></em><a class="headerlink" href="#ServerConfig.pythonVersion" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">pythonVersion</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;Please</span> <span class="pre">set</span> <span class="pre">during</span> <span class="pre">compilation&quot;</span></em><a class="headerlink" href="#ServerConfig.pythonVersion" title="Link to this definition"></a></dt>
 <dd><p>Python version</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.serverConnectionInfo">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">serverConnectionInfo</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">try!</span> <span class="pre">getEnv(&quot;ARKOUDA_SERVER_CONNECTION_INFO&quot;,</span> <span class="pre">&quot;&quot;)</span></em><a class="headerlink" href="#ServerConfig.serverConnectionInfo" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">serverConnectionInfo</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">try!</span> <span class="pre">getEnv(&quot;ARKOUDA_SERVER_CONNECTION_INFO&quot;,</span> <span class="pre">&quot;&quot;)</span></em><a class="headerlink" href="#ServerConfig.serverConnectionInfo" title="Link to this definition"></a></dt>
 <dd><p>Write the server <cite>hostname:port</cite> to this file.</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.autoShutdown">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">autoShutdown</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.autoShutdown" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">autoShutdown</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.autoShutdown" title="Link to this definition"></a></dt>
 <dd><p>Flag to shut down the arkouda server automatically when the client disconnects</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.serverInfoNoSplash">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">serverInfoNoSplash</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.serverInfoNoSplash" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">serverInfoNoSplash</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.serverInfoNoSplash" title="Link to this definition"></a></dt>
 <dd><p>Flag to print the server information on startup</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.serverHostname">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverHostname</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">try!</span> <span class="pre">get_hostname()</span></em><a class="headerlink" href="#ServerConfig.serverHostname" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverHostname</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">try!</span> <span class="pre">get_hostname()</span></em><a class="headerlink" href="#ServerConfig.serverHostname" title="Link to this definition"></a></dt>
 <dd><p>Hostname where I am running</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.get_hostname">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get_hostname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerConfig.get_hostname" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get_hostname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerConfig.get_hostname" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getConnectHostname">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConnectHostname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getConnectHostname" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConnectHostname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getConnectHostname" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Retrieves the hostname of the locale 0 arkouda_server process, which is useful for</p></li>
 <li><p>registering Arkouda with cloud environments such as Kubernetes.</p></li>
@@ -336,7 +326,7 @@ or on Kubernetes, defaults to Deployment.STANDARD</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getChplVersion">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getChplVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getChplVersion" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getChplVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getChplVersion" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Returns the version of Chapel arkouda was built with</p></li>
 </ul>
@@ -344,103 +334,103 @@ or on Kubernetes, defaults to Deployment.STANDARD</p>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.chplVersionArkouda">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">chplVersionArkouda</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">try!</span> <span class="pre">getChplVersion()</span></em><a class="headerlink" href="#ServerConfig.chplVersionArkouda" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">chplVersionArkouda</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">try!</span> <span class="pre">getChplVersion()</span></em><a class="headerlink" href="#ServerConfig.chplVersionArkouda" title="Link to this definition"></a></dt>
 <dd><p>Indicates the version of Chapel Arkouda was built with</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.authenticate">
-<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">authenticate</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.authenticate" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">authenticate</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.authenticate" title="Link to this definition"></a></dt>
 <dd><p>Indicates whether token authentication is being used for Akrouda server requests</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.regexMaxCaptures">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">regexMaxCaptures</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">20</span></em><a class="headerlink" href="#ServerConfig.regexMaxCaptures" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">regexMaxCaptures</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">20</span></em><a class="headerlink" href="#ServerConfig.regexMaxCaptures" title="Link to this definition"></a></dt>
 <dd><p>Determines the maximum number of capture groups returned by Regex.matches</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.saveUsedModules">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">saveUsedModules</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.saveUsedModules" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">saveUsedModules</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">false</span></em><a class="headerlink" href="#ServerConfig.saveUsedModules" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.usedModulesFmt">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">usedModulesFmt</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;cfg&quot;</span></em><a class="headerlink" href="#ServerConfig.usedModulesFmt" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">usedModulesFmt</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;cfg&quot;</span></em><a class="headerlink" href="#ServerConfig.usedModulesFmt" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.scLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">scLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(lLevel,</span> <span class="pre">lChannel)</span></em><a class="headerlink" href="#ServerConfig.scLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">scLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(lLevel,</span> <span class="pre">lChannel)</span></em><a class="headerlink" href="#ServerConfig.scLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.createConfig">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createConfig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.createConfig" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createConfig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.createConfig" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getConfig">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConfig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerConfig.getConfig" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConfig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerConfig.getConfig" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getEnv">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">default</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getEnv" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEnv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">default</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getEnv" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getPhysicalMemHere">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPhysicalMemHere</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getPhysicalMemHere" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPhysicalMemHere</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getPhysicalMemHere" title="Link to this definition"></a></dt>
 <dd><p>Get an estimate for how much memory can be allocated. Based on runtime with
 chpl_comm_regMemHeapInfo if using a fixed heap, otherwise physical memory</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getByteorder">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getByteorder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getByteorder" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getByteorder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.getByteorder" title="Link to this definition"></a></dt>
 <dd><p>Get the byteorder (endianness) of this locale</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getMemUsed">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMemUsed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getMemUsed" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMemUsed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getMemUsed" title="Link to this definition"></a></dt>
 <dd><p>Get the memory used on this locale</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getMemLimit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMemLimit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">uint</span></em><a class="headerlink" href="#ServerConfig.getMemLimit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMemLimit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">uint</span></em><a class="headerlink" href="#ServerConfig.getMemLimit" title="Link to this definition"></a></dt>
 <dd><p>Get the memory limit for this server run
 returns either the memMax if set or a percentage of the physical memory per locale</p>
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.memHighWater">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">memHighWater</span></span><em class="property"> <span class="pre">:</span> <span class="pre">uint</span> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#ServerConfig.memHighWater" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">memHighWater</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">uint</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#ServerConfig.memHighWater" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.overMemLimit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">overMemLimit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">additionalAmount:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.overMemLimit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">overMemLimit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">additionalAmount:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerConfig.overMemLimit" title="Link to this definition"></a></dt>
 <dd><p>check used + amount is over the memory limit
 throw error if we would go over the limit</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.arrayDimIsSupported">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayDimIsSupported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">dim:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ServerConfig.arrayDimIsSupported" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayDimIsSupported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">dim:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ServerConfig.arrayDimIsSupported" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.arrayElmTypeIsSupported">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayElmTypeIsSupported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ServerConfig.arrayElmTypeIsSupported" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayElmTypeIsSupported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ServerConfig.arrayElmTypeIsSupported" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerConfig.string.splitMsgToTuple">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">string.</span></span><span class="sig-name descname"><span class="pre">splitMsgToTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">numChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.string.splitMsgToTuple" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">string.</span></span><span class="sig-name descname"><span class="pre">splitMsgToTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">numChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.string.splitMsgToTuple" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -450,7 +440,7 @@ throw error if we would go over the limit</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerConfig.bytes.splitMsgToTuple">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">bytes.</span></span><span class="sig-name descname"><span class="pre">splitMsgToTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">numChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.bytes.splitMsgToTuple" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">bytes.</span></span><span class="sig-name descname"><span class="pre">splitMsgToTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">numChunks:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.bytes.splitMsgToTuple" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -460,12 +450,12 @@ throw error if we would go over the limit</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.getEnvInt">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEnvInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">default:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#ServerConfig.getEnvInt" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getEnvInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">default:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#ServerConfig.getEnvInt" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.Q">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">Q</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;\&quot;&quot;</span></em><a class="headerlink" href="#ServerConfig.Q" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">Q</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;\&quot;&quot;</span></em><a class="headerlink" href="#ServerConfig.Q" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>String constants for use in constructing JSON formatted messages</p></li>
 </ul>
@@ -473,27 +463,27 @@ throw error if we would go over the limit</p>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.QCQ">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">QCQ</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">Q</span> <span class="pre">+</span> <span class="pre">&quot;</span></em><em class="property"> <span class="pre">:</span> <span class="pre">&quot;</span> <span class="pre">+</span> <span class="pre">Q</span></em><a class="headerlink" href="#ServerConfig.QCQ" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">QCQ</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">Q</span> <span class="pre">+</span> <span class="pre">&quot;:&quot;</span> <span class="pre">+</span> <span class="pre">Q</span></em><a class="headerlink" href="#ServerConfig.QCQ" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.BSLASH">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">BSLASH</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;\\&quot;</span></em><a class="headerlink" href="#ServerConfig.BSLASH" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">BSLASH</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;\\&quot;</span></em><a class="headerlink" href="#ServerConfig.BSLASH" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ServerConfig.ESCAPED_QUOTES">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ESCAPED_QUOTES</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">BSLASH</span> <span class="pre">+</span> <span class="pre">Q</span></em><a class="headerlink" href="#ServerConfig.ESCAPED_QUOTES" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ESCAPED_QUOTES</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">BSLASH</span> <span class="pre">+</span> <span class="pre">Q</span></em><a class="headerlink" href="#ServerConfig.ESCAPED_QUOTES" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.appendToConfigStr">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendToConfigStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.appendToConfigStr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendToConfigStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">val:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.appendToConfigStr" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerConfig.currentTime">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">currentTime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.currentTime" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">currentTime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.currentTime" title="Link to this definition"></a></dt>
 <dd><p>proposed replacement for <cite>timeSinceEpoch().totalSeconds()</cite></p>
 </dd></dl>
 

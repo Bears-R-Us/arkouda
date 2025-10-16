@@ -62,11 +62,11 @@ Module Contents
    :param side: If 'left', the index of the first suitable location found is given. If 'right', return the
                 last such index. Default is 'left'.
    :type side: {'left', 'right'}, optional
-   :param sorter: The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.
-   :type sorter: Array, optional
    :param x2_sorted: If True, assumes that `x2` is already sorted in ascending order. This can improve performance
                      for large, sorted search arrays. If False, no assumption is made about the order of `x2`.
    :type x2_sorted: bool, default=False
+   :param sorter: The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.
+   :type sorter: Array, optional
 
 
 .. py:function:: where(condition: arkouda.array_api.array_object.Array, x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array

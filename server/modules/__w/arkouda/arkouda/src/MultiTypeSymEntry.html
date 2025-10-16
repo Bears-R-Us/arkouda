@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MultiTypeSymEntry &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="multitypesymentry">
-<span id="module-MultiTypeSymEntry"></span><h1>MultiTypeSymEntry<a class="headerlink" href="#multitypesymentry" title="Link to this heading">¶</a></h1>
+<span id="module-MultiTypeSymEntry"></span><h1>MultiTypeSymEntry<a class="headerlink" href="#multitypesymentry" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
 </pre></div>
@@ -133,12 +130,12 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.genLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">genLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MultiTypeSymEntry.genLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">genLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MultiTypeSymEntry.genLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">GenSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">GenSparseSymEntry,</span> <span class="pre">SparseSymEntry,</span> <span class="pre">GeneratorSymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SymbolEntryType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">AbstractSymEntry,</span> <span class="pre">TypedArraySymEntry,</span> <span class="pre">PrimitiveTypedArraySymEntry,</span> <span class="pre">ComplexTypedArraySymEntry,</span> <span class="pre">GenSymEntry,</span> <span class="pre">SegStringSymEntry,</span> <span class="pre">CompositeSymEntry,</span> <span class="pre">GenSparseSymEntry,</span> <span class="pre">SparseSymEntry,</span> <span class="pre">GeneratorSymEntry,</span> <span class="pre">AnythingSymEntry,</span> <span class="pre">UnknownSymEntry,</span> <span class="pre">None</span> <span class="pre">}</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Internal Types we can use to build our Symbol type hierarchy.</p></li>
@@ -146,74 +143,74 @@
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.AbstractSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AbstractSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.AbstractSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AbstractSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.AbstractSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.TypedArraySymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TypedArraySymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.TypedArraySymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TypedArraySymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.TypedArraySymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.PrimitiveTypedArraySymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PrimitiveTypedArraySymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.PrimitiveTypedArraySymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PrimitiveTypedArraySymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.PrimitiveTypedArraySymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.ComplexTypedArraySymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ComplexTypedArraySymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.ComplexTypedArraySymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ComplexTypedArraySymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.ComplexTypedArraySymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.GenSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GenSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.GenSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GenSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.GenSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.SegStringSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SegStringSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.SegStringSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SegStringSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.SegStringSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.CompositeSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CompositeSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.CompositeSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CompositeSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.CompositeSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.GenSparseSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GenSparseSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.GenSparseSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GenSparseSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.GenSparseSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.SparseSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SparseSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.SparseSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SparseSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.SparseSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.GeneratorSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GeneratorSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.GeneratorSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GeneratorSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.GeneratorSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.AnythingSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AnythingSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.AnythingSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AnythingSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.AnythingSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.UnknownSymEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UnknownSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.UnknownSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UnknownSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.UnknownSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymbolEntryType.None">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">None</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.None" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">None</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymbolEntryType.None" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AbstractSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AbstractSymEntry</span></span><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>This is the root of our SymbolTable Entry / Typing system.</p></li>
@@ -226,22 +223,22 @@
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.entryType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">entryType</span></span><em class="property"> <span class="pre">:</span> <span class="pre">SymbolEntryType</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.entryType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">entryType</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">SymbolEntryType</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.entryType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.assignableTypes">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">assignableTypes</span></span><em class="property"> <span class="pre">:</span> <span class="pre">set(SymbolEntryType)</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.assignableTypes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">assignableTypes</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">set(SymbolEntryType)</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.assignableTypes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.name">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -251,13 +248,13 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.setName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.setName" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.setName" title="Link to this definition"></a></dt>
 <dd><p>Sets the name of the entry when it is added to the Symbol Table</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.isAssignableTo">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isAssignableTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entryType:</span> <span class="pre">SymbolEntryType</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.isAssignableTo" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isAssignableTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entryType:</span> <span class="pre">SymbolEntryType</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.isAssignableTo" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>This can be used to help determine if a class can be</p></li>
@@ -267,7 +264,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.getSizeEstimate">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.getSizeEstimate" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.getSizeEstimate" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>This is a hook for the ServerConfig.overMemLimit procedure</p></li>
@@ -276,8 +273,18 @@
 </dd></dl>
 
 <dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.removeDependents">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeDependents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.removeDependents" title="Link to this definition"></a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>When a SegStringSymEntry is removed from the ST, need to remove</p></li>
+<li><p>its “offsets” and “values”. Otherwise nothing to do.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.AbstractSymEntry.entry__str__">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.AbstractSymEntry.entry__str__" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Formats and returns data in this entry up to the specified threshold.</p></li>
@@ -349,7 +356,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">gse:</span> <span class="pre">borrowed</span> <span class="pre">GenSymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Link to this definition"></a></dt>
 <dd><p>Casts a GenSymEntry to the specified type and returns it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -360,7 +367,7 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenSymEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenSymEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry" title="Link to this definition"></a></dt>
 <dd><p>This is a dummy class to avoid having to talk about specific
 instantiations of SymEntry.
 GenSymEntries can contain multiple SymEntries, but they represent a singular object.
@@ -368,43 +375,43 @@ For example, SegArray contains the offsets and values array, but only the values
 considered data.</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.dtype">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.dtype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.dtype" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.itemsize">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">itemsize</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.itemsize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">itemsize</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.itemsize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.ndim">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.ndim" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.ndim" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.shape">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;[0]&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.shape" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;[0]&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.shape" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Link to this definition"></a></dt>
 <dd><p>Create a 1D GenSymEntry from an array element type and length</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.getSizeEstimate">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.getSizeEstimate" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.getSizeEstimate" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.toSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.toSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.toSymEntry" title="Link to this definition"></a></dt>
 <dd><p>Cast this <cite>GenSymEntry</cite> to <cite>borrowed SymEntry(etype)</cite></p>
 <p>This function will halt if the cast fails.</p>
 <dl class="field-list simple">
@@ -416,7 +423,7 @@ considered data.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.entry__str__">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.entry__str__" title="Link to this definition"></a></dt>
 <dd><p>Formats and returns data in this entry up to the specified threshold.
 Arrays of size less than threshold will be printed in their entirety.
 Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
@@ -455,58 +462,58 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSymEntry.attrib">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.attrib" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.attrib" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SymEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SymEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry" title="Link to this definition"></a></dt>
 <dd><p>Symbol table entry</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.etype">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.etype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.etype" title="Link to this definition"></a></dt>
 <dd><p>generic element type array
 etype is different from dtype (chapel vs numpy)</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.dimensions">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dimensions</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.dimensions" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dimensions</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.dimensions" title="Link to this definition"></a></dt>
 <dd><p>number of dimensions, to be passed back to the <cite>GenSymEntry</cite> so that
 we are able to make it visible to the Python client</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.tupShape">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">tupShape</span></span><em class="property"> <span class="pre">:</span> <span class="pre">dimensions*int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.tupShape" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">tupShape</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">dimensions*int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.tupShape" title="Link to this definition"></a></dt>
 <dd><p>the actual shape of the array, this has to live here, since GenSymEntry
 has to stay generic</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.a">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">makeDistArray(...tupShape,</span> <span class="pre">etype)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.a" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">makeDistArray(...tupShape,</span> <span class="pre">etype)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.a" title="Link to this definition"></a></dt>
 <dd><p>‘a’ is the distributed array whose value and type are defined by
 makeDist{Dom,Array}() to support varying distributions</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.aD">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">aD</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.aD" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">aD</span></span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.aD" title="Link to this definition"></a></dt>
 <dd><p>Removed domain accessor, use <cite>a.domain</cite> instead</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.max_bits">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">max_bits</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.max_bits" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">max_bits</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">-1</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.max_bits" title="Link to this definition"></a></dt>
 <dd><p>only used with bigint pdarrays</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em>, <em class="sig-param"><span class="pre">max_bits</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">MyDmap</span> <span class="pre">!=</span> <span class="pre">Dmap.defaultRectangular</span> <span class="pre">&amp;&amp;</span> <span class="pre">a.isDefaultRectangular()</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?etype</span></em>, <em class="sig-param"><span class="pre">max_bits</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">MyDmap</span> <span class="pre">!=</span> <span class="pre">Dmap.defaultRectangular</span> <span class="pre">&amp;&amp;</span> <span class="pre">a.isDefaultRectangular()</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Link to this definition"></a></dt>
 <dd><p>Create a SymEntry from a defaultRectangular array (when the server is
 configured to create distributed arrays)</p>
 <dl class="field-list simple">
@@ -538,13 +545,13 @@ configured to create distributed arrays)</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.deinit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.deinit" title="Link to this definition"></a></dt>
 <dd><p>Verbose flag utility method</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SymEntry.entry__str__">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">6</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;[&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;]&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;%\?&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">6</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;[&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;]&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;%\?&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.entry__str__" title="Link to this definition"></a></dt>
 <dd><p>Formats and returns data in this entry up to the specified threshold.
 Arrays of size less than threshold will be printed in their entirety.
 Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
@@ -585,7 +592,7 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.createSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.createSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.createSymEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -595,35 +602,35 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CompositeSymEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CompositeSymEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry" title="Link to this definition"></a></dt>
 <dd><p>Base class for any entry that consists of multiple SymEntries that have varying types.
 These entries are related, but do not represent a single object.
 For Example, group by contains multiple SymEntries that are all considered part of the dataset.</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.ndim">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.ndim" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.ndim" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.CompositeSymEntry.attrib">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.attrib" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.CompositeSymEntry.attrib" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.createTypedSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createTypedSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.createTypedSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">createTypedSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">len:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.createTypedSymEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Factory method for creating a typed SymEntry and checking mem limits</p></li>
@@ -657,35 +664,40 @@ For Example, group by contains multiple SymEntries that are all considered part 
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegStringSymEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegStringSymEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.etype">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.etype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.etype" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.offsetsEntry">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">offsetsEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int,</span> <span class="pre">1)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.offsetsEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">offsetsEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int,</span> <span class="pre">1)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.offsetsEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.bytesEntry">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">bytesEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8),</span> <span class="pre">1)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.bytesEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">bytesEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8),</span> <span class="pre">1)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.bytesEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsetsSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">bytesSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8))</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">offsetsSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry(int)</span></em>, <em class="sig-param"><span class="pre">bytesSymEntry:</span> <span class="pre">shared</span> <span class="pre">SymEntry(uint(8))</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.getSizeEstimate">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.getSizeEstimate" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSizeEstimate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.getSizeEstimate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.removeDependents">
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">removeDependents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.removeDependents" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SegStringSymEntry.entry__str__">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SegStringSymEntry.entry__str__" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Formats and returns data in this entry up to the specified threshold.</p></li>
@@ -757,51 +769,51 @@ For Example, group by contains multiple SymEntries that are all considered part 
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenSparseSymEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenSparseSymEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.dtype">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.dtype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.dtype" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.itemsize">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">itemsize</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.itemsize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">itemsize</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.itemsize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.nnz">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">nnz</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.nnz" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">nnz</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.nnz" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.ndim">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.ndim" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">ndim</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.ndim" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.shape">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;[0,0]&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.shape" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">shape</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;[0,0]&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.shape" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.layoutStr">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">layoutStr</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;UNKNOWN&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.layoutStr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">layoutStr</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;UNKNOWN&quot;</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.layoutStr" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">nnz:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></em>, <em class="sig-param"><span class="pre">layoutStr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em>, <em class="sig-param"><span class="pre">nnz:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></em>, <em class="sig-param"><span class="pre">layoutStr:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.init" title="Link to this definition"></a></dt>
 <dd><p>Create a 1D GenSymEntry from an array element type and length</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.toSparseSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSparseSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">2</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">layout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.toSparseSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSparseSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">dimensions</span> <span class="pre">=</span> <span class="pre">2</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">layout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.toSparseSymEntry" title="Link to this definition"></a></dt>
 <dd><p>Cast this <cite>SparseGenSymEntry</cite> to <cite>borrowed SparseSymEntry(etype)</cite></p>
 <p>This function will halt if the cast fails.</p>
 <dl class="field-list simple">
@@ -813,7 +825,7 @@ For Example, group by contains multiple SymEntries that are all considered part 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.entry__str__">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.entry__str__" title="Link to this definition"></a></dt>
 <dd><p>Formats and returns data in this entry up to the specified threshold.
 Arrays of size less than threshold will be printed in their entirety.
 Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
@@ -852,37 +864,37 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GenSparseSymEntry.attrib">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.attrib" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">attrib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.GenSparseSymEntry.attrib" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.layoutToStr">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">layoutToStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">l</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><a class="headerlink" href="#MultiTypeSymEntry.layoutToStr" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">layoutToStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">l</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><a class="headerlink" href="#MultiTypeSymEntry.layoutToStr" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SparseSymEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenSparseSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SparseSymEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenSparseSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry" title="Link to this definition"></a></dt>
 <dd><p>Symbol table entry</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.etype">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.etype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.etype" title="Link to this definition"></a></dt>
 <dd><p>generic element type array
 etype is different from dtype (chapel vs numpy)</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.dimensions">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dimensions</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.dimensions" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">dimensions</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.dimensions" title="Link to this definition"></a></dt>
 <dd><p>number of dimensions, to be passed back to the <cite>GenSparseSymEntry</cite> so that
 we are able to make it visible to the Python client</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.tupShape">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">tupShape</span></span><em class="property"> <span class="pre">:</span> <span class="pre">dimensions*int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.tupShape" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">tupShape</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">dimensions*int</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.tupShape" title="Link to this definition"></a></dt>
 <dd><p>the actual shape of the array, this has to live here, since GenSparseSymEntry
 has to stay generic
 For now, each dimension is assumed to be equal.</p>
@@ -890,24 +902,24 @@ For now, each dimension is assumed to be equal.</p>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.matLayout">
-<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">matLayout</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Layout</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.matLayout" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">matLayout</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Layout</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.matLayout" title="Link to this definition"></a></dt>
 <dd><p>layout of the sparse array: CSC or CSR</p>
 </dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.a">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">makeSparseArray(...tupShape,</span> <span class="pre">etype,</span> <span class="pre">matLayout)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.a" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">a</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">makeSparseArray(...tupShape,</span> <span class="pre">etype,</span> <span class="pre">matLayout)</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.a" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?eltType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">a.domain.parentDom.rank</span> <span class="pre">==</span> <span class="pre">2</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a:</span> <span class="pre">[?D]</span> <span class="pre">?eltType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout</span></em><span class="sig-paren">)</span><em class="property">&#160; <span class="pre">where</span> <span class="pre">a.domain.parentDom.rank</span> <span class="pre">==</span> <span class="pre">2</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.init" title="Link to this definition"></a></dt>
 <dd><p>Create a SparseSymEntry from a sparse array</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.entry__str__">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">6</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;noprefix&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;nosuffix&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;%\?&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.entry__str__" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">entry__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">thresh:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">6</span></em>, <em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;noprefix&quot;</span></em>, <em class="sig-param"><span class="pre">suffix:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;nosuffix&quot;</span></em>, <em class="sig-param"><span class="pre">baseFormat:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;%\?&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.entry__str__" title="Link to this definition"></a></dt>
 <dd><p>Formats and returns data in this entry up to the specified threshold.
 Matrices with nnz less than threshold will be printed in their entirety.
 Matrices with nnz greater than or equal to threshold will print the first 3 and last 3 elements</p>
@@ -946,7 +958,7 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.SparseSymEntry.deinit">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.deinit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SparseSymEntry.deinit" title="Link to this definition"></a></dt>
 <dd><p>Verbose flag utility method</p>
 </dd></dl>
 
@@ -954,32 +966,32 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GeneratorSymEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GeneratorSymEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractSymEntry</span></em><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.etype">
-<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.etype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">etype</span></span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.etype" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.generator">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">generator</span></span><em class="property"> <span class="pre">:</span> <span class="pre">randomStream(etype)</span></em><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.generator" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">generator</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">randomStream(etype)</span></em><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.generator" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.state">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">state</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.state" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">state</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.state" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.GeneratorSymEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">generator:</span> <span class="pre">randomStream(?etype)</span></em>, <em class="sig-param"><span class="pre">state:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">generator:</span> <span class="pre">randomStream(?etype)</span></em>, <em class="sig-param"><span class="pre">state:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GeneratorSymEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toGenSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGenSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toGenSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGenSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toGenSymEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Helper proc to cast AbstrcatSymEntry to GenSymEntry</p></li>
@@ -988,7 +1000,7 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toCompositeSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toCompositeSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toCompositeSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toCompositeSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toCompositeSymEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Helper proc to cast AbstractSymEntry to CompositeSymEntry</p></li>
@@ -997,7 +1009,7 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toSegStringSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSegStringSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toSegStringSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toSegStringSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toSegStringSymEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Helper proc to cast AbstractSymEntry to SegStringSymEntry</p></li>
@@ -1006,7 +1018,7 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toGenSparseSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGenSparseSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toGenSparseSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGenSparseSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toGenSparseSymEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Helper proc to cast AbstractSymEntry to GenSparseSymEntry</p></li>
@@ -1015,7 +1027,7 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.toGeneratorSymEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGeneratorSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toGeneratorSymEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toGeneratorSymEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.toGeneratorSymEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Helper proc to cast AbstractSymEntry to GeneratorSymEntry</p></li>
@@ -1024,7 +1036,7 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.getArraySpecFromEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArraySpecFromEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.getArraySpecFromEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getArraySpecFromEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">entry:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeSymEntry.getArraySpecFromEntry" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Temporary shim to ease transition to Typed Symbol Table Entries.</p></li>
@@ -1057,13 +1069,13 @@ Matrices with nnz greater than or equal to threshold will print the first 3 and 
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MultiTypeSymEntry.tupShapeString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tupShapeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeSymEntry.tupShapeString" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tupShapeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeSymEntry.tupShapeString" title="Link to this definition"></a></dt>
 <dd><p>Create a string to represent a JSON tuple of an array’s shape</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tupShapeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tupShapeString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ndim:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em></dt>
 <dd></dd></dl>
 
 </section>

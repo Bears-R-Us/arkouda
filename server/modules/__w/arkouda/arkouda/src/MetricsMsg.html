@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MetricsMsg &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="metricsmsg">
-<span id="module-MetricsMsg"></span><h1>MetricsMsg<a class="headerlink" href="#metricsmsg" title="Link to this heading">¶</a></h1>
+<span id="module-MetricsMsg"></span><h1>MetricsMsg<a class="headerlink" href="#metricsmsg" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">MetricsMsg</span><span class="p">;</span>
 </pre></div>
@@ -133,210 +130,210 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricCategory</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">ALL,</span> <span class="pre">NUM_REQUESTS,</span> <span class="pre">RESPONSE_TIME,</span> <span class="pre">AVG_RESPONSE_TIME,</span> <span class="pre">TOTAL_RESPONSE_TIME,</span> <span class="pre">TOTAL_MEMORY_USED,</span> <span class="pre">SYSTEM,</span> <span class="pre">SERVER,</span> <span class="pre">SERVER_INFO,</span> <span class="pre">NUM_ERRORS</span> <span class="pre">}</span></em><a class="headerlink" href="#MetricsMsg.MetricCategory" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricCategory</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">ALL,</span> <span class="pre">NUM_REQUESTS,</span> <span class="pre">RESPONSE_TIME,</span> <span class="pre">AVG_RESPONSE_TIME,</span> <span class="pre">TOTAL_RESPONSE_TIME,</span> <span class="pre">TOTAL_MEMORY_USED,</span> <span class="pre">SYSTEM,</span> <span class="pre">SERVER,</span> <span class="pre">SERVER_INFO,</span> <span class="pre">NUM_ERRORS</span> <span class="pre">}</span></em><a class="headerlink" href="#MetricsMsg.MetricCategory" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.ALL">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ALL</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.ALL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ALL</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.ALL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.NUM_REQUESTS">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NUM_REQUESTS</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.NUM_REQUESTS" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NUM_REQUESTS</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.NUM_REQUESTS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.RESPONSE_TIME">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">RESPONSE_TIME</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.RESPONSE_TIME" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">RESPONSE_TIME</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.RESPONSE_TIME" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.AVG_RESPONSE_TIME">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AVG_RESPONSE_TIME</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.AVG_RESPONSE_TIME" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AVG_RESPONSE_TIME</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.AVG_RESPONSE_TIME" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.TOTAL_RESPONSE_TIME">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TOTAL_RESPONSE_TIME</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.TOTAL_RESPONSE_TIME" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TOTAL_RESPONSE_TIME</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.TOTAL_RESPONSE_TIME" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.TOTAL_MEMORY_USED">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TOTAL_MEMORY_USED</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.TOTAL_MEMORY_USED" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TOTAL_MEMORY_USED</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.TOTAL_MEMORY_USED" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.SYSTEM">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SYSTEM</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.SYSTEM" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SYSTEM</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.SYSTEM" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.SERVER">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SERVER</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.SERVER" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SERVER</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.SERVER" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.SERVER_INFO">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SERVER_INFO</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.SERVER_INFO" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SERVER_INFO</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.SERVER_INFO" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricCategory.NUM_ERRORS">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NUM_ERRORS</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.NUM_ERRORS" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NUM_ERRORS</span></span><a class="headerlink" href="#MetricsMsg.MetricCategory.NUM_ERRORS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricScope">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricScope</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">GLOBAL,</span> <span class="pre">LOCALE,</span> <span class="pre">REQUEST,</span> <span class="pre">USER</span> <span class="pre">}</span></em><a class="headerlink" href="#MetricsMsg.MetricScope" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricScope</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">GLOBAL,</span> <span class="pre">LOCALE,</span> <span class="pre">REQUEST,</span> <span class="pre">USER</span> <span class="pre">}</span></em><a class="headerlink" href="#MetricsMsg.MetricScope" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricScope.GLOBAL">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GLOBAL</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.GLOBAL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GLOBAL</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.GLOBAL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricScope.LOCALE">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">LOCALE</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.LOCALE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">LOCALE</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.LOCALE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricScope.REQUEST">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">REQUEST</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.REQUEST" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">REQUEST</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.REQUEST" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricScope.USER">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">USER</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.USER" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">USER</span></span><a class="headerlink" href="#MetricsMsg.MetricScope.USER" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricDataType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricDataType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">INT,</span> <span class="pre">REAL</span> <span class="pre">}</span></em><a class="headerlink" href="#MetricsMsg.MetricDataType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MetricDataType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">INT,</span> <span class="pre">REAL</span> <span class="pre">}</span></em><a class="headerlink" href="#MetricsMsg.MetricDataType" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricDataType.INT">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">INT</span></span><a class="headerlink" href="#MetricsMsg.MetricDataType.INT" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">INT</span></span><a class="headerlink" href="#MetricsMsg.MetricDataType.INT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricDataType.REAL">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">REAL</span></span><a class="headerlink" href="#MetricsMsg.MetricDataType.REAL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">REAL</span></span><a class="headerlink" href="#MetricsMsg.MetricDataType.REAL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.mLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">mLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MetricsMsg.mLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">mLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MetricsMsg.mLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.metricScope">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">metricScope</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">try!</span> <span class="pre">ServerConfig.getEnv(name</span> <span class="pre">=</span> <span class="pre">&quot;METRIC_SCOPE&quot;,</span> <span class="pre">default</span> <span class="pre">=</span> <span class="pre">&quot;MetricScope.REQUEST&quot;)</span></em><a class="headerlink" href="#MetricsMsg.metricScope" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">metricScope</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">try!</span> <span class="pre">ServerConfig.getEnv(name</span> <span class="pre">=</span> <span class="pre">&quot;METRIC_SCOPE&quot;,</span> <span class="pre">default</span> <span class="pre">=</span> <span class="pre">&quot;MetricScope.REQUEST&quot;)</span></em><a class="headerlink" href="#MetricsMsg.metricScope" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.serverMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">CounterTable()</span></em><a class="headerlink" href="#MetricsMsg.serverMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">serverMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">CounterTable()</span></em><a class="headerlink" href="#MetricsMsg.serverMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.requestMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">requestMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">CounterTable()</span></em><a class="headerlink" href="#MetricsMsg.requestMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">requestMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">CounterTable()</span></em><a class="headerlink" href="#MetricsMsg.requestMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.avgResponseTimeMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">avgResponseTimeMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">AverageMeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.avgResponseTimeMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">avgResponseTimeMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">AverageMeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.avgResponseTimeMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.responseTimeMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">responseTimeMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.responseTimeMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">responseTimeMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.responseTimeMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.totalResponseTimeMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">totalResponseTimeMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.totalResponseTimeMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">totalResponseTimeMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.totalResponseTimeMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.totalMemoryUsedMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">totalMemoryUsedMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.totalMemoryUsedMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">totalMemoryUsedMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">MeasurementTable()</span></em><a class="headerlink" href="#MetricsMsg.totalMemoryUsedMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.users">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">users</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Users()</span></em><a class="headerlink" href="#MetricsMsg.users" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">users</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Users()</span></em><a class="headerlink" href="#MetricsMsg.users" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.userMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">userMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">UserMetrics()</span></em><a class="headerlink" href="#MetricsMsg.userMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">userMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">UserMetrics()</span></em><a class="headerlink" href="#MetricsMsg.userMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MetricsMsg.errorMetrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">errorMetrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">CounterTable()</span></em><a class="headerlink" href="#MetricsMsg.errorMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">errorMetrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">CounterTable()</span></em><a class="headerlink" href="#MetricsMsg.errorMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="MetricsMsg.User">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">User</span></span><a class="headerlink" href="#MetricsMsg.User" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">User</span></span><a class="headerlink" href="#MetricsMsg.User" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.User.name">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.User.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.User.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.Users">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Users</span></span><a class="headerlink" href="#MetricsMsg.Users" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Users</span></span><a class="headerlink" href="#MetricsMsg.Users" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.Users.users">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">users</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">User)</span></em><a class="headerlink" href="#MetricsMsg.Users.users" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">users</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">User)</span></em><a class="headerlink" href="#MetricsMsg.Users.users" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.Users.getUser">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Users.getUser" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Users.getUser" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.Users.getUserNames">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUserNames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Users.getUserNames" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUserNames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Users.getUserNames" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.Users.getUsers">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUsers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Users.getUsers" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUsers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Users.getUsers" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricValue">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MetricValue</span></span><a class="headerlink" href="#MetricsMsg.MetricValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MetricValue</span></span><a class="headerlink" href="#MetricsMsg.MetricValue" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricValue.realValue">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">realValue</span></span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><a class="headerlink" href="#MetricsMsg.MetricValue.realValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">realValue</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><a class="headerlink" href="#MetricsMsg.MetricValue.realValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricValue.intValue">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">intValue</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int(64)</span></em><a class="headerlink" href="#MetricsMsg.MetricValue.intValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">intValue</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int(64)</span></em><a class="headerlink" href="#MetricsMsg.MetricValue.intValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricValue.dataType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dataType</span></span><em class="property"> <span class="pre">:</span> <span class="pre">MetricDataType</span></em><a class="headerlink" href="#MetricsMsg.MetricValue.dataType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dataType</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MetricDataType</span></em><a class="headerlink" href="#MetricsMsg.MetricValue.dataType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricValue.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">realValue:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MetricValue.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">realValue:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MetricValue.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -346,95 +343,95 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MetricValue.update">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MetricValue.update" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MetricValue.update" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.AvgMetricValue">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AvgMetricValue</span></span><em class="property"> <span class="pre">:</span> <span class="pre">MetricValue</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AvgMetricValue</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MetricValue</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.AvgMetricValue.numValues">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">numValues</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue.numValues" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">numValues</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue.numValues" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.AvgMetricValue.intTotal">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">intTotal</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int(64)</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue.intTotal" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">intTotal</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int(64)</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue.intTotal" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.AvgMetricValue.realTotal">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">realTotal</span></span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue.realTotal" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">realTotal</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><a class="headerlink" href="#MetricsMsg.AvgMetricValue.realTotal" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.AvgMetricValue.update">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.AvgMetricValue.update" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.AvgMetricValue.update" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UserMetrics</span></span><a class="headerlink" href="#MetricsMsg.UserMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UserMetrics</span></span><a class="headerlink" href="#MetricsMsg.UserMetrics" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.metrics">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">metrics</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(keyType</span> <span class="pre">=</span> <span class="pre">User,</span> <span class="pre">valType</span> <span class="pre">=</span> <span class="pre">shared</span> <span class="pre">CounterTable)</span></em><a class="headerlink" href="#MetricsMsg.UserMetrics.metrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">metrics</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(keyType</span> <span class="pre">=</span> <span class="pre">User,</span> <span class="pre">valType</span> <span class="pre">=</span> <span class="pre">shared</span> <span class="pre">CounterTable)</span></em><a class="headerlink" href="#MetricsMsg.UserMetrics.metrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.users">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">users</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Users()</span></em><a class="headerlink" href="#MetricsMsg.UserMetrics.users" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">users</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Users()</span></em><a class="headerlink" href="#MetricsMsg.UserMetrics.users" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.getUserMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUserMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">User</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">CounterTable</span></em><a class="headerlink" href="#MetricsMsg.UserMetrics.getUserMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUserMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">User</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">borrowed</span> <span class="pre">CounterTable</span></em><a class="headerlink" href="#MetricsMsg.UserMetrics.getUserMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.incrementPerUserRequestMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incrementPerUserRequestMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">metricName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.incrementPerUserRequestMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incrementPerUserRequestMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">metricName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.incrementPerUserRequestMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPerUserNumRequestsPerCommandMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPerUserNumRequestsPerCommandMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandForAllUsersMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPerUserNumRequestsPerCommandForAllUsersMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandForAllUsersMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPerUserNumRequestsPerCommandForAllUsersMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.getPerUserNumRequestsPerCommandForAllUsersMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.incrementNumRequestsPerCommand">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incrementNumRequestsPerCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.incrementNumRequestsPerCommand" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incrementNumRequestsPerCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.incrementNumRequestsPerCommand" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetrics.incrementTotalNumRequests">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incrementTotalNumRequests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.incrementTotalNumRequests" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">incrementTotalNumRequests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetrics.incrementTotalNumRequests" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MeasurementTable</span></span><a class="headerlink" href="#MetricsMsg.MeasurementTable" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MeasurementTable</span></span><a class="headerlink" href="#MetricsMsg.MeasurementTable" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The MeasurementTable encapsulates real measurements</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.measurements">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">measurements</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">real)</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.measurements" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">measurements</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">real)</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.measurements" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.get">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">real</span> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.get" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.get" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Returns the measurement corresponding to the metric name If the</p></li>
 <li><p>metric does not exist, the metric value is set to 0.0 and is returned.</p></li>
@@ -443,7 +440,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.set">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.set" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.set" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Sets the metrics value</p></li>
 </ul>
@@ -451,7 +448,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.size">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.size" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Returns the number of measurements in the MeasurementTable.s</p></li>
 </ul>
@@ -459,7 +456,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.add">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.add" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.MeasurementTable.add" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Adds a measurement to an existing measurement corresponding to the</p></li>
 <li><p>metric name, setting the value if the metric does not exist.</p></li>
@@ -468,31 +465,31 @@
 
 <dl class="chpl itermethod">
 <dt class="sig sig-object chpl" id="MetricsMsg.MeasurementTable.items">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.items" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.MeasurementTable.items" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AverageMeasurementTable</span></span><em class="property"> <span class="pre">:</span> <span class="pre">MeasurementTable</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AverageMeasurementTable</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MeasurementTable</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The AverageMeasurementTable extends the MeasurementTable by generating</p></li>
 <li><p>values that are averages of incoming values for each metric.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.numMeasurements">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">numMeasurements</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">int(64))</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.numMeasurements" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">numMeasurements</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">int(64))</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.numMeasurements" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.measurementTotals">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">measurementTotals</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">real)</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.measurementTotals" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">measurementTotals</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">real)</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.measurementTotals" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.getNumMeasurements">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumMeasurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.getNumMeasurements" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumMeasurements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.getNumMeasurements" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Returns the number of measurements corresponding to a metric.</p></li>
 </ul>
@@ -500,7 +497,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.getMeasurementTotal">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMeasurementTotal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">real</span> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.getMeasurementTotal" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMeasurementTotal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.getMeasurementTotal" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Returns the sum of all measurements corresponding to a metric. Note:</p></li>
 <li><p>this function is designed to invoked internally in order to</p></li>
@@ -510,7 +507,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.AverageMeasurementTable.add">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.add" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">measurement:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.AverageMeasurementTable.add" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The overridden add method updates the measurement value by doing the following:</p></li>
 <li></li>
@@ -534,292 +531,292 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CounterTable</span></span><a class="headerlink" href="#MetricsMsg.CounterTable" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CounterTable</span></span><a class="headerlink" href="#MetricsMsg.CounterTable" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.counts">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">counts</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">int)</span></em><a class="headerlink" href="#MetricsMsg.CounterTable.counts" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">counts</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">map(string,</span> <span class="pre">int)</span></em><a class="headerlink" href="#MetricsMsg.CounterTable.counts" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.get">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.CounterTable.get" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.CounterTable.get" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.set">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">count:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.set" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">count:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.set" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.increment">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">increment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.increment" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">increment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.increment" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.decrement">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">decrement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.decrement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">decrement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">metric:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">increment:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.decrement" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl itermethod">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.items">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.items" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.items" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.size">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.CounterTable.total">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">total</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.total" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">total</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.CounterTable.total" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.exportAllMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">exportAllMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.exportAllMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">exportAllMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.exportAllMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getUserRequestMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUserRequestMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getUserRequestMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUserRequestMetrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">userName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getUserRequestMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getAllUserRequestMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAllUserRequestMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getAllUserRequestMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAllUserRequestMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getAllUserRequestMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getServerMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getServerMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getServerMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getServerMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getServerMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getNumRequestMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumRequestMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getNumRequestMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumRequestMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getNumRequestMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getNumErrorMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumErrorMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getNumErrorMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getNumErrorMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getNumErrorMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getPerUserNumRequestMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPerUserNumRequestMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getPerUserNumRequestMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPerUserNumRequestMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getPerUserNumRequestMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getResponseTimeMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getResponseTimeMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getResponseTimeMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getAvgResponseTimeMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAvgResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getAvgResponseTimeMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getAvgResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getAvgResponseTimeMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getTotalResponseTimeMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTotalResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getTotalResponseTimeMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTotalResponseTimeMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getTotalResponseTimeMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getTotalMemoryUsedMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTotalMemoryUsedMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getTotalMemoryUsedMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTotalMemoryUsedMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getTotalMemoryUsedMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getMaxLocaleMemory">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMaxLocaleMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getMaxLocaleMemory" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMaxLocaleMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">loc</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getMaxLocaleMemory" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getSystemMetrics">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSystemMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getSystemMetrics" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getSystemMetrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getSystemMetrics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.getServerInfo">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getServerInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getServerInfo" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getServerInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.getServerInfo" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.Metric">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Metric</span></span><a class="headerlink" href="#MetricsMsg.Metric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Metric</span></span><a class="headerlink" href="#MetricsMsg.Metric" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.Metric.name">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.Metric.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.Metric.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.Metric.category">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">category</span></span><em class="property"> <span class="pre">:</span> <span class="pre">MetricCategory</span></em><a class="headerlink" href="#MetricsMsg.Metric.category" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">category</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MetricCategory</span></em><a class="headerlink" href="#MetricsMsg.Metric.category" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.Metric.scope">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">scope</span></span><em class="property"> <span class="pre">:</span> <span class="pre">MetricScope</span></em><a class="headerlink" href="#MetricsMsg.Metric.scope" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">scope</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MetricScope</span></em><a class="headerlink" href="#MetricsMsg.Metric.scope" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.Metric.timestamp">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"> <span class="pre">:</span> <span class="pre">dateTime</span></em><a class="headerlink" href="#MetricsMsg.Metric.timestamp" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">timestamp</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">dateTime</span></em><a class="headerlink" href="#MetricsMsg.Metric.timestamp" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.Metric.value">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><a class="headerlink" href="#MetricsMsg.Metric.value" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">value</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><a class="headerlink" href="#MetricsMsg.Metric.value" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.Metric.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.GLOBAL</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Metric.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.GLOBAL</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.Metric.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetric">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UserMetric</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Metric</span></em><a class="headerlink" href="#MetricsMsg.UserMetric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UserMetric</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Metric</span></em><a class="headerlink" href="#MetricsMsg.UserMetric" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetric.user">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.UserMetric.user" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.UserMetric.user" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.UserMetric.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.USER</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetric.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.USER</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.UserMetric.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.ArrayMetric">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ArrayMetric</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Metric</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ArrayMetric</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Metric</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ArrayMetric.cmd">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">cmd</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric.cmd" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">cmd</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric.cmd" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ArrayMetric.dType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dType</span></span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric.dType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dType</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">DType</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric.dType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ArrayMetric.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.ArrayMetric.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.ArrayMetric.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.GLOBAL</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dType:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.ArrayMetric.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.GLOBAL</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">dType:</span> <span class="pre">DType</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.ArrayMetric.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">LocaleInfo</span></span><a class="headerlink" href="#MetricsMsg.LocaleInfo" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">LocaleInfo</span></span><a class="headerlink" href="#MetricsMsg.LocaleInfo" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleInfo.name">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleInfo.id">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">id</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.id" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleInfo.hostname">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">hostname</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.hostname" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">hostname</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.hostname" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleInfo.number_of_processing_units">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">number_of_processing_units</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.number_of_processing_units" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">number_of_processing_units</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.number_of_processing_units" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleInfo.physical_memory">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">physical_memory</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.physical_memory" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">physical_memory</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.physical_memory" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleInfo.max_number_of_tasks">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">max_number_of_tasks</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.max_number_of_tasks" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">max_number_of_tasks</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleInfo.max_number_of_tasks" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.ServerInfo">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ServerInfo</span></span><a class="headerlink" href="#MetricsMsg.ServerInfo" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ServerInfo</span></span><a class="headerlink" href="#MetricsMsg.ServerInfo" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ServerInfo.hostname">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">hostname</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.hostname" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">hostname</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.hostname" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ServerInfo.version">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">version</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.version" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">version</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.version" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ServerInfo.server_port">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">server_port</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.server_port" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">server_port</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.server_port" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ServerInfo.locales">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locales</span></span><em class="property"> <span class="pre">:</span> <span class="pre">[0..numLocales-1]</span> <span class="pre">owned</span> <span class="pre">LocaleInfo?</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.locales" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locales</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[0..numLocales-1]</span> <span class="pre">owned</span> <span class="pre">LocaleInfo?</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.locales" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.ServerInfo.number_of_locales">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">number_of_locales</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.number_of_locales" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">number_of_locales</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.ServerInfo.number_of_locales" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.ServerInfo.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hostname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">version:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">server_port:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">locales</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.ServerInfo.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hostname:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">version:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">server_port:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">locales</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.ServerInfo.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleMetric">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">LocaleMetric</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Metric</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">LocaleMetric</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Metric</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleMetric.locale_num">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_num</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric.locale_num" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_num</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric.locale_num" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleMetric.locale_name">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_name</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric.locale_name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_name</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric.locale_name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleMetric.locale_hostname">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_hostname</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric.locale_hostname" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">locale_hostname</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MetricsMsg.LocaleMetric.locale_hostname" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MetricsMsg.LocaleMetric.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.LOCALE</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">locale_num:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">locale_name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">locale_hostname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.LocaleMetric.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">category:</span> <span class="pre">MetricCategory</span></em>, <em class="sig-param"><span class="pre">scope:</span> <span class="pre">MetricScope</span> <span class="pre">=</span> <span class="pre">MetricScope.LOCALE</span></em>, <em class="sig-param"><span class="pre">timestamp:</span> <span class="pre">dateTime</span> <span class="pre">=</span> <span class="pre">dateTime.now()</span></em>, <em class="sig-param"><span class="pre">value:</span> <span class="pre">real</span></em>, <em class="sig-param"><span class="pre">locale_num:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">locale_name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">locale_hostname:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MetricsMsg.LocaleMetric.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="MetricsMsg.metricsMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">metricsMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.metricsMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">metricsMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MetricsMsg.metricsMsg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

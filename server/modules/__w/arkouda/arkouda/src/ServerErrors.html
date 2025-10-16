@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ServerErrors &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="servererrors">
-<span id="module-ServerErrors"></span><h1>ServerErrors<a class="headerlink" href="#servererrors" title="Link to this heading">¶</a></h1>
+<span id="module-ServerErrors"></span><h1>ServerErrors<a class="headerlink" href="#servererrors" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ServerErrors</span><span class="p">;</span>
 </pre></div>
@@ -133,12 +130,12 @@
 </div>
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.OutOfBoundsError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">OutOfBoundsError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Error</span></em><a class="headerlink" href="#ServerErrors.OutOfBoundsError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">OutOfBoundsError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Error</span></em><a class="headerlink" href="#ServerErrors.OutOfBoundsError" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ErrorWithContext</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Error</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ErrorWithContext</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Error</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Generates an error message that provides a fuller context to the error</p></li>
 <li><p>by including the line number, proc name, and module name from which the</p></li>
@@ -146,32 +143,32 @@
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext.lineNumber">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lineNumber</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.lineNumber" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lineNumber</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.lineNumber" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext.routineName">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">routineName</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.routineName" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">routineName</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.routineName" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext.moduleName">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">moduleName</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.moduleName" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">moduleName</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.moduleName" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext.errorClass">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">errorClass</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.errorClass" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">errorClass</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.errorClass" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext.publishMsg">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">publishMsg</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.publishMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">publishMsg</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.publishMsg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">errorClass:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;ErrorWithContext&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.ErrorWithContext.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">errorClass:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;ErrorWithContext&quot;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.ErrorWithContext.init" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Accepts parameters that are used to generate the detailed, context-rich</p></li>
 <li><p>error message accessible via ErrorWithContext.message() as well as the</p></li>
@@ -186,7 +183,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.ErrorWithContext.publish">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">publish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.publish" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">publish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.ErrorWithContext.publish" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Returns only the msg init parameter element prepended with “Error: “,</p></li>
 <li><p>which can be used to report errors back to the Arkouda client in a format</p></li>
@@ -198,14 +195,14 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.DatasetNotFoundError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DatasetNotFoundError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.DatasetNotFoundError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DatasetNotFoundError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.DatasetNotFoundError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The DatasetNotFoundError is thrown if there is no dataset in the file</p></li>
 <li><p>being accessed.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.DatasetNotFoundError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.DatasetNotFoundError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.DatasetNotFoundError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -217,14 +214,14 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.WriteModeError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">WriteModeError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.WriteModeError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">WriteModeError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.WriteModeError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The WriteModeError is thrown if a file save operation is executed in append mode</p></li>
 <li><p>on a brand new file lacking any current datasets.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.WriteModeError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.WriteModeError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.WriteModeError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -236,13 +233,13 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.NotHDF5FileError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NotHDF5FileError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.NotHDF5FileError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NotHDF5FileError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.NotHDF5FileError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The NotHDF5FileError is thrown if it is determined a file is not HDFF file.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.NotHDF5FileError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.NotHDF5FileError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.NotHDF5FileError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -254,13 +251,13 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.HDF5FileFormatError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HDF5FileFormatError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.HDF5FileFormatError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HDF5FileFormatError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.HDF5FileFormatError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The HDF5FileFormatError is thrown if there is an error in parsing the HDF5 file.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.HDF5FileFormatError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.HDF5FileFormatError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.HDF5FileFormatError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -272,7 +269,7 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.MismatchedAppendError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MismatchedAppendError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.MismatchedAppendError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MismatchedAppendError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.MismatchedAppendError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The MismatchedAppendError is thrown if an attempt is made to append a dataset to</p></li>
 <li><p>an HDF5 file where the number of locales for the current Arkouda instance differs</p></li>
@@ -280,7 +277,7 @@
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.MismatchedAppendError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.MismatchedAppendError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.MismatchedAppendError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -292,14 +289,14 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.SegStringError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegStringError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.SegStringError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegStringError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.SegStringError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The SegStringError is thrown if the file corresponding to the SegString lacks either the</p></li>
 <li><p>SEGSTRING_OFFSET_NAME or SEGSTRING_VALUE_NAME dataset.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.SegStringError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.SegStringError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.SegStringError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -311,14 +308,14 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.ArgumentError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ArgumentError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.ArgumentError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ArgumentError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.ArgumentError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The ArgumentError is thrown if there is a problem with 1.n arguments passed</p></li>
 <li><p>into a function.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.ArgumentError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.ArgumentError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.ArgumentError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -330,14 +327,14 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.NotImplementedError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NotImplementedError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.NotImplementedError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">NotImplementedError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.NotImplementedError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The NotImplementedError is thrown if the requested operation has not been implemented</p></li>
 <li><p>for the specified data type(s) and/or command type.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.NotImplementedError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.NotImplementedError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.NotImplementedError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -349,13 +346,13 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.UnknownSymbolError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UnknownSymbolError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.UnknownSymbolError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UnknownSymbolError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.UnknownSymbolError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The UnknownSymbolError is thrown if there is not entry in the SymTab.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.UnknownSymbolError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.UnknownSymbolError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.UnknownSymbolError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -367,13 +364,13 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.UnsupportedOSError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UnsupportedOSError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.UnsupportedOSError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">UnsupportedOSError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.UnsupportedOSError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The UnsupportedOSError is thrown if a function cannot be executed on the host OS.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.UnsupportedOSError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.UnsupportedOSError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.UnsupportedOSError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -385,13 +382,13 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.IOError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">IOError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.IOError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">IOError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.IOError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The IOError is thrown if there is an error in IO code.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.IOError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.IOError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.IOError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -403,14 +400,14 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.OverMemoryLimitError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">OverMemoryLimitError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.OverMemoryLimitError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">OverMemoryLimitError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.OverMemoryLimitError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The OverMemoryLimitError is thrown if the projected memory required for a method</p></li>
 <li><p>invocation will exceed available, free memory on 1..n locales</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.OverMemoryLimitError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.OverMemoryLimitError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.OverMemoryLimitError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -422,14 +419,14 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ServerErrors.ConfigurationError">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ConfigurationError</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.ConfigurationError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ConfigurationError</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ErrorWithContext</span></em><a class="headerlink" href="#ServerErrors.ConfigurationError" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The ConfigurationError if the current instance of the server was not</p></li>
 <li><p>configured to complete a requested operation.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ServerErrors.ConfigurationError.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.ConfigurationError.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ServerErrors.ConfigurationError.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -441,7 +438,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrors.generateErrorContext">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateErrorContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">errorClass:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;ErrorWithContext&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.generateErrorContext" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateErrorContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">errorClass:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;ErrorWithContext&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ServerErrors.generateErrorContext" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Generates a detailed, context-rich error message for errors such as instances of</p></li>
 <li><p>built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext</p></li>
@@ -451,7 +448,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ServerErrors.getErrorWithContext">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getErrorWithContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">errorClass:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerErrors.getErrorWithContext" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getErrorWithContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lineNumber:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">moduleName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">routineName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">errorClass:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ServerErrors.getErrorWithContext" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Factory method for generating ErrorWithContext objects that include an error</p></li>
 <li><p>message as well as the line number, routine name, and module name where the</p></li>

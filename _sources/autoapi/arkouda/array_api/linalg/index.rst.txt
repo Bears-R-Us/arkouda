@@ -30,7 +30,7 @@ Module Contents
 
 .. py:function:: tensordot()
 
-   WARNING: not yet implemented
+   WARNING: not yet implemented.
 
 
 .. py:function:: vecdot(x1: arkouda.array_api.array_object.Array, x2: arkouda.array_api.array_object.Array, /, *, axis: int = -1) -> arkouda.array_api.array_object.Array

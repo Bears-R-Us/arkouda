@@ -78,10 +78,10 @@ Module Contents
 .. py:function:: unique_all(x: arkouda.array_api.array_object.Array, /) -> UniqueAllResult
 
    Return a tuple of arrays containing:
-   - the unique values in `x`
-   - the indices of the first occurrence of each unique value
-   - the inverse indices that reconstruct `x` from the unique values
-   - the counts of each unique value
+   - the unique values in `x`.
+   - the indices of the first occurrence of each unique value.
+   - the inverse indices that reconstruct `x` from the unique values.
+   - the counts of each unique value.
 
 
 
@@ -89,14 +89,14 @@ Module Contents
 
    Return a tuple of arrays containing:
    - the unique values in `x`
-   - the counts of each unique value
+   - the counts of each unique value.
 
 
 .. py:function:: unique_inverse(x: arkouda.array_api.array_object.Array, /) -> UniqueInverseResult
 
    Return a tuple of arrays containing:
    - the unique values in `x`
-   - the inverse indices that reconstruct `x` from the unique values
+   - the inverse indices that reconstruct `x` from the unique values.
 
 
 .. py:function:: unique_values(x: arkouda.array_api.array_object.Array, /) -> arkouda.array_api.array_object.Array

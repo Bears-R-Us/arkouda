@@ -44,7 +44,7 @@ arkouda.comm_diagnostics
 
    >>> import arkouda as ak
    >>> import arkouda.comm_diagnostics as cd
-   >>> ak.connect()
+
    >>> from arkouda.comm_diagnostics import start_comm_diagnostics, stop_comm_diagnostics, get_comm_diagnostics, print_comm_diagnostics_table
    >>> start_comm_diagnostics()
    'commDiagnostics started.'

@@ -28,21 +28,25 @@ Module Contents
 
 .. py:data:: SortingAlgorithm
 
-.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: argsort(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, axis: arkouda.numpy.dtypes.int_scalars = 0, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
 
-   Return the permutation that sorts the array.
+   Return the permutation (indices) that sorts the array.
 
-   :param pda: The array to sort (int64, uint64, or float64)
+   :param pda: The array to sort (supported: int64, uint64, float64 for pdarray).
    :type pda: pdarray, Strings, or Categorical
-   :param algorithm: The algorithm to be used for sorting the array.
-   :type algorithm: SortingAlgorithm, default=SortingAlgorithm.RadixSortLSD
-   :param axis: The axis to sort over.
-   :type axis: int_scalars, default=0
+   :param algorithm: The algorithm to use for sorting.
+   :type algorithm: SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+   :param axis: Axis to sort along. Negative values are normalized against the array rank.
+                For 1D types (Strings, Categorical), must be 0.
+   :type axis: int, default 0
+   :param ascending: Sort order.
+   :type ascending: bool, default True
 
-   :returns: The indices such that ``pda[indices]`` is sorted
+   :returns: Indices such that ``pda[indices]`` is sorted.
    :rtype: pdarray
 
-   :raises TypeError: Raised if the parameter is other than a pdarray, Strings or Categorical
+   :raises TypeError: If `pda` is not a pdarray, Strings, or Categorical.
+   :raises ValueError: If `axis` is out of bounds.
 
    .. seealso:: :py:obj:`coargsort`
 
@@ -57,16 +61,15 @@ Module Contents
    >>> a = ak.randint(0, 10, 10, seed=1)
    >>> a
    array([7 9 5 1 4 1 8 5 5 0])
-
    >>> perm = ak.argsort(a)
    >>> a[perm]
    array([0 1 1 4 5 5 5 7 8 9])
-
    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["RadixSortLSD"])
    array([9 3 5 4 2 7 8 0 6 1])
-
    >>> ak.argsort(a, ak.sorting.SortingAlgorithm["TwoArrayRadixSort"])
    array([9 3 5 4 2 7 8 0 6 1])
+   >>> ak.argsort(a, ascending=False)
+   array([1 6 0 8 7 2 4 5 3 9])
 
 
 .. py:function:: coargsort(arrays: Sequence[Union[arkouda.numpy.strings.Strings, arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.categorical.Categorical]], algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray

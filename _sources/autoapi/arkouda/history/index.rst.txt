@@ -104,10 +104,10 @@ Module Contents
       Generate list of commands executed within a Jupyter notebook or IPython shell,
       with an optional command filter and number of commands to return.
 
-      :param num_commands: The number of commands from history to retrieve
-      :type num_commands: int
       :param command_filter: String containing characters used to select a subset of command history.
       :type command_filter: str
+      :param num_commands: The number of commands from history to retrieve
+      :type num_commands: int
 
       :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
       :rtype: List[str]
@@ -143,10 +143,10 @@ Module Contents
       Generate list of commands executed within the a Python REPL shell, with an
       optional command filter and number of commands to return.
 
-      :param num_commands: The number of commands from history to retrieve
-      :type num_commands: int
       :param command_filter: String containing characters used to select a subset of command history.
       :type command_filter: str
+      :param num_commands: The number of commands from history to retrieve
+      :type num_commands: int
 
       :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
       :rtype: List[str]

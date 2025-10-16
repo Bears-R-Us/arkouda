@@ -129,12 +129,37 @@ Module Contents
    .. py:attribute:: RequiredPieces
 
 
-   .. py:method:: argsort()
+   .. py:method:: argsort(algorithm: arkouda.numpy.sorting.SortingAlgorithm = SortingAlgorithm.RadixSortLSD, ascending: bool = True) -> arkouda.numpy.pdarrayclass.pdarray
 
-      Return the indices that would sort the Categorical.
+      Return the permutation of indices that would sort the Categorical.
 
-      :returns: Permutation indices that would sort the values by category label.
+      Sorting is based on the order of the Categorical's `categories`,
+      not on the underlying codes.
+
+      :param algorithm: The sorting algorithm to use.
+      :type algorithm: SortingAlgorithm, default SortingAlgorithm.RadixSortLSD
+      :param ascending: Whether to return indices that would sort the Categorical in ascending
+                        category order. If False, returns indices for descending order.
+      :type ascending: bool, default True
+
+      :returns: An array of indices such that `self[index]` is sorted by category order.
       :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+
+      >>> cat = ak.Categorical(ak.array(['dog', 'cat', 'dog', 'bird']))
+      >>> cat.argsort()
+      array([3, 1, 0, 2])  # 'bird' < 'cat' < 'dog'
+
+      >>> cat.argsort(ascending=False)
+      array([2, 0, 1, 3])
+
+      The result can be used to reorder the Categorical:
+      >>> sorted_cat = cat[cat.argsort()]
+      >>> sorted_cat
+      Categorical(['bird', 'cat', 'dog', 'dog'])
 
 
 
@@ -200,6 +225,15 @@ Module Contents
 
 
 
+   .. py:method:: copy() -> Categorical
+
+      Return an copy of the given Categorical.
+
+      :returns: A deep copy of the Categorical.
+      :rtype: Categorical
+
+
+
    .. py:attribute:: dtype
 
 
@@ -244,7 +278,7 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
+
       >>> c = Categorical(ak.array(["a", "b", "c"]))
       >>> c_cpy = Categorical(ak.array(["a", "b", "c"]))
       >>> c.equals(c_cpy)

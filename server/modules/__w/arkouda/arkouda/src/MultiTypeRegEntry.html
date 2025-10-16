@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MultiTypeRegEntry &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="multityperegentry">
-<span id="module-MultiTypeRegEntry"></span><h1>MultiTypeRegEntry<a class="headerlink" href="#multityperegentry" title="Link to this heading">¶</a></h1>
+<span id="module-MultiTypeRegEntry"></span><h1>MultiTypeRegEntry<a class="headerlink" href="#multityperegentry" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">MultiTypeRegEntry</span><span class="p">;</span>
 </pre></div>
@@ -133,340 +130,340 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.regLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">regLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MultiTypeRegEntry.regLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">regLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#MultiTypeRegEntry.regLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">RegistryEntryType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">AbstractRegEntry,</span> <span class="pre">GenRegEntry,</span> <span class="pre">ArrayRegEntry,</span> <span class="pre">DataFrameRegEntry,</span> <span class="pre">GroupByRegEntry,</span> <span class="pre">CategoricalRegEntry,</span> <span class="pre">SegArrayRegEntry,</span> <span class="pre">IndexRegEntry,</span> <span class="pre">SeriesRegEntry,</span> <span class="pre">BitVectorRegEntry</span> <span class="pre">}</span></em><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">RegistryEntryType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">AbstractRegEntry,</span> <span class="pre">GenRegEntry,</span> <span class="pre">ArrayRegEntry,</span> <span class="pre">DataFrameRegEntry,</span> <span class="pre">GroupByRegEntry,</span> <span class="pre">CategoricalRegEntry,</span> <span class="pre">SegArrayRegEntry,</span> <span class="pre">IndexRegEntry,</span> <span class="pre">SeriesRegEntry,</span> <span class="pre">BitVectorRegEntry</span> <span class="pre">}</span></em><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.AbstractRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AbstractRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.AbstractRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">AbstractRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.AbstractRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.GenRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GenRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.GenRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GenRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.GenRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.ArrayRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ArrayRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.ArrayRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ArrayRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.ArrayRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.DataFrameRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DataFrameRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.DataFrameRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DataFrameRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.DataFrameRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.GroupByRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GroupByRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.GroupByRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">GroupByRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.GroupByRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.CategoricalRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CategoricalRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.CategoricalRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CategoricalRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.CategoricalRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.SegArrayRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SegArrayRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.SegArrayRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SegArrayRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.SegArrayRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.IndexRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">IndexRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.IndexRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">IndexRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.IndexRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.SeriesRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SeriesRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.SeriesRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SeriesRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.SeriesRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.RegistryEntryType.BitVectorRegEntry">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BitVectorRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.BitVectorRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BitVectorRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.RegistryEntryType.BitVectorRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.AbstractRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AbstractRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AbstractRegEntry</span></span><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.AbstractRegEntry.entryType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">entryType</span></span><em class="property"> <span class="pre">:</span> <span class="pre">RegistryEntryType</span></em><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.entryType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">entryType</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">RegistryEntryType</span></em><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.entryType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.AbstractRegEntry.assignableTypes">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">assignableTypes</span></span><em class="property"> <span class="pre">:</span> <span class="pre">set(RegistryEntryType)</span></em><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.assignableTypes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">assignableTypes</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">set(RegistryEntryType)</span></em><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.assignableTypes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.AbstractRegEntry.name">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">name</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.AbstractRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.AbstractRegEntry.setName">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.setName" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">setName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.AbstractRegEntry.setName" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GenRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GenRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">AbstractRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GenRegEntry.objType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">objType</span></span><em class="property"> <span class="pre">:</span> <span class="pre">ObjType</span></em><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry.objType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">objType</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ObjType</span></em><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry.objType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GenRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GenRegEntry.toDataFrameRegEntry">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toDataFrameRegEntry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry.toDataFrameRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toDataFrameRegEntry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.GenRegEntry.toDataFrameRegEntry" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.ArrayRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ArrayRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">ArrayRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.ArrayRegEntry.array">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">array</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry.array" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">array</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry.array" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.ArrayRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">array_name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">array_name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.ArrayRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.ArrayRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.BitVectorRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">BitVectorRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">BitVectorRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.BitVectorRegEntry.array">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">array</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.array" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">array</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.array" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.BitVectorRegEntry.width">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">width</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.width" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">width</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.width" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.BitVectorRegEntry.reverse">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">reverse</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.reverse" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">reverse</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.reverse" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.BitVectorRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">array_name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">width:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">reverse:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">array_name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">width:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">reverse:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.BitVectorRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.BitVectorRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SegArrayRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegArrayRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SegArrayRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SegArrayRegEntry.segments">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segments</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.segments" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segments</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.segments" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SegArrayRegEntry.values">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">values</span></span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">ArrayRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.values" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">values</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">ArrayRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.values" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SegArrayRegEntry.lengths">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lengths</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.lengths" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">lengths</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.lengths" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SegArrayRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">shared</span> <span class="pre">ArrayRegEntry</span></em>, <em class="sig-param"><span class="pre">lengths:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">shared</span> <span class="pre">ArrayRegEntry</span></em>, <em class="sig-param"><span class="pre">lengths:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SegArrayRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.SegArrayRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.DataFrameRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DataFrameRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DataFrameRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.DataFrameRegEntry.idx">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idx</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.idx" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idx</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.idx" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.DataFrameRegEntry.column_names">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">column_names</span></span><em class="property"> <span class="pre">:</span> <span class="pre">list(string)</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.column_names" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">column_names</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">list(string)</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.column_names" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.DataFrameRegEntry.columns">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">columns</span></span><em class="property"> <span class="pre">:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.columns" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">columns</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.columns" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.DataFrameRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">column_names:</span> <span class="pre">list(string)</span></em>, <em class="sig-param"><span class="pre">columns:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">column_names:</span> <span class="pre">list(string)</span></em>, <em class="sig-param"><span class="pre">columns:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.DataFrameRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.DataFrameRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GroupByRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GroupByRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GroupByRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GroupByRegEntry.segments">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segments</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.segments" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segments</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.segments" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GroupByRegEntry.permutation">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">permutation</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.permutation" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">permutation</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.permutation" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GroupByRegEntry.keys">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">keys</span></span><em class="property"> <span class="pre">:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.keys" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">keys</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.keys" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GroupByRegEntry.uki">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">uki</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.uki" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">uki</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.uki" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GroupByRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">permutation:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">keys:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em>, <em class="sig-param"><span class="pre">uki:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">permutation:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">keys:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em>, <em class="sig-param"><span class="pre">uki:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.GroupByRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.GroupByRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CategoricalRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CategoricalRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry.codes">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">codes</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.codes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">codes</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.codes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry.categories">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">categories</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.categories" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">categories</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.categories" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry.permutation">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">permutation</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.permutation" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">permutation</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.permutation" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry.segments">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segments</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.segments" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">segments</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.segments" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry.naCode">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">naCode</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.naCode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">naCode</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.naCode" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">codes:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">categories:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">naCode:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">permutation:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">codes:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">categories:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">naCode:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">permutation:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">segments:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.CategoricalRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.CategoricalRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.IndexRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">IndexRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">IndexRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.IndexRegEntry.idx">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idx</span></span><em class="property"> <span class="pre">:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry.idx" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idx</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry.idx" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.IndexRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em>, <em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">list(shared</span> <span class="pre">AbstractRegEntry)</span></em>, <em class="sig-param"><span class="pre">objType:</span> <span class="pre">ObjType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.IndexRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.IndexRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SeriesRegEntry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SeriesRegEntry</span></span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">SeriesRegEntry</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry" title="Link to this definition"></a></dt>
 <dd><dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SeriesRegEntry.idx">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idx</span></span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">IndexRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.idx" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">idx</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">IndexRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.idx" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SeriesRegEntry.values">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">values</span></span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.values" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">values</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">shared</span> <span class="pre">GenRegEntry</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.values" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SeriesRegEntry.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">shared</span> <span class="pre">IndexRegEntry</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">shared</span> <span class="pre">GenRegEntry</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">idx:</span> <span class="pre">shared</span> <span class="pre">IndexRegEntry</span></em>, <em class="sig-param"><span class="pre">values:</span> <span class="pre">shared</span> <span class="pre">GenRegEntry</span></em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="MultiTypeRegEntry.SeriesRegEntry.asMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.asMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">asMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map(string,</span> <span class="pre">string)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#MultiTypeRegEntry.SeriesRegEntry.asMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

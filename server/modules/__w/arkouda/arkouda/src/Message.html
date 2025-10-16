@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Message &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="message">
-<span id="module-Message"></span><h1>Message<a class="headerlink" href="#message" title="Link to this heading">¶</a></h1>
+<span id="module-Message"></span><h1>Message<a class="headerlink" href="#message" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Message</span><span class="p">;</span>
 </pre></div>
@@ -133,113 +130,113 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="Message.MsgType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">NORMAL,</span> <span class="pre">WARNING,</span> <span class="pre">ERROR</span> <span class="pre">}</span></em><a class="headerlink" href="#Message.MsgType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">NORMAL,</span> <span class="pre">WARNING,</span> <span class="pre">ERROR</span> <span class="pre">}</span></em><a class="headerlink" href="#Message.MsgType" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Message.MsgType.NORMAL">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NORMAL</span></span><a class="headerlink" href="#Message.MsgType.NORMAL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NORMAL</span></span><a class="headerlink" href="#Message.MsgType.NORMAL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Message.MsgType.WARNING">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">WARNING</span></span><a class="headerlink" href="#Message.MsgType.WARNING" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">WARNING</span></span><a class="headerlink" href="#Message.MsgType.WARNING" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Message.MsgType.ERROR">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#Message.MsgType.ERROR" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ERROR</span></span><a class="headerlink" href="#Message.MsgType.ERROR" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="Message.MsgFormat">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgFormat</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">STRING,</span> <span class="pre">BINARY</span> <span class="pre">}</span></em><a class="headerlink" href="#Message.MsgFormat" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">MsgFormat</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">STRING,</span> <span class="pre">BINARY</span> <span class="pre">}</span></em><a class="headerlink" href="#Message.MsgFormat" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Message.MsgFormat.STRING">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STRING</span></span><a class="headerlink" href="#Message.MsgFormat.STRING" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STRING</span></span><a class="headerlink" href="#Message.MsgFormat.STRING" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="Message.MsgFormat.BINARY">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BINARY</span></span><a class="headerlink" href="#Message.MsgFormat.BINARY" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">BINARY</span></span><a class="headerlink" href="#Message.MsgFormat.BINARY" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="Message.MsgTuple">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">MsgTuple</span></span><a class="headerlink" href="#Message.MsgTuple" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">MsgTuple</span></span><a class="headerlink" href="#Message.MsgTuple" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Encapsulates the message string and message type.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.msg">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.MsgTuple.msg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msg</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.MsgTuple.msg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.msgType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgType</span></span><em class="property"> <span class="pre">:</span> <span class="pre">MsgType</span></em><a class="headerlink" href="#Message.MsgTuple.msgType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgType</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgType</span></em><a class="headerlink" href="#Message.MsgTuple.msgType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.msgFormat">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgFormat</span></span><em class="property"> <span class="pre">:</span> <span class="pre">MsgFormat</span></em><a class="headerlink" href="#Message.MsgTuple.msgFormat" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">msgFormat</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgFormat</span></em><a class="headerlink" href="#Message.MsgTuple.msgFormat" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.user">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.MsgTuple.user" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.MsgTuple.user" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.payload">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">payload</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><a class="headerlink" href="#Message.MsgTuple.payload" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">payload</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><a class="headerlink" href="#Message.MsgTuple.payload" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="Message.RequestMsg">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">RequestMsg</span></span><a class="headerlink" href="#Message.RequestMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">RequestMsg</span></span><a class="headerlink" href="#Message.RequestMsg" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Encapsulates state corresponding to a client request sent to the Arkouda server.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.RequestMsg.user">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.user" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">user</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.user" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.RequestMsg.token">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">token</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.token" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">token</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.token" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.RequestMsg.cmd">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">cmd</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.cmd" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">cmd</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.cmd" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.RequestMsg.format">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">format</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.format" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">format</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.format" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.RequestMsg.args">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">args</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.args" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">args</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.RequestMsg.args" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.RequestMsg.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#Message.RequestMsg.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#Message.RequestMsg.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MsgTuple.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MsgTuple.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -254,28 +251,28 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.success">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><a class="headerlink" href="#Message.MsgTuple.success" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><a class="headerlink" href="#Message.MsgTuple.success" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.warning">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><a class="headerlink" href="#Message.MsgTuple.warning" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><a class="headerlink" href="#Message.MsgTuple.warning" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.error">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><a class="headerlink" href="#Message.MsgTuple.error" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><a class="headerlink" href="#Message.MsgTuple.error" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.newSymbol">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">newSymbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sym:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.newSymbol" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">newSymbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">sym:</span> <span class="pre">borrowed</span> <span class="pre">AbstractSymEntry</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.newSymbol" title="Link to this definition"></a></dt>
 <dd><p>Create a MsgTuple indicating to the client that a new symbol was created</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.fromResponses">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">fromResponses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">responses:</span> <span class="pre">[]</span> <span class="pre">MsgTuple</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.fromResponses" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">fromResponses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">responses:</span> <span class="pre">[]</span> <span class="pre">MsgTuple</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.fromResponses" title="Link to this definition"></a></dt>
 <dd><p>Create a MsgTuple from a group of responses (useful for returning multiple
 symbols from one command, see: ‘unstack’ in ‘ManipulationMsg’)</p>
 <p>If any of the responses are errors, return the first error message.
@@ -285,22 +282,22 @@ are composed into a JSON list.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.fromScalar">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">fromScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scalar:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.fromScalar" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">fromScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scalar:</span> <span class="pre">?t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.fromScalar" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl">
-<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">data:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">type</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">data:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MsgTuple.serialize">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.serialize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-prename descclassname"><span class="pre">MsgTuple.</span></span><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MsgTuple.serialize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl record">
 <dt class="sig sig-object chpl" id="Message.ParameterObj">
-<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">ParameterObj</span></span><a class="headerlink" href="#Message.ParameterObj" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">record</span> </em><span class="sig-name descname"><span class="pre">ParameterObj</span></span><a class="headerlink" href="#Message.ParameterObj" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Encapsulate parameter for a request sent to the Arkouda server</p></li>
 <li><p>Note - Only used when args is in JSON format.</p></li>
@@ -309,22 +306,22 @@ are composed into a JSON list.</p>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.key">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">key</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.ParameterObj.key" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">key</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.ParameterObj.key" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.val">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">val</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.ParameterObj.val" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">val</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.ParameterObj.val" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.dtype">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.ParameterObj.dtype" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">dtype</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#Message.ParameterObj.dtype" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -334,17 +331,17 @@ are composed into a JSON list.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.setKey">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">setKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setKey" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">setKey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setKey" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.setVal">
-<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">setVal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setVal" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> <span class="pre">ref</span> </em><span class="sig-name descname"><span class="pre">setVal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.setVal" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getDType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getDType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getDType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getDType" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Return the Dtype value as NumpyDtype</p></li>
 <li><p>Returns Dtype</p></li>
@@ -353,7 +350,7 @@ are composed into a JSON list.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.ParameterObj.getValue" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Return the raw string value</p></li>
 <li><p>Returns string</p></li>
@@ -362,12 +359,12 @@ are composed into a JSON list.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.tryGetScalar">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tryGetScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">(t,</span> <span class="pre">bool)</span></em><a class="headerlink" href="#Message.ParameterObj.tryGetScalar" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">tryGetScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">(t,</span> <span class="pre">bool)</span></em><a class="headerlink" href="#Message.ParameterObj.tryGetScalar" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.toScalar">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalar" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalar" title="Link to this definition"></a></dt>
 <dd><p>Get a value of the given type from a JSON scalar</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -382,7 +379,7 @@ are composed into a JSON list.</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.toScalarTuple">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">size*t</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalarTuple" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">size*t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalarTuple" title="Link to this definition"></a></dt>
 <dd><p>Get a tuple of the given type from a JSON array of scalar values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -402,7 +399,7 @@ be parsed as the given type</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.toScalarList">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">list(t)</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalarList" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">list(t)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalarList" title="Link to this definition"></a></dt>
 <dd><p>Get a list of the given type from a JSON array of scalar values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -417,7 +414,7 @@ be parsed as the given type</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.toScalarArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalarArray" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">toScalarArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.toScalarArray" title="Link to this definition"></a></dt>
 <dd><p>Get an array of the given type from a JSON array of scalar values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -437,17 +434,17 @@ be parsed as the given type</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getScalarValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getScalarValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getScalarValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getScalarValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">type</span> <span class="pre">t</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">t</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getScalarValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getIntValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getIntValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getIntValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getPositiveIntValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPositiveIntValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">max:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getPositiveIntValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getPositiveIntValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">max:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getPositiveIntValue" title="Link to this definition"></a></dt>
 <dd><p>Return the value as a positive int
 If the value is negative, return ‘value + max + 1’, otherwise return the value
 This is useful for implementing Python’s negative indexing rules</p>
@@ -455,65 +452,65 @@ This is useful for implementing Python’s negative indexing rules</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getUIntValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">uint</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getUIntValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">uint</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getUIntValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getUInt8Value">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUInt8Value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">uint(8)</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getUInt8Value" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getUInt8Value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">uint(8)</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getUInt8Value" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getRealValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getRealValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">real</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getRealValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getRealValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">real</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getRealValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getBoolValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBoolValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getBoolValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBoolValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getBoolValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getBigIntValue">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBigIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bigint</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getBigIntValue" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getBigIntValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bigint</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getBigIntValue" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getList">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getList" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getList" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.ParameterObj.getTuple">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">size*int</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getTuple" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getTuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">param</span> <span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">size*int</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.ParameterObj.getTuple" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="Message.MessageArgs">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MessageArgs</span></span><em class="property"> <span class="pre">:</span> <span class="pre">writeSerializable</span></em><a class="headerlink" href="#Message.MessageArgs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MessageArgs</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">writeSerializable</span></em><a class="headerlink" href="#Message.MessageArgs" title="Link to this definition"></a></dt>
 <dd><p>Container class for the message arguments formatted as json
 :param_list:  array of ParameterObj
 :size: int - number of parameters contained in list</p>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.param_list">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">param_list</span></span><em class="property"> <span class="pre">:</span> <span class="pre">list(ParameterObj)</span></em><a class="headerlink" href="#Message.MessageArgs.param_list" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">param_list</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">list(ParameterObj)</span></em><a class="headerlink" href="#Message.MessageArgs.param_list" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.size">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#Message.MessageArgs.size" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">size</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#Message.MessageArgs.size" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.payload">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">payload</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><a class="headerlink" href="#Message.MessageArgs.payload" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">payload</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><a class="headerlink" href="#Message.MessageArgs.payload" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
@@ -528,29 +525,29 @@ This is useful for implementing Python’s negative indexing rules</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.addPayload">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addPayload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">p:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.addPayload" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addPayload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">in</span> <span class="pre">p:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Message.MessageArgs.addPayload" title="Link to this definition"></a></dt>
 <dd><p>Attach a binary payload to the message arguments</p>
 </dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.this">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">ParameterObj</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.this" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ParameterObj</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.this" title="Link to this definition"></a></dt>
 <dd><p>Get the value of the argument with the given key</p>
 </dd></dl>
 
 <dl class="chpl itermethod">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.these">
-<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">these</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">ParameterObj</span></em><a class="headerlink" href="#Message.MessageArgs.these" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">iter</span> </em><span class="sig-name descname"><span class="pre">these</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ParameterObj</span></em><a class="headerlink" href="#Message.MessageArgs.these" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.serialize">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">writer:</span> <span class="pre">fileWriter(?)</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">serializer:</span> <span class="pre">?st</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.serialize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">writer:</span> <span class="pre">fileWriter(?)</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">serializer:</span> <span class="pre">?st</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.serialize" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.get">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">ParameterObj</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.get" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">ParameterObj</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.get" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Identify the parameter with the provided key and return it</p></li>
 <li><p>Returns ParameterObj with the provided key</p></li>
@@ -560,12 +557,12 @@ This is useful for implementing Python’s negative indexing rules</p>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.getValueOf">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValueOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.getValueOf" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getValueOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.MessageArgs.getValueOf" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="Message.MessageArgs.contains">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#Message.MessageArgs.contains" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">key:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#Message.MessageArgs.contains" title="Link to this definition"></a></dt>
 <dd><p>Return true if there is an argument with the given name, false otherwise</p>
 </dd></dl>
 
@@ -573,19 +570,19 @@ This is useful for implementing Python’s negative indexing rules</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Message.parseParameter">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.parseParameter" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.parseParameter" title="Link to this definition"></a></dt>
 <dd><p>Parse and individual parameter components into a ParameterObj</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Message.parseMessageArgs">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseMessageArgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json_str:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">payload</span> <span class="pre">=</span> <span class="pre">b&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.parseMessageArgs" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">parseMessageArgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">json_str:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">in</span> <span class="pre">payload</span> <span class="pre">=</span> <span class="pre">b&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.parseMessageArgs" title="Link to this definition"></a></dt>
 <dd><p>Parse arguments formatted as json string into objects</p>
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Message.deserialize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">msg:</span> <span class="pre">RequestMsg</span></em>, <em class="sig-param"><span class="pre">request:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.deserialize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ref</span> <span class="pre">msg:</span> <span class="pre">RequestMsg</span></em>, <em class="sig-param"><span class="pre">request:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.deserialize" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Deserializes a JSON-formatted string to a RequestMsg object, where the</p></li>
 <li><p>JSON format is as follows (size is only set for json args. Otherwise, -1):</p></li>
@@ -597,7 +594,7 @@ This is useful for implementing Python’s negative indexing rules</p>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="Message.serialize">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgType:</span> <span class="pre">MsgType</span></em>, <em class="sig-param"><span class="pre">msgFormat:</span> <span class="pre">MsgFormat</span></em>, <em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#Message.serialize" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msg:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgType:</span> <span class="pre">MsgType</span></em>, <em class="sig-param"><span class="pre">msgFormat:</span> <span class="pre">MsgFormat</span></em>, <em class="sig-param"><span class="pre">user:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#Message.serialize" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Generates a ReplyMsg object and serializes it into a JSON-formatted reply message</p></li>
 </ul>

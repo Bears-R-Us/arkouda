@@ -123,7 +123,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this Datetime object and underlying components with the Arkouda server
+      Register this Datetime object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the Datetime is to be registered under,
                                 this will be the root name for underlying components
@@ -221,7 +221,7 @@ Module Contents
    .. py:method:: unregister()
 
       Unregister this Datetime object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
@@ -320,7 +320,7 @@ Module Contents
 
    .. py:method:: register(user_defined_name)
 
-      Register this Timedelta object and underlying components with the Arkouda server
+      Register this Timedelta object and underlying components with the Arkouda server.
 
       :param user_defined_name: user defined name the timedelta is to be registered under,
                                 this will be the root name for underlying components
@@ -354,7 +354,7 @@ Module Contents
 
    .. py:method:: std(ddof: arkouda.numpy.dtypes.int_scalars = 0, axis: Optional[Union[None, int, tuple]] = None, keepdims: Optional[bool] = False)
 
-      Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std
+      Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std.
 
 
 
@@ -427,7 +427,7 @@ Module Contents
    .. py:method:: unregister()
 
       Unregister this timedelta object in the arkouda server which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister

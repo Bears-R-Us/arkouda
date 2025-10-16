@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SegmentedComputation &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="segmentedcomputation">
-<span id="module-SegmentedComputation"></span><h1>SegmentedComputation<a class="headerlink" href="#segmentedcomputation" title="Link to this heading">¶</a></h1>
+<span id="module-SegmentedComputation"></span><h1>SegmentedComputation<a class="headerlink" href="#segmentedcomputation" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">SegmentedComputation</span><span class="p">;</span>
 </pre></div>
@@ -133,102 +130,102 @@
 </div>
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedComputation.computeSegmentOwnership">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">computeSegmentOwnership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">vD</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedComputation.computeSegmentOwnership" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">computeSegmentOwnership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">vD</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedComputation.computeSegmentOwnership" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SegFunction</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">SipHash128,</span> <span class="pre">StringToNumericStrict,</span> <span class="pre">StringToNumericIgnore,</span> <span class="pre">StringToNumericReturnValidity,</span> <span class="pre">StringCompareLiteralEq,</span> <span class="pre">StringCompareLiteralNeq,</span> <span class="pre">StringSearch,</span> <span class="pre">StringIsLower,</span> <span class="pre">StringIsUpper,</span> <span class="pre">StringIsTitle,</span> <span class="pre">StringIsAlphaNumeric,</span> <span class="pre">StringIsAlphabetic,</span> <span class="pre">StringIsDigit,</span> <span class="pre">StringIsNumeric,</span> <span class="pre">StringIsDecimal,</span> <span class="pre">StringIsEmpty,</span> <span class="pre">StringIsSpace</span> <span class="pre">}</span></em><a class="headerlink" href="#SegmentedComputation.SegFunction" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SegFunction</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">SipHash128,</span> <span class="pre">StringToNumericStrict,</span> <span class="pre">StringToNumericIgnore,</span> <span class="pre">StringToNumericReturnValidity,</span> <span class="pre">StringCompareLiteralEq,</span> <span class="pre">StringCompareLiteralNeq,</span> <span class="pre">StringSearch,</span> <span class="pre">StringIsLower,</span> <span class="pre">StringIsUpper,</span> <span class="pre">StringIsTitle,</span> <span class="pre">StringIsAlphaNumeric,</span> <span class="pre">StringIsAlphabetic,</span> <span class="pre">StringIsDigit,</span> <span class="pre">StringIsNumeric,</span> <span class="pre">StringIsDecimal,</span> <span class="pre">StringIsEmpty,</span> <span class="pre">StringIsSpace</span> <span class="pre">}</span></em><a class="headerlink" href="#SegmentedComputation.SegFunction" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.SipHash128">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SipHash128</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.SipHash128" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">SipHash128</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.SipHash128" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringToNumericStrict">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringToNumericStrict</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringToNumericStrict" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringToNumericStrict</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringToNumericStrict" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringToNumericIgnore">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringToNumericIgnore</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringToNumericIgnore" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringToNumericIgnore</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringToNumericIgnore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringToNumericReturnValidity">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringToNumericReturnValidity</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringToNumericReturnValidity" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringToNumericReturnValidity</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringToNumericReturnValidity" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringCompareLiteralEq">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringCompareLiteralEq</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringCompareLiteralEq" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringCompareLiteralEq</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringCompareLiteralEq" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringCompareLiteralNeq">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringCompareLiteralNeq</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringCompareLiteralNeq" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringCompareLiteralNeq</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringCompareLiteralNeq" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringSearch">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringSearch</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringSearch" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringSearch</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringSearch" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsLower">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsLower</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsLower" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsLower</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsLower" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsUpper">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsUpper</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsUpper" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsUpper</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsUpper" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsTitle">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsTitle</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsTitle" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsTitle</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsTitle" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsAlphaNumeric">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsAlphaNumeric</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsAlphaNumeric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsAlphaNumeric</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsAlphaNumeric" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsAlphabetic">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsAlphabetic</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsAlphabetic" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsAlphabetic</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsAlphabetic" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsDigit">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsDigit</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsDigit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsDigit</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsDigit" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsNumeric">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsNumeric</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsNumeric" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsNumeric</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsNumeric" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsDecimal">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsDecimal</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsDecimal" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsDecimal</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsDecimal" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsEmpty">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsEmpty</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsEmpty" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsEmpty</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsEmpty" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SegmentedComputation.SegFunction.StringIsSpace">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsSpace</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsSpace" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">StringIsSpace</span></span><a class="headerlink" href="#SegmentedComputation.SegFunction.StringIsSpace" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SegmentedComputation.computeOnSegments">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">computeOnSegments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">function:</span> <span class="pre">SegFunction</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">retType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">strArg:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedComputation.computeOnSegments" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">computeOnSegments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">segments:</span> <span class="pre">[?D]</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">values:</span> <span class="pre">[?vD]</span> <span class="pre">?t</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">function:</span> <span class="pre">SegFunction</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">retType</span></em>, <em class="sig-param"><span class="pre">const</span> <span class="pre">strArg:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#SegmentedComputation.computeOnSegments" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

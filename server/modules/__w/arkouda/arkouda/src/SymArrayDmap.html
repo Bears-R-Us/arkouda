@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SymArrayDmap &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="symarraydmap">
-<span id="module-SymArrayDmap"></span><h1>SymArrayDmap<a class="headerlink" href="#symarraydmap" title="Link to this heading">¶</a></h1>
+<span id="module-SymArrayDmap"></span><h1>SymArrayDmap<a class="headerlink" href="#symarraydmap" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">SymArrayDmap</span><span class="p">;</span>
 </pre></div>
@@ -133,28 +130,28 @@
 </div>
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="SymArrayDmap.Dmap">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Dmap</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">defaultRectangular,</span> <span class="pre">blockDist</span> <span class="pre">}</span></em><a class="headerlink" href="#SymArrayDmap.Dmap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">Dmap</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">defaultRectangular,</span> <span class="pre">blockDist</span> <span class="pre">}</span></em><a class="headerlink" href="#SymArrayDmap.Dmap" title="Link to this definition"></a></dt>
 <dd><p>Available domain maps.</p>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SymArrayDmap.Dmap.defaultRectangular">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">defaultRectangular</span></span><a class="headerlink" href="#SymArrayDmap.Dmap.defaultRectangular" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">defaultRectangular</span></span><a class="headerlink" href="#SymArrayDmap.Dmap.defaultRectangular" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="SymArrayDmap.Dmap.blockDist">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">blockDist</span></span><a class="headerlink" href="#SymArrayDmap.Dmap.blockDist" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">blockDist</span></span><a class="headerlink" href="#SymArrayDmap.Dmap.blockDist" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="SymArrayDmap.MyDmap">
-<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">MyDmap</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Dmap</span> <span class="pre">=</span> <span class="pre">defaultDmap</span></em><a class="headerlink" href="#SymArrayDmap.MyDmap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">config</span> <span class="pre">param</span> </em><span class="sig-name descname"><span class="pre">MyDmap</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Dmap</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">defaultDmap</span></em><a class="headerlink" href="#SymArrayDmap.MyDmap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SymArrayDmap.makeDistDom">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeDistDom" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeDistDom" title="Link to this definition"></a></dt>
 <dd><p>Makes a domain distributed according to <a class="reference internal" href="#SymArrayDmap.MyDmap" title="SymArrayDmap.MyDmap"><code class="xref chpl chpl-param docutils literal notranslate"><span class="pre">MyDmap</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -170,7 +167,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SymArrayDmap.makeDistArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N</span> <span class="pre">==</span> <span class="pre">1</span></em><a class="headerlink" href="#SymArrayDmap.makeDistArray" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">int</span> <span class="pre">...?N</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">etype</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><em class="property">&#160; <span class="pre">where</span> <span class="pre">N</span> <span class="pre">==</span> <span class="pre">1</span></em><a class="headerlink" href="#SymArrayDmap.makeDistArray" title="Link to this definition"></a></dt>
 <dd><p>Makes an array of specified type over a distributed domain</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -237,7 +234,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SymArrayDmap.makeDistDomType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDomType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">type</span></em><a class="headerlink" href="#SymArrayDmap.makeDistDomType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeDistDomType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">type</span></em><a class="headerlink" href="#SymArrayDmap.makeDistDomType" title="Link to this definition"></a></dt>
 <dd><p>Returns the type of the distributed domain</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments<span class="colon">:</span></dt>
@@ -251,12 +248,12 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SymArrayDmap.makeSparseDomain">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeSparseDomain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">2*(int)</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout:</span> <span class="pre">Layout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeSparseDomain" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeSparseDomain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">shape:</span> <span class="pre">2*(int)</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout:</span> <span class="pre">Layout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeSparseDomain" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="SymArrayDmap.makeSparseArray">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeSparseArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">m:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout:</span> <span class="pre">Layout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeSparseArray" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">makeSparseArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">m:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">n:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">type</span> <span class="pre">eltType</span></em>, <em class="sig-param"><span class="pre">param</span> <span class="pre">matLayout:</span> <span class="pre">Layout</span></em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeSparseArray" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

@@ -1,6 +1,0 @@
-arkouda.sparsematrix
-====================
-
-.. py:module:: arkouda.sparsematrix
-
-

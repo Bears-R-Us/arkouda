@@ -114,12 +114,13 @@ Module Contents
    :type read_path: str
    :param dataset_name: name to store dataset under
    :type dataset_name: str
+   :param write_file: path to file to write pandas formatted data to. Only write the file if this is set.
+                      Default is None.
+   :type write_file: str
+   :param return_obj: When True (default) return the Pandas DataFrame object, otherwise return None.
+   :type return_obj: bool
    :param index: Default False. When True, maintain the indexes loaded from the pandas file
    :type index: bool
-   :param write_file: path to file to write pandas formatted data to. Only write the file if this is set
-   :type write_file: str, optional
-   :param return_obj: Default True. When True return the Pandas DataFrame object, otherwise return None
-   :type return_obj: bool, optional
 
    :raises RuntimeError: - Unsupported file type
 
@@ -224,10 +225,10 @@ Module Contents
    :type read_path: str
    :param write_file: path to file to write arkouda formatted data to. Only write file if provided
    :type write_file: str, optional
-   :param return_obj: Default True. When True return the Arkouda DataFrame object, otherwise return None
-   :type return_obj: bool, optional
-   :param index: Default False. When True, maintain the indexes loaded from the pandas file
-   :type index: bool, optional
+   :param return_obj: If True (default), return the Arkouda DataFrame object. If False, return None.
+   :type return_obj: bool
+   :param index: If True, maintain the indexes loaded from the pandas file. Default is False.
+   :type index: bool
 
    :raises RuntimeWarning: - Export attempted on Parquet file. Arkouda formatted Parquet files are readable by pandas.
    :raises RuntimeError: - Unsupported file type
@@ -300,7 +301,7 @@ Module Contents
    the extension is not required to be a specific format.
 
 
-.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',', read_nested: bool = True) -> Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical]]
+.. py:function:: load_all(path_prefix: str, file_format: str = 'INFER', column_delim: str = ',', read_nested: bool = True) -> Mapping[str, arkouda.numpy.pdarrayclass.pdarray | arkouda.numpy.strings.Strings | arkouda.numpy.segarray.SegArray | arkouda.pandas.categorical.Categorical | arkouda.pandas.dataframe.DataFrame | arkouda.client_dtypes.IPv4 | arkouda.numpy.timeclass.Datetime | arkouda.numpy.timeclass.Timedelta | arkouda.pandas.index.Index]
 
    Load multiple pdarrays, Strings, SegArrays, or Categoricals previously saved with ``save_all()``.
 
@@ -382,11 +383,12 @@ Module Contents
 
    :param filename: Path to the file on the Arkouda server. Must be a non-empty string.
    :type filename: str
-   :param col_delim: Delimiter to use when interpreting CSV files.
-   :type col_delim: str, default=","
+   :param col_delim: Delimiter to use when interpreting CSV files. Default is ",".
+   :type col_delim: str
    :param read_nested: If True, include nested Parquet columns (e.g., `SegArray`). If False,
                        nested columns are ignored. Only applies to Parquet files.
-   :type read_nested: bool, default=True
+                       Default is True.
+   :type read_nested: bool
 
    :returns: A list of lines describing each dataset or column in the file.
    :rtype: List[str]
@@ -614,7 +616,7 @@ Module Contents
    >>> x = ak.read_hdf('path/name_prefix*')  # doctest: +SKIP
 
 
-.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]
+.. py:function:: read_parquet(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strict_types: bool = True, allow_errors: bool = False, tag_data: bool = False, read_nested: bool = True, has_non_float_nulls: bool = False, null_handling: Optional[str] = None, fixed_len: int = -1) -> Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical, arkouda.pandas.dataframe.DataFrame, arkouda.client_dtypes.IPv4, arkouda.numpy.timeclass.Datetime, arkouda.numpy.timeclass.Timedelta, arkouda.pandas.index.Index]]]
 
    Read Arkouda objects from Parquet file/s.
 
@@ -642,9 +644,19 @@ Module Contents
                        SegArray (or other nested Parquet columns) will be ignored.
                        If datasets is not None, this will be ignored.
    :type read_nested: bool
-   :param has_non_float_nulls: Default False. This flag must be set to True to read non-float parquet columns
+   :param has_non_float_nulls: Deprecated. Please use null_handling.
+                               Default False. This flag must be set to True to read non-float parquet columns
                                that contain null values.
    :type has_non_float_nulls: bool
+   :param null_handling: Defaults to "only floats".
+                         Supported values are "none", "only floats", "all".
+                         If "none", the data is assumed to be free of nulls.  This results in the
+                         fastest performance. However, if there is nulls in the data, the
+                         behavior is undefined. If "only floats", only floating point typed
+                         columns may contain nulls. This makes reading other data types faster.
+                         If "all", any column can contain nulls. This is the most generally
+                         applicable mode, though results in slower performance across the board.
+   :type null_handling: Optional str
    :param fixed_len: Default -1. This value can be set for reading Parquet string columns when the
                      length of each string is known at runtime. This can allow for skipping byte
                      calculation, which can have an impact on performance.
@@ -831,7 +843,7 @@ Module Contents
    objects in HDF5. Thus, they are returned within the dictionary as a dataframe.
 
 
-.. py:function:: save_checkpoint(name='', path='.akdata', mode: str = 'overwrite')
+.. py:function:: save_checkpoint(name='', path='.akdata', mode: Literal['overwrite', 'preserve_previous', 'error'] = 'overwrite')
 
    Save the server's state.
 
@@ -846,13 +858,12 @@ Module Contents
                 will be created. If it exists, a new directory for the checkpoint
                 instance will be created inside this directory.
    :type path: str
-   :param mode: By default, overwrite the checkpoint files if they exist.
-                If 'preserve_previous', an existing checkpoint with 'name' will be
-                renamed to 'name.prev', overwriting 'name.prev' if it existed,
-                before creating a new checkpoint with 'name'.
-                If 'error', an error will be raised if a checkpoint with the same name
-                exists.
-   :type mode: {'overwrite' | 'preserve_previous' | 'error'}
+   :param mode: How to handle an existing checkpoint with the same name.
+                - ``'overwrite'`` (default): overwrite the checkpoint files.
+                - ``'preserve_previous'``: rename existing checkpoint to ``<name>.prev``,
+                  overwriting that if it exists.
+                - ``'error'``: raise an error if the checkpoint exists.
+   :type mode: {'overwrite', 'preserve_previous', 'error'}
 
    .. rubric:: Notes
 
@@ -940,7 +951,7 @@ Module Contents
      bytes as uint(8).
 
 
-.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', file_type: str = 'distribute') -> None
+.. py:function:: to_hdf(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute') -> None
 
    Save multiple named pdarrays to HDF5 files.
 
@@ -952,11 +963,11 @@ Module Contents
    :type names: list of str
    :param mode: By default, truncate (overwrite) the output files if they exist.
                 If 'append', attempt to create new dataset in existing files.
-   :type mode: {'truncate' | 'append'}
+   :type mode: {"truncate", "append"}
    :param file_type: Default: distribute
                      Single writes the dataset to a single file
-                     Distribute writes the dataset to a file per locale
-   :type file_type: str ("single" | "distribute")
+                     Distribute writes the dataset to a file per locale.
+   :type file_type: {"single", "distribute"}
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'
@@ -987,7 +998,7 @@ Module Contents
    >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b']) # doctest: +SKIP
 
 
-.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, mode: str = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
+.. py:function:: to_parquet(columns: Union[Mapping[str, Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray]]], prefix_path: str, names: Optional[List[str]] = None, mode: Literal['truncate', 'append'] = 'truncate', compression: Optional[str] = None, convert_categoricals: bool = False) -> None
 
    Save multiple named pdarrays to Parquet files.
 
@@ -999,9 +1010,9 @@ Module Contents
    :type names: list of str
    :param mode: By default, truncate (overwrite) the output files if they exist.
                 If 'append', attempt to create new dataset in existing files.
-                'append' is deprecated, please use the multi-column write
-   :type mode: {'truncate' | 'append'}
-   :param compression:     Default None
+                'append' is deprecated, please use the multi-column write.
+   :type mode: {"truncate", "append"}
+   :param compression:     Default None.
                            Provide the compression type to use when writing the file.
                            Supported values: snappy, gzip, brotli, zstd, lz4
                        convert_categoricals: bool
@@ -1009,7 +1020,7 @@ Module Contents
                            Parquet requires all columns to be the same size and Categoricals
                            don't satisfy that requirement.
                            if set, write the equivalent Strings in place of any Categorical columns.
-   :type compression: str (Optional)
+   :type compression: str
 
    :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
        is not 'truncate' or 'append'

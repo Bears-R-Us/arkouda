@@ -1,13 +1,13 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
         <title>arkouda.pandas.io - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -24,14 +24,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #2b2b2b;
-  --color-code-foreground: #f8f8f2;
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
   
       }
     }
@@ -146,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -163,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -172,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -181,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -203,7 +196,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Installation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
@@ -212,14 +205,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of File I/O</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Usage Guide</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
@@ -237,12 +230,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of arkouda</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of arkouda.array_api</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
@@ -257,29 +250,21 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/categorical/index.html">arkouda.categorical</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/dataframe/index.html">arkouda.dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/groupbyclass/index.html">arkouda.groupbyclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/index/index.html">arkouda.index</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io/index.html">arkouda.io</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/io_util/index.html">arkouda.io_util</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/join/index.html">arkouda.join</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/match/index.html">arkouda.match</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/matcher/index.html">arkouda.matcher</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of arkouda.numpy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of arkouda.numpy.lib</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
@@ -293,7 +278,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of arkouda.numpy.random</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
@@ -307,9 +292,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of arkouda.pandas</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
@@ -322,16 +308,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/row/index.html">arkouda.row</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of arkouda.scipy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/series/index.html">arkouda.series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparrayclass/index.html">arkouda.sparrayclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/sparsematrix/index.html">arkouda.sparsematrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -339,7 +323,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Developer Documentation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
@@ -369,8 +353,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -378,8 +361,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -452,7 +434,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -469,6 +451,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
+
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -509,7 +492,7 @@
 
 
 <div class="viewcode-block" id="get_filetype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.get_filetype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.get_filetype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_filetype</span><span class="p">(</span><span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the type of a file accessible to the server.</span>
@@ -555,7 +538,7 @@
 
 
 <div class="viewcode-block" id="ls">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.ls">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.ls">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ls</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List the contents of an HDF5 or Parquet file on the Arkouda server.</span>
@@ -568,11 +551,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    filename : str</span>
 <span class="sd">        Path to the file on the Arkouda server. Must be a non-empty string.</span>
-<span class="sd">    col_delim : str, default=&quot;,&quot;</span>
-<span class="sd">        Delimiter to use when interpreting CSV files.</span>
-<span class="sd">    read_nested : bool, default=True</span>
+<span class="sd">    col_delim : str</span>
+<span class="sd">        Delimiter to use when interpreting CSV files. Default is &quot;,&quot;.</span>
+<span class="sd">    read_nested : bool</span>
 <span class="sd">        If True, include nested Parquet columns (e.g., `SegArray`). If False,</span>
 <span class="sd">        nested columns are ignored. Only applies to Parquet files.</span>
+<span class="sd">        Default is True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -618,7 +602,7 @@
 
 
 <div class="viewcode-block" id="get_null_indices">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.get_null_indices">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.get_null_indices">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_null_indices</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
@@ -673,14 +657,14 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_file_type_to_int</span><span class="p">(</span><span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a string to integer representing the format to save the file in.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    file_type: str (single | distribute)</span>
-<span class="sd">        The string representation of the format for saving the file</span>
+<span class="sd">    file_type: {&quot;single&quot; | &quot;distribute&quot;}</span>
+<span class="sd">        The format for saving the file.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -701,14 +685,14 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mode_str_to_int</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert string to integer representing the mode to write.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mode: str (truncate | append)</span>
-<span class="sd">        The string representation of the write mode to be converted to integer</span>
+<span class="sd">    mode: {&quot;truncate&quot; | &quot;append&quot;}</span>
+<span class="sd">        The string representation of the write mode to be converted to integer.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -729,7 +713,7 @@
 
 
 <div class="viewcode-block" id="get_datasets">
-<a class="viewcode-back" href="../../../usage/IO.html#arkouda.get_datasets">[docs]</a>
+<a class="viewcode-back" href="../../../usage/IO.html#arkouda.pandas.io.get_datasets">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_datasets</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -796,7 +780,7 @@
 
 
 <div class="viewcode-block" id="ls_csv">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.ls_csv">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.ls_csv">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ls_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    List the datasets within a file when a CSV does not have a header.</span>
@@ -836,7 +820,7 @@
 
 
 <div class="viewcode-block" id="get_columns">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.get_columns">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.get_columns">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_columns</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">col_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">allow_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -1090,7 +1074,7 @@
 
 
 <div class="viewcode-block" id="read_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.read_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.read_hdf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_hdf</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1233,7 +1217,7 @@
 
 
 <div class="viewcode-block" id="read_parquet">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.read_parquet">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.read_parquet">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_parquet</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1243,6 +1227,7 @@
     <span class="n">tag_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">has_non_float_nulls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">null_handling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">fixed_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">Mapping</span><span class="p">[</span>
@@ -1290,8 +1275,18 @@
 <span class="sd">        SegArray (or other nested Parquet columns) will be ignored.</span>
 <span class="sd">        If datasets is not None, this will be ignored.</span>
 <span class="sd">    has_non_float_nulls: bool</span>
+<span class="sd">        Deprecated. Please use null_handling.</span>
 <span class="sd">        Default False. This flag must be set to True to read non-float parquet columns</span>
 <span class="sd">        that contain null values.</span>
+<span class="sd">    null_handling: Optional str</span>
+<span class="sd">        Defaults to &quot;only floats&quot;.</span>
+<span class="sd">        Supported values are &quot;none&quot;, &quot;only floats&quot;, &quot;all&quot;.</span>
+<span class="sd">        If &quot;none&quot;, the data is assumed to be free of nulls.  This results in the</span>
+<span class="sd">        fastest performance. However, if there is nulls in the data, the</span>
+<span class="sd">        behavior is undefined. If &quot;only floats&quot;, only floating point typed</span>
+<span class="sd">        columns may contain nulls. This makes reading other data types faster.</span>
+<span class="sd">        If &quot;all&quot;, any column can contain nulls. This is the most generally</span>
+<span class="sd">        applicable mode, though results in slower performance across the board.</span>
 <span class="sd">    fixed_len: int</span>
 <span class="sd">        Default -1. This value can be set for reading Parquet string columns when the</span>
 <span class="sd">        length of each string is known at runtime. This can allow for skipping byte</span>
@@ -1353,6 +1348,42 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames</span><span class="p">]</span>
+
+    <span class="c1"># normalize null handling arguments</span>
+    <span class="k">if</span> <span class="n">null_handling</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;only floats&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;null_handling argument only accepts &#39;none&#39;, &#39;only_floats&#39;, or &#39;all&#39; options&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">datasets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">has_non_float_nulls</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;has_non_float_nulls argument has been deprecated when reading &quot;</span>
+            <span class="s2">&quot;Parquet files. Please use null_handling=&#39;all&#39;, instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">null_handling</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Both the deprecated has_non_float_nulls and its replacement &quot;</span>
+                <span class="s2">&quot;null_handling arguments are used. null_handling will be &quot;</span>
+                <span class="s2">&quot;preferred and has_non_float_nulls will be ignored&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">null_handling</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+
+    <span class="k">if</span> <span class="n">null_handling</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">null_handling</span> <span class="o">=</span> <span class="s2">&quot;only floats&quot;</span>
+
+    <span class="c1"># adjust has_non_float_nulls in case we are reading a single column. This is</span>
+    <span class="c1"># a workaround while we unify the read interface of the server</span>
+    <span class="k">if</span> <span class="n">null_handling</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;only floats&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">):</span>
+        <span class="n">has_non_float_nulls</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">read_all_cols</span> <span class="o">=</span> <span class="n">datasets</span> <span class="ow">is</span> <span class="kc">None</span>
+
     <span class="n">datasets</span> <span class="o">=</span> <span class="n">_prep_datasets</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">read_nested</span><span class="o">=</span><span class="n">read_nested</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">iterative</span><span class="p">:</span>
@@ -1372,20 +1403,38 @@
             <span class="k">for</span> <span class="n">dset</span> <span class="ow">in</span> <span class="n">datasets</span>
         <span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-            <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;readAllParquet&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;strict_types&quot;</span><span class="p">:</span> <span class="n">strict_types</span><span class="p">,</span>
-                <span class="s2">&quot;dset_size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span>
-                <span class="s2">&quot;filename_size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">),</span>
-                <span class="s2">&quot;allow_errors&quot;</span><span class="p">:</span> <span class="n">allow_errors</span><span class="p">,</span>
-                <span class="s2">&quot;dsets&quot;</span><span class="p">:</span> <span class="n">datasets</span><span class="p">,</span>
-                <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="n">filenames</span><span class="p">,</span>
-                <span class="s2">&quot;tag_data&quot;</span><span class="p">:</span> <span class="n">tag_data</span><span class="p">,</span>
-                <span class="s2">&quot;has_non_float_nulls&quot;</span><span class="p">:</span> <span class="n">has_non_float_nulls</span><span class="p">,</span>
-                <span class="s2">&quot;fixed_len&quot;</span><span class="p">:</span> <span class="n">fixed_len</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">read_all_cols</span><span class="p">:</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;readAllColsParquet&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;strict_types&quot;</span><span class="p">:</span> <span class="n">strict_types</span><span class="p">,</span>
+                    <span class="s2">&quot;dset_size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span>
+                    <span class="s2">&quot;filename_size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">),</span>
+                    <span class="s2">&quot;allow_errors&quot;</span><span class="p">:</span> <span class="n">allow_errors</span><span class="p">,</span>
+                    <span class="s2">&quot;dsets&quot;</span><span class="p">:</span> <span class="n">datasets</span><span class="p">,</span>
+                    <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="n">filenames</span><span class="p">,</span>
+                    <span class="s2">&quot;tag_data&quot;</span><span class="p">:</span> <span class="n">tag_data</span><span class="p">,</span>
+                    <span class="s2">&quot;has_non_float_nulls&quot;</span><span class="p">:</span> <span class="n">has_non_float_nulls</span><span class="p">,</span>
+                    <span class="s2">&quot;null_handling&quot;</span><span class="p">:</span> <span class="n">null_handling</span><span class="p">,</span>
+                    <span class="s2">&quot;fixed_len&quot;</span><span class="p">:</span> <span class="n">fixed_len</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;readAllParquet&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;strict_types&quot;</span><span class="p">:</span> <span class="n">strict_types</span><span class="p">,</span>
+                    <span class="s2">&quot;dset_size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">),</span>
+                    <span class="s2">&quot;filename_size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">),</span>
+                    <span class="s2">&quot;allow_errors&quot;</span><span class="p">:</span> <span class="n">allow_errors</span><span class="p">,</span>
+                    <span class="s2">&quot;dsets&quot;</span><span class="p">:</span> <span class="n">datasets</span><span class="p">,</span>
+                    <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="n">filenames</span><span class="p">,</span>
+                    <span class="s2">&quot;tag_data&quot;</span><span class="p">:</span> <span class="n">tag_data</span><span class="p">,</span>
+                    <span class="s2">&quot;has_non_float_nulls&quot;</span><span class="p">:</span> <span class="n">has_non_float_nulls</span><span class="p">,</span>
+                    <span class="s2">&quot;fixed_len&quot;</span><span class="p">:</span> <span class="n">fixed_len</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+
         <span class="n">rep</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>  <span class="c1"># See GenSymIO._buildReadAllMsgJson for json structure</span>
         <span class="n">_parse_errors</span><span class="p">(</span><span class="n">rep</span><span class="p">,</span> <span class="n">allow_errors</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_build_objects</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span></div>
@@ -1393,7 +1442,7 @@
 
 
 <div class="viewcode-block" id="read_csv">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.read_csv">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.read_csv">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_csv</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1495,7 +1544,7 @@
 
 
 <div class="viewcode-block" id="import_data">
-<a class="viewcode-back" href="../../../usage/IO.html#arkouda.import_data">[docs]</a>
+<a class="viewcode-back" href="../../../usage/IO.html#arkouda.pandas.io.import_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">import_data</span><span class="p">(</span>
     <span class="n">read_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">write_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_obj</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">):</span>
@@ -1511,10 +1560,10 @@
 <span class="sd">        path to file where pandas data is stored. This can be glob expression for parquet formats.</span>
 <span class="sd">    write_file: str, optional</span>
 <span class="sd">        path to file to write arkouda formatted data to. Only write file if provided</span>
-<span class="sd">    return_obj: bool, optional</span>
-<span class="sd">        Default True. When True return the Arkouda DataFrame object, otherwise return None</span>
-<span class="sd">    index: bool, optional</span>
-<span class="sd">        Default False. When True, maintain the indexes loaded from the pandas file</span>
+<span class="sd">    return_obj: bool</span>
+<span class="sd">        If True (default), return the Arkouda DataFrame object. If False, return None.</span>
+<span class="sd">    index: bool</span>
+<span class="sd">        If True, maintain the indexes loaded from the pandas file. Default is False.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -1580,7 +1629,7 @@
 
 
 <div class="viewcode-block" id="export">
-<a class="viewcode-back" href="../../../usage/IO.html#arkouda.export">[docs]</a>
+<a class="viewcode-back" href="../../../usage/IO.html#arkouda.pandas.io.export">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span>
     <span class="n">read_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ak_data&quot;</span><span class="p">,</span>
@@ -1600,13 +1649,13 @@
 <span class="sd">        path to file where arkouda data is stored.</span>
 <span class="sd">    dataset_name: str</span>
 <span class="sd">        name to store dataset under</span>
+<span class="sd">    write_file: str</span>
+<span class="sd">        path to file to write pandas formatted data to. Only write the file if this is set.</span>
+<span class="sd">        Default is None.</span>
+<span class="sd">    return_obj: bool</span>
+<span class="sd">        When True (default) return the Pandas DataFrame object, otherwise return None.</span>
 <span class="sd">    index: bool</span>
 <span class="sd">        Default False. When True, maintain the indexes loaded from the pandas file</span>
-<span class="sd">    write_file: str, optional</span>
-<span class="sd">        path to file to write pandas formatted data to. Only write the file if this is set</span>
-<span class="sd">    return_obj: bool, optional</span>
-<span class="sd">        Default True. When True return the Pandas DataFrame object, otherwise return None</span>
-
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -1722,7 +1771,7 @@
 
 
 <div class="viewcode-block" id="to_parquet">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.to_parquet">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.to_parquet">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -1730,7 +1779,7 @@
     <span class="p">],</span>
     <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
     <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">convert_categoricals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1745,12 +1794,12 @@
 <span class="sd">        Directory and filename prefix for output files</span>
 <span class="sd">    names : list of str</span>
 <span class="sd">        Dataset names for the pdarrays</span>
-<span class="sd">    mode : {&#39;truncate&#39; | &#39;append&#39;}</span>
+<span class="sd">    mode : {&quot;truncate&quot;, &quot;append&quot;}</span>
 <span class="sd">        By default, truncate (overwrite) the output files if they exist.</span>
 <span class="sd">        If &#39;append&#39;, attempt to create new dataset in existing files.</span>
-<span class="sd">        &#39;append&#39; is deprecated, please use the multi-column write</span>
-<span class="sd">    compression : str (Optional)</span>
-<span class="sd">            Default None</span>
+<span class="sd">        &#39;append&#39; is deprecated, please use the multi-column write.</span>
+<span class="sd">    compression : str</span>
+<span class="sd">            Default None.</span>
 <span class="sd">            Provide the compression type to use when writing the file.</span>
 <span class="sd">            Supported values: snappy, gzip, brotli, zstd, lz4</span>
 <span class="sd">        convert_categoricals: bool</span>
@@ -1814,27 +1863,25 @@
         <span class="k">for</span> <span class="n">arr</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">datasetNames</span><span class="p">)):</span>
             <span class="n">arr</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">prefix_path</span><span class="o">=</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="n">cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;toParquet_multi&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
-                        <span class="s2">&quot;col_names&quot;</span><span class="p">:</span> <span class="n">datasetNames</span><span class="p">,</span>
-                        <span class="s2">&quot;col_objtypes&quot;</span><span class="p">:</span> <span class="n">col_objtypes</span><span class="p">,</span>
-                        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
-                        <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
-                        <span class="s2">&quot;compression&quot;</span><span class="p">:</span> <span class="n">compression</span><span class="p">,</span>
-                    <span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
+        <span class="n">cast</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;toParquet_multi&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+                    <span class="s2">&quot;col_names&quot;</span><span class="p">:</span> <span class="n">datasetNames</span><span class="p">,</span>
+                    <span class="s2">&quot;col_objtypes&quot;</span><span class="p">:</span> <span class="n">col_objtypes</span><span class="p">,</span>
+                    <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
+                    <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                    <span class="s2">&quot;compression&quot;</span><span class="p">:</span> <span class="n">compression</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
         <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="to_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.to_hdf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -1842,8 +1889,8 @@
     <span class="p">],</span>
     <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
-    <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+    <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save multiple named pdarrays to HDF5 files.</span>
@@ -1856,13 +1903,13 @@
 <span class="sd">        Directory and filename prefix for output files</span>
 <span class="sd">    names : list of str</span>
 <span class="sd">        Dataset names for the pdarrays</span>
-<span class="sd">    mode : {&#39;truncate&#39; | &#39;append&#39;}</span>
+<span class="sd">    mode : {&quot;truncate&quot;, &quot;append&quot;}</span>
 <span class="sd">        By default, truncate (overwrite) the output files if they exist.</span>
 <span class="sd">        If &#39;append&#39;, attempt to create new dataset in existing files.</span>
-<span class="sd">    file_type : str (&quot;single&quot; | &quot;distribute&quot;)</span>
+<span class="sd">    file_type : {&quot;single&quot;, &quot;distribute&quot;}</span>
 <span class="sd">            Default: distribute</span>
 <span class="sd">            Single writes the dataset to a single file</span>
-<span class="sd">            Distribute writes the dataset to a file per locale</span>
+<span class="sd">            Distribute writes the dataset to a file per locale.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -1947,7 +1994,7 @@
 
 
 <div class="viewcode-block" id="update_hdf">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.update_hdf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">]],</span>
@@ -2003,7 +2050,7 @@
 
 
 <div class="viewcode-block" id="to_csv">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.to_csv">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.to_csv">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
     <span class="n">columns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]],</span>
     <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2083,7 +2130,7 @@
 
 
 <div class="viewcode-block" id="to_zarr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.to_zarr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.to_zarr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">arr</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write a pdarray to disk as a Zarr store.</span>
@@ -2127,7 +2174,7 @@
 
 
 <div class="viewcode-block" id="read_zarr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.read_zarr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.read_zarr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ndim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read a Zarr store from disk into a pdarray.</span>
@@ -2160,7 +2207,7 @@
 
 
 <div class="viewcode-block" id="load">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.load">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.load">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span>
     <span class="n">path_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -2279,14 +2326,16 @@
 
 
 <div class="viewcode-block" id="load_all">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.load_all">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.load_all">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_all</span><span class="p">(</span>
     <span class="n">path_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;INFER&quot;</span><span class="p">,</span>
     <span class="n">column_delim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
     <span class="n">read_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span>
+    <span class="nb">str</span><span class="p">,</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">Strings</span> <span class="o">|</span> <span class="n">SegArray</span> <span class="o">|</span> <span class="n">Categorical</span> <span class="o">|</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">IPv4</span> <span class="o">|</span> <span class="n">Datetime</span> <span class="o">|</span> <span class="n">Timedelta</span> <span class="o">|</span> <span class="n">Index</span>
+<span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load multiple pdarrays, Strings, SegArrays, or Categoricals previously saved with ``save_all()``.</span>
 
@@ -2377,7 +2426,7 @@
 
 
 <div class="viewcode-block" id="read">
-<a class="viewcode-back" href="../../../usage/IO.html#arkouda.read">[docs]</a>
+<a class="viewcode-back" href="../../../usage/IO.html#arkouda.pandas.io.read">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2530,8 +2579,10 @@
 
 
 <div class="viewcode-block" id="save_checkpoint">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.save_checkpoint">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;.akdata&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;overwrite&quot;</span><span class="p">):</span>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.save_checkpoint">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;.akdata&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="s2">&quot;preserve_previous&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;overwrite&quot;</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the server&#39;s state.</span>
 
@@ -2548,13 +2599,12 @@
 <span class="sd">        The directory to save the checkpoint. If the directory doesn&#39;t exist, it</span>
 <span class="sd">        will be created. If it exists, a new directory for the checkpoint</span>
 <span class="sd">        instance will be created inside this directory.</span>
-<span class="sd">    mode : {&#39;overwrite&#39; | &#39;preserve_previous&#39; | &#39;error&#39;}</span>
-<span class="sd">        By default, overwrite the checkpoint files if they exist.</span>
-<span class="sd">        If &#39;preserve_previous&#39;, an existing checkpoint with &#39;name&#39; will be</span>
-<span class="sd">        renamed to &#39;name.prev&#39;, overwriting &#39;name.prev&#39; if it existed,</span>
-<span class="sd">        before creating a new checkpoint with &#39;name&#39;.</span>
-<span class="sd">        If &#39;error&#39;, an error will be raised if a checkpoint with the same name</span>
-<span class="sd">        exists.</span>
+<span class="sd">    mode : {&#39;overwrite&#39;, &#39;preserve_previous&#39;, &#39;error&#39;}</span>
+<span class="sd">        How to handle an existing checkpoint with the same name.</span>
+<span class="sd">        - ``&#39;overwrite&#39;`` (default): overwrite the checkpoint files.</span>
+<span class="sd">        - ``&#39;preserve_previous&#39;``: rename existing checkpoint to ``&lt;name&gt;.prev``,</span>
+<span class="sd">          overwriting that if it exists.</span>
+<span class="sd">        - ``&#39;error&#39;``: raise an error if the checkpoint exists.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -2599,7 +2649,7 @@
 
 
 <div class="viewcode-block" id="load_checkpoint">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.load_checkpoint">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.load_checkpoint">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;.akdata&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load server&#39;s state.</span>
@@ -2652,7 +2702,7 @@
 
 
 <div class="viewcode-block" id="read_tagged_data">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.read_tagged_data">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.read_tagged_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_tagged_data</span><span class="p">(</span>
     <span class="n">filenames</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">datasets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2763,7 +2813,7 @@
 
 
 <div class="viewcode-block" id="snapshot">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.snapshot">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.snapshot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">snapshot</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a snapshot of the current Arkouda namespace.</span>
@@ -2792,7 +2842,7 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;_SNAPSHOT&quot;</span>
-    <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;TRUNCATE&quot;</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span>
     <span class="n">callers_local_vars</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_locals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">callers_local_vars</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ModuleType</span><span class="p">)</span>
@@ -2802,12 +2852,12 @@
                 <span class="n">val</span><span class="o">.</span><span class="n">_to_hdf_snapshot</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">val</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;APPEND&quot;</span></div>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;append&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="restore">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.restore">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.restore">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">restore</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return data saved using `ak.snapshot`.</span>
@@ -2833,7 +2883,7 @@
 
 
 <div class="viewcode-block" id="receive">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.receive">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.receive">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">receive</span><span class="p">(</span><span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Receive a pdarray sent by `pdarray.transfer()`.</span>
@@ -2878,7 +2928,7 @@
 
 
 <div class="viewcode-block" id="receive_dataframe">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.receive_dataframe">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/io/index.html#arkouda.pandas.io.receive_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">receive_dataframe</span><span class="p">(</span><span class="n">hostname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Receive a pdarray sent by `dataframe.transfer()`.</span>

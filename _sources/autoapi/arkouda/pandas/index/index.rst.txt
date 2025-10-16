@@ -103,16 +103,23 @@ Module Contents
    Index([1, 2, 3], dtype='int64')
 
 
-   .. py:method:: argsort(ascending=True)
+   .. py:method:: argsort(ascending: bool = True) -> Union[list, arkouda.numpy.pdarrayclass.pdarray]
 
-      Return the indices that would sort the Index.
+      Return the permutation that sorts the Index.
 
       :param ascending: If True (default), sort in ascending order.
                         If False, sort in descending order.
       :type ascending: bool, optional
 
-      :returns: The indices that would sort the Index.
-      :rtype: array-like
+      :returns: Indices that would sort the Index.
+      :rtype: list or pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> idx = ak.Index([10, 3, 5])
+      >>> idx.argsort()
+      array([1 2 0])
 
 
 
@@ -135,7 +142,7 @@ Module Contents
       Whether Indexes are the same size, and all entries are equal.
 
       :param other: object to compare.
-      :type other: object
+      :type other: Index
 
       :returns: True if the Indexes are the same, o.w. False.
       :rtype: bool_scalars
@@ -280,7 +287,7 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
+
       >>> idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
       >>> idx
       Index(array([2 3 2 3 4]), dtype='int64')
@@ -394,6 +401,44 @@ Module Contents
       :rtype: tuple
 
 
+   .. py:method:: sort_values(return_indexer: bool = False, ascending: bool = True, na_position: str = 'last') -> Union[Index, Tuple[Index, Union[arkouda.numpy.pdarrayclass.pdarray, list]]]
+
+      Return a sorted copy of the index.
+
+      :param return_indexer: If True, also return the integer positions that sort the index.
+      :type return_indexer: bool, default False
+      :param ascending: Sort in ascending order. Use False for descending.
+      :type ascending: bool, default True
+      :param na_position: Where to position NaNs. 'first' puts NaNs at the beginning,
+                          'last' at the end.
+      :type na_position: {'first', 'last'}, default 'last'
+
+      :returns:
+
+                sorted_index : arkouda.Index
+                    A new Index whose values are sorted.
+                indexer : Union[arkouda.pdarray, list], optional
+                    The indices that would sort the original index.
+                    Only returned when ``return_indexer=True``.
+      :rtype: Union[Index, Tuple[Index, Union[pdarray, list]]]
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> idx = ak.Index([10, 100, 1, 1000])
+      >>> idx
+      Index(array([10 100 1 1000]), dtype='int64')
+
+      Sort in ascending order (default):
+      >>> idx.sort_values()
+      Index(array([1 10 100 1000]), dtype='int64')
+
+      Sort in descending order and get the sort positions:
+      >>> idx.sort_values(ascending=False, return_indexer=True)
+      (Index(array([1000 100 10 1]), dtype='int64'), array([3 1 0 2]))
+
+
+
    .. py:method:: to_csv(prefix_path: str, dataset: str = 'index', col_delim: str = ',', overwrite: bool = False)
 
       Write Index to CSV file(s).
@@ -445,7 +490,7 @@ Module Contents
 
 
 
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute') -> str
 
       Save the Index to HDF5.
 
@@ -500,7 +545,7 @@ Module Contents
 
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', compression: Optional[str] = None)
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: Literal['truncate', 'append'] = 'truncate', compression: Optional[str] = None)
 
       Save the Index to Parquet.
 
@@ -515,7 +560,7 @@ Module Contents
       :type dataset: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {'truncate' | 'append'}
       :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
                           Sets the compression type used with Parquet files
       :type compression: str (Optional)
@@ -555,7 +600,7 @@ Module Contents
       Unregister this Index object in the arkouda server.
 
       Unregister this Index object in the arkouda server, which was previously
-      registered using register() and/or attached to using attach()
+      registered using register() and/or attached to using attach().
 
       :raises RegistrationError: If the object is already unregistered or if there is a server error
           when attempting to unregister
@@ -707,7 +752,7 @@ Module Contents
 
 
    .. py:attribute:: levels
-      :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]]
+      :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]]
 
 
    .. py:method:: lookup(key)
@@ -740,7 +785,7 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> ak.connect()
+
       >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
       >>> m.memory_usage()
       48
@@ -834,7 +879,7 @@ Module Contents
 
 
 
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: str = 'truncate', file_type: str = 'distribute') -> str
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute') -> str
 
       Save the Index to HDF5.
 
@@ -846,12 +891,12 @@ Module Contents
       :type dataset: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {'truncate' | 'append'}
       :param file_type: Default: "distribute"
                         When set to single, dataset is written to a single file.
                         When distribute, dataset is written on a file per locale.
                         This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
+      :type file_type: {"single" | "distribute"}
 
       :rtype: string message indicating result of save operation
 

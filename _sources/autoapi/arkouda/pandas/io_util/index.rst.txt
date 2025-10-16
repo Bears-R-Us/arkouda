@@ -12,15 +12,6 @@ arkouda.pandas.io_util
    utilities for creating and deleting directories, reading and writing key-value pairs
    from/to delimited text files, and appending lines to files.
 
-   Exports
-   -------
-   __all__ = [
-       "delete_directory",
-       "delimited_file_to_dict",
-       "dict_to_delimited_file",
-       "get_directory",
-       "write_line_to_file",
-   ]
 
    Functions
    ---------
@@ -112,6 +103,7 @@ Module Contents
    :param path: Path to the file
    :type path: str
    :param delimiter: Delimiter separating key and value
+   :type delimiter: str
 
    :raises OError: Raised if there's an error opening or writing to the
        specified file

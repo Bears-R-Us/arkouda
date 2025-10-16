@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FileIO &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="fileio">
-<span id="module-FileIO"></span><h1>FileIO<a class="headerlink" href="#fileio" title="Link to this heading">¶</a></h1>
+<span id="module-FileIO"></span><h1>FileIO<a class="headerlink" href="#fileio" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">FileIO</span><span class="p">;</span>
 </pre></div>
@@ -133,57 +130,57 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="FileIO.fioLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">fioLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#FileIO.fioLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">fioLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#FileIO.fioLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="FileIO.FileType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">FileType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">HDF5,</span> <span class="pre">ARROW,</span> <span class="pre">PARQUET,</span> <span class="pre">CSV,</span> <span class="pre">UNKNOWN</span> <span class="pre">}</span></em><a class="headerlink" href="#FileIO.FileType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">FileType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">HDF5,</span> <span class="pre">ARROW,</span> <span class="pre">PARQUET,</span> <span class="pre">CSV,</span> <span class="pre">UNKNOWN</span> <span class="pre">}</span></em><a class="headerlink" href="#FileIO.FileType" title="Link to this definition"></a></dt>
 <dd><dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="FileIO.FileType.HDF5">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">HDF5</span></span><a class="headerlink" href="#FileIO.FileType.HDF5" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">HDF5</span></span><a class="headerlink" href="#FileIO.FileType.HDF5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="FileIO.FileType.ARROW">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ARROW</span></span><a class="headerlink" href="#FileIO.FileType.ARROW" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ARROW</span></span><a class="headerlink" href="#FileIO.FileType.ARROW" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="FileIO.FileType.PARQUET">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PARQUET</span></span><a class="headerlink" href="#FileIO.FileType.PARQUET" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PARQUET</span></span><a class="headerlink" href="#FileIO.FileType.PARQUET" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="FileIO.FileType.CSV">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CSV</span></span><a class="headerlink" href="#FileIO.FileType.CSV" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CSV</span></span><a class="headerlink" href="#FileIO.FileType.CSV" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="FileIO.FileType.UNKNOWN">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNKNOWN</span></span><a class="headerlink" href="#FileIO.FileType.UNKNOWN" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">UNKNOWN</span></span><a class="headerlink" href="#FileIO.FileType.UNKNOWN" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.appendFile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.appendFile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">appendFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.appendFile" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.writeToFile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.writeToFile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">line:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.writeToFile" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.writeLinesToFile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeLinesToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lines:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.writeLinesToFile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">writeLinesToFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lines:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.writeLinesToFile" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getLineFromFile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLineFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineIndex:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getLineFromFile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getLineFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">lineIndex:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getLineFromFile" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
@@ -193,17 +190,17 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.delimitedFileToMap">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">delimitedFileToMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">delimiter:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;</span></em>, <em class="sig-param"><span class="pre">&quot;</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">map</span></em><a class="headerlink" href="#FileIO.delimitedFileToMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">delimitedFileToMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">delimiter:</span> <span class="pre">string</span> <span class="pre">=</span> <span class="pre">&quot;</span></em>, <em class="sig-param"><span class="pre">&quot;</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">map</span></em><a class="headerlink" href="#FileIO.delimitedFileToMap" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.initDirectory">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">initDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.initDirectory" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">initDirectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filePath:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.initDirectory" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.ensureClose">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ensureClose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tmpf:</span> <span class="pre">file</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#FileIO.ensureClose" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">ensureClose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tmpf:</span> <span class="pre">file</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#FileIO.ensureClose" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Ensure the file is closed, disregard errors</p></li>
 </ul>
@@ -211,7 +208,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.isGlobPattern">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isGlobPattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.isGlobPattern" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">isGlobPattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.isGlobPattern" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Indicates whether the filename represents a glob expression as opposed to</p></li>
 <li><p>an specific filename</p></li>
@@ -220,7 +217,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.generateFilenames">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">targetLocalesSize:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.generateFilenames" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">targetLocalesSize:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">[]</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.generateFilenames" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Generates a list of filenames to be written to based upon a file prefix,</p></li>
 <li><p>extension, and number of locales.</p></li>
@@ -229,7 +226,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.generateFilename">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.generateFilename" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateFilename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">idx:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.generateFilename" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Generates a file name composed of a prefix, which is a filename provided by</p></li>
 <li><p>the user along with a file index and extension.</p></li>
@@ -238,7 +235,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getMatchingFilenames">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMatchingFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getMatchingFilenames" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getMatchingFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getMatchingFilenames" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Generates an array of filenames to be matched in APPEND mode and to be</p></li>
 <li><p>checked in TRUNCATE mode that will warn the user that 1..n files are</p></li>
@@ -248,7 +245,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.deleteMatchingFilenamesMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteMatchingFilenamesMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.deleteMatchingFilenamesMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteMatchingFilenamesMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.deleteMatchingFilenamesMsg" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Delete files matching a prefix and following the pattern &lt;prefix&gt;_LOCALE*.</p></li>
 </ul>
@@ -256,17 +253,17 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.deleteMatchingFilenames">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteMatchingFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.deleteMatchingFilenames" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteMatchingFilenames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">prefix:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">extension:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.deleteMatchingFilenames" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.deleteFile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.deleteFile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deleteFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.deleteFile" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getFileMetadata">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.getFileMetadata" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.getFileMetadata" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Returns a tuple composed of a file prefix and extension to be used to</p></li>
 <li><p>generate locale-specific filenames to be written to.</p></li>
@@ -275,27 +272,27 @@
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="FileIO.MAGIC_PARQUET">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_PARQUET</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;PAR1&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_PARQUET" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_PARQUET</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">b&quot;PAR1&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_PARQUET" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="FileIO.MAGIC_HDF5">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_HDF5</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;\x89HDF\r\n\x1A\n&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_HDF5" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_HDF5</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">b&quot;\x89HDF\r\n\x1A\n&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_HDF5" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="FileIO.MAGIC_ARROW">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_ARROW</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;ARROW1\x00\x00&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_ARROW" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_ARROW</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">b&quot;ARROW1\x00\x00&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_ARROW" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="FileIO.MAGIC_CSV">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_CSV</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">=</span> <span class="pre">b&quot;**HEADER&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_CSV" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">MAGIC_CSV</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">b&quot;**HEADER&quot;</span></em><a class="headerlink" href="#FileIO.MAGIC_CSV" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getFileTypeByMagic">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileTypeByMagic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">header:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">FileType</span></em><a class="headerlink" href="#FileIO.getFileTypeByMagic" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileTypeByMagic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">header:</span> <span class="pre">bytes</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">FileType</span></em><a class="headerlink" href="#FileIO.getFileTypeByMagic" title="Link to this definition"></a></dt>
 <dd><p>Determine FileType based on public File Magic for supported types
 :arg header: file header
 :type header: bytes</p>
@@ -308,32 +305,32 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.domain_intersection">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domain_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d1:</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">d2:</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.domain_intersection" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">domain_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d1:</span> <span class="pre">domain(1)</span></em>, <em class="sig-param"><span class="pre">d2:</span> <span class="pre">domain(1)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FileIO.domain_intersection" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getFirstEightBytesFromFile">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFirstEightBytesFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getFirstEightBytesFromFile" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFirstEightBytesFromFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bytes</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getFirstEightBytesFromFile" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getFileType">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getFileType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">filename:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getFileType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.getFileTypeMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileTypeMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getFileTypeMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getFileTypeMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.getFileTypeMsg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.lsAnyMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lsAnyMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.lsAnyMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">lsAnyMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.lsAnyMsg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="FileIO.globExpansionMsg">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">globExpansionMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.globExpansionMsg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">globExpansionMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">msgArgs:</span> <span class="pre">borrowed</span> <span class="pre">MessageArgs</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">MsgTuple</span></em><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#FileIO.globExpansionMsg" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

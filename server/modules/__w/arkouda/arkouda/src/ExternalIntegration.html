@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../../">
 <head>
@@ -5,17 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ExternalIntegration &mdash; chpldoc 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
-        <script src="../../../../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -34,9 +34,6 @@
           <a href="../../../../../index.html" class="icon icon-home">
             chpldoc
           </a>
-              <div class="version">
-                0.0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -122,7 +119,7 @@
            <div itemprop="articleBody">
              
   <section id="externalintegration">
-<span id="module-ExternalIntegration"></span><h1>ExternalIntegration<a class="headerlink" href="#externalintegration" title="Link to this heading">¶</a></h1>
+<span id="module-ExternalIntegration"></span><h1>ExternalIntegration<a class="headerlink" href="#externalintegration" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ExternalIntegration</span><span class="p">;</span>
 </pre></div>
@@ -133,12 +130,12 @@
 </div>
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.eiLogger">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">eiLogger</span></span><span class="w"> </span><em class="property"> <span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#ExternalIntegration.eiLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">eiLogger</span></span><span class="w"> </span><em class="property"><span class="pre">=</span> <span class="pre">new</span> <span class="pre">Logger(logLevel,</span> <span class="pre">logChannel)</span></em><a class="headerlink" href="#ExternalIntegration.eiLogger" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_VERBOSE">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_VERBOSE</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_VERBOSE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_VERBOSE</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_VERBOSE" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>libcurl C constants required to configure the Curl core</p></li>
 <li><p>of HttpChannel objects.</p></li>
@@ -147,211 +144,211 @@
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_USERNAME">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_USERNAME</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_USERNAME" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_USERNAME</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_USERNAME" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_PASSWORD">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_PASSWORD</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_PASSWORD" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_PASSWORD</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_PASSWORD" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_USE_SSL">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_USE_SSL</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_USE_SSL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_USE_SSL</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_USE_SSL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_SSLCERT">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSLCERT</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSLCERT" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSLCERT</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSLCERT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_SSLKEY">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSLKEY</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSLKEY" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSLKEY</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSLKEY" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_KEYPASSWD">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_KEYPASSWD</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_KEYPASSWD" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_KEYPASSWD</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_KEYPASSWD" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_SSLCERTTYPE">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSLCERTTYPE</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSLCERTTYPE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSLCERTTYPE</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSLCERTTYPE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_CAPATH">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_CAPATH</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_CAPATH" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_CAPATH</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_CAPATH" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_CAINFO">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_CAINFO</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_CAINFO" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_CAINFO</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_CAINFO" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_URL">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_URL</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_URL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_URL</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_URL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_HTTPHEADER">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_HTTPHEADER</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_HTTPHEADER" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_HTTPHEADER</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_HTTPHEADER" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_POSTFIELDS">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_POSTFIELDS</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_POSTFIELDS" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_POSTFIELDS</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_POSTFIELDS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_CUSTOMREQUEST">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_CUSTOMREQUEST</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_CUSTOMREQUEST" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_CUSTOMREQUEST</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_CUSTOMREQUEST" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_FAILONERROR">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_FAILONERROR</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_FAILONERROR" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_FAILONERROR</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_FAILONERROR" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLINFO_RESPONSE_CODE">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLINFO_RESPONSE_CODE</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLINFO_RESPONSE_CODE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLINFO_RESPONSE_CODE</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLINFO_RESPONSE_CODE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl data">
 <dt class="sig sig-object chpl" id="ExternalIntegration.CURLOPT_SSL_VERIFYPEER">
-<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSL_VERIFYPEER</span></span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSL_VERIFYPEER" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">CURLOPT_SSL_VERIFYPEER</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">CURLoption</span></em><a class="headerlink" href="#ExternalIntegration.CURLOPT_SSL_VERIFYPEER" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ExternalIntegration.SystemType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SystemType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">KUBERNETES,</span> <span class="pre">REDIS,</span> <span class="pre">CONSUL,</span> <span class="pre">NONE</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.SystemType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">SystemType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">KUBERNETES,</span> <span class="pre">REDIS,</span> <span class="pre">CONSUL,</span> <span class="pre">NONE</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.SystemType" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Enum specifies the type of external system Arkouda will integrate with.</p></li>
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.SystemType.KUBERNETES">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">KUBERNETES</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.KUBERNETES" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">KUBERNETES</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.KUBERNETES" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.SystemType.REDIS">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">REDIS</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.REDIS" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">REDIS</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.REDIS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.SystemType.CONSUL">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CONSUL</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.CONSUL" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">CONSUL</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.CONSUL" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.SystemType.NONE">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NONE</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.NONE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">NONE</span></span><a class="headerlink" href="#ExternalIntegration.SystemType.NONE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ExternalIntegration.ChannelType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ChannelType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">STDOUT,</span> <span class="pre">FILE,</span> <span class="pre">HTTP</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.ChannelType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ChannelType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">STDOUT,</span> <span class="pre">FILE,</span> <span class="pre">HTTP</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.ChannelType" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Enum describing the type of channel used to write to an</p></li>
 <li><p>external system.</p></li>
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.ChannelType.STDOUT">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STDOUT</span></span><a class="headerlink" href="#ExternalIntegration.ChannelType.STDOUT" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">STDOUT</span></span><a class="headerlink" href="#ExternalIntegration.ChannelType.STDOUT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.ChannelType.FILE">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">FILE</span></span><a class="headerlink" href="#ExternalIntegration.ChannelType.FILE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">FILE</span></span><a class="headerlink" href="#ExternalIntegration.ChannelType.FILE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.ChannelType.HTTP">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">HTTP</span></span><a class="headerlink" href="#ExternalIntegration.ChannelType.HTTP" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">HTTP</span></span><a class="headerlink" href="#ExternalIntegration.ChannelType.HTTP" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ExternalIntegration.ServiceEndpoint">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ServiceEndpoint</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">ARKOUDA_CLIENT,</span> <span class="pre">METRICS</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.ServiceEndpoint" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">ServiceEndpoint</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">ARKOUDA_CLIENT,</span> <span class="pre">METRICS</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.ServiceEndpoint" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Enum specifies if the service endpoint is the Arkouda client or metrics</p></li>
 <li><p>socket</p></li>
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.ServiceEndpoint.ARKOUDA_CLIENT">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_CLIENT</span></span><a class="headerlink" href="#ExternalIntegration.ServiceEndpoint.ARKOUDA_CLIENT" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_CLIENT</span></span><a class="headerlink" href="#ExternalIntegration.ServiceEndpoint.ARKOUDA_CLIENT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.ServiceEndpoint.METRICS">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">METRICS</span></span><a class="headerlink" href="#ExternalIntegration.ServiceEndpoint.METRICS" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">METRICS</span></span><a class="headerlink" href="#ExternalIntegration.ServiceEndpoint.METRICS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestType">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">HttpRequestType</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">POST,</span> <span class="pre">PUT,</span> <span class="pre">PATCH,</span> <span class="pre">DELETE</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.HttpRequestType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">HttpRequestType</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">POST,</span> <span class="pre">PUT,</span> <span class="pre">PATCH,</span> <span class="pre">DELETE</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.HttpRequestType" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Enum specifies the request type used to write to an external system</p></li>
 <li><p>via HTTP.</p></li>
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestType.POST">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">POST</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.POST" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">POST</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.POST" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestType.PUT">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PUT</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.PUT" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PUT</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.PUT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestType.PATCH">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PATCH</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.PATCH" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">PATCH</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.PATCH" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestType.DELETE">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DELETE</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.DELETE" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">DELETE</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestType.DELETE" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl enum">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestFormat">
-<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">HttpRequestFormat</span></span><span class="w"> </span><em class="property"> <span class="pre">{</span> <span class="pre">TEXT,</span> <span class="pre">JSON,</span> <span class="pre">MULTIPART</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> </em><span class="sig-name descname"><span class="pre">HttpRequestFormat</span></span><span class="w"> </span><em class="property"><span class="pre">{</span> <span class="pre">TEXT,</span> <span class="pre">JSON,</span> <span class="pre">MULTIPART</span> <span class="pre">}</span></em><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Enum specifies the request format used to write to an external system</p></li>
 <li><p>via HTTP.</p></li>
 </ul>
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestFormat.TEXT">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TEXT</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat.TEXT" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">TEXT</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat.TEXT" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestFormat.JSON">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">JSON</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat.JSON" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">JSON</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat.JSON" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl enumconstant">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpRequestFormat.MULTIPART">
-<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">MULTIPART</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat.MULTIPART" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">enum</span> <span class="pre">constant</span> </em><span class="sig-name descname"><span class="pre">MULTIPART</span></span><a class="headerlink" href="#ExternalIntegration.HttpRequestFormat.MULTIPART" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ExternalIntegration.getConnectHostIp">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConnectHostIp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.getConnectHostIp" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getConnectHostIp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.getConnectHostIp" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Retrieves the host ip address of the locale 0 arkouda_server process, which is</p></li>
 <li><p>useful for registering Arkouda with cloud environments such as Kubernetes.</p></li>
@@ -360,87 +357,87 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ExternalIntegration.Channel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Channel</span></span><a class="headerlink" href="#ExternalIntegration.Channel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Channel</span></span><a class="headerlink" href="#ExternalIntegration.Channel" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Base class defining the Arkouda Channel interface consisting of a</p></li>
 <li><p>write method that writes a payload to an external system.</p></li>
 </ul>
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.Channel.write">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.Channel.write" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.Channel.write" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ExternalIntegration.FileChannel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">FileChannel</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Channel</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">FileChannel</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Channel</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The FileChannel class writes a payload out to a file, either by appending</p></li>
 <li><p>or overwriting an existing file or creating and writing to a new file.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ExternalIntegration.FileChannel.path">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">path</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel.path" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">path</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel.path" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ExternalIntegration.FileChannel.append">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">append</span></span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel.append" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">append</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel.append" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.FileChannel.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">append:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ExternalIntegration.FileChannel.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">append:</span> <span class="pre">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ExternalIntegration.FileChannel.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.FileChannel.write">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel.write" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.FileChannel.write" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HttpChannel</span></span><em class="property"> <span class="pre">:</span> <span class="pre">Channel</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HttpChannel</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Channel</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The HttpChannel class writes a payload out to an HTTP endpoint</p></li>
 <li><p>in a configurable format via a configurable request type.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel.url">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.url" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">url</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.url" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel.requestType">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">requestType</span></span><em class="property"> <span class="pre">:</span> <span class="pre">HttpRequestType</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.requestType" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">requestType</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">HttpRequestType</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.requestType" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel.requestFormat">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">requestFormat</span></span><em class="property"> <span class="pre">:</span> <span class="pre">HttpRequestFormat</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.requestFormat" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">requestFormat</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">HttpRequestFormat</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.requestFormat" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">url:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">requestType:</span> <span class="pre">HttpRequestType</span></em>, <em class="sig-param"><span class="pre">requestFormat:</span> <span class="pre">HttpRequestFormat</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ExternalIntegration.HttpChannel.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">url:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">requestType:</span> <span class="pre">HttpRequestType</span></em>, <em class="sig-param"><span class="pre">requestFormat:</span> <span class="pre">HttpRequestFormat</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ExternalIntegration.HttpChannel.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel.configureChannel">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">configureChannel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.configureChannel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">configureChannel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.configureChannel" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel.generateHeader">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.generateHeader" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.generateHeader" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpChannel.write">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.write" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpChannel.write" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Writes the payload out to an HTTP/S endpoint in a format specified</p></li>
 <li><p>by the requestFormat instance attribute via the request type</p></li>
@@ -452,29 +449,29 @@
 
 <dl class="chpl class">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpsChannel">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HttpsChannel</span></span><em class="property"> <span class="pre">:</span> <span class="pre">HttpChannel</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">HttpsChannel</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">HttpChannel</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>The HttpChannel class writes a payload out to an HTTPS endpoint</p></li>
 <li><p>in a configurable format via a configurable request type.</p></li>
 </ul>
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpsChannel.caCert">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">caCert</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.caCert" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">caCert</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.caCert" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl attribute">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpsChannel.token">
-<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">token</span></span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.token" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">var</span> </em><span class="sig-name descname"><span class="pre">token</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.token" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpsChannel.init">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">url:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">requestType:</span> <span class="pre">HttpRequestType</span></em>, <em class="sig-param"><span class="pre">requestFormat:</span> <span class="pre">HttpRequestFormat</span></em>, <em class="sig-param"><span class="pre">caCert:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ExternalIntegration.HttpsChannel.init" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">url:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">requestType:</span> <span class="pre">HttpRequestType</span></em>, <em class="sig-param"><span class="pre">requestFormat:</span> <span class="pre">HttpRequestFormat</span></em>, <em class="sig-param"><span class="pre">caCert:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">token:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ExternalIntegration.HttpsChannel.init" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpsChannel.configureChannel">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">configureChannel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.configureChannel" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">configureChannel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.configureChannel" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Overridden proc adds token TLS configuration</p></li>
@@ -483,7 +480,7 @@
 
 <dl class="chpl method">
 <dt class="sig sig-object chpl" id="ExternalIntegration.HttpsChannel.generateHeader">
-<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.generateHeader" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">override</span> <span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">generateHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">channel</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.HttpsChannel.generateHeader" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li></li>
 <li><p>Overridden proc adds TLS token to the HTTPS header</p></li>
@@ -494,7 +491,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ExternalIntegration.registerWithKubernetes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerWithKubernetes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">appName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">serviceName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">servicePort:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">targetServicePort:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.registerWithKubernetes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerWithKubernetes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">appName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">serviceName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">servicePort:</span> <span class="pre">int</span></em>, <em class="sig-param"><span class="pre">targetServicePort:</span> <span class="pre">int</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.registerWithKubernetes" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Registers Arkouda with Kubernetes by creating a Kubernetes Service–and an Endpoints</p></li>
 <li><p>if Arkouda is deployed outside of Kubernetes–to enable service discovery of Arkouda</p></li>
@@ -504,7 +501,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ExternalIntegration.deregisterFromKubernetes">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deregisterFromKubernetes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">serviceName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.deregisterFromKubernetes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deregisterFromKubernetes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">serviceName:</span> <span class="pre">string</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.deregisterFromKubernetes" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Removes the Kubernetes Service and, if applicable, Endpoints that compose the</p></li>
 <li><p>service endpoint that enables access to Arkouda deployed within or outside of</p></li>
@@ -514,17 +511,17 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ExternalIntegration.getKubernetesRegistrationParameters">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getKubernetesRegistrationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">serviceEndpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.getKubernetesRegistrationParameters" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getKubernetesRegistrationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">serviceEndpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.getKubernetesRegistrationParameters" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ExternalIntegration.getKubernetesDeregisterParameters">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getKubernetesDeregisterParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">serviceEndpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.getKubernetesDeregisterParameters" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">getKubernetesDeregisterParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">serviceEndpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.getKubernetesDeregisterParameters" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ExternalIntegration.registerWithExternalSystem">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerWithExternalSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">appName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">endpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.registerWithExternalSystem" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">registerWithExternalSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">appName:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">endpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.registerWithExternalSystem" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Registers Arkouda with an external system on startup, defaulting to none.</p></li>
 </ul>
@@ -532,7 +529,7 @@
 
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="ExternalIntegration.deregisterFromExternalSystem">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deregisterFromExternalSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">endpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.deregisterFromExternalSystem" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">deregisterFromExternalSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">endpoint:</span> <span class="pre">ServiceEndpoint</span></em><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">throws</span></em><a class="headerlink" href="#ExternalIntegration.deregisterFromExternalSystem" title="Link to this definition"></a></dt>
 <dd><ul class="simple">
 <li><p>Deregisters Arkouda from an external system upon receipt of shutdown command</p></li>
 </ul>

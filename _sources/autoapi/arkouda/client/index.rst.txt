@@ -20,79 +20,52 @@ arkouda.client
    - Retrieve memory and configuration metrics from the server
    - Provide a health check (`ruok`) and shutdown mechanism
    - Maintain client-side logging, verbosity, and session parameters
-
-   Main API
-   --------
-   __all__ = [
-       "connect",
-       "disconnect",
-       "shutdown",
-       "get_config",
-       "get_max_array_rank",
-       "get_mem_used",
-       "get_mem_avail",
-       "get_mem_status",
-       "get_server_commands",
-       "print_server_commands",
-       "generate_history",
-       "ruok",
-   ]
+   - (Optional) Provide async-style request *sending* and an `async_connect()` helper
 
    Classes
    -------
    Channel
        Abstract base class for communication between the client and the server.
-
    ZmqChannel
        Default implementation of `Channel` using ZeroMQ request-reply pattern.
-
-   ClientMode, ShellMode, RequestMode, RequestStatus, ChannelType
+   ClientMode, ShellMode, RequestMode, ChannelType
        Enum classes defining modes of client interaction, shell type detection, and channel selection.
 
    Functions
    ---------
    connect(...)
        Establish a connection to an Arkouda server.
-
    disconnect()
        Cleanly disconnect from the server and reset session state.
-
    shutdown()
        Shut down the server, delete its symbol table, and disconnect the client.
-
    get_config()
        Return server runtime configuration and environment settings.
-
    get_mem_used(), get_mem_avail(), get_mem_status()
        Retrieve memory usage and availability statistics from the server.
-
    get_server_commands()
        Get a mapping of available server commands and their functions.
-
    print_server_commands()
        Print a list of all supported server-side commands.
-
    generate_history(...)
        Retrieve interactive shell or notebook command history.
-
    ruok()
        Send a health check to the server ("ruok") and receive status.
 
    .. rubric:: Notes
 
    - This module is foundational to all Arkouda workflows.
-   - The `generic_msg()` function is used internally to handle message transmission.
-   - Clients must call `connect()` before performing any server operations.
+   - The `generic_msg()` function handles message transmission.
+   - Clients must call `connect()` (or `async_connect()`) before performing any operations.
+   - The async additions are fully backward-compatible and purely opt‑in via env var.
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect() # doctest: +SKIP
-   >>> ak.get_config() # doctest: +SKIP
+   >>> ak.connect()  # doctest: +SKIP
+   >>> ak.get_config()  # doctest: +SKIP
    {'serverHostname': 'localhost', 'numLocales': 4, ...}
-   >>> ak.disconnect() # doctest: +SKIP
-
-   .. seealso:: :py:obj:`-`, :py:obj:`-`, :py:obj:`-`, :py:obj:`-`
+   >>> ak.disconnect()  # doctest: +SKIP
 
 
 
@@ -109,11 +82,11 @@ Functions
    arkouda.client.get_mem_avail
    arkouda.client.get_mem_status
    arkouda.client.get_mem_used
+   arkouda.client.get_registration_config
    arkouda.client.get_server_commands
    arkouda.client.print_server_commands
    arkouda.client.ruok
    arkouda.client.shutdown
-   arkouda.client.wait_for_async_activity
 
 
 Module Contents
@@ -121,62 +94,54 @@ Module Contents
 
 .. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: Optional[str] = None, connect_url: Optional[str] = None, access_channel: Optional[Channel] = None) -> None
 
-   Connect to a running arkouda server.
+   Connect to a running Arkouda server.
 
-   :param server: The hostname of the server (must be visible to the current
-                  machine).
-   :type server: str, default="localhost"
-   :param port: The port of the server.
-   :type port: int, default=5555
-   :param timeout: The timeout in seconds for client send and receive operations.
-                   Defaults to 0 seconds, which is interpreted as no timeout.
-   :type timeout: int, default=0
-   :param access_token: The token used to connect to an existing socket to enable access to
-                        an Arkouda server where authentication is enabled. Defaults to None.
+   :param server: Hostname visible to the current machine.
+   :type server: str, default "localhost"
+   :param port: Server port.
+   :type port: int, default 5555
+   :param timeout: Timeout in seconds for send/receive. If positive, also activates
+                   heartbeat monitoring (ZMQ).
+   :type timeout: int, default 0
+   :param access_token: Access token for authenticated servers.
    :type access_token: str, optional
-   :param connect_url: The complete url in the format of tcp://server:port?token=<token_value>
-                       where the token is optional
+   :param connect_url: Complete URL in the form ``tcp://server:port?token=<token_value>``.
    :type connect_url: str, optional
-   :param access_channel: The desired Channel implementation that differs from the default ZmqChannel
+   :param access_channel: A pre-constructed channel instance to use instead of the default.
    :type access_channel: Channel, optional
 
-   :raises ConnectionError: Raised if there's an error in connecting to the Arkouda server
-   :raises ValueError: Raised if there's an error in parsing the connect_url parameter
-   :raises RuntimeError: Raised if there is a server-side error
+   :raises ConnectionError: If there is an error connecting to the server.
+   :raises ValueError: If `connect_url` cannot be parsed.
+   :raises RuntimeError: If a server-side error occurs during connect.
 
    .. rubric:: Notes
 
-   On success, prints the connected address, as seen by the server. If called
+   On success, prints the connected address (as seen by the server). If called
    with an existing connection, the socket will be re-initialized.
 
 
 .. py:function:: disconnect() -> None
 
-   Disconnects the client from the Arkouda server.
+   Disconnect the client from the Arkouda server.
 
-   :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
+   :raises ConnectionError: If there is an error during disconnect.
 
 
 .. py:function:: generate_history(num_commands: Optional[int] = None, command_filter: Optional[str] = None) -> List[str]
 
-   Generate list of commands executed.
+   Generate a list of commands executed in the shell/notebook.
 
-   Generate list of commands executed within the Python shell, Jupyter notebook,
-   or IPython notebook, with an optional cmd_filter and number of commands to return.
-
-   :param num_commands: The number of commands from history to retrieve
+   :param num_commands: Number of commands to retrieve from history.
    :type num_commands: int, optional
-   :param command_filter: String containing characters used to select a subset of commands.
+   :param command_filter: Filter string to select a subset of commands.
    :type command_filter: str, optional
 
-   :returns: A list of commands from the Python shell, Jupyter notebook, or IPython notebook
-   :rtype: List[str]
+   :returns: List of command strings.
+   :rtype: list[str]
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.connect()    # doctest: +SKIP
-   connected to arkouda server tcp://*:5555
    >>> ak.get_config()    # doctest: +SKIP
    {'arkoudaVersion': 'v2025.01.13+165.g23ccdfd6c', 'chplVersion': '2.4.0',
        ... 'pythonVersion': '3.13', 'ZMQVersion': '4.3.5', 'HDF5Version': '1.14.4',
@@ -202,26 +167,31 @@ Module Contents
 
    Get runtime information about the server.
 
-   :returns: serverHostname
-             serverPort
-             numLocales
-             numPUs (number of processor units per locale)
-             maxTaskPar (maximum number of tasks per locale)
-             physicalMemory
+   :returns: Mapping containing selected server configuration and environment settings.
+             Common keys include:
+
+             - ``serverHostname`` : str
+                 Hostname of the Arkouda server.
+             - ``serverPort`` : int
+                 Port number the server is listening on.
+             - ``numLocales`` : int
+                 Number of Chapel locales (nodes) in the server deployment.
+             - ``numPUs`` : int
+                 Number of processor units (hardware threads) per locale.
+             - ``maxTaskPar`` : int
+                 Maximum number of tasks per locale.
+             - ``physicalMemory`` : int
+                 Total physical memory on each locale (bytes).
    :rtype: Mapping[str, Union[str, int, float]]
 
-   :raises RuntimeError: Raised if the client is not connected to a server
+   :raises RuntimeError: If the client is not connected to a server.
 
 
 .. py:function:: get_max_array_rank() -> int
 
    Get the maximum pdarray rank the server was compiled to support.
 
-   This value corresponds to the maximum number in
-   parameter_classes -> array -> nd in the `registration-config.json`
-   file when the server was compiled.
-
-   :returns: The maximum pdarray rank supported by the server
+   :returns: Maximum pdarray rank.
    :rtype: int
 
 
@@ -229,57 +199,73 @@ Module Contents
 
    Compute the amount of memory available to be used.
 
-   :param unit: unit of return ('b' by default)
-   :type unit: str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
-   :param as_percent: If True, return the percent (as an int) of the memory that's available to be used
-                      False by default
-   :type as_percent: bool
+   :param unit: Unit of the return value (default 'b').
+   :type unit: {'b','kb','mb','gb','tb','pb'}
+   :param as_percent: If True, return the percentage of memory that is available.
+   :type as_percent: bool, default False
 
-   :returns: Indicates the amount of memory available to be used.
+   :returns: Amount of memory available (scaled per `unit`) or percentage if `as_percent`.
    :rtype: int
 
-   :raises RuntimeError: Raised if there is a server-side error in getting memory available
-   :raises ValueError: Raised if the returned value is not an int-formatted string
+   :raises RuntimeError: Raised if there is a server-side error in getting memory used.
+   :raises ValueError: Raised if the returned value is not an int-formatted string.
 
 
 .. py:function:: get_mem_status() -> List[Mapping[str, Union[str, int, float]]]
 
    Retrieve the memory status for each locale.
 
-   :returns: total_mem: total physical memory on locale host
-             avail_mem: current available memory on locale host
-             arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
-             pct_avail_mem: percentage of physical memory currently available on locale host
-             locale_id: locale id which is between 0 and numLocales-1
-             locale_hostname: host name of locale host
-   :rtype: List[Mapping[str, Union[str, int, float]]]
+   :returns: Each mapping contains:
 
-   :raises RuntimeError: Raised if there is a server-side error in getting per-locale
-       memory status information
+             - ``total_mem`` : int
+                 Total physical memory on the locale host (bytes).
+             - ``avail_mem`` : int
+                 Current available memory on the locale host (bytes).
+             - ``arkouda_mem_alloc`` : int
+                 Memory allocated to the Arkouda Chapel process on the locale host (bytes).
+             - ``pct_avail_mem`` : float
+                 Percentage of physical memory currently available on the locale host.
+             - ``locale_id`` : int
+                 Locale identifier (between 0 and numLocales - 1).
+             - ``locale_hostname`` : str
+                 Hostname of the locale.
+   :rtype: list of mapping
+
+   :raises RuntimeError: If there is a server-side error in retrieving memory status.
+   :raises ValueError: If the returned data is not valid JSON.
 
 
 .. py:function:: get_mem_used(unit: str = 'b', as_percent: bool = False) -> int
 
    Compute the amount of memory used by objects in the server's symbol table.
 
-   :param unit: unit of return ('b' by default)
-   :type unit: str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
-   :param as_percent: If True, return the percent (as an int) of the available memory that's been used
-                      False by default
-   :type as_percent: bool
+   :param unit: Unit of the return value (default 'b').
+   :type unit: {'b','kb','mb','gb','tb','pb'}
+   :param as_percent: If True, return the percentage of available memory that is used.
+   :type as_percent: bool, default False
 
-   :returns: Indicates the amount of memory allocated to symbol table objects.
+   :returns: Amount of memory used (scaled per `unit`) or percentage if `as_percent`.
    :rtype: int
 
-   :raises RuntimeError: Raised if there is a server-side error in getting memory used
-   :raises ValueError: Raised if the returned value is not an int-formatted string
+   :raises RuntimeError: Raised if there is a server-side error in getting memory used.
+   :raises ValueError: Raised if the returned value is not an int-formatted string.
+
+
+.. py:function:: get_registration_config()
+
+   Get the registration settings the server was built with.
+
+   :returns: Snapshot of `registration-config.json` taken at server build time.
+   :rtype: dict
+
+   :raises RuntimeError: Raised if the client is not connected to a server
 
 
 .. py:function:: get_server_commands() -> Mapping[str, str]
 
-   Return a dictionary of available server commands and the functions they map to.
+   Return a dictionary of available server commands and their functions.
 
-   :returns: String to String mapping of available server commands to functions
+   :returns: Mapping of command name → function (stringified).
    :rtype: dict
 
    :raises RuntimeError: Raised if there is a server-side error in retrieving and formatting the CommandMap
@@ -288,47 +274,27 @@ Module Contents
 
 .. py:function:: print_server_commands()
 
-   Print the list of the available Server commands.
+   Print the list of available server commands.
 
 
 .. py:function:: ruok() -> str
 
-   Send a "ruok" message to the arkouda_server.
+   Quick health check that does not require error handling.
 
-   Simply sends a "ruok" message to the server and, if the return message is
-   "imok", this means the arkouda_server is up and operating normally. A return
-   message of "imnotok" indicates an error occurred or the connection timed out.
-
-   This method is basically a way to do a quick healthcheck in a way that does
-   not require error handling.
-
-   :returns: A string indicating if the server is operating normally (imok), if there's
-             an error server-side, or if ruok did not return a response (imnotok) in
-             both of the latter cases
+   :returns: "imok" if the server is operating normally, otherwise an error string.
    :rtype: str
 
 
 .. py:function:: shutdown() -> None
 
-   Send a shutdown message.
+   Send a shutdown message and disconnect.
 
-   Send a shutdown message to the Arkouda server that does the
-   following:
-
-   1. Delete all objects in the SymTable
-   2. Shuts down the Arkouda server
-   3. Disconnects the client from the stopped Arkouda Server
+   Performs:
+     1. Delete all objects in the server SymTable.
+     2. Shut down the server.
+     3. Disconnect the client.
 
    :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
-       there is an error in disconnecting from the server
-
-
-.. py:function:: wait_for_async_activity() -> None
-
-   Wait for the completion of asynchronous activities on the server.
-
-   Intended to help with testing of automatic checkpointing.
-   The server will consider itself "idle" despite serving this message.
-
+       there is an error in disconnecting from the server.
 
 

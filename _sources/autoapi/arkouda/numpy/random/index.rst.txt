@@ -27,7 +27,22 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.numpy.random.choice
+   arkouda.numpy.random.default_rng
+   arkouda.numpy.random.exponential
+   arkouda.numpy.random.integers
+   arkouda.numpy.random.logistic
+   arkouda.numpy.random.lognormal
+   arkouda.numpy.random.normal
+   arkouda.numpy.random.permutation
+   arkouda.numpy.random.poisson
+   arkouda.numpy.random.rand
    arkouda.numpy.random.randint
+   arkouda.numpy.random.random
+   arkouda.numpy.random.seed
+   arkouda.numpy.random.shuffle
+   arkouda.numpy.random.standard_exponential
+   arkouda.numpy.random.standard_gamma
    arkouda.numpy.random.standard_normal
    arkouda.numpy.random.uniform
 
@@ -44,11 +59,11 @@ Package Contents
    value is generated and returned. If `size` is an integer, then a 1-D
    array filled with generated values is returned.
 
-   :param seed: Seed to allow for reproducible random number generation.
-   :type seed: int
    :param name_dict: Dictionary mapping the server side names associated with
                      the generators for each dtype.
    :type name_dict: dict
+   :param seed: Seed to allow for reproducible random number generation.
+   :type seed: int
    :param state: The current state we are in the random number generation stream.
                  This information makes it so calls to any dtype generator
                  function affects the stream of random numbers for the other generators.
@@ -79,6 +94,9 @@ Package Contents
       :returns: A pdarray containing the sampled values or a single random value if size not provided.
       :rtype: pdarray, numeric_scalar
 
+
+
+   .. py:method:: destructor()
 
 
    .. py:method:: exponential(scale=1.0, size=None, method='zig')
@@ -138,11 +156,11 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> rng = ak.random.default_rng()
+      >>> rng = ak.random.default_rng(seed=1)
       >>> rng.integers(5, 20, 10)
-      array([15, 13, 10, 8, 5, 18, 16, 14, 7, 13])  # random
+      array([7 19 5 16 19 11 18 15 10 5])
       >>> rng.integers(5, size=10)
-      array([2, 4, 0, 0, 0, 3, 1, 5, 5, 3])  # random
+      array([4 2 5 5 3 5 5 2 2 2])
 
 
 
@@ -229,13 +247,13 @@ Package Contents
 
       >>> import arkouda as ak
       >>> ak.random.default_rng(17).lognormal(3, 2.5, 3)
-      array([7.3866978126031091 106.20159494048757 4.5424399190667666])
+      array([75.587346973566639 9.4194790331678568 1.0996120079897966])
 
 
 
    .. py:method:: normal(loc=0.0, scale=1.0, size=None, method='zig')
 
-      Draw samples from a normal (Gaussian) distribution
+      Draw samples from a normal (Gaussian) distribution.
 
       :param loc: Mean of the distribution. Default of 0.
       :type loc: float or pdarray of floats, optional
@@ -266,7 +284,7 @@ Package Contents
 
       >>> import arkouda as ak
       >>> ak.random.default_rng(17).normal(3, 2.5, 3)
-      array([2.3673425816523577 4.0532529435624589 2.0598322696795694])
+      array([4.3252889011033728 2.2427797827243081 0.09495739757471533])
 
 
 
@@ -321,9 +339,9 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> rng = ak.random.default_rng()
+      >>> rng = ak.random.default_rng(seed=17)
       >>> rng.poisson(lam=3, size=5)
-      array([5 3 2 2 3])  # random
+      array([1 2 3 2 5])
 
 
 
@@ -350,20 +368,76 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> rng = ak.random.default_rng()
+      >>> rng = ak.random.default_rng(seed=17)
       >>> rng.random()
-      0.47108547995356098 # random
+      0.8450747927979015
       >>> rng.random(3)
-      array([0.055256829926011691, 0.62511314008006458, 0.16400145561571539]) # random
+      array([0.8059711747202466 0.71958748004486961 0.72539618972095954])
 
 
 
-   .. py:method:: shuffle(x)
+   .. py:method:: shuffle(x, method: str = 'FisherYates', *, feistel_rounds: int = 16, feistel_key: int | None = None)
 
-      Randomly shuffle a pdarray in place.
+      Randomly shuffle the elements of a `pdarray` in place.
 
-      :param x: shuffle the elements of x randomly in place
+      This method performs a reproducible in-place shuffle of the array `x`
+      using the specified strategy. Three methods are available:
+
+      :param x: The array to be shuffled in place. Must be a one-dimensional Arkouda array.
       :type x: pdarray
+      :param method:
+                     - "FisherYates": A **serial, global** Fisher–Yates shuffle implemented in Chapel.
+                       Simple and fast for small/medium arrays, but **not distributed** — the entire
+                       array must fit on one locale.
+                     - "MergeShuffle": A **fully distributed** shuffle that combines local randomization
+                       and cross-locale probabilistic merging. Scales to large datasets and maintains
+                       good statistical uniformity across locales.
+                     - "Feistel": A **keyed permutation** of indices via a Feistel PRP over [0, N),
+                       then applies that permutation to `x`. Works for any `N` (uses cycle-walking
+                       when N is not a power of two). **Distributed-friendly** and reproducible.
+                       Not intended for cryptographic security.
+
+                     Default is "FisherYates".
+      :type method: {"FisherYates","MergeShuffle","Feistel"}, optional
+      :param feistel_rounds: Number of Feistel rounds (default 16). Higher may cost more time.
+      :type feistel_rounds: int, optional (keyword-only)
+      :param feistel_key: 64-bit key for the Feistel permutation. If None, the backend should derive
+                          a key from the RNG stream so results remain deterministic given the client RNG state.
+      :type feistel_key: int or None, optional (keyword-only)
+
+      :raises TypeError: If `x` is not a `pdarray`.
+      :raises ValueError: If an unsupported shuffle method is specified, or if `feistel_key` is not a 64-bit integer.
+
+      .. rubric:: Notes
+
+      - The shuffle modifies `x` in place.
+      - The result is deterministic given the client RNG state.
+      - For `"MergeShuffle"`, reproducibility is guaranteed **only if the number of locales
+        remains fixed** between runs. Changing locale count will yield different permutations.
+      - Use `"FisherYates"` only for small arrays or testing.
+      - Use `"MergeShuffle"` for production-scale distributed shuffling.
+      - Use `"Feistel"` when you need a keyed, reproducible permutation of indices that
+        also scales in distributed settings.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> rng = ak.random.default_rng(18)
+      >>> pda = ak.arange(10)
+      >>> pda
+      array([0 1 2 3 4 5 6 7 8 9])
+      >>> rng.shuffle(pda, method="FisherYates")
+      >>> pda
+      array([0 8 2 7 9 4 6 3 5 1])
+      >>> rng.shuffle(pda, method="MergeShuffle")
+      >>> pda
+      array([5 6 9 3 8 2 7 0 4 1])
+      >>> rng.shuffle(pda, method="Feistel", feistel_rounds=18)
+      >>> pda
+      array([8 7 3 2 4 9 0 1 5 6])
+      >>> rng.shuffle(pda, method="Feistel", feistel_key=0x1234_5678_9ABC_DEF0, feistel_rounds=18)
+      >>> pda
+      array([6 1 7 3 4 9 2 0 5 8])
 
 
 
@@ -411,11 +485,11 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> rng = ak.random.default_rng()
+      >>> rng = ak.random.default_rng(seed=17)
       >>> rng.standard_gamma(1)
-      0.8729704388729135 # random
+      1.5654448696305245
       >>> rng.standard_gamma(1, size=3)
-      array([0.4879818539586227 0.6534654349920751 0.40990997253631162]) # random
+      array([0.016990291286171716 0.21612542775489499 0.49600147238356695])
 
 
 
@@ -444,11 +518,11 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> rng = ak.random.default_rng()
+      >>> rng = ak.random.default_rng(seed=17)
       >>> rng.standard_normal()
-      2.1923875335537315 # random
+      1.101262453505847
       >>> rng.standard_normal(3)
-      array([0.8797352989638163, -0.7085325853376141, 0.021728052940979934])  # random
+      array([0.53011556044134911 -0.30288808691027669 -1.1620170409701138])
 
 
 
@@ -465,8 +539,8 @@ Package Contents
       :param high: Upper boundary of the output interval. All values generated will be less than high.
                    high must be greater than or equal to low. The default value is 1.0.
       :type high: float, optional
-      :param size: Output shape. Default is None, in which case a single value is returned.
-      :type size: numeric_scalars, optional
+      :param size: Output size or shape. Default is None, in which case a single value is returned.
+      :type size: int, tuple(int), None, optional
 
       :returns: Pdarray of floats (unless size=None, in which case a single float is returned).
       :rtype: pdarray
@@ -476,10 +550,328 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> rng = ak.random.default_rng()
+      >>> rng = ak.random.default_rng(seed=17)
       >>> rng.uniform(-1, 1, 3)
-      array([0.030785499755523249, 0.08505865366367038, -0.38552048588998722])  # random
+      array([0.61194234944049319 0.43917496008973922 0.45079237944191908])
 
+
+
+.. py:function:: choice(a, size=None, replace=True, p=None)
+
+   Generate a random sample from a.
+
+   :param a: If a is an integer, randomly sample from ak.arange(a).
+             If a is a pdarray, randomly sample from a.
+   :type a: int or pdarray
+   :param size: Number of elements to be sampled
+   :type size: int, optional
+   :param replace: If True, sample with replacement. Otherwise sample without replacement.
+                   Defaults to True
+   :type replace: bool, optional
+   :param p: p is the probabilities or weights associated with each element of a.
+   :type p: pdarray, optional
+
+   :returns: Sample or samples from the input a.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, numeric_scalar
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(1701)
+   >>> ak.random.choice(ak.arange(10),size=5,replace=True)
+   array([6 5 1 6 3])
+
+
+.. py:function:: default_rng(seed=None)
+
+   Construct a new Generator.
+
+   Right now we only support PCG64, since this is what is available in chapel.
+
+   :param seed: A seed to initialize the `Generator`. If None, then the seed will
+                be generated by chapel in an implementation specific manner based on the current time.
+                This behavior is currently unstable and may change in the future. If an int,
+                then the value must be non-negative. If passed a `Generator`, it will be returned unaltered.
+   :type seed: {None, int, Generator}, optional
+
+   :returns: The initialized generator object.
+   :rtype: Generator
+
+
+.. py:function:: exponential(scale=1.0, size=None, method='zig')
+
+   Draw samples from an exponential distribution.
+
+   Its probability density function is
+
+   .. math::
+       f(x; \frac{1}{\beta}) = \frac{1}{\beta} \exp(-\frac{x}{\beta}),
+
+   for ``x > 0`` and 0 elsewhere. :math:`\beta` is the scale parameter,
+   which is the inverse of the rate parameter :math:`\lambda = 1/\beta`.
+   The rate parameter is an alternative, widely used parameterization
+   of the exponential distribution.
+
+   :param scale: The scale parameter, :math:`\beta = 1/\lambda`. Must be
+                 non-negative. An array must have the same size as the size argument.
+   :type scale: float or pdarray
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+   :param method: Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+                  'zig' uses the Ziggurat method.
+   :type method: str, optional
+
+   :returns: Drawn samples from the parameterized exponential distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(1701)
+   >>> ak.random.exponential(scale=1.0,size=3,method='zig')
+   array([0.35023958744297734 1.3308542074773211 1.819197246298274])
+
+
+.. py:function:: integers(low, high=None, size=None, dtype=akint64, endpoint=False)
+
+   Return random integers from range (low,high) if endpoint = True, else (low,high].
+
+   Return random integers from the “discrete uniform” distribution of the specified dtype.
+   If high is None (the default), then results are from 0 to low.
+
+   :param low: If low and high are both defined, range is low to high.  But if high is none,
+               the range is 0 to low.
+   :type low: numeric_scalars
+   :param high: If provided, and endpoint is True, the highest value to be included in the range.
+                If provided, and endpoint is False, 1 more than the highest value to be included.
+                See above for behavior if high=None.
+   :type high: numeric_scalars
+   :param size: If scalar, size = output size.  If tuple, size = output shape. Default is None,
+                in which case a scalar is returned.
+   :type size: numeric_scalars
+   :param dtype: The type of the output.
+   :type dtype: type
+   :param endpoint: if True, high is included in the range.  If False, the range ends at high-1.
+   :type endpoint: boolean
+
+   :returns: Values drawn uniformly from the specified range having the desired dtype.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, numeric_scalar
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(1)
+   >>> ak.random.integers(5, 20, 10)
+   array([7 19 5 16 19 11 18 15 10 5])
+   >>> ak.random.integers(5, size=10)
+   array([5 9 7 7 9 9 7 7 8 6])
+
+
+.. py:function:: logistic(loc=0.0, scale=0.0, size=None)
+
+   Draw samples from a logistic distribution.
+
+   Samples are drawn from a logistic distribution with specified parameters,
+   loc (location or mean, also median), and scale (>0).
+
+   :param loc: Parameter of the distribution. Default of 0.
+   :type loc: float or pdarray of floats, optional
+   :param scale: Parameter of the distribution. Must be non-negative. Default is 1.
+   :type scale: float or pdarray of floats, optional
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+
+   .. rubric:: Notes
+
+   The probability density for the Logistic distribution is
+
+   .. math::
+      P(x) = \frac{e^{-(x - \mu)/s}}{s( 1 + e^{-(x - \mu)/s})^2}
+
+   where :math:`\mu` is the location and :math:`s` is the scale.
+
+   The Logistic distribution is used in Extreme Value problems where it can act
+   as a mixture of Gumbel distributions, in Epidemiology, and by the World Chess Federation (FIDE)
+   where it is used in the Elo ranking system, assuming the performance of each player
+   is a logistically distributed random variable.
+
+   :returns: Samples drawn from a logistic distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   .. seealso:: :py:obj:`normal`
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(17)
+   >>> ak.random.logistic(3, 2.5, 3)
+   array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
+
+
+.. py:function:: lognormal(mean=0.0, sigma=1.0, size=None, method='zig')
+
+   Draw samples from a log-normal distribution with specified mean,
+   standard deviation, and array shape.
+
+   Note that the mean and standard deviation are not the values for the distribution itself,
+   but of the underlying normal distribution it is derived from.
+
+   :param mean: Mean of the distribution. Default of 0.
+   :type mean: float or pdarray of floats, optional
+   :param sigma: Standard deviation of the distribution. Must be non-negative. Default of 1.
+   :type sigma: float or pdarray of floats, optional
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+   :param method: Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+                  'zig' uses the Ziggurat method.
+   :type method: str, optional
+
+   .. rubric:: Notes
+
+   A variable `x` has a log-normal distribution if `log(x)` is normally distributed.
+   The probability density for the log-normal distribution is:
+
+   .. math::
+      p(x) = \frac{1}{\sigma x \sqrt{2\pi}} e^{-\frac{(\ln(x)-\mu)^2}{2\sigma^2}}
+
+   where :math:`\mu` is the mean and :math:`\sigma` the standard deviation of the normally
+   distributed logarithm of the variable.
+   A log-normal distribution results if a random variable is the product of a
+   large number of independent, identically-distributed variables in the same
+   way that a normal distribution results if the variable is
+   the sum of a large number of independent, identically-distributed variables.
+
+   :returns: Samples drawn from a lognormal distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   .. seealso:: :py:obj:`normal`
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(17)
+   >>> ak.random.lognormal(3, 2.5, 3)
+   array([75.587346973566639 9.4194790331678568 1.0996120079897966])
+
+
+.. py:function:: normal(loc=0.0, scale=1.0, size=None, method='zig')
+
+   Draw samples from a normal (Gaussian) distribution.
+
+   :param loc: Mean of the distribution. Default of 0.
+   :type loc: float or pdarray of floats, optional
+   :param scale: Standard deviation of the distribution. Must be non-negative. Default of 1.
+   :type scale: float or pdarray of floats, optional
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+   :param method: Either 'box' or 'zig'. 'box' uses the Box–Muller transform
+                  'zig' uses the Ziggurat method.
+   :type method: str, optional
+
+   .. rubric:: Notes
+
+   The probability density for the Gaussian distribution is:
+
+   .. math::
+      p(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+
+   where :math:`\mu` is the mean and :math:`\sigma` the standard deviation.
+   The square of the standard deviation, :math:`\sigma^2`, is called the variance.
+
+   :returns: Samples drawn from a normal distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   .. seealso:: :py:obj:`standard_normal`, :py:obj:`uniform`
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(17)
+   >>> ak.random.normal(3, 2.5, 3)
+   array([4.3252889011033728 2.2427797827243081 0.09495739757471533])
+
+
+.. py:function:: permutation(x, method='Argsort')
+
+   Randomly permute a sequence, or return a permuted range.
+
+   :param x: If x is an integer, randomly permute ak.arange(x). If x is an array,
+             make a copy and shuffle the elements randomly.
+   :type x: int or pdarray
+   :param method: The method for generating the permutation.
+                  Allowed values: 'FisherYates', 'Argsort'
+
+                  If 'Argsort' is selected, the permutation will be generated by
+                  an argsort performed on randomly generated floats.
+   :type method: str = 'Argsort'
+
+   :returns: pdarray of permuted elements
+   :rtype: pdarray
+
+   :raises ValueError: Raised if method is not an allowed value.
+   :raises TypeError: Raised if x is not of type int or pdarray.
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(1984)
+   >>> ak.random.permutation(ak.arange(10))
+   array([4 7 0 2 5 3 6 1 8 9])
+
+
+.. py:function:: poisson(lam=1.0, size=None)
+
+   Draw samples from a Poisson distribution.
+
+   The Poisson distribution is the limit of the binomial distribution for large N.
+
+   :param lam: Expected number of events occurring in a fixed-time interval, must be >= 0.
+               An array must have the same size as the size argument.
+   :type lam: float or pdarray
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+
+   .. rubric:: Notes
+
+   The probability mass function for the Poisson distribution is:
+
+   .. math::
+      f(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}
+
+   For events with an expected separation :math:`\lambda`, the Poisson distribution
+   :math:`f(k; \lambda)` describes the probability of :math:`k` events occurring
+   within the observed interval :math:`\lambda`
+
+   :returns: Samples drawn from a Poisson distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, int_scalar
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(2525)
+   >>> ak.random.poisson(lam=3, size=5)
+   array([3 4 3 3 5])
+
+
+.. py:function:: rand(*size: arkouda.numpy.dtypes.int_scalars, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.float64]
+
+   Generate a pdarray of float values in the range (0,1).
+
+   :param size: Dimensions of the returned array. Multiple arguments define a shape tuple.
+   :type size: int
+   :param seed: The seed for the random number generator
+   :type seed: int_scalars, optional
+
+   :returns: Values drawn uniformly from the range (0,1).
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   :raises TypeError: Raised if size is not an int or a sequence of ints, or if seed is not an int
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.rand(3,seed=1701)
+   array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
 
 
 .. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
@@ -494,7 +886,7 @@ Package Contents
    :param size: The length of the returned array
    :type size: int_scalars
    :param dtype: The dtype of the array
-   :type dtype: Union[int64, float64, bool]
+   :type dtype: Union[int64, float_scalar, bool]
    :param seed: Seed to allow for reproducible random number generation
    :type seed: int_scalars, optional
 
@@ -503,7 +895,14 @@ Package Contents
 
    :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, low or high is
        not an int or float, or seed is not an int
-   :raises ValueError: Raised if size < 0 or if high < low
+   :raises ValueError: If ``size < 0`` or ``ndim < 1``.
+       For ``dtype=int64``, if ``low >= high``.
+       For ``dtype=bool`` (NumPy-compatible), one of:
+           * ``"high <= 0"`` if ``high <= 0``
+           * ``"low < 0"`` if ``low < 0``
+           * ``"high is out of bounds for bool"`` if ``high > 2``
+           * ``"low >= high"`` if ``low >= high``
+       For ``dtype=float64``, if ``high < low``.
 
    .. rubric:: Notes
 
@@ -535,6 +934,172 @@ Package Contents
    array([False, True, True, True, True, False, True, True, True, True])
 
 
+.. py:function:: random(size=None)
+
+   Return random floats in the half-open interval [0.0, 1.0).
+
+   Results are from the uniform distribution over the stated interval.
+
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+
+   :returns: Samples drawn from a uniform distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   .. rubric:: Notes
+
+   To sample over `[a,b)`, use uniform or multiply the output of random by `(b - a)` and add `a`:
+
+    ``(b - a) * random() + a``
+
+   .. seealso:: :py:obj:`uniform`
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(42)
+   >>> ak.random.random()
+   0.7739560485559633
+   >>> ak.random.random(3)
+   array([0.30447083571882388 0.89653821715718895 0.34737575437149532])
+
+
+.. py:function:: seed(seed=None)
+
+   Implements global seed by seeding theGenerator.
+
+   :param seed: the seed for the global generator.  Can be left out.
+   :type seed: int, None
+
+   .. rubric:: Notes
+
+   Reseeding always causes the destruction of an existing generator, because
+   there is no way to reseed a chapel randomStream.  The existing generator
+   is deleted, and the python destructor invokes the chapel-side delGenerator
+   which removes the generator from the symbol table, deleting it and its
+   RandomStream.
+
+
+.. py:function:: shuffle(x, method: str = 'FisherYates', *, feistel_rounds: int = 16, feistel_key: int | None = None)
+
+   Randomly shuffle the elements of a `pdarray` in place.
+
+   This method performs a reproducible in-place shuffle of the array `x`
+   using the specified strategy. Three methods are available:
+
+   :param x: The array to be shuffled in place. Must be a one-dimensional Arkouda array.
+   :type x: pdarray
+   :param method:
+                  - "FisherYates": A **serial, global** Fisher–Yates shuffle implemented in Chapel.
+                    Simple and fast for small/medium arrays, but **not distributed** — the entire
+                    array must fit on one locale.
+                  - "MergeShuffle": A **fully distributed** shuffle that combines local randomization
+                    and cross-locale probabilistic merging. Scales to large datasets and maintains
+                    good statistical uniformity across locales.
+                  - "Feistel": A **keyed permutation** of indices via a Feistel PRP over [0, N),
+                    then applies that permutation to `x`. Works for any `N` (uses cycle-walking
+                    when N is not a power of two). **Distributed-friendly** and reproducible.
+                    Not intended for cryptographic security.
+
+                  Default is "FisherYates".
+   :type method: {"FisherYates","MergeShuffle","Feistel"}, optional
+   :param feistel_rounds: Number of Feistel rounds (default 16). Higher may cost more time.
+   :type feistel_rounds: int, optional (keyword-only)
+   :param feistel_key: 64-bit key for the Feistel permutation. If None, the backend should derive
+                       a key from the RNG stream so results remain deterministic given the client RNG state.
+   :type feistel_key: int or None, optional (keyword-only)
+
+   :raises TypeError: If `x` is not a `pdarray`.
+   :raises ValueError: If an unsupported shuffle method is specified, or if `feistel_key` is not a 64-bit integer.
+
+   .. rubric:: Notes
+
+   - The shuffle modifies `x` in place.
+   - The result is deterministic given the client RNG state.
+   - For `"MergeShuffle"`, reproducibility is guaranteed **only if the number of locales
+     remains fixed** between runs. Changing locale count will yield different permutations.
+   - Use `"FisherYates"` only for small arrays or testing.
+   - Use `"MergeShuffle"` for production-scale distributed shuffling.
+   - Use `"Feistel"` when you need a keyed, reproducible permutation of indices that
+     also scales in distributed settings.
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(18)
+   >>> pda = ak.arange(10)
+   >>> pda
+   array([0 1 2 3 4 5 6 7 8 9])
+   >>> ak.random.shuffle(pda, method="FisherYates")
+   >>> pda
+   array([0 8 2 7 9 4 6 3 5 1])
+   >>> ak.random.shuffle(pda, method="MergeShuffle")
+   >>> pda
+   array([5 6 9 3 8 2 7 0 4 1])
+   >>> ak.random.shuffle(pda, method="Feistel", feistel_rounds=18)
+   >>> pda
+   array([4 2 1 6 9 3 0 5 8 7])
+   >>> ak.random.shuffle(pda, method="Feistel", feistel_key=0x1234_5678_9ABC_DEF0, feistel_rounds=18)
+   >>> pda
+   array([2 3 6 9 8 5 1 4 7 0])
+
+
+.. py:function:: standard_exponential(size=None, method='zig')
+
+   Draw samples from the standard exponential distribution.
+
+   `standard_exponential` is identical to the exponential distribution
+   with a scale parameter of 1.
+
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+   :param method: Either 'inv' or 'zig'. 'inv' uses the default inverse CDF method.
+                  'zig' uses the Ziggurat method.
+   :type method: str, optional
+
+   :returns: Drawn samples from the standard exponential distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(5551212)
+   >>> ak.random.standard_exponential(size=3,method="zig")
+   array([0.0036288331189547511 0.12747464978660919 2.4564938704378503])
+
+
+.. py:function:: standard_gamma(shape, size=None)
+
+   Draw samples from a standard gamma distribution.
+
+   Samples are drawn from a Gamma distribution with specified parameters,
+   shape (sometimes designated “k”) and scale (sometimes designated “theta”),
+   where both parameters are > 0.
+
+   :param shape: specified parameter (sometimes designated “k”)
+   :type shape: numeric_scalars
+   :param size: Output shape. Default is None, in which case a single value is returned.
+   :type size: numeric_scalars, optional
+
+   :returns: Samples drawn from a standard gamma distribution.
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   .. rubric:: Notes
+
+   The probability density function for the Gamma distribution is
+
+   .. math::
+       p(x) = x^{k-1}\frac{e^{\frac{-x}{\theta}}}{\theta^k\Gamma(k)}
+
+   .. rubric:: Examples
+
+   >>> ak.random.seed(16309)
+   >>> ak.random.standard_gamma(1)
+   0.22445153117925773
+   >>> ak.random.standard_gamma(1, size=3)
+   array([0.85277675774402018 3.1253116338237561 0.95808096440750634])
+
+
 .. py:function:: standard_normal(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]], seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Draw real numbers from the standard normal distribution.
@@ -554,7 +1119,7 @@ Package Contents
 
    .. rubric:: Notes
 
-   For random samples from :math:`N(\mu, \sigma^2)`, use:
+   For random samples from :math:`N(\\mu, \\sigma^2)`, use:
 
    ``(sigma * standard_normal(size)) + mu``
 
@@ -565,17 +1130,17 @@ Package Contents
    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
 
 
-.. py:function:: uniform(size: arkouda.numpy.dtypes.int_scalars, low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: uniform(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]], low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Generate a pdarray with uniformly distributed random float values
    in a specified range.
 
+   :param size: The length or shape of the returned array
+   :type size: Union[int_scalars, Tuple[int_scalars]
    :param low: The low value (inclusive) of the range, defaults to 0.0
    :type low: float_scalars
    :param high: The high value (inclusive) of the range, defaults to 1.0
    :type high: float_scalars
-   :param size: The length of the returned array
-   :type size: int_scalars
    :param seed: Value used to initialize the random number generator
    :type seed: int_scalars, optional
 
