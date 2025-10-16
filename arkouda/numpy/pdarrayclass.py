@@ -4122,8 +4122,12 @@ def allclose(a: pdarray, b: pdarray, rtol: float = 1e-5, atol: float = 1e-8) -> 
     >>> ak.allclose(x, y)
     True
     """
+    from arkouda.client import generic_msg
+
     if not isinstance(a, pdarray) or not isinstance(b, pdarray):
         raise TypeError("a and b must be pdarray instances")
+    if (a.dtype in [bigint]) or (b.dtype in [bigint]):
+        raise TypeError("bigint is not supported for allclose")
     return parse_single_value(
         generic_msg(
             cmd=f"allclose<{a.dtype},{a.ndim},{b.dtype},{b.ndim}>",

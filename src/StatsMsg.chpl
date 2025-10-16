@@ -104,10 +104,10 @@ module StatsMsg {
 
       return (+ reduce ((x:real - mx) * (y:real - my))) / (dx.size - 1):real;
     }
-
-    @arkouda.registerCommand()
+    
+    @arkouda.registerCommand("allclose")
     proc allclose(const ref a: [?da] ?ta, const ref b: [?db] ?tb, rtol: real, atol: real): bool throws
-      where da.rank == db.rank
+      where da.rank == db.rank && !(isBigintType(ta) || isBigintType(tb))
     {
       if da.shape != db.shape then
         throw new Error("a and b must have the same shape");
