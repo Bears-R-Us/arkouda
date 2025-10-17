@@ -1392,3 +1392,27 @@ class TestPdarrayCreation:
         assert a.size == 100
         assert ak.all(a == 0)
         assert ak.all(a == ak.array([0] * 100, dtype=ak.bigint).reshape(5, 20))
+
+    def test_bigint_large_negative_values(self):
+        a = ak.array([-(2**200)])
+        b = np.array([2**200])
+        val = 2**200
+        c = [f"{-val}"]
+        ak_c = ak.array(c, dtype=ak.bigint)
+        assert_equivalent(a, -b)
+        assert_equivalent(a, ak_c)
+
+    def test_range_conversion(self):
+        a = ak.array(range(0, 10))
+        b = ak.array(list(range(10)))
+        assert_equivalent(a, b)
+
+    def test_should_be_uint(self):
+        a = ak.array([2**63])
+        assert a.dtype == ak.uint64
+
+    def test_should_not_be_uint(self):
+        a = ak.array([-1, 2**63])
+        b = np.array([-1, 2**63])
+        assert_equivalent(a, b)
+        assert a.dtype == ak.float64

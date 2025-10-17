@@ -243,6 +243,11 @@ def array(
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy.numeric import cast as akcast
 
+    if isinstance(a, str):
+        raise TypeError(
+            "Cannot convert a scalar string to an Arkouda array; pass a sequence of strings instead."
+        )
+
     if isinstance(a, pdarray) and (a.dtype == dtype or dtype is None):
         return _deepcopy(a) if copy else a
 
@@ -261,6 +266,9 @@ def array(
 
     from arkouda.client import maxTransferBytes
 
+    if isinstance(a, Iterable) and not isinstance(a, (list, tuple, np.ndarray, pd.Series, set, dict)):
+        a = list(a)
+
     # If a is not already a numpy.ndarray, convert it
 
     if not isinstance(a, np.ndarray):
@@ -268,8 +276,12 @@ def array(
             if dtype is not None and dtype != bigint:
                 # if the user specified dtype, use that dtype
                 a = np.array(a, dtype=dtype)
-            elif all(isSupportedInt(i) for i in a) and any(2**64 > i > 2**63 for i in a):
-                # all supportedInt values but some >2**63, default to uint (see #1297)
+            elif (
+                all(isSupportedInt(i) for i in a)
+                and all(i >= 0 for i in a)
+                and any(2**64 > i >= 2**63 for i in a)
+            ):
+                # all supportedInt values but some >=2**63, default to uint (see #1297)
                 # iterating shouldn't be too expensive since
                 # this is after the `isinstance(a, pdarray)` check
                 a = np.array(a, dtype=np.uint)
@@ -279,11 +291,21 @@ def array(
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
 
+    if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a) and dtype is None:
+        dtype = bigint
+
     #   Special case, to get around error when putting negative numbers in a bigint
 
-    if dtype == bigint:
-        if a.dtype == "int64" and (a < 0).any():
-            return akcast(array(a), bigint)
+    if (
+        not isinstance(a, Strings)
+        and not np.issubdtype(a.dtype, np.str_)
+        and dtype == bigint
+        and (a < 0).any()
+    ):
+        neg_mask = array((a < 0) * -2 + 1)
+        abs_a = array(abs(a), dtype, max_bits=max_bits)
+        assert isinstance(abs_a, pdarray)  # This is for mypy reasons
+        return neg_mask * abs_a
 
     if a.dtype == bigint or a.dtype.name not in DTypes or dtype == bigint:
         # We need this array whether the number of dimensions is 1 or greater.
@@ -317,7 +339,9 @@ def array(
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
-    if "U" in a.dtype.kind or (a.dtype == np.object_ and a.size > 0 and isinstance(a[0], str)):
+    if np.issubdtype(a.dtype, np.str_) or (
+        a.dtype == np.object_ and a.size > 0 and isinstance(a[0], str)
+    ):
         # encode each string and add a null byte terminator
         encoded = [i for i in itertools.chain.from_iterable(map(lambda x: x.encode() + b"\x00", a))]
         nbytes = len(encoded)
