@@ -1,7 +1,7 @@
 """
 Base extension array infrastructure for Arkouda-backed pandas objects.
 
-This module defines :class:`ArkoudaBaseArray`, an abstract base class implementing
+This module defines :class:`ArkoudaExtensionArray`, an abstract base class implementing
 common logic for pandas ``ExtensionArray`` subclasses that store their data in Arkouda
 server-side arrays. It provides core methods like construction from sequences,
 concatenation, conversion to NumPy, and a generalized ``take`` implementation
@@ -14,7 +14,7 @@ array type.
 
 Classes
 -------
-ArkoudaBaseArray(ExtensionArray)
+ArkoudaExtensionArray(ExtensionArray)
     Base class for Arkouda-backed pandas extension arrays, implementing shared
     behaviors and bridging pandas’ extension array API with Arkouda server arrays.
 
@@ -28,9 +28,9 @@ datatype-specific methods, such as ``_fill_missing``.
 Examples
 --------
 >>> import arkouda as ak
->>> from arkouda.pandas.extension._arkouda_base_array import ArkoudaBaseArray
+>>> from arkouda.pandas.extension import ArkoudaExtensionArray
 >>> arr = ak.array([1, 2, 3])
->>> class MyArray(ArkoudaBaseArray): pass
+>>> class MyArray(ArkoudaExtensionArray): pass
 >>> a = MyArray(arr)
 >>> len(a)
 3
@@ -54,7 +54,7 @@ from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 
 
-__all__ = ["_ensure_numpy", "ArkoudaBaseArray"]
+__all__ = ["_ensure_numpy", "ArkoudaExtensionArray"]
 
 
 def _ensure_numpy(x):
@@ -63,7 +63,7 @@ def _ensure_numpy(x):
     return np.asarray(x)
 
 
-class ArkoudaBaseArray(ExtensionArray):
+class ArkoudaExtensionArray(ExtensionArray):
     default_fill_value: Optional[Union[all_scalars, str]] = -1
 
     def __init__(self, data):
@@ -234,49 +234,51 @@ class ArkoudaBaseArray(ExtensionArray):
         return self._data.to_ndarray()
 
     def broadcast_arrays(self, *arrays):
-        raise NotImplementedError("ArkoudaBaseArray.broadcast_arrays is not implemented in Arkouda yet")
+        raise NotImplementedError(
+            "ArkoudaExtensionArray.broadcast_arrays is not implemented in Arkouda yet"
+        )
 
     def broadcast_to(self, x, shape, /):
-        raise NotImplementedError("ArkoudaBaseArray.broadcast_to is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.broadcast_to is not implemented in Arkouda yet")
 
     def concat(self, arrays, /, *, axis=0):
-        raise NotImplementedError("ArkoudaBaseArray.concat is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.concat is not implemented in Arkouda yet")
 
     def duplicated(self, arrays, /, *, axis=0):
-        raise NotImplementedError("ArkoudaBaseArray.duplicated is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.duplicated is not implemented in Arkouda yet")
 
     def expand_dims(self, x, /, *, axis):
-        raise NotImplementedError("ArkoudaBaseArray.expand_dims is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.expand_dims is not implemented in Arkouda yet")
 
     def permute_dims(self, x, /, axes):
-        raise NotImplementedError("ArkoudaBaseArray.permute_dims is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.permute_dims is not implemented in Arkouda yet")
 
     def reshape(self, x, /, shape):
-        raise NotImplementedError("ArkoudaBaseArray.reshape is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.reshape is not implemented in Arkouda yet")
 
     def split(self, x, indices_or_sections, /, *, axis=0):
-        raise NotImplementedError("ArkoudaBaseArray.split is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.split is not implemented in Arkouda yet")
 
     def squeeze(self, x, /, *, axis=None):
-        raise NotImplementedError("ArkoudaBaseArray.squeeze is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.squeeze is not implemented in Arkouda yet")
 
     def stack(self, arrays, /, *, axis=0):
-        raise NotImplementedError("ArkoudaBaseArray.stack is not implemented in Arkouda yet")
+        raise NotImplementedError("ArkoudaExtensionArray.stack is not implemented in Arkouda yet")
 
     def __hash__(self):
         raise NotImplementedError(
-            "__hash__ is not yet implemented for ArkoudaBaseArray. "
+            "__hash__ is not yet implemented for ArkoudaExtensionArray. "
             "Use .to_numpy() and hash the result if needed."
         )
 
     def argmax(self, axis=None, out=None):
-        raise NotImplementedError("argmax is not yet implemented for ArkoudaBaseArray.")
+        raise NotImplementedError("argmax is not yet implemented for ArkoudaExtensionArray.")
 
     def argmin(self, axis=None, out=None):
-        raise NotImplementedError("argmin is not yet implemented for ArkoudaBaseArray.")
+        raise NotImplementedError("argmin is not yet implemented for ArkoudaExtensionArray.")
 
     def _mode(self, dropna=True):
-        raise NotImplementedError("_mode is not yet implemented for ArkoudaBaseArray.")
+        raise NotImplementedError("_mode is not yet implemented for ArkoudaExtensionArray.")
 
     def _quantile(self, q, interpolation="linear"):
-        raise NotImplementedError("_quantile is not yet implemented for ArkoudaBaseArray.")
+        raise NotImplementedError("_quantile is not yet implemented for ArkoudaExtensionArray.")

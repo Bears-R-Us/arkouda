@@ -9,7 +9,7 @@ from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraycreation import full as ak_full
 from arkouda.numpy.pdarraycreation import pdarray
 
-from ._arkouda_base_array import ArkoudaBaseArray
+from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import (
     ArkoudaBigintDtype,
     ArkoudaBoolDtype,
@@ -24,7 +24,7 @@ from ._dtypes import (
 __all__ = ["ArkoudaArray"]
 
 
-class ArkoudaArray(ArkoudaBaseArray, ExtensionArray):
+class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     default_fill_value = -1
 
     def __init__(self, data):
