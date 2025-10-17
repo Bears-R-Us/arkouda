@@ -59,7 +59,7 @@ Package Contents
 
 .. py:class:: ArkoudaArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
@@ -603,7 +603,7 @@ Package Contents
 
 .. py:class:: ArkoudaCategoricalArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
@@ -1178,7 +1178,7 @@ Package Contents
 
 .. py:class:: ArkoudaStringArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.

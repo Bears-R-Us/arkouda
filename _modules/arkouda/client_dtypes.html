@@ -451,7 +451,7 @@
 
 
 <div class="viewcode-block" id="BitVectorizer">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVectorizer">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVectorizer">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">BitVectorizer</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make a callback (i.e. function) that can be called on an array to create a BitVector.</span>
@@ -476,7 +476,7 @@
 
 
 <div class="viewcode-block" id="BitVector">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVector">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BitVector</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represent integers as bit vectors, e.g. a set of flags.</span>
@@ -531,7 +531,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="BitVector.format">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVector.format">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.format">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a single binary vector as a string.&quot;&quot;&quot;</span>
         <span class="c1"># Start with a fixed-width, zero-padded binary value,</span>
@@ -581,14 +581,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BitVector.to_ndarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVector.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export data to a numpy array of string-formatted bit vectors.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()])</span></div>
 
 
 <div class="viewcode-block" id="BitVector.tolist">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVector.tolist">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.tolist">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export data to a list of string-formatted bit vectors.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
@@ -676,7 +676,7 @@
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
 <div class="viewcode-block" id="BitVector.opeq">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVector.opeq">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.opeq">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In-place binary operation on the BitVector.</span>
@@ -702,7 +702,7 @@
 
 
 <div class="viewcode-block" id="BitVector.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVector.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.register">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this BitVector object and underlying components with the Arkouda server.</span>
@@ -757,7 +757,7 @@
 
 
 <div class="viewcode-block" id="BitVector.from_return_msg">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.BitVector.from_return_msg">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.BitVector.from_return_msg">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_return_msg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -788,7 +788,7 @@
 
 
 <div class="viewcode-block" id="Fields">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.Fields">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.Fields">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Fields</span><span class="p">(</span><span class="n">BitVector</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An integer-backed representation of a set of named binary fields, e.g. flags.</span>
@@ -914,7 +914,7 @@
         <span class="k">return</span> <span class="n">val</span>
 
 <div class="viewcode-block" id="Fields.format">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.Fields.format">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.Fields.format">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a single binary value as a string of named fields.&quot;&quot;&quot;</span>
         <span class="c1"># Start with a fixed-width, zero-padded binary value,</span>
@@ -975,7 +975,7 @@
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Fields.opeq">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.Fields.opeq">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.Fields.opeq">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform in-place binary operation on the Fields object.</span>
@@ -998,7 +998,7 @@
 
 
 <div class="viewcode-block" id="ip_address">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.ip_address">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.ip_address">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ip_address</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert values to an Arkouda array of IP addresses.</span>
@@ -1039,7 +1039,7 @@
 
 
 <div class="viewcode-block" id="IPv4">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">IPv4</span><span class="p">(</span><span class="n">pdarray</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represent integers as IPv4 addresses.</span>
@@ -1083,7 +1083,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="IPv4.export_uint">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.export_uint">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.export_uint">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">export_uint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export the internal values as unsigned 64-bit integers.</span>
@@ -1100,7 +1100,7 @@
 
 
 <div class="viewcode-block" id="IPv4.format">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.format">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.format">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a single integer IP address as a string.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -1109,7 +1109,7 @@
 
 
 <div class="viewcode-block" id="IPv4.normalize">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.normalize">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.normalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Normalize IP adress.</span>
@@ -1168,14 +1168,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="IPv4.to_ndarray">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.to_ndarray">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.to_ndarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export array as a numpy array of integers.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()])</span></div>
 
 
 <div class="viewcode-block" id="IPv4.tolist">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.tolist">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.tolist">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Export array as a list of integers.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
@@ -1248,7 +1248,7 @@
             <span class="k">return</span> <span class="bp">NotImplemented</span>
 
 <div class="viewcode-block" id="IPv4.opeq">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.opeq">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.opeq">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">opeq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform an in-place binary operation on the IPv4 object.</span>
@@ -1275,7 +1275,7 @@
 
 
 <div class="viewcode-block" id="IPv4.register">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.register">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.register">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_defined_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this IPv4 object and underlying components with the Arkouda server.</span>
@@ -1328,7 +1328,7 @@
 
 
 <div class="viewcode-block" id="IPv4.to_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.to_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1360,7 +1360,7 @@
 
 
 <div class="viewcode-block" id="IPv4.update_hdf">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4.update_hdf">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.IPv4.update_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Override the pdarray implementation so that the special object type will be used.&quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
@@ -1390,7 +1390,7 @@
 
 
 <div class="viewcode-block" id="is_ipv4">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.is_ipv4">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.is_ipv4">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_ipv4</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">],</span> <span class="n">ip2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1432,7 +1432,7 @@
 
 
 <div class="viewcode-block" id="is_ipv6">
-<a class="viewcode-back" href="../../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.is_ipv6">[docs]</a>
+<a class="viewcode-back" href="../../autoapi/arkouda/index.html#arkouda.client_dtypes.is_ipv6">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_ipv6</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">IPv4</span><span class="p">],</span> <span class="n">ip2</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

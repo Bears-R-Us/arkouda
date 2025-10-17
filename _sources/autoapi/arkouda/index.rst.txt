@@ -100,6 +100,7 @@ Classes
    arkouda.ArkoudaStringDtype
    arkouda.ArkoudaUint64Dtype
    arkouda.ArkoudaUint8Dtype
+   arkouda.BitVector
    arkouda.BoolDType
    arkouda.ByteDType
    arkouda.BytesDType
@@ -115,9 +116,11 @@ Classes
    arkouda.DatetimeAccessor
    arkouda.ErrorMode
    arkouda.False_
+   arkouda.Fields
    arkouda.Float16DType
    arkouda.Float32DType
    arkouda.Float64DType
+   arkouda.IPv4
    arkouda.Int16DType
    arkouda.Int32DType
    arkouda.Int64DType
@@ -220,10 +223,10 @@ Functions
 
 .. autoapisummary::
 
+   arkouda.BitVectorizer
    arkouda.abs
    arkouda.align
    arkouda.append
-   arkouda.apply
    arkouda.arange
    arkouda.arccos
    arkouda.arccosh
@@ -328,12 +331,15 @@ Functions
    arkouda.information
    arkouda.intersect1d
    arkouda.interval_lookup
+   arkouda.ip_address
    arkouda.isSupportedBool
    arkouda.isSupportedDType
    arkouda.isSupportedFloat
    arkouda.isSupportedInt
    arkouda.isSupportedNumber
    arkouda.is_cosorted
+   arkouda.is_ipv4
+   arkouda.is_ipv6
    arkouda.is_registered
    arkouda.isfinite
    arkouda.isinf
@@ -484,7 +490,7 @@ Package Contents
 
 .. py:class:: ArkoudaArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
@@ -1028,7 +1034,7 @@ Package Contents
 
 .. py:class:: ArkoudaCategoricalArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
@@ -1603,7 +1609,7 @@ Package Contents
 
 .. py:class:: ArkoudaStringArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
@@ -2179,6 +2185,142 @@ Package Contents
       of ``ExtensionDtype.type`` for scalar ``item``, assuming
       that value is valid (not NA). NA values do not need to be
       instances of `type`.
+
+
+.. py:class:: BitVector(values, width=64, reverse=False)
+
+   Bases: :py:obj:`arkouda.numpy.pdarrayclass.pdarray`
+
+
+   Represent integers as bit vectors, e.g. a set of flags.
+
+   :param values: The integers to represent as bit vectors
+   :type values: pdarray, int64
+   :param width: The number of bit fields in the vector
+   :type width: int
+   :param reverse: If True, display bits from least significant (left) to most
+                   significant (right). By default, the most significant bit
+                   is the left-most bit.
+   :type reverse: bool
+
+   :returns: **bitvectors** -- The array of binary vectors
+   :rtype: BitVector
+
+   .. rubric:: Notes
+
+   This class is a thin wrapper around pdarray that mostly affects
+   how values are displayed to the user. Operators and methods will
+   typically treat this class like a uint64 pdarray.
+
+
+   .. py:attribute:: conserves
+
+
+   .. py:method:: format(x)
+
+      Format a single binary vector as a string.
+
+
+
+   .. py:method:: from_return_msg(rep_msg)
+      :classmethod:
+
+
+      Reconstruct a BitVector from a server return message.
+
+      :param rep_msg: JSON-encoded response from Arkouda server.
+      :type rep_msg: str
+
+      :returns: Reconstructed BitVector instance.
+      :rtype: BitVector
+
+
+
+   .. py:method:: opeq(other, op)
+
+      In-place binary operation on the BitVector.
+
+      :param other: Right-hand operand.
+      :type other: int, BitVector, or pdarray
+      :param op: Binary operator as a string (e.g., '+', '&').
+      :type op: str
+
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this BitVector object and underlying components with the Arkouda server.
+
+      :param user_defined_name: user defined name the BitVector is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same BitVector which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different BitVectors with the same name.
+      :rtype: BitVector
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the BitVector with the user_defined_name
+
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:attribute:: registered_name
+      :value: None
+
+
+
+   .. py:attribute:: reverse
+      :value: False
+
+
+
+   .. py:attribute:: special_objType
+      :value: 'BitVector'
+
+
+
+   .. py:method:: to_ndarray()
+
+      Export data to a numpy array of string-formatted bit vectors.
+
+
+
+   .. py:method:: tolist()
+
+      Export data to a list of string-formatted bit vectors.
+
+
+
+   .. py:attribute:: values
+
+
+   .. py:attribute:: width
+      :value: 64
+
+
+
+.. py:function:: BitVectorizer(width=64, reverse=False)
+
+   Make a callback (i.e. function) that can be called on an array to create a BitVector.
+
+   :param width: The number of bit fields in the vector
+   :type width: int
+   :param reverse: If True, display bits from least significant (left) to most
+                   significant (right). By default, the most significant bit
+                   is the left-most bit.
+   :type reverse: bool
+
+   :returns: **bitvectorizer** -- A function that takes an array and returns a BitVector instance
+   :rtype: callable
 
 
 .. py:class:: BoolDType
@@ -2786,6 +2928,97 @@ Package Contents
        :Character code: ``'?'``
 
 
+.. py:class:: Fields(values, names, MSB_left=True, pad='-', separator='', show_int=True)
+
+   Bases: :py:obj:`BitVector`
+
+
+   An integer-backed representation of a set of named binary fields, e.g. flags.
+
+   :param values: The array of field values. If (u)int64, the values are used as-is for the
+                  binary representation of fields. If Strings, the values are converted
+                  to binary according to the mapping defined by the names and MSB_left
+                  arguments.
+   :type values: pdarray or Strings
+   :param names: The names of the fields, in order. A string will be treated as a list
+                 of single-character field names. Multi-character field names are allowed,
+                 but must be passed as a list or tuple and user must specify a separator.
+   :type names: str or sequence of str
+   :param MSB_left: Controls how field names are mapped to binary values. If True (default),
+                    the left-most field name corresponds to the most significant bit in the
+                    binary representation. If False, the left-most field name corresponds to
+                    the least significant bit.
+   :type MSB_left: bool
+   :param pad: Character to display when field is not present. Use empty string if no
+               padding is desired.
+   :type pad: str
+   :param separator: Substring that separates fields. Used to parse input values (if ak.Strings)
+                     and to display output.
+   :type separator: str
+   :param show_int: If True (default), display the integer value of the binary fields in output.
+   :type show_int: bool
+
+   :returns: **fields** -- The array of field values
+   :rtype: Fields
+
+   .. rubric:: Notes
+
+   This class is a thin wrapper around pdarray that mostly affects
+   how values are displayed to the user. Operators and methods will
+   typically treat this class like an int64 pdarray.
+
+
+   .. py:attribute:: MSB_left
+      :value: True
+
+
+
+   .. py:method:: format(x)
+
+      Format a single binary value as a string of named fields.
+
+
+
+   .. py:attribute:: name
+      :value: None
+
+
+
+   .. py:attribute:: names
+
+
+   .. py:attribute:: namewidth
+
+
+   .. py:method:: opeq(other, op)
+
+      Perform in-place binary operation on the Fields object.
+
+      :param other: Operand to apply the binary operation with.
+      :type other: str or BitVector
+      :param op: Binary operation to apply (e.g., '|', '&').
+      :type op: str
+
+
+
+   .. py:attribute:: pad
+
+
+   .. py:attribute:: padchar
+      :value: '-'
+
+
+
+   .. py:attribute:: separator
+      :value: ''
+
+
+
+   .. py:attribute:: show_int
+      :value: True
+
+
+
 .. py:class:: Float16DType
 
    Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
@@ -2820,6 +3053,120 @@ Package Contents
    Please see `numpy.dtype` for the typical way to create
    dtype instances and :ref:`arrays.dtypes` for additional
    information.
+
+
+.. py:class:: IPv4(values)
+
+   Bases: :py:obj:`arkouda.numpy.pdarrayclass.pdarray`
+
+
+   Represent integers as IPv4 addresses.
+
+   :param values: The integer IP addresses
+   :type values: pdarray, int64
+
+   :returns: The same IP addresses
+   :rtype: IPv4
+
+   .. rubric:: Notes
+
+   This class is a thin wrapper around pdarray that mostly affects
+   how values are displayed to the user. Operators and methods will
+   typically treat this class like an int64 pdarray.
+
+
+   .. py:method:: export_uint()
+
+      Export the internal values as unsigned 64-bit integers.
+
+      :returns: Array of uint64 values representing the data.
+      :rtype: pdarray
+
+
+
+   .. py:method:: format(x)
+
+      Format a single integer IP address as a string.
+
+
+
+   .. py:method:: normalize(x)
+
+      Normalize IP adress.
+
+      Take in an IP address as a string, integer, or IPAddress object,
+      and convert it to an integer.
+
+
+
+
+   .. py:method:: opeq(other, op)
+
+      Perform an in-place binary operation on the IPv4 object.
+
+      :param other: Operand for the operation.
+      :type other: int, str, pdarray, or IPv4
+      :param op: Binary operator as a string.
+      :type op: str
+
+
+
+   .. py:method:: register(user_defined_name)
+
+      Register this IPv4 object and underlying components with the Arkouda server.
+
+      :param user_defined_name: user defined name the IPv4 is to be registered under,
+                                this will be the root name for underlying components
+      :type user_defined_name: str
+
+      :returns: The same IPv4 which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support
+                a fluid programming style.
+                Please note you cannot register two different IPv4s with the same name.
+      :rtype: IPv4
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the IPv4 with the user_defined_name
+
+      .. seealso:: :py:obj:`unregister`, :py:obj:`attach`, :py:obj:`is_registered`
+
+      .. rubric:: Notes
+
+      Objects registered with the server are immune to deletion until
+      they are unregistered.
+
+
+
+   .. py:attribute:: special_objType
+      :value: 'IPv4'
+
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute')
+
+      Override of the pdarray to_hdf to store the special object type.
+
+
+
+   .. py:method:: to_ndarray()
+
+      Export array as a numpy array of integers.
+
+
+
+   .. py:method:: tolist()
+
+      Export array as a list of integers.
+
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'array', repack: bool = True)
+
+      Override the pdarray implementation so that the special object type will be used.
+
+
+
+   .. py:attribute:: values
 
 
 .. py:class:: Int16DType
@@ -7149,55 +7496,6 @@ Package Contents
    array([1 2 3 4 5 6 7 8 9])
    >>> ak.append(b, b, axis = 0)
    array([array([4 5 6]) array([7 8 9]) array([4 5 6]) array([7 8 9])])
-
-
-.. py:function:: apply(arr: arkouda.numpy.pdarrayclass.pdarray, func: Union[Callable, str], result_dtype: Optional[Union[numpy.dtype, str]] = None) -> arkouda.numpy.pdarrayclass.pdarray
-
-   Apply a python function to a pdarray.
-
-   The function should take one argument
-   and return a new value. The function will then be called on each element in
-   the pdarray.
-
-
-
-   Warning: This function is experimental and may not work as expected.
-   Known limitations:
-   - Any python modules used inside of the function must be installed on the server.
-
-   :param arr: The pdarray to which the function is applied
-   :type arr: pdarray
-   :param func: The function to apply to the array. This can be a callable function or
-                a string, but either way it should take a single argument and return a
-                single value. If a string, it should be a lambda function that takes a
-                single argument, e.g. "lambda x,: x+1". Note the dangling comma after
-                the argument, this is required for string functions.
-   :type func: Union[Callable, str]
-   :param result_dtype: The dtype of the resulting pdarray. If None, the dtype of the resulting
-                        pdarray will be the same as the input pdarray. If a string, it should be
-                        a valid numpy dtype string, e.g. "float64". If a numpy dtype, it should
-                        be a valid numpy dtype object, e.g. np.float64. This is not supported
-                        for functions passed as strings.
-   :type result_dtype: Optional[Union[np.dtype, str]]
-
-   :returns: The pdarray resulting from applying the function to the input array
-   :rtype: pdarray
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> arr = ak.apply(ak.array([1, 2, 3]), lambda x: x+1)
-   >>> arr
-   array([2 3 4])
-
-   Or,
-   >>> import math
-   >>> arr = ak.randint(0, 10, 4, seed=1)
-   >>> def times_pi(x):
-   ...        return x*math.pi
-   >>> arr = ak.apply(arr, times_pi, "float64")
-   >>> arr
-   array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])
 
 
 .. py:function:: arange(__arg1: arkouda.numpy.dtypes.int_scalars, *, dtype: Optional[Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint]] = None, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
@@ -12150,6 +12448,24 @@ Package Contents
 
 
 
+.. py:function:: ip_address(values)
+
+   Convert values to an Arkouda array of IP addresses.
+
+   :param values: The integer IP addresses or IPv4 object.
+   :type values: list-like, integer pdarray, or IPv4
+
+   :returns: The same IP addresses as an Arkouda array
+   :rtype: IPv4
+
+   .. rubric:: Notes
+
+   This helper is intended to help future proof changes made to
+   accomodate IPv6 and to prevent errors if a user inadvertently
+   casts a IPv4 instead of a int64 pdarray. It can also be used
+   for importing Python lists of IP addresses into Arkouda.
+
+
 .. py:function:: isSupportedBool(num)
 
    Whether a scalar is an arkouda supported boolean dtype.
@@ -12260,6 +12576,34 @@ Package Contents
 
    :raises ValueError: Raised if arrays are not the same length
    :raises TypeError: Raised if arrays is not a list-like of pdarrays
+
+
+.. py:function:: is_ipv4(ip: Union[arkouda.numpy.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.numpy.pdarrayclass.pdarray] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Indicate which values are ipv4 when passed data containing IPv4 and IPv6 values.
+
+   :param ip: IPv4 value. High Bits of IPv6 if IPv6 is passed in.
+   :type ip: pdarray (int64) or ak.IPv4
+   :param ip2: Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
+   :type ip2: pdarray (int64), Optional
+
+   :rtype: pdarray of bools indicating which indexes are IPv4.
+
+   .. seealso:: :py:obj:`ak.is_ipv6`
+
+
+.. py:function:: is_ipv6(ip: Union[arkouda.numpy.pdarrayclass.pdarray, IPv4], ip2: Optional[arkouda.numpy.pdarrayclass.pdarray] = None) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Indicate which values are ipv6 when passed data containing IPv4 and IPv6 values.
+
+   :param ip: High Bits of IPv6.
+   :type ip: pdarray (int64) or ak.IPv4
+   :param ip2: Low Bits of IPv6
+   :type ip2: pdarray (int64), Optional
+
+   :rtype: pdarray of bools indicating which indexes are IPv6.
+
+   .. seealso:: :py:obj:`ak.is_ipv4`
 
 
 .. py:function:: is_registered(name: str, as_component: bool = False) -> bool

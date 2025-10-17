@@ -377,7 +377,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span> <span class="k">as</span> <span class="n">ak_full</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_base_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaBaseArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_extension_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ArkoudaBigintDtype</span><span class="p">,</span>
     <span class="n">ArkoudaBoolDtype</span><span class="p">,</span>
@@ -394,7 +394,7 @@
 
 <div class="viewcode-block" id="ArkoudaArray">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaArray</span><span class="p">(</span><span class="n">ArkoudaBaseArray</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaArray</span><span class="p">(</span><span class="n">ArkoudaExtensionArray</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">):</span>
     <span class="n">default_fill_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>

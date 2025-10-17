@@ -33,6 +33,7 @@ Classes
    arkouda.pandas.extension.ArkoudaBoolDtype
    arkouda.pandas.extension.ArkoudaCategoricalArray
    arkouda.pandas.extension.ArkoudaCategoricalDtype
+   arkouda.pandas.extension.ArkoudaExtensionArray
    arkouda.pandas.extension.ArkoudaFloat64Dtype
    arkouda.pandas.extension.ArkoudaInt64Dtype
    arkouda.pandas.extension.ArkoudaStringArray
@@ -46,7 +47,7 @@ Package Contents
 
 .. py:class:: ArkoudaArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
@@ -590,7 +591,7 @@ Package Contents
 
 .. py:class:: ArkoudaCategoricalArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
@@ -997,6 +998,367 @@ Package Contents
       instances of `type`.
 
 
+.. py:class:: ArkoudaExtensionArray(data)
+
+   Bases: :py:obj:`pandas.api.extensions.ExtensionArray`
+
+
+   Abstract base class for custom 1-D array types.
+
+   pandas will recognize instances of this class as proper arrays
+   with a custom type and will not attempt to coerce them to objects. They
+   may be stored directly inside a :class:`DataFrame` or :class:`Series`.
+
+   .. attribute:: dtype
+
+
+
+   .. attribute:: nbytes
+
+
+
+   .. attribute:: ndim
+
+
+
+   .. attribute:: shape
+
+
+
+   .. method:: argsort
+
+   .. method:: astype
+
+   .. method:: copy
+
+   .. method:: dropna
+
+   .. method:: duplicated
+
+   .. method:: factorize
+
+   .. method:: fillna
+
+   .. method:: equals
+
+   .. method:: insert
+
+   .. method:: interpolate
+
+   .. method:: isin
+
+   .. method:: isna
+
+   .. method:: ravel
+
+   .. method:: repeat
+
+   .. method:: searchsorted
+
+   .. method:: shift
+
+   .. method:: take
+
+   .. method:: tolist
+
+   .. method:: unique
+
+   .. method:: view
+
+   .. method:: _accumulate
+
+   .. method:: _concat_same_type
+
+   .. method:: _explode
+
+   .. method:: _formatter
+
+   .. method:: _from_factorized
+
+   .. method:: _from_sequence
+
+   .. method:: _from_sequence_of_strings
+
+   .. method:: _hash_pandas_object
+
+   .. method:: _pad_or_backfill
+
+   .. method:: _reduce
+
+   .. method:: _values_for_argsort
+
+   .. method:: _values_for_factorize
+
+
+
+   .. rubric:: Notes
+
+   The interface includes the following abstract methods that must be
+   implemented by subclasses:
+
+   * _from_sequence
+   * _from_factorized
+   * __getitem__
+   * __len__
+   * __eq__
+   * dtype
+   * nbytes
+   * isna
+   * take
+   * copy
+   * _concat_same_type
+   * interpolate
+
+   A default repr displaying the type, (truncated) data, length,
+   and dtype is provided. It can be customized or replaced by
+   by overriding:
+
+   * __repr__ : A default repr for the ExtensionArray.
+   * _formatter : Print scalars inside a Series or DataFrame.
+
+   Some methods require casting the ExtensionArray to an ndarray of Python
+   objects with ``self.astype(object)``, which may be expensive. When
+   performance is a concern, we highly recommend overriding the following
+   methods:
+
+   * fillna
+   * _pad_or_backfill
+   * dropna
+   * unique
+   * factorize / _values_for_factorize
+   * argsort, argmax, argmin / _values_for_argsort
+   * searchsorted
+   * map
+
+   The remaining methods implemented on this class should be performant,
+   as they only compose abstract methods. Still, a more efficient
+   implementation may be available, and these methods can be overridden.
+
+   One can implement methods to handle array accumulations or reductions.
+
+   * _accumulate
+   * _reduce
+
+   One can implement methods to handle parsing from strings that will be used
+   in methods such as ``pandas.io.parsers.read_csv``.
+
+   * _from_sequence_of_strings
+
+   This class does not inherit from 'abc.ABCMeta' for performance reasons.
+   Methods and properties required by the interface raise
+   ``pandas.errors.AbstractMethodError`` and no ``register`` method is
+   provided for registering virtual subclasses.
+
+   ExtensionArrays are limited to 1 dimension.
+
+   They may be backed by none, one, or many NumPy arrays. For example,
+   ``pandas.Categorical`` is an extension array backed by two arrays,
+   one for codes and one for categories. An array of IPv6 address may
+   be backed by a NumPy structured array with two fields, one for the
+   lower 64 bits and one for the upper 64 bits. Or they may be backed
+   by some other storage type, like Python lists. Pandas makes no
+   assumptions on how the data are stored, just that it can be converted
+   to a NumPy array.
+   The ExtensionArray interface does not impose any rules on how this data
+   is stored. However, currently, the backing data cannot be stored in
+   attributes called ``.values`` or ``._values`` to ensure full compatibility
+   with pandas internals. But other names as ``.data``, ``._data``,
+   ``._items``, ... can be freely used.
+
+   If implementing NumPy's ``__array_ufunc__`` interface, pandas expects
+   that
+
+   1. You defer by returning ``NotImplemented`` when any Series are present
+      in `inputs`. Pandas will extract the arrays and call the ufunc again.
+   2. You define a ``_HANDLED_TYPES`` tuple as an attribute on the class.
+      Pandas inspect this to determine whether the ufunc is valid for the
+      types present.
+
+   See :ref:`extending.extension.ufunc` for more.
+
+   By default, ExtensionArrays are not hashable.  Immutable subclasses may
+   override this behavior.
+
+   .. rubric:: Examples
+
+   Please see the following:
+
+   https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
+
+
+   .. py:method:: argmax(axis=None, out=None)
+      :abstractmethod:
+
+
+      Return the index of maximum value.
+
+      In case of multiple occurrences of the maximum value, the index
+      corresponding to the first occurrence is returned.
+
+      :param skipna:
+      :type skipna: bool, default True
+
+      :rtype: int
+
+      .. seealso::
+
+         :py:obj:`ExtensionArray.argmin`
+             Return the index of the minimum value.
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([3, 1, 2, 5, 4])
+      >>> arr.argmax()
+      3
+
+
+
+   .. py:method:: argmin(axis=None, out=None)
+      :abstractmethod:
+
+
+      Return the index of minimum value.
+
+      In case of multiple occurrences of the minimum value, the index
+      corresponding to the first occurrence is returned.
+
+      :param skipna:
+      :type skipna: bool, default True
+
+      :rtype: int
+
+      .. seealso::
+
+         :py:obj:`ExtensionArray.argmax`
+             Return the index of the maximum value.
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([3, 1, 2, 5, 4])
+      >>> arr.argmin()
+      1
+
+
+
+   .. py:method:: broadcast_arrays(*arrays)
+      :abstractmethod:
+
+
+
+   .. py:method:: broadcast_to(x, shape, /)
+      :abstractmethod:
+
+
+
+   .. py:method:: concat(arrays, /, *, axis=0)
+      :abstractmethod:
+
+
+
+   .. py:attribute:: default_fill_value
+      :type:  Optional[Union[arkouda.numpy.dtypes.all_scalars, str]]
+      :value: -1
+
+
+
+   .. py:method:: duplicated(arrays, /, *, axis=0)
+      :abstractmethod:
+
+
+      Return boolean ndarray denoting duplicate values.
+
+      :param keep:
+                   - ``first`` : Mark duplicates as ``True`` except for the first occurrence.
+                   - ``last`` : Mark duplicates as ``True`` except for the last occurrence.
+                   - False : Mark all duplicates as ``True``.
+      :type keep: {'first', 'last', False}, default 'first'
+
+      :rtype: ndarray[bool]
+
+      .. rubric:: Examples
+
+      >>> pd.array([1, 1, 2, 3, 3], dtype="Int64").duplicated()
+      array([False,  True, False, False,  True])
+
+
+
+   .. py:method:: expand_dims(x, /, *, axis)
+      :abstractmethod:
+
+
+
+   .. py:method:: permute_dims(x, /, axes)
+      :abstractmethod:
+
+
+
+   .. py:method:: reshape(x, /, shape)
+      :abstractmethod:
+
+
+
+   .. py:method:: split(x, indices_or_sections, /, *, axis=0)
+      :abstractmethod:
+
+
+
+   .. py:method:: squeeze(x, /, *, axis=None)
+      :abstractmethod:
+
+
+
+   .. py:method:: stack(arrays, /, *, axis=0)
+      :abstractmethod:
+
+
+
+   .. py:method:: take(indexer, fill_value=None, allow_fill=False)
+
+      Take elements by (0-based) position, returning a new array.
+
+      This implementation:
+        * normalizes the indexer to Arkouda int64,
+        * explicitly emulates NumPy-style negative wrapping when allow_fill=False,
+        * If ``allow_fill=True``, then **only** ``-1`` is allowed as a sentinel
+          for missing; those positions are filled with ``fill_value``. Any other
+          negative index raises ``ValueError``.
+        * validates bounds (raising IndexError) when allow_fill=True,
+        * gathers once, then fills masked positions in a single pass.
+
+
+
+   .. py:method:: to_ndarray() -> numpy.ndarray
+
+      Convert to a NumPy ndarray, without any dtype conversion or copy options.
+
+      :returns: A new NumPy array materialized from the underlying Arkouda data.
+      :rtype: numpy.ndarray
+
+      .. rubric:: Notes
+
+      This is a lightweight convenience wrapper around the backend's
+      ``.to_ndarray()`` method. Unlike :meth:`to_numpy`, this method does
+      not accept ``dtype`` or ``copy`` arguments and always performs a
+      materialization step.
+
+
+
+   .. py:method:: to_numpy(dtype=None, copy=False, na_value=None)
+
+      Convert the array to a NumPy ndarray.
+
+      :param dtype: Desired dtype for the result. If None, the underlying dtype is preserved.
+      :type dtype: str, numpy.dtype, optional
+      :param copy: Whether to ensure a copy is made:
+                   - If False, a view of the underlying buffer may be returned when possible.
+                   - If True, always return a new NumPy array.
+      :type copy: bool, default False
+
+      :returns: NumPy array representation of the data.
+      :rtype: numpy.ndarray
+
+
+
 .. py:class:: ArkoudaFloat64Dtype
 
    Bases: :py:obj:`_ArkoudaBaseDtype`
@@ -1165,7 +1527,7 @@ Package Contents
 
 .. py:class:: ArkoudaStringArray(data)
 
-   Bases: :py:obj:`arkouda.pandas.extension._arkouda_base_array.ArkoudaBaseArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
