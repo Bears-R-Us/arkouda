@@ -152,6 +152,25 @@ Note:
 This step can require a large amount of RAM, especially when building with multi-locale enabled.
 If you are running in wsl or a container and your build fails, consider increasing the memory allocation. 
 
+### Chapel Instantiation Limit Errors
+
+If you encounter an error similar to the following during the build:
+
+```bash
+$CHPL_HOME/modules/standard/CTypes.chpl:611: error: Function ':' has been instantiated too many times
+note: If this is intentional, try increasing the instantiation limit from 512
+make: *** [Makefile:575: arkouda_server] Error 1
+```
+
+you can resolve it by increasing Chapel’s instantiation limit when invoking `make`:
+
+```bash
+make instantiate_max=1024
+```
+
+You can substitute `1024` with a higher value if needed.
+This flag passes `--instantiate-max=<value>` to the Chapel compiler during the build.
+
 ## Building the Arkouda Documentation
 The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/). This section is only necessary
 if you're updating the documentation.
