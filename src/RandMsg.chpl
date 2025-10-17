@@ -15,6 +15,8 @@ module RandMsg
     use RandUtil;
     use ArkoudaSortCompat;
     use CommAggregation;
+
+    use AryUtil ; // to get indexToOrder
     use Repartition;
     use ZigguratConstants;
     use BitOps;
@@ -160,6 +162,48 @@ module RandMsg
         if state != 1 then generator.skipTo(state-1);
         return st.insert(new shared GeneratorSymEntry(generator, state));
     }
+
+    @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
+    proc frivolousMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws
+    {
+        const name = msgArgs["name"],
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
+              state = msgArgs["state"].toScalar(int),
+              seed  = msgArgs["seed"].toScalar(int);
+    
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? state %i seed %i".format(name, shape, state, seed));
+
+        var frivolousEntry = createSymEntry((...shape), int);
+        var ord = new orderer(shape);
+        // fillFrivolously (frivolousEntry.a, rng, ord);
+        // var rng = new randomStream(int, seed);
+        // if state != 1 then rng.skipTo(state-1);
+        coforall loc in Locales do on loc {
+            forall entry in frivolousEntry.a.localSubdomain() {
+                var rng = new randomStream(int, seed);
+                if state != 1 then rng.skipTo(state-1);
+                var spot = ord.indexToOrder(entry);
+                rng.skipTo(spot);
+                // rng.skipTo(ord.indexToOrder(entry));
+                frivolousEntry.a[entry] = rng.next();
+            }
+        }
+        return st.insert(frivolousEntry);
+    }
+
+    //proc fillFrivolously (ref A: [?d] ?t, ref rng, ref ord) {
+    //    coforall loc in Locales do on loc {
+    //       forall entry in d.localSubdomain() {
+    //            rng.skipTo(ord.indexToOrder(entry));
+    //            A[entry] = rng.next();
+    //        }
+    //    }
+    //}
+         
+            
+
 
     @arkouda.instantiateAndRegister
     @chplcheck.ignore("UnusedFormal")
