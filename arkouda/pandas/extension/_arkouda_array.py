@@ -144,11 +144,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return False
         return self._data.equals(other._data)
 
-    #   TODO:  add pandas arguments
-    def argsort(self, ascending=True):
-        perm = self._data.argsort(ascending=ascending)
-        return perm
-
     def _reduce(self, name, skipna=True, **kwargs):
         if name == "all":
             return self._data.all()
