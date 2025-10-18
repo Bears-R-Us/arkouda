@@ -163,6 +163,10 @@ module RandMsg
         return st.insert(new shared GeneratorSymEntry(generator, state));
     }
 
+
+    // frivolousMsg is a demonstration of random number generation that's independent
+    // of the number of locales.
+
     @arkouda.instantiateAndRegister
     @chplcheck.ignore("UnusedFormal")
     proc frivolousMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws
@@ -177,32 +181,18 @@ module RandMsg
 
         var frivolousEntry = createSymEntry((...shape), int);
         var ord = new orderer(shape);
-        // fillFrivolously (frivolousEntry.a, rng, ord);
-        // var rng = new randomStream(int, seed);
-        // if state != 1 then rng.skipTo(state-1);
         coforall loc in Locales do on loc {
-            forall entry in frivolousEntry.a.localSubdomain() {
-                var rng = new randomStream(int, seed);
-                if state != 1 then rng.skipTo(state-1);
-                var spot = ord.indexToOrder(entry);
+            var relative_start = if state != 1 then state else 1; 
+            forall entry in frivolousEntry.a.localSubdomain() { // I'd rather the rng was in
+                var rng = new randomStream(int, seed);          // a with in the forall, but
+                var spot = relative_start + ord.indexToOrder(entry) - 1; // it wasn't working
                 rng.skipTo(spot);
-                // rng.skipTo(ord.indexToOrder(entry));
                 frivolousEntry.a[entry] = rng.next();
             }
         }
         return st.insert(frivolousEntry);
     }
 
-    //proc fillFrivolously (ref A: [?d] ?t, ref rng, ref ord) {
-    //    coforall loc in Locales do on loc {
-    //       forall entry in d.localSubdomain() {
-    //            rng.skipTo(ord.indexToOrder(entry));
-    //            A[entry] = rng.next();
-    //        }
-    //    }
-    //}
-         
-            
 
 
     @arkouda.instantiateAndRegister
