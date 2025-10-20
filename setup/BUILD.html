@@ -512,6 +512,21 @@ pip<span class="w"> </span>install<span class="w"> </span>dist/arkouda*.tar.gz
 <p>Note:
 This step can require a large amount of RAM, especially when building with multi-locale enabled.
 If you are running in wsl or a container and your build fails, consider increasing the memory allocation.</p>
+<section id="chapel-instantiation-limit-errors">
+<h3>Chapel Instantiation Limit Errors<a class="headerlink" href="#chapel-instantiation-limit-errors" title="Link to this heading">¶</a></h3>
+<p>If you encounter an error similar to the following during the build:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">$CHPL_HOME</span>/modules/standard/CTypes.chpl:611:<span class="w"> </span>error:<span class="w"> </span>Function<span class="w"> </span><span class="s1">&#39;:&#39;</span><span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>instantiated<span class="w"> </span>too<span class="w"> </span>many<span class="w"> </span><span class="nb">times</span>
+note:<span class="w"> </span>If<span class="w"> </span>this<span class="w"> </span>is<span class="w"> </span>intentional,<span class="w"> </span>try<span class="w"> </span>increasing<span class="w"> </span>the<span class="w"> </span>instantiation<span class="w"> </span>limit<span class="w"> </span>from<span class="w"> </span><span class="m">512</span>
+make:<span class="w"> </span>***<span class="w"> </span><span class="o">[</span>Makefile:575:<span class="w"> </span>arkouda_server<span class="o">]</span><span class="w"> </span>Error<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+<p>you can resolve it by increasing Chapel’s instantiation limit when invoking <code class="docutils literal notranslate"><span class="pre">make</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nv">instantiate_max</span><span class="o">=</span><span class="m">1024</span>
+</pre></div>
+</div>
+<p>You can substitute <code class="docutils literal notranslate"><span class="pre">1024</span></code> with a higher value if needed.
+This flag passes <code class="docutils literal notranslate"><span class="pre">--instantiate-max=&lt;value&gt;</span></code> to the Chapel compiler during the build.</p>
+</section>
 </section>
 <section id="building-the-arkouda-documentation">
 <h2>Building the Arkouda Documentation<a class="headerlink" href="#building-the-arkouda-documentation" title="Link to this heading">¶</a></h2>
@@ -637,7 +652,10 @@ Arkouda documentation homepage will be displayed.</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#build-the-server">Build the Server</a></li>
+<li><a class="reference internal" href="#build-the-server">Build the Server</a><ul>
+<li><a class="reference internal" href="#chapel-instantiation-limit-errors">Chapel Instantiation Limit Errors</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#building-the-arkouda-documentation">Building the Arkouda Documentation</a></li>
 <li><a class="reference internal" href="#modular-building">Modular Building</a></li>
 </ul>
