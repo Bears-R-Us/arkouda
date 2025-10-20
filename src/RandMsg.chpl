@@ -182,6 +182,8 @@ module RandMsg
         var frivolousEntry = createSymEntry((...shape), int);
         var ord = new orderer(shape);
         coforall loc in Locales do on loc {
+            writeln ("=========> ",loc," of ",Locales);
+            writeln ("           ",frivolousEntry.a.localSubdomain());
             var relative_start = if state != 1 then state else 1; 
             forall entry in frivolousEntry.a.localSubdomain() { // I'd rather the rng was in
                 var rng = new randomStream(int, seed);          // a with in the forall, but
