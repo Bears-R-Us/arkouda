@@ -233,38 +233,6 @@ Package Contents
    https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
 
 
-   .. py:method:: argsort(ascending=True)
-
-      Return the indices that would sort this array.
-
-      :param ascending: Whether the indices should result in an ascending
-                        or descending sort.
-      :type ascending: bool, default True
-      :param kind: Sorting algorithm.
-      :type kind: {'quicksort', 'mergesort', 'heapsort', 'stable'}, optional
-      :param na_position: If ``'first'``, put ``NaN`` values at the beginning.
-                          If ``'last'``, put ``NaN`` values at the end.
-      :type na_position: {'first', 'last'}, default 'last'
-      :param \*args: Passed through to :func:`numpy.argsort`.
-      :param \*\*kwargs: Passed through to :func:`numpy.argsort`.
-
-      :returns: Array of indices that sort ``self``. If NaN values are contained,
-                NaN values are placed at the end.
-      :rtype: np.ndarray[np.intp]
-
-      .. seealso::
-
-         :py:obj:`numpy.argsort`
-             Sorting implementation used internally.
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([3, 1, 2, 5, 4])
-      >>> arr.argsort()
-      array([1, 2, 0, 4, 3])
-
-
-
    .. py:method:: astype(dtype, copy: bool = False)
 
       Cast to a NumPy array or ExtensionArray with 'dtype'.
@@ -1237,6 +1205,55 @@ Package Contents
       >>> arr = pd.array([3, 1, 2, 5, 4])
       >>> arr.argmin()
       1
+
+
+
+   .. py:method:: argsort(*, ascending: bool = True, kind='quicksort', na_position: str = 'last', **kwargs) -> arkouda.numpy.pdarrayclass.pdarray
+
+      Return the indices that would sort the array.
+
+      This method computes the permutation indices that would sort the
+      underlying Arkouda data. It aligns with the pandas ``ExtensionArray``
+      contract, returning a 1-D ``pdarray`` of integer indices suitable for
+      reordering the array via ``take`` or ``iloc``. NaN values are placed
+      either at the beginning or end of the result depending on
+      ``na_position``.
+
+      :param ascending: If True, sort values in ascending order. If False, sort in
+                        descending order.
+      :type ascending: bool, default True
+      :param kind: Sorting algorithm. Present for API compatibility with NumPy and
+                   pandas but currently ignored.
+      :type kind: str, default "quicksort"
+      :param na_position: Where to place NaN values in the sorted result.  Currently only implemented for pdarray.
+                          For Strings and Categorical will have no effect.
+      :type na_position: {"first", "last"}, default "last"
+      :param \*\*kwargs: Additional keyword arguments for compatibility; ignored.
+      :type \*\*kwargs: Any
+
+      :returns: Integer indices (``int64``) that would sort the array.
+      :rtype: pdarray
+
+      :raises ValueError: If ``na_position`` is not "first" or "last".
+      :raises TypeError: If the underlying data type does not support sorting.
+
+      .. rubric:: Notes
+
+      - Supports Arkouda ``pdarray``, ``Strings``, and ``Categorical`` data.
+      - Floating-point arrays have NaNs repositioned according to
+        ``na_position``.
+      - This method does not move data to the client; the computation
+        occurs on the Arkouda server.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaArray
+      >>> a = ArkoudaArray(ak.array([3.0, float("nan"), 1.0]))
+      >>> a.argsort() # NA last by default
+      array([2 0 1])
+      >>> a.argsort(na_position="first")
+      array([1 2 0])
 
 
 

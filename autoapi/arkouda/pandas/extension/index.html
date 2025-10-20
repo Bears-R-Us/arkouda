@@ -465,7 +465,7 @@ may be stored directly inside a <code class="xref py py-class docutils literal n
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaArray.argsort">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaArray.argsort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaArray.argsort" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -709,46 +709,7 @@ override this behavior.</p>
 <p><a class="reference external" href="https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py">https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py</a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
-<dd><p>Return the indices that would sort this array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ascending</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether the indices should result in an ascending
-or descending sort.</p></li>
-<li><p><strong>kind</strong> (<em>{'quicksort'</em><em>, </em><em>'mergesort'</em><em>, </em><em>'heapsort'</em><em>, </em><em>'stable'}</em><em>, </em><em>optional</em>) – Sorting algorithm.</p></li>
-<li><p><strong>na_position</strong> (<em>{'first'</em><em>, </em><em>'last'}</em><em>, </em><em>default 'last'</em>) – If <code class="docutils literal notranslate"><span class="pre">'first'</span></code>, put <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values at the beginning.
-If <code class="docutils literal notranslate"><span class="pre">'last'</span></code>, put <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values at the end.</p></li>
-<li><p><strong>*args</strong> – Passed through to <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.argsort()</span></code>.</p></li>
-<li><p><strong>**kwargs</strong> – Passed through to <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.argsort()</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array of indices that sort <code class="docutils literal notranslate"><span class="pre">self</span></code>. If NaN values are contained,
-NaN values are placed at the end.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray[np.intp]</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.argsort</span></code></dt><dd><p>Sorting implementation used internally.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
-<span class="go">array([1, 2, 0, 4, 3])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
 <dd><p>Cast to a NumPy array or ExtensionArray with ‘dtype’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -796,8 +757,8 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
 <dd><p>Return a copy of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -822,8 +783,8 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id5">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
 <dd><p>An instance of ExtensionDtype.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">dtype</span>
@@ -833,8 +794,8 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.equals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">equals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.equals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd><p>Return if another array is equivalent to this array.</p>
 <p>Equivalent means that both arrays have the same shape and dtype, and
 all values compare equal. Missing values in the same location are
@@ -860,8 +821,8 @@ considered equal (in contrast with normal equality).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">factorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_na_sentinel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.factorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">factorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_na_sentinel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.factorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
 <dd><p>Encode the extension array as an enumerated type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -892,7 +853,7 @@ in <cite>self</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#id7" title="arkouda.pandas.extension.ArkoudaArray.factorize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">factorize</span></code></a></dt><dd><p>Top-level factorize method that dispatches here.</p>
+<dt><a class="reference internal" href="#id6" title="arkouda.pandas.extension.ArkoudaArray.factorize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">factorize</span></code></a></dt><dd><p>Top-level factorize method that dispatches here.</p>
 </dd>
 </dl>
 </div>
@@ -911,8 +872,8 @@ in <cite>self</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id8">
-<span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.api.extensions.ExtensionArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id8" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.api.extensions.ExtensionArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
 <dd><p>A 1-D array indicating if each value is missing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -941,8 +902,8 @@ returned.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id9">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#id9" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id8">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#id8" title="Link to this definition">¶</a></dt>
 <dd><p>The number of bytes needed to store this object in memory.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">nbytes</span>
@@ -970,8 +931,8 @@ on the Arkouda server.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id10">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_array_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dtypes.html#ArkoudaBigintDtype.construct_array_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id9">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_array_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dtypes.html#ArkoudaBigintDtype.construct_array_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Link to this definition">¶</a></dt>
 <dd><p>Return the ExtensionArray subclass that handles storage for this dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1041,8 +1002,8 @@ boolean arrays without materializing them on the client.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id11">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_array_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dtypes.html#ArkoudaBoolDtype.construct_array_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id10">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_array_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dtypes.html#ArkoudaBoolDtype.construct_array_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Link to this definition">¶</a></dt>
 <dd><p>Return the ExtensionArray subclass that handles storage for this dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1369,8 +1330,8 @@ override this behavior.</p>
 <p>Please see the following:</p>
 <p><a class="reference external" href="https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py">https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py</a></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="id12">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id11">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id11" title="Link to this definition">¶</a></dt>
 <dd><p>Cast to a NumPy array or ExtensionArray with ‘dtype’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1418,8 +1379,8 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id13">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id13" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id12" title="Link to this definition">¶</a></dt>
 <dd><p>Return a copy of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1444,8 +1405,8 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id14">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#id14" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id13">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#id13" title="Link to this definition">¶</a></dt>
 <dd><p>An instance of ExtensionDtype.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">dtype</span>
@@ -1455,8 +1416,8 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id15">
-<span class="sig-name descname"><span class="pre">factorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_na_sentinel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.factorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id15" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">factorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_na_sentinel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.factorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id14" title="Link to this definition">¶</a></dt>
 <dd><p>Encode the extension array as an enumerated type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1487,7 +1448,7 @@ in <cite>self</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#id15" title="arkouda.pandas.extension.ArkoudaCategoricalArray.factorize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">factorize</span></code></a></dt><dd><p>Top-level factorize method that dispatches here.</p>
+<dt><a class="reference internal" href="#id14" title="arkouda.pandas.extension.ArkoudaCategoricalArray.factorize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">factorize</span></code></a></dt><dd><p>Top-level factorize method that dispatches here.</p>
 </dd>
 </dl>
 </div>
@@ -1506,8 +1467,8 @@ in <cite>self</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id16">
-<span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id16" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id15" title="Link to this definition">¶</a></dt>
 <dd><p>A 1-D array indicating if each value is missing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1554,8 +1515,8 @@ pandas APIs.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id17">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_array_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dtypes.html#ArkoudaCategoricalDtype.construct_array_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id17" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id16">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">construct_array_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dtypes.html#ArkoudaCategoricalDtype.construct_array_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id16" title="Link to this definition">¶</a></dt>
 <dd><p>Return the ExtensionArray subclass that handles storage for this dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1639,7 +1600,7 @@ may be stored directly inside a <code class="xref py py-class docutils literal n
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaExtensionArray.argsort">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaExtensionArray.argsort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaExtensionArray.argsort" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1935,6 +1896,61 @@ corresponding to the first occurrence is returned.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
 <span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quicksort'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'last'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id17" title="Link to this definition">¶</a></dt>
+<dd><p>Return the indices that would sort the array.</p>
+<p>This method computes the permutation indices that would sort the
+underlying Arkouda data. It aligns with the pandas <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code>
+contract, returning a 1-D <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of integer indices suitable for
+reordering the array via <code class="docutils literal notranslate"><span class="pre">take</span></code> or <code class="docutils literal notranslate"><span class="pre">iloc</span></code>. NaN values are placed
+either at the beginning or end of the result depending on
+<code class="docutils literal notranslate"><span class="pre">na_position</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ascending</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If True, sort values in ascending order. If False, sort in
+descending order.</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>default &quot;quicksort&quot;</em>) – Sorting algorithm. Present for API compatibility with NumPy and
+pandas but currently ignored.</p></li>
+<li><p><strong>na_position</strong> (<em>{&quot;first&quot;</em><em>, </em><em>&quot;last&quot;}</em><em>, </em><em>default &quot;last&quot;</em>) – Where to place NaN values in the sorted result.  Currently only implemented for pdarray.
+For Strings and Categorical will have no effect.</p></li>
+<li><p><strong>**kwargs</strong> (<em>Any</em>) – Additional keyword arguments for compatibility; ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Integer indices (<code class="docutils literal notranslate"><span class="pre">int64</span></code>) that would sort the array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">na_position</span></code> is not “first” or “last”.</p></li>
+<li><p><strong>TypeError</strong> – If the underlying data type does not support sorting.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Supports Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, and <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> data.</p></li>
+<li><p>Floating-point arrays have NaNs repositioned according to
+<code class="docutils literal notranslate"><span class="pre">na_position</span></code>.</p></li>
+<li><p>This method does not move data to the client; the computation
+occurs on the Arkouda server.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span> <span class="c1"># NA last by default</span>
+<span class="go">array([2 0 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">na_position</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)</span>
+<span class="go">array([1 2 0])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3017,20 +3033,19 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray._reduce"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray._reduce()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray._values_for_argsort"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray._values_for_argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray._values_for_factorize"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray._values_for_factorize()</span></code></a></li>
-<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.argsort()</span></code></a></li>
-<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.astype()</span></code></a></li>
-<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.copy()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.astype()</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.copy()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.default_fill_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.default_fill_value</span></code></a></li>
-<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.dtype</span></code></a></li>
-<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.equals()</span></code></a></li>
-<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.factorize()</span></code></a></li>
-<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.isna()</span></code></a></li>
-<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.nbytes</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.dtype</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.equals()</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.factorize()</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.isna()</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.nbytes</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBigintDtype"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBigintDtype.construct_array_type"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype.construct_array_type()</span></code></a></li>
-<li><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype.construct_array_type()</span></code></a></li>
+<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype.construct_array_type()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBigintDtype.kind"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype.kind</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBigintDtype.na_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype.na_value</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBigintDtype.name"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype.name</span></code></a></li>
@@ -3039,7 +3054,7 @@ instances of <cite>type</cite>.</p>
 </li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBoolDtype"><code class="docutils literal notranslate"><span class="pre">ArkoudaBoolDtype</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBoolDtype.construct_array_type"><code class="docutils literal notranslate"><span class="pre">ArkoudaBoolDtype.construct_array_type()</span></code></a></li>
-<li><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">ArkoudaBoolDtype.construct_array_type()</span></code></a></li>
+<li><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">ArkoudaBoolDtype.construct_array_type()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBoolDtype.kind"><code class="docutils literal notranslate"><span class="pre">ArkoudaBoolDtype.kind</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBoolDtype.na_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaBoolDtype.na_value</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBoolDtype.name"><code class="docutils literal notranslate"><span class="pre">ArkoudaBoolDtype.name</span></code></a></li>
@@ -3083,17 +3098,17 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalArray._reduce"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray._reduce()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalArray._values_for_argsort"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray._values_for_argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalArray._values_for_factorize"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray._values_for_factorize()</span></code></a></li>
-<li><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.astype()</span></code></a></li>
-<li><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.copy()</span></code></a></li>
+<li><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.astype()</span></code></a></li>
+<li><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.copy()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalArray.default_fill_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.default_fill_value</span></code></a></li>
-<li><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.dtype</span></code></a></li>
-<li><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.factorize()</span></code></a></li>
-<li><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.isna()</span></code></a></li>
+<li><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.dtype</span></code></a></li>
+<li><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.factorize()</span></code></a></li>
+<li><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalArray.isna()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalDtype"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalDtype</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalDtype.construct_array_type"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalDtype.construct_array_type()</span></code></a></li>
-<li><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalDtype.construct_array_type()</span></code></a></li>
+<li><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalDtype.construct_array_type()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalDtype.kind"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalDtype.kind</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalDtype.na_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalDtype.na_value</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategoricalDtype.name"><code class="docutils literal notranslate"><span class="pre">ArkoudaCategoricalDtype.name</span></code></a></li>
@@ -3139,6 +3154,7 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray._values_for_factorize"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray._values_for_factorize()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.argmax"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.argmax()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.argmin"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.argmin()</span></code></a></li>
+<li><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.broadcast_arrays"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.broadcast_arrays()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.broadcast_to"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.broadcast_to()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.concat"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.concat()</span></code></a></li>

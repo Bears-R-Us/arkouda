@@ -245,38 +245,6 @@ Package Contents
    https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
 
 
-   .. py:method:: argsort(ascending=True)
-
-      Return the indices that would sort this array.
-
-      :param ascending: Whether the indices should result in an ascending
-                        or descending sort.
-      :type ascending: bool, default True
-      :param kind: Sorting algorithm.
-      :type kind: {'quicksort', 'mergesort', 'heapsort', 'stable'}, optional
-      :param na_position: If ``'first'``, put ``NaN`` values at the beginning.
-                          If ``'last'``, put ``NaN`` values at the end.
-      :type na_position: {'first', 'last'}, default 'last'
-      :param \*args: Passed through to :func:`numpy.argsort`.
-      :param \*\*kwargs: Passed through to :func:`numpy.argsort`.
-
-      :returns: Array of indices that sort ``self``. If NaN values are contained,
-                NaN values are placed at the end.
-      :rtype: np.ndarray[np.intp]
-
-      .. seealso::
-
-         :py:obj:`numpy.argsort`
-             Sorting implementation used internally.
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([3, 1, 2, 5, 4])
-      >>> arr.argsort()
-      array([1, 2, 0, 4, 3])
-
-
-
    .. py:method:: astype(dtype, copy: bool = False)
 
       Cast to a NumPy array or ExtensionArray with 'dtype'.
