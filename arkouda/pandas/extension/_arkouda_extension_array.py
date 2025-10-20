@@ -50,8 +50,10 @@ import numpy as np
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import all_scalars
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
+from arkouda.numpy.strings import Strings
 
 
 __all__ = ["_ensure_numpy", "ArkoudaExtensionArray"]
@@ -232,6 +234,92 @@ class ArkoudaExtensionArray(ExtensionArray):
         materialization step.
         """
         return self._data.to_ndarray()
+
+    def argsort(  # type: ignore[override]
+        self,
+        *,
+        ascending: bool = True,
+        kind="quicksort",
+        na_position: str = "last",
+        **kwargs,
+    ) -> pdarray:
+        """
+        Return the indices that would sort the array.
+
+        This method computes the permutation indices that would sort the
+        underlying Arkouda data. It aligns with the pandas ``ExtensionArray``
+        contract, returning a 1-D ``pdarray`` of integer indices suitable for
+        reordering the array via ``take`` or ``iloc``. NaN values are placed
+        either at the beginning or end of the result depending on
+        ``na_position``.
+
+        Parameters
+        ----------
+        ascending : bool, default True
+            If True, sort values in ascending order. If False, sort in
+            descending order.
+        kind : str, default "quicksort"
+            Sorting algorithm. Present for API compatibility with NumPy and
+            pandas but currently ignored.
+        na_position : {"first", "last"}, default "last"
+            Where to place NaN values in the sorted result.  Currently only implemented for pdarray.
+            For Strings and Categorical will have no effect.
+        **kwargs : Any
+            Additional keyword arguments for compatibility; ignored.
+
+        Returns
+        -------
+        pdarray
+            Integer indices (``int64``) that would sort the array.
+
+        Raises
+        ------
+        ValueError
+            If ``na_position`` is not "first" or "last".
+        TypeError
+            If the underlying data type does not support sorting.
+
+        Notes
+        -----
+        - Supports Arkouda ``pdarray``, ``Strings``, and ``Categorical`` data.
+        - Floating-point arrays have NaNs repositioned according to
+          ``na_position``.
+        - This method does not move data to the client; the computation
+          occurs on the Arkouda server.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> a = ArkoudaArray(ak.array([3.0, float("nan"), 1.0]))
+        >>> a.argsort() # NA last by default
+        array([2 0 1])
+        >>> a.argsort(na_position="first")
+        array([1 2 0])
+        """
+        from arkouda.numpy import argsort
+        from arkouda.numpy.numeric import isnan as ak_isnan
+        from arkouda.numpy.pdarraysetops import concatenate
+        from arkouda.numpy.util import is_float
+        from arkouda.pandas.categorical import Categorical
+
+        if na_position not in {"first", "last"}:
+            raise ValueError("na_position must be 'first' or 'last'.")
+
+        perm: pdarray
+
+        if isinstance(self._data, (Strings, Categorical, pdarray)):
+            perm = argsort(self._data, ascending=ascending)
+
+            if is_float(self._data):
+                is_nan = ak_isnan(self._data)[perm]
+                if na_position == "last":
+                    perm = concatenate([perm[~is_nan], perm[is_nan]])
+                else:
+                    perm = concatenate([perm[is_nan], perm[~is_nan]])
+        else:
+            raise TypeError(f"Unsupported argsort dtype: {type(self._data)}")
+        return perm
 
     def broadcast_arrays(self, *arrays):
         raise NotImplementedError(
