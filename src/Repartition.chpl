@@ -50,6 +50,52 @@ module Repartition
     return repartitionByLocaleString(destLocales, strOffsets, strBytes);
   }
 
+  // Note, the arrays passed here must have PrivateSpace domains.
+  proc repartitionByHashStringArray(const ref strOffsets: [] innerArray(int),
+                                 const ref strBytes: [] innerArray(uint(8))):
+    ([PrivateSpace] innerArray(int), [PrivateSpace] innerArray(uint(8)))
+  {
+    var destLocales: [PrivateSpace] innerArray(int);
+
+    coforall loc in Locales do on loc {
+
+      ref myStrOffsets = strOffsets[here.id].Arr;
+      ref myStrBytes = strBytes[here.id].Arr;
+      destLocales[here.id] = new innerArray({0..#myStrOffsets.size}, int);
+      ref myDestLocales = destLocales[here.id].Arr;
+
+      forall i in myStrOffsets.domain {
+        const start = myStrOffsets[i];
+        const end = if i == myStrOffsets.size - 1 then myStrBytes.size else myStrOffsets[i + 1];
+        const str = interpretAsString(myStrBytes, start..<end);
+        myDestLocales[i] = (str.hash() % numLocales): int;
+      }
+    }
+
+    return repartitionByLocaleStringArray(destLocales, strOffsets, strBytes);
+  }
+
+  // Note, the arrays passed here must have PrivateSpace domains.
+  proc repartitionByHashArray(type t, const ref vals: [] innerArray(t))
+  {
+    type eltType = vals.eltType.t;
+    var destLocales: [PrivateSpace] innerArray(int);
+
+    coforall loc in Locales do on loc {
+
+      ref myVals = vals[here.id].Arr;
+      destLocales[here.id] = new innerArray({0..#myVals.size}, int);
+      ref myDestLocales = destLocales[here.id].Arr;
+
+      forall i in myVals.domain {
+        const val = myVals[i];
+        myDestLocales[i] = (val.hash() % numLocales): int;
+      }
+    }
+
+    return repartitionByLocaleArray(eltType, destLocales, vals);
+  }
+
   // Note, the arrays passed here must have PrivateSpace domains. With Chapel
   // 2.5, distribution equality with PrivateSpace doesn't work.
   // https://github.com/chapel-lang/chapel/pull/27397 is the upstream PR to
