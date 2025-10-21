@@ -65,6 +65,7 @@ dev = [
   "darglint>=1.8.1",
   "pydoclint[flake8]==0.6.10",
   "numba",
+  "typeguard==2.11.0",
 ]
 
 
