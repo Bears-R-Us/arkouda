@@ -63,6 +63,7 @@ dev = [
   "pre-commit",
   "pydoclint[flake8]==0.6.10",
   "numba",
+  "typeguard==2.11.0",
 ]
 
 
