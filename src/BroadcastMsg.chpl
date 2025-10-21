@@ -138,5 +138,5 @@ module BroadcastMsg {
   }
 
   use CommandMap;
-  registerFunction("broadcast", broadcastMsg, getModuleName());
+  registerFunction("gbbroadcast", broadcastMsg, getModuleName());
 }
