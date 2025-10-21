@@ -185,10 +185,10 @@ module RandMsg
             writeln ("=========> ",loc," of ",Locales);
             writeln ("           ",frivolousEntry.a.localSubdomain());
             var relative_start = if state != 1 then state else 1; 
-            forall entry in frivolousEntry.a.localSubdomain() { // I'd rather the rng was in
-                var rng = new randomStream(int, seed);          // a with in the forall, but
+            forall entry in frivolousEntry.a.localSubdomain() {          // I'd rather the rng was in
+                var rng = new randomStream(int, seed);                   // a with in the forall, but
                 var spot = relative_start + ord.indexToOrder(entry) - 1; // it wasn't working
-                rng.skipTo(spot);
+                rng.skipTo(spot);                                        
                 frivolousEntry.a[entry] = rng.next();
             }
         }
