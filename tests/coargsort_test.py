@@ -24,9 +24,7 @@ def make_ak_arrays(size, dtype, minimum=-(2**32), maximum=2**32):
 
 def assert_cosorted(arr_list, perm):
     arrays = [arr[perm] for arr in arr_list]
-    # Here
-    # HELP, i have to force the import here???
-    assert ak.numpy.alignment.is_cosorted(arrays)
+    assert ak.numpy.is_cosorted(arrays)
 
 
 class TestCoargsort:
