@@ -1,12 +1,19 @@
+from typing import TYPE_CHECKING, TypeVar
+
 import numpy as np
 from pandas.api.extensions import ExtensionArray
-
-from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.numpy.strings import Strings
 
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import ArkoudaStringDtype
 
+
+if TYPE_CHECKING:
+    from arkouda.numpy.pdarraycreation import array as ak_array
+    from arkouda.numpy.strings import Strings
+
+else:
+    ak_array = TypeVar("ak_array")
+    Strings = TypeVar("Strings")
 
 __all__ = ["ArkoudaStringArray"]
 
@@ -15,6 +22,8 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
     default_fill_value = ""
 
     def __init__(self, data):
+        from arkouda.numpy.strings import Strings
+
         if isinstance(data, np.ndarray):
             from arkouda.numpy.pdarraycreation import array as ak_array
 

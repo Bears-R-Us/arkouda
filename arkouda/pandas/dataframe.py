@@ -68,11 +68,9 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import numeric_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.sorting import sort as aksort
-from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
@@ -83,16 +81,23 @@ if TYPE_CHECKING:
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import cumsum, where
+    from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, full, zeros
     from arkouda.numpy.segarray import SegArray
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.series import Series
 else:
-    Series = TypeVar("Series")
-    SegArray = TypeVar("SegArray")
     akcast = TypeVar("akcast")
+    Categorical = TypeVar("Categorical")
     cumsum = TypeVar("cumsum")
     where = TypeVar("where")
-    Categorical = TypeVar("Categorical")
-
+    arange = TypeVar("arange")
+    array = TypeVar("array")
+    create_pdarray = TypeVar("create_pdarray")
+    full = TypeVar("full")
+    zeros = TypeVar("zeros")
+    Series = TypeVar("Series")
+    Strings = TypeVar("Strings")
+    SegArray = TypeVar("SegArray")
 
 # This is necessary for displaying DataFrames with BitVector columns,
 # because pandas _html_repr automatically truncates the number of displayed bits
@@ -798,7 +803,9 @@ class DataFrame(UserDict):
         super().__init__()
         self.registered_name = None
 
+        from arkouda.numpy.pdarraycreation import arange, array
         from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
 
         self._COLUMN_CLASSES = (pdarray, Strings, Categorical, SegArray)
@@ -997,6 +1004,7 @@ class DataFrame(UserDict):
             The requested column(s).
 
         """
+        from arkouda.numpy.pdarraycreation import arange, array
         from arkouda.pandas.series import Series
 
         # convert series to underlying values
@@ -1070,6 +1078,7 @@ class DataFrame(UserDict):
             The new values for the column.
 
         """
+        from arkouda.numpy.pdarraycreation import arange
         from arkouda.pandas.series import Series
 
         self.update_nrows()
@@ -1169,6 +1178,7 @@ class DataFrame(UserDict):
         return "DataFrame([" + keystr + "], {:,}".format(self._nrows) + rows + ", " + str(mem) + ")"
 
     def _get_head_tail(self):
+        from arkouda.numpy.pdarraycreation import array
         from arkouda.pandas.categorical import Categorical
 
         if self._empty:
@@ -1199,7 +1209,9 @@ class DataFrame(UserDict):
 
     def _get_head_tail_server(self):
         from arkouda.client import generic_msg
+        from arkouda.numpy.pdarraycreation import array, create_pdarray
         from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
 
         if self._empty:
@@ -1326,6 +1338,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.client import generic_msg
+        from arkouda.pandas.categorical import Categorical
 
         self.update_nrows()
         idx = self._index
@@ -1651,6 +1664,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
 
         dtypes = []
@@ -1780,6 +1794,9 @@ class DataFrame(UserDict):
         return self._index
 
     def _set_index(self, value):
+        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.strings import Strings
+
         if isinstance(value, Index) or value is None:
             self._index = value
         elif isinstance(value, (pdarray, Strings, pd.Index)):
@@ -1845,6 +1862,8 @@ class DataFrame(UserDict):
         2  2  5 (3 rows x 2 columns)
 
         """
+        from arkouda.numpy.pdarraycreation import arange
+
         obj = self if inplace else self.copy()
 
         if not size:
@@ -2539,6 +2558,7 @@ class DataFrame(UserDict):
         np.int64(125000)
 
         """
+        from arkouda.numpy.pdarraycreation import array
         from arkouda.numpy.util import convert_bytes
         from arkouda.pandas.series import Series
 
@@ -2628,6 +2648,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
 
         # Estimate how much memory would be required for this DataFrame
@@ -3287,6 +3308,8 @@ class DataFrame(UserDict):
         0   1.1     6 (3 rows x 2 columns)
 
         """
+        from arkouda.numpy.pdarraycreation import arange, array
+
         if self._empty:
             return array([], dtype=akint64)
         if ascending:
@@ -3331,6 +3354,8 @@ class DataFrame(UserDict):
         >>>
 
         """
+        from arkouda.numpy.pdarraycreation import arange, array
+
         if self._empty:
             return array([], dtype=akint64)
         arrays = []
@@ -3754,6 +3779,7 @@ class DataFrame(UserDict):
 
         """
         from arkouda.numpy import cumsum
+        from arkouda.numpy.pdarraycreation import array, zeros
         from arkouda.pandas.series import Series
 
         if isinstance(values, pdarray):
@@ -3871,8 +3897,9 @@ class DataFrame(UserDict):
         dtype: int64
 
         """
-        from arkouda import full, isnan
+        from arkouda import isnan
         from arkouda.numpy import cast as akcast
+        from arkouda.numpy.pdarraycreation import arange, array, full
         from arkouda.numpy.util import is_numeric
         from arkouda.pandas.series import Series
 
@@ -3954,9 +3981,12 @@ class DataFrame(UserDict):
         col2  -1.0   1.0 (2 rows x 2 columns)
 
         """
+        from arkouda.numpy.pdarraycreation import array
         from arkouda.pandas.categorical import Categorical
 
         def numeric_help(d):
+            from arkouda.numpy.strings import Strings
+
             if isinstance(d, Strings):
                 d = Categorical(d)
             return d if isinstance(d, pdarray) else d.codes
@@ -4767,7 +4797,9 @@ class DataFrame(UserDict):
         DataFrame
 
         """
+        from arkouda.numpy.pdarraycreation import create_pdarray
         from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
@@ -5091,6 +5123,8 @@ def invert_permutation(perm):
     array([1 2 0 4 3])
 
     """
+    from arkouda.numpy.pdarraycreation import arange
+
     # Test if the array is actually a permutation
     rng = perm.max() - perm.min()
     if (unique(perm).size != perm.size) and (perm.size != rng + 1):
@@ -5447,6 +5481,8 @@ def __nulls_like(
         ]
     ] = None,
 ):
+    from arkouda.numpy.pdarraycreation import full
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 
     if size is None:
@@ -5582,6 +5618,7 @@ def merge(
     6     8     NaN     8.0 (7 rows x 3 columns)
 
     """
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 
     col_intersect = list(set(left.columns) & set(right.columns))
