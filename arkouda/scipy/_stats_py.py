@@ -81,11 +81,11 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
     >>> x = ak.array([10, 20, 30, 10])
     >>> y = ak.array([10, 30, 20, 10])
     >>> power_divergence(x, y, lambda_="pearson")
-    Power_divergenceResult(statistic=np.float64(8.333333333333334),
-        pvalue=np.float64(0.03960235520756414))
+    Power_divergenceResult(statistic=np.float64(8.333333333333334), 
+        pvalue=np.float64(0.03960235520756417))
     >>> power_divergence(x, y, lambda_="log-likelihood")
-    Power_divergenceResult(statistic=np.float64(8.109302162163285),
-        pvalue=np.float64(0.04380595350226197))
+    Power_divergenceResult(statistic=np.float64(8.109302162163285), 
+        pvalue=np.float64(0.04380595350226192))
 
     See Also
     --------
@@ -194,8 +194,8 @@ def chisquare(f_obs, f_exp=None, ddof=0):
     >>> import arkouda as ak
     >>> from arkouda.scipy import chisquare
     >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
-    Power_divergenceResult(statistic=np.float64(8.333333333333334),
-        pvalue=np.float64(0.03960235520756414))
+    Power_divergenceResult(statistic=np.float64(8.333333333333334), 
+        pvalue=np.float64(0.03960235520756417))
 
     See Also
     --------
