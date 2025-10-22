@@ -49,9 +49,9 @@ from typing import TYPE_CHECKING, Optional, TypeVar, Union
 import numpy as np
 from pandas.api.extensions import ExtensionArray
 
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.dtypes import all_scalars
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
-from arkouda.numpy.strings import Strings
 
 
 if TYPE_CHECKING:
