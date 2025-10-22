@@ -3,7 +3,7 @@ module BroadcastMsg {
   use MultiTypeSymEntry;
   use ServerErrors;
   use Reflection;
-  use Broadcast;
+  use GBroadcast;
   use ServerConfig;
   use Logging;
   use Message;
@@ -19,7 +19,7 @@ module BroadcastMsg {
    * full size of the array, optionally applying a permutation
    * to return the result in the order of the original array.
    */
-  proc broadcastMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+  proc gBroadcastMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
     const size = msgArgs.get("size").getIntValue();
     // Segments must be an int64 array
     const gs = getGenericTypedArrayEntry(msgArgs.getValueOf("segName"), st);
@@ -62,29 +62,29 @@ module BroadcastMsg {
         when DType.Int64 {
           const vals = toSymEntry(gv, int);
           var res = st.addEntry(rname, size, int);
-          res.a = broadcast(perm.a, segs.a, vals.a);
+          res.a = gBroadcastImpl(perm.a, segs.a, vals.a);
         }
         when DType.UInt64 {
           const vals = toSymEntry(gv, uint);
           var res = st.addEntry(rname, size, uint);
-          res.a = broadcast(perm.a, segs.a, vals.a);
+          res.a = gBroadcastImpl(perm.a, segs.a, vals.a);
         }
         when DType.Float64 {
           const vals = toSymEntry(gv, real);
           const transmuted = [ei in vals.a] ei.transmute(uint(64));
           var res = st.addEntry(rname, size, real);
-          res.a = [bi in broadcast(perm.a, segs.a, transmuted)] bi.transmute(real(64));
+          res.a = [bi in gBroadcastImpl(perm.a, segs.a, transmuted)] bi.transmute(real(64));
         }
         when DType.BigInt {
           const vals = toSymEntry(gv, bigint);
           var res = st.addEntry(rname, size, bigint);
-          res.a = broadcast(perm.a, segs.a, vals.a);
+          res.a = gBroadcastImpl(perm.a, segs.a, vals.a);
           res.max_bits = vals.max_bits;
         }
         when DType.Bool {
           const vals = toSymEntry(gv, bool);
           var res = st.addEntry(rname, size, bool);
-          res.a = broadcast(perm.a, segs.a, vals.a);
+          res.a = gBroadcastImpl(perm.a, segs.a, vals.a);
         }
         otherwise {
           throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
@@ -100,28 +100,28 @@ module BroadcastMsg {
         when DType.Int64 {
           const vals = toSymEntry(gv, int);
           var res = st.addEntry(rname, size, int);
-          res.a = broadcast(segs.a, vals.a, size);
+          res.a = gBroadcastImpl(segs.a, vals.a, size);
         }
         when DType.UInt64 {
           const vals = toSymEntry(gv, uint);
           var res = st.addEntry(rname, size, uint);
-          res.a = broadcast(segs.a, vals.a, size);
+          res.a = gBroadcastImpl(segs.a, vals.a, size);
         }
         when DType.Float64 {
           const vals = toSymEntry(gv, real);
           var res = st.addEntry(rname, size, real);
-          res.a = broadcast(segs.a, vals.a, size);
+          res.a = gBroadcastImpl(segs.a, vals.a, size);
         }
         when DType.BigInt {
           const vals = toSymEntry(gv, bigint);
           var res = st.addEntry(rname, size, bigint);
-          res.a = broadcast(segs.a, vals.a, size);
+          res.a = gBroadcastImpl(segs.a, vals.a, size);
           res.max_bits = vals.max_bits;
         }
         when DType.Bool {
           const vals = toSymEntry(gv, bool);
           var res = st.addEntry(rname, size, bool);
-          res.a = broadcast(segs.a, vals.a, size);
+          res.a = gBroadcastImpl(segs.a, vals.a, size);
         }
         otherwise {
           throw new owned ErrorWithContext("Values array has unsupported dtype %s".format(gv.dtype:string),
@@ -138,5 +138,5 @@ module BroadcastMsg {
   }
 
   use CommandMap;
-  registerFunction("gbbroadcast", broadcastMsg, getModuleName());
+  registerFunction("gbbroadcast", gBroadcastMsg, getModuleName());
 }
