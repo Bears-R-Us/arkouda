@@ -12,10 +12,8 @@ from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
 from arkouda.infoclass import list_registry
 from arkouda.numpy.dtypes import _is_dtype_in_union, dtype, float_scalars, int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.pdarraysetops import unique
 from arkouda.numpy.sorting import coargsort
-from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GroupBy
 
@@ -54,16 +52,20 @@ __all__ = [
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
     from arkouda.client import generic_msg, get_config, get_mem_used
+    from arkouda.numpy.pdarraycreation import arange
+    from arkouda.numpy.segarray import SegArray
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
 else:
-    Index = TypeVar("Index")
-    Series = TypeVar("Series")
-    SegArray = TypeVar("SegArray")
     generic_msg = TypeVar("generic_msg")
     get_config = TypeVar("get_config")
     get_mem_used = TypeVar("get_mem_used")
-    Categorical = TypeVar("Categorical")
+    arange = TypeVar("arange")
+    SegArray = TypeVar("SegArray")
+    Strings = TypeVar("Strings")
+    Index = TypeVar("Index")
+    Series = TypeVar("Series")
 
 
 def identity(x):
@@ -275,6 +277,7 @@ def attach(name: str):
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.dataframe import DataFrame
     from arkouda.pandas.index import Index, MultiIndex
@@ -970,6 +973,7 @@ def map(
 
     from arkouda import Series, array, broadcast, full
     from arkouda.numpy.pdarraysetops import in1d
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 
     keys = values
@@ -1115,6 +1119,8 @@ def copy(a: Union[Strings, pdarray]) -> Union[Strings, pdarray]:
     TypeError
         If the input is not a Strings or pdarray instance.
     """
+    from arkouda.numpy.strings import Strings
+
     if isinstance(a, (Strings, pdarray)):
         return a.copy()
     raise TypeError(f"Unsupported type for copy: {type(a)}")
