@@ -945,9 +945,34 @@ class Generator:
         if full_size < 0:
             raise ValueError("The size parameter must be >= 0")
 
+        #  adc --- right here is where we need to handle lam and size differently
+        #  adc --- to use all existing chapel code, we would first broadcast lam
+        #  adc --- to the appropriate shape, then flatten it, then call the chapel
+        #  adc --- function, then return a reshaped version
+
+        #  adc --- whether lam is scalar or pdarray, broadcast it to size
+        #  adc --- (the size is None case was handled above).
+        #  adc --- then do the stuff I described above
+
         is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
         if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
             raise TypeError("lam must be non-negative.")
+
+        #  adc --- here's where it gets tricky
+
+        _lam = lam
+        final_shape = ()
+        
+        if ndim == 1 :
+            if is_single_lam :
+                continue
+            else :
+                _lam = lam.flatten()
+                final_shape = lam.shape()
+        else :
+            _lam = akbroadcastto (lam, shape)
+            _lam = _lam.flatten()
+            final_shape = shape
 
         rep_msg = generic_msg(
             cmd="poissonGenerator",
@@ -1013,6 +1038,7 @@ class Generator:
         if full_size < 0:
             raise ValueError("The size parameter must be >= 0")
 
+         
         dt = akdtype("float64")
         rep_msg = generic_msg(
             cmd=f"uniformGenerator<{dt.name},{ndim}>",
@@ -1086,8 +1112,8 @@ def float_array_or_scalar_helper(func_name, var_name, var, size):
             var = float(var)
     elif isinstance(var, pdarray):
         is_scalar = False
-        if size != var.size:
-            raise TypeError(f"array of {var_name} must have same size as return size")
+        #if size != var.size:
+        #    raise TypeError(f"array of {var_name} must have same size as return size")
         if var.dtype != akfloat64:
             from arkouda.numpy import cast as akcast
 
