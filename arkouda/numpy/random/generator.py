@@ -935,34 +935,61 @@ class Generator:
 
         """
         from arkouda.client import generic_msg
+        from arkouda.numpy import cast as akcast
+        from arkouda.numpy.pdarraycreation import array as akarray
         from arkouda.numpy.util import _infer_shape_from_size
+        from arkouda.numpy.util import broadcast_to as bcast_to
+
+        # if size == 0, that means return an empty pdarray
+
+        if size == 0:
+            return akarray([], dtype=akint64)
+
+        # if size is None and lam is int, then and only then do we return a scalar
 
         if size is None:
-            # delegate to numpy when return size is 1
-            return self._np_generator.poisson(lam, size)
+            if isinstance(lam, int):
+                return self._np_generator.poisson(lam, size)
+            else:
+                size = 1
+
+        # all remaining cases will involve a pdarray return
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
             raise ValueError("The size parameter must be >= 0")
 
-        is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
-        if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
+        # lam must be broadcastable to the shape given in the size parameter
+        # server-side poisson generation does not yet handle multi-dim, so we flatten
+        # here, and will reshape the pdarray returned by the server.
+
+        _lam = bcast_to(lam, shape).flatten()
+
+        # _lam must be float and non-negative
+
+        if _lam.dtype != akfloat64:
+            _lam = akcast(_lam, akfloat64)
+
+        if (_lam < 0).any():
             raise TypeError("lam must be non-negative.")
 
         rep_msg = generic_msg(
             cmd="poissonGenerator",
             args={
                 "name": self._name_dict[akdtype("float64")],
-                "lam": lam,
-                "is_single_lambda": is_single_lambda,
+                "lam": _lam,
+                "is_single_lambda": False,  # this parameter is temporarily unused
                 "size": full_size,
                 "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
+
         # we only generate one val using the generator in the symbol table
+        # so we only advance the state by 1.
+
         self._state += 1
-        return create_pdarray(rep_msg) if ndim == 1 else create_pdarray(rep_msg).reshape(shape)
+        return create_pdarray(rep_msg).reshape(shape)
 
     def uniform(self, low=0.0, high=1.0, size=None):
         """
