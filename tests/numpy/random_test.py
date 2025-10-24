@@ -373,6 +373,40 @@ class TestRandom:
         assert rng.poisson(lam=scal_lam, size=num_samples).tolist() == scal_sample
         assert rng.poisson(lam=arr_lam, size=num_samples).tolist() == arr_sample
 
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    def test_poisson_2D(self):
+        rng = ak.random.default_rng(pytest.seed)
+        size = (2, 5)
+        # scalar lambda
+        scal_lam = 2
+        scal_sample = rng.poisson(lam=scal_lam, size=size)
+
+        # array lambda
+        arr_lam = ak.arange(5)
+        arr_sample = rng.poisson(lam=arr_lam, size=size)
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(pytest.seed)
+        assert_arkouda_array_equal(scal_sample, rng.poisson(lam=scal_lam, size=size))
+        assert_arkouda_array_equal(arr_sample, rng.poisson(lam=arr_lam, size=size))
+
+    @pytest.mark.skip_if_rank_not_compiled(3)
+    def test_poisson_3D(self):
+        rng = ak.random.default_rng(pytest.seed)
+        size = (2, 3, 5)
+        # scalar lambda
+        scal_lam = 5
+        scal_sample = rng.poisson(lam=scal_lam, size=size)
+
+        # array lambda
+        arr_lam = ak.arange(10).reshape(2, 1, 5)
+        arr_sample = rng.poisson(lam=arr_lam, size=size)
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(pytest.seed)
+        assert_arkouda_array_equal(scal_sample, rng.poisson(lam=scal_lam, size=size))
+        assert_arkouda_array_equal(arr_sample, rng.poisson(lam=arr_lam, size=size))
+
     def test_poisson_seed_reproducibility(self):
         # test resolution of issue #3322, same seed gives same result across machines / num locales
         iseed = 11  # retains non pytest.seed because it asserts specific values

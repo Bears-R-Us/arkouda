@@ -160,7 +160,13 @@ class TestUtil:
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_broadcast_to(self, size):
+        pd = ak.broadcast_to(1, size)
+        nd = np.broadcast_to(1, size)
+        assert_arkouda_array_equivalent(pd, nd)
         chop = size // 4
+        pd = ak.broadcast_to(1, (2, chop))
+        nd = np.broadcast_to(1, (2, chop))
+        assert_arkouda_array_equivalent(pd, nd)
         a = ak.arange(chop).reshape(1, 1, chop)
         b = ak.arange(2 * chop).reshape(1, 2, chop)
         c = ak.arange(2 * chop).reshape(2, 1, chop)
