@@ -209,6 +209,7 @@ from arkouda.numpy.pdarrayclass import (
     RegistrationError,
     _to_pdarray,
     all,
+    allclose,
     any,
     argmax,
     argmaxk,
