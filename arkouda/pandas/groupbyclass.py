@@ -2170,7 +2170,7 @@ class GroupBy:
         if is_str:
             str_vals = values
             values = arange(str_vals.size)
-        cmd = "broadcast"
+        cmd = "gbbroadcast"
         repMsg = cast(
             str,
             generic_msg(
@@ -2493,7 +2493,7 @@ def broadcast(
         str_vals = values
         values = arange(str_vals.size)
 
-    cmd = "broadcast"
+    cmd = "gbbroadcast"
     repMsg = cast(
         str,
         generic_msg(

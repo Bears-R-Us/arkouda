@@ -8,7 +8,7 @@ module HashUtils {
   use MultiTypeSymEntry;
   use SegmentedString;
   use CommAggregation;
-  use Broadcast;
+  use GBroadcast;
 
   /* Hashes of subsequent arrays cannot be simply XORed
     * because equivalent values will cancel each other out.
@@ -158,7 +158,7 @@ module HashUtils {
     const segments = toSymEntry(getGenericTypedArrayEntry(segName, st), int);
     var values = getGenericTypedArrayEntry(valName, st);
     const size = values.size;
-    const broadcastedSegs = broadcast(segments.a, segments.a, size);
+    const broadcastedSegs = gBroadcastImpl(segments.a, segments.a, size);
     const valInd = makeDistDom(size);
 
     // calculate segment indices (we use this to prevent
