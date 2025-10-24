@@ -165,43 +165,70 @@ def _datatype_check(the_dtype, allowed_list, name):
         raise TypeError(f"{name} only implements types {allowed_list}")
 
 
-def dtype(dtype):
-    """
-    Create a data type object.
+def dtype(dt):
+    import builtins
 
-    Parameters
-    ----------
-    dtype: object
-        Object to be converted to a data type object.
+    import numpy as np
 
-    Returns
-    -------
-    type
-
-    """
-    # we had to create our own bigint type since numpy
-    # gives them dtype=object there's no np equivalent
+    # bigint spellings / sentinels
     if (
-        (isinstance(dtype, str) and dtype == "bigint")
-        or isinstance(dtype, bigint)
-        or (hasattr(dtype, "name") and dtype.name == "bigint")
+        (isinstance(dt, str) and dt.lower() == "bigint")
+        or isinstance(dt, bigint)
+        or (getattr(dt, "__name__", None) == "bigint")
+        or (hasattr(dt, "name") and getattr(dt, "name") == "bigint")
     ):
         return bigint()
-    if isinstance(dtype, str) and dtype in ["Strings"]:
+
+    # string dtype spellings (no Strings class support)
+    if isinstance(dt, str) and dt.lower() in {"str", "str_"}:
+        return np.dtype(np.str_)
+    if dt in (str, np.str_):
         return np.dtype(np.str_)
 
-    if isinstance(dtype, int):
-        if 0 < dtype and dtype < 2**64:
-            return np.dtype(np.uint64)
-        if dtype >= 2**64:
-            return bigint()
-        else:
-            return np.dtype(np.int64)
-    if isinstance(dtype, float):
+    # core Python types -> 64-bit family
+    if dt is int:
+        return np.dtype(np.int64)
+    if dt is float:
         return np.dtype(np.float64)
-    if isinstance(dtype, builtins.bool):
-        return np.dtype(np.bool)
-    return np.dtype(dtype)
+    if dt is bool or dt is builtins.bool:
+        return np.dtype(np.bool_)
+
+    # historical: integer *value* as dtype
+    if isinstance(dt, int):
+        if 0 < dt < 2**64:
+            return np.dtype(np.uint64)
+        if dt >= 2**64:
+            return bigint()
+        return np.dtype(np.int64)
+    if isinstance(dt, float):
+        return np.dtype(np.float64)
+    if isinstance(dt, bool):
+        return np.dtype(np.bool_)
+
+    # defer to NumPy, but don't widen explicit widths
+    try:
+        np_dt = np.dtype(dt)
+    except Exception as e:
+        raise TypeError(
+            f"Unsupported dtype hint {dt!r} (type {type(dt).__name__}). "
+            "Use: int64/uint64/float64/bool_, 'str'/'str_', np.str_/ak.str_, or 'bigint'."
+        ) from e
+
+    if np_dt == np.dtype("bool"):
+        return np.dtype(np.bool_)
+    if np_dt.kind in ("U", "S"):
+        return np.dtype(np.str_)
+    if np_dt.kind in ("i", "u", "f", "b"):
+        return np_dt
+
+    #   Question:  How to deal with non-supported types like complex?
+    if np_dt:
+        return np_dt
+
+    raise TypeError(
+        f"Unsupported numpy dtype {np_dt} for Arkouda. "
+        "Supported: int8/16/32/64, uint8/16/32/64, float32/64, bool_, str_, and bigint."
+    )
 
 
 _dtype_for_chapel = dict()  # type: ignore
@@ -396,39 +423,82 @@ def _val_isinstance_of_union(val, union_type) -> builtins.bool:
 
 class bigint:
     """
-    Datatype for representing integers of variable size.
+    Arkouda dtype sentinel for variable-width integers.
 
-    May be used for integers that exceed 64 bits.
+    Notes
+    -----
+    - Represents integers that may exceed 64 bits.
+    - Acts as a *dtype-like* sentinel (similar to `np.dtype('int64')` semantics).
+    - Implemented as a singleton: `bigint() is bigint()` is True.
     """
 
-    # an estimate of the itemsize of bigint (128 bytes)
-    itemsize = 128
-    name = "bigint"
-    ndim = 0
-    shape = ()
+    __slots__ = ()  # dtype sentinel: no per-instance state
 
-    def __init__(self):
-        self.kind = "ui"
+    # dtype-like attributes
+    name: str = "bigint"
+    kind: str = "ui"  # unsigned/signed integer family (matches Arkouda conventions)
+    itemsize: int = 128  # heuristic upper bound used for estimates
+    ndim: int = 0
+    shape: tuple = ()
 
-    def __str__(self):
+    # ---- singleton plumbing ----
+    _INSTANCE = None
+
+    def __new__(cls):
+        inst = getattr(cls, "_INSTANCE", None)
+        if inst is None:
+            inst = super().__new__(cls)
+            cls._INSTANCE = inst
+        return inst
+
+    # Make pickling return the singleton
+    def __reduce__(self):
+        return (bigint, ())
+
+    # ---- dtype-esque API ----
+    def __str__(self) -> str:
         return self.name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"dtype({self.name})"
 
-    def __hash__(self):
-        return hash(str(self))
+    def __hash__(self) -> int:
+        # stable hash across processes; dtype identity is the name
+        return hash(self.name)
 
-    def __eq__(self, other):
-        if isinstance(dtype(other), bigint):
+    def __eq__(self, other) -> builtins.bool:
+        """
+        Accept common ‘bigint’ spellings/tokens without importing .dtype
+        to avoid circular dependencies.
+        """
+        if other is self or other is bigint:
             return True
-        return False
+        # string tokens
+        if isinstance(other, str):
+            return other.lower() == "bigint"
+        # other bigint instances (even from reloaded modules)
+        if other.__class__.__name__ == "bigint":
+            return True
+        # objects that behave like dtypes and expose a name
+        name = getattr(other, "name", None)
+        return name == "bigint"
 
-    def __neq__(self, other):
-        return not (self == other)
+    def __ne__(self, other) -> builtins.bool:
+        return not self.__eq__(other)
 
-    def type(self, x):
+    # match numpy dtype's .type attribute (callable that converts values)
+    def type(self, x) -> int:
         return int(x)
+
+    # convenience attributes for dtype-ish checks
+    @property
+    def is_signed(self) -> builtins.bool:
+        # bigint supports signed integers
+        return True
+
+    @property
+    def is_variable_width(self) -> builtins.bool:
+        return True
 
 
 intTypes = frozenset((dtype("int64"), dtype("uint64"), dtype("uint8")))
@@ -508,6 +578,7 @@ class DType(Enum):
 
 
 ARKOUDA_SUPPORTED_BOOLS = (builtins.bool, np.bool_)
+
 
 ARKOUDA_SUPPORTED_INTS = (
     int,
