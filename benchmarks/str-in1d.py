@@ -19,13 +19,13 @@ MAXSTRLEN = 5
 def time_ak_in1d(size, trials):
     print(">>> arkouda string in1d")
     cfg = ak.get_config()
-    N = size * cfg["numLocales"]
+    N = size * cfg["numNodes"]
     a = ak.random_strings_uniform(1, MAXSTRLEN, N)
 
     for regime, bsize in zip(("Medium", "Large"), (MEDIUM, LARGE)):
         print(
-            "{} regime: numLocales = {}  a.size = {:,}  b.size = {:,}".format(
-                regime, cfg["numLocales"], N, bsize
+            "{} regime: numNodes = {}  a.size = {:,}  b.size = {:,}".format(
+                regime, cfg["numNodes"], N, bsize
             )
         )
         b = ak.random_strings_uniform(1, MAXSTRLEN, bsize)
