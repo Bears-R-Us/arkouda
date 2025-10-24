@@ -786,6 +786,12 @@ module RandMsg
         return k - 1;
     }
 
+
+    //   Effective with Issue 5018, the boolean isSingleLam will always be False, because of
+    //   a client-side fix to align array_like lam and/or size to numpy.  The parameter is
+    //   being retained, however, because it's anticipated that a future change will move the
+    //   multi-dim handling server-side, to take advantage of distribution across locales.
+
     @chplcheck.ignore("UnusedFormal")
     proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs["name"],                                       // generator name
