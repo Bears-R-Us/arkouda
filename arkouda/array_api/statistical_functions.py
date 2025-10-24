@@ -612,9 +612,9 @@ def cumulative_sum(
 
     if dtype is None:
         if x_.dtype == "bool":
-            x_ = akcast(x_, int)
+            x_ = Array._new(akcast(x_, int))
     else:
-        x_ = akcast(x_, dtype)
+        x_ = Array._new(akcast(x_, dtype))
 
     resp = generic_msg(
         cmd=f"cumSum<{x_.dtype},{x.ndim}>",
@@ -691,9 +691,9 @@ def cumulative_prod(
 
     if dtype is None:
         if x_.dtype == "bool":
-            x_ = akcast(x_, int)
+            x_ = Array._new(akcast(x_, int))
     else:
-        x_ = akcast(x_, dtype)
+        x_ = Array._new(akcast(x_, dtype))
 
     resp = generic_msg(
         cmd=f"cumProd<{x_.dtype},{x.ndim}>",

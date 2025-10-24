@@ -17,9 +17,7 @@ MAXSTRLEN = 5
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("size", SIZES)
 def bench_in1d(benchmark, dtype, size):
-    """
-    Benchmark ak.in1d. Skips if --numpy is used.
-    """
+    """Benchmark ak.in1d. Skips if --numpy is used."""
     if dtype in pytest.dtype:
         N = pytest.N
         s = SIZES[size]

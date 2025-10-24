@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Literal, NoReturn, cast
+from typing import Literal, NoReturn
+from typing import cast
+from typing import cast as type_cast
 
 import numpy as np
 from pandas.api.types import is_bool, is_number
@@ -416,7 +418,7 @@ def assert_is_sorted(seq) -> None:
         seq = seq.values
 
     # sorting does not change precisions
-    assert_arkouda_array_equal(seq, sort(array(seq)))
+    assert_arkouda_array_equal(seq, sort(type_cast(pdarray, array(seq))))
 
 
 def assert_categorical_equal(

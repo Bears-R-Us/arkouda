@@ -51,7 +51,7 @@ array([True True])
 
 from functools import partial
 from ipaddress import ip_address as _ip_address
-from typing import TYPE_CHECKING, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Literal, Optional, TypeVar, Union
 
 import numpy as np
 from typeguard import typechecked
@@ -904,8 +904,8 @@ class IPv4(pdarray):
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """Override of the pdarray to_hdf to store the special object type."""
         from typing import cast as typecast

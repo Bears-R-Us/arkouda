@@ -7,10 +7,7 @@ from benchmark_v2.benchmark_utils import calc_num_bytes
 @pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="AK_string_index")
 def bench_string_index(benchmark):
-    """
-    Measure __getitem__ performance for Strings
-
-    """
+    """Measure __getitem__ performance for Strings."""
     N = pytest.N
     ind_frac = 0.5  # Use 50% of the arr as indexing set
     iN = max(1, int(ind_frac * N))

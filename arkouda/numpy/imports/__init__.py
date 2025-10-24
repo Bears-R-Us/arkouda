@@ -2,6 +2,7 @@ import importlib
 import sys
 from typing import TYPE_CHECKING
 
+
 _np = importlib.import_module("numpy")
 this_module = sys.modules[__name__]
 

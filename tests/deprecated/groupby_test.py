@@ -635,9 +635,7 @@ class GroupByTest(ArkoudaTest):
             self.assertListEqual(i_res[1].to_list(), (bi_res[1] - 2**200).to_list())
 
     def test_zero_length_groupby(self):
-        """
-        This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details
-        """
+        """This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details."""
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
 

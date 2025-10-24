@@ -2,6 +2,7 @@ import warnings
 
 import numpy as np
 import pytest
+from typeguard import TypeCheckError
 
 import arkouda as ak
 
@@ -37,7 +38,7 @@ class TestWhere:
             assert np.allclose(akres, npres, equal_nan=True)
 
     def test_error_handling(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.where([0], ak.linspace(1, 10, 10), ak.linspace(1, 10, 10))
 
         with pytest.raises(TypeError):
@@ -138,7 +139,7 @@ class TestWhere:
         )
         # Arkouda does not support multiple where clauses
         cond = a1 > 5, a1 < 8
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.where(cond, a1, a2)
 
     def test_dtypes(self):
