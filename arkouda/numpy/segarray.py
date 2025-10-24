@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Optional, Sequence, Tuple, TypeVar
+from typing import TYPE_CHECKING, Literal, Optional, Sequence, Tuple, TypeVar
 from typing import cast as type_cast
 
 import numpy as np
@@ -788,7 +788,7 @@ class SegArray:
             x = self.values
         return self.grouping.aggregate(x, op)
 
-    def unique(self, x=None):
+    def unique(self, x=None) -> SegArray:
         """
         Return sub-arrays of unique values.
 
@@ -958,7 +958,11 @@ class SegArray:
             _repack_hdf(prefix_path)
 
     def to_parquet(
-        self, prefix_path, dataset="segarray", mode: str = "truncate", compression: Optional[str] = None
+        self,
+        prefix_path,
+        dataset="segarray",
+        mode: Literal["truncate", "append"] = "truncate",
+        compression: Optional[str] = None,
     ):
         """
         Save the SegArray object to Parquet. The result is a collection of files,
@@ -972,7 +976,7 @@ class SegArray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             Deprecated.
             Parameter kept to maintain functionality of other calls. Only Truncate
             supported.

@@ -51,9 +51,7 @@ def do_argsort(data, algo):
 
 
 def check_correctness(data):
-    """
-    Only check accuracy of sorting, do not measure performance
-    """
+    """Only check accuracy of sorting, do not measure performance."""
     for algo in SortingAlgorithm:
         perm = do_argsort(data, algo)
         s = apply_perm(data, perm)
@@ -61,9 +59,7 @@ def check_correctness(data):
 
 
 def time_sort(name, data, trials):
-    """
-    Measure both performance and correctness of sorting
-    """
+    """Measure both performance and correctness of sorting."""
     for algo in SortingAlgorithm:
         timings = []
         for i in range(trials):
@@ -99,9 +95,7 @@ def random_uniform(N):
 
 
 def power_law(N):
-    """
-    Power law distributed (alpha = 2.5) reals and integers in (1, 2**32)
-    """
+    """Power law distributed (alpha = 2.5) reals and integers in (1, 2**32)."""
     y = ak.uniform(N)
     a = -2.5  # power law exponent, between -2 and -3
     ub = 2**32  # upper bound
@@ -113,9 +107,7 @@ def power_law(N):
 
 
 def rmat(size):
-    """
-    RMAT-generated edges (coargsort of two vertex arrays)
-    """
+    """RMAT-generated edges (coargsort of two vertex arrays)."""
     # N = number of edges = number of elements / 2
     N = size // 2
     avgdegree = 10
@@ -197,9 +189,7 @@ def time_like(N):
 
 
 def IP_like(N):
-    """
-    Data like a 90/10 mix of IPv4 and IPv6 addresses
-    """
+    """Data like a 90/10 mix of IPv4 and IPv6 addresses."""
     multiplicity = 10
     nunique = N // (2 * multiplicity)
     # First generate unique addresses, then sample with replacement

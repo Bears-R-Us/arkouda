@@ -65,9 +65,7 @@ class TestSegArray:
 
     @staticmethod
     def make_segarray_edge(dtype):
-        """
-        Small specific examples to test handling of empty segments
-        """
+        """Small specific examples to test handling of empty segments."""
         segs = np.array([0, 0, 3, 5, 5, 9, 10])
         if dtype in [ak.int64, ak.uint64]:
             vals = np.random.randint(0, 3, 10, dtype=dtype)
