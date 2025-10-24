@@ -70,6 +70,37 @@ class Generator:
             # suppress errors in __del__
             pass
 
+    def frivolous(self, size=None):
+        """
+        generate the same random integer array from 0 to 25 regardless of number of locales
+        """
+        from arkouda.client import generic_msg
+        from arkouda.numpy.util import _infer_shape_from_size
+        import hashlib
+
+        if size is None:
+            raise ValueError ("Size must be given.")
+
+        shape, ndim, full_size = _infer_shape_from_size(size)
+        if full_size <=0:
+            raise ValueError("The size parameter must be > 0")
+
+        name = self._name_dict[to_numpy_dtype(akint64)]
+        rep_msg = generic_msg(
+            cmd=f"frivolousMsg<{ndim}>",
+            args={
+                "name": name,
+                "shape": shape,
+                "state": self._state,
+                "seed": self._seed,
+            },
+        )
+        self._state += full_size
+        tmp = create_pdarray(rep_msg)
+        arr = np.ascontiguousarray(tmp.to_ndarray())
+        print (hashlib.sha256(arr.view(np.uint8)).hexdigest())
+        return tmp
+
     def choice(self, a, size=None, replace=True, p=None):
         """
         Generate a randomly sample from a.

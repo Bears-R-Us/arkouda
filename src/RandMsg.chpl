@@ -15,6 +15,8 @@ module RandMsg
     use RandUtil;
     use ArkoudaSortCompat;
     use CommAggregation;
+
+    use AryUtil ; // to get indexToOrder
     use Repartition;
     use ZigguratConstants;
     use BitOps;
@@ -160,6 +162,40 @@ module RandMsg
         if state != 1 then generator.skipTo(state-1);
         return st.insert(new shared GeneratorSymEntry(generator, state));
     }
+
+
+    // frivolousMsg is a demonstration of random number generation that's independent
+    // of the number of locales.
+
+    @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
+    proc frivolousMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, param array_nd: int): MsgTuple throws
+    {
+        const name = msgArgs["name"],
+              shape = msgArgs["shape"].toScalarTuple(int, array_nd),
+              state = msgArgs["state"].toScalar(int),
+              seed  = msgArgs["seed"].toScalar(int);
+    
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "name: %? shape %? state %i seed %i".format(name, shape, state, seed));
+
+        var frivolousEntry = createSymEntry((...shape), int);
+        var ord = new orderer(shape);
+        coforall loc in Locales do on loc {
+            writeln ("=========> ",loc," of ",Locales);
+            writeln ("           ",frivolousEntry.a.localSubdomain());
+            var relative_start = if state != 1 then state else 1; 
+            forall entry in frivolousEntry.a.localSubdomain() {          // I'd rather the rng was in
+                var rng = new randomStream(int, seed);                   // a with in the forall, but
+                var spot = relative_start + ord.indexToOrder(entry) - 1; // it wasn't working
+                rng.skipTo(spot);                                        
+                frivolousEntry.a[entry] = rng.next();
+            }
+        }
+        return st.insert(frivolousEntry);
+    }
+
+
 
     @arkouda.instantiateAndRegister
     @chplcheck.ignore("UnusedFormal")
