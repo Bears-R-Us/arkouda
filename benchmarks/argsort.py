@@ -14,8 +14,8 @@ TYPES = ("int64", "uint64", "float64")
 def time_ak_argsort(N_per_locale, trials, dtype, seed):
     print(">>> arkouda {} argsort".format(dtype))
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
     if dtype == "int64":
         a = ak.randint(0, 2**32, N, seed=seed)
         nbytes = a.size * a.itemsize

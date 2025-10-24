@@ -14,9 +14,9 @@ TYPES = ("int64", "float64", "bool")
 def time_ak_scatter(isize, vsize, trials, dtype, random, seed):
     print(">>> arkouda {} scatter".format(dtype))
     cfg = ak.get_config()
-    Ni = isize * cfg["numLocales"]
-    Nv = vsize * cfg["numLocales"]
-    print("numLocales = {}, num_indices = {:,} ; num_values = {:,}".format(cfg["numLocales"], Ni, Nv))
+    Ni = isize * cfg["numNodes"]
+    Nv = vsize * cfg["numNodes"]
+    print("numNodes = {}, num_indices = {:,} ; num_values = {:,}".format(cfg["numNodes"], Ni, Nv))
     # Index vector is always random
     i = ak.randint(0, Nv, Ni, seed=seed)
     c = ak.zeros(Nv, dtype=dtype)

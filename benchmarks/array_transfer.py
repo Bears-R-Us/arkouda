@@ -15,7 +15,7 @@ TYPES = ("int64", "float64")
 def time_ak_array_transfer(N, trials, dtype, seed, max_bits=-1):
     print(">>> arkouda {} array transfer".format(dtype))
     cfg = ak.get_config()
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
 
     if dtype == ak.bigint.name:
         u1 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)

@@ -22,9 +22,9 @@ def time_all_ops(N_per_locale, trials, seed, correctnessOnly):
         N = 10**4
     else:
         print(">>> arkouda string locality tests")
-        nl = ak.get_config()["numLocales"]
+        nl = ak.get_config()["numNodes"]
         N = nl * N_per_locale
-        print("numLocales = {}, N = {:,}".format(nl, N))
+        print("numNodes = {}, N = {:,}".format(nl, N))
     random_strings, sorted_strings, perm = generate_data(N, seed)
     nbytes = random_strings.nbytes
 

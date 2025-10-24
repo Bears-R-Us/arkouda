@@ -7,8 +7,8 @@ import arkouda as ak
 def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
     print(">>> arkouda uint arrays from bigint array")
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
 
     a = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
     b = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=seed)
