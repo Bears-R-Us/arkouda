@@ -978,7 +978,7 @@ class Generator:
             args={
                 "name": self._name_dict[akdtype("float64")],
                 "lam": _lam,
-                "is_single_lambda": False,  # this parameter is now obsolete.
+                "is_single_lambda": False,  # this parameter is temporarily unused
                 "size": full_size,
                 "has_seed": self._seed is not None,
                 "state": self._state,
@@ -1113,8 +1113,8 @@ def float_array_or_scalar_helper(func_name, var_name, var, size):
             var = float(var)
     elif isinstance(var, pdarray):
         is_scalar = False
-        # if size != var.size:
-        #    raise TypeError(f"array of {var_name} must have same size as return size")
+        if size != var.size:
+           raise TypeError(f"array of {var_name} must have same size as return size")
         if var.dtype != akfloat64:
             from arkouda.numpy import cast as akcast
 
