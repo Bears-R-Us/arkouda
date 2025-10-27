@@ -25,7 +25,7 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
         elif isinstance(data, Strings):
             self._data = data
         else:
-            raise TypeError(f"Expected arkouda Strings.  Instead recieved {type(data)}.")
+            raise TypeError(f"Expected arkouda Strings. Instead received {type(data)}.")
 
     @property
     def dtype(self):
