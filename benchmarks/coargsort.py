@@ -14,8 +14,8 @@ TYPES = ("int64", "uint64", "float64")
 def time_ak_coargsort(N_per_locale, trials, dtype, seed):
     print(">>> arkouda {} coargsort".format(dtype))
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
     for numArrays in (1, 2, 8, 16):
         if seed is None:
             seeds = [None for _ in range(numArrays)]
