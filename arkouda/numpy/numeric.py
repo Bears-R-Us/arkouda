@@ -3068,7 +3068,9 @@ def _matmul2D(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
 
     if pdaLeft.ndim == 2 and pdaRight.ndim == 2:
         if pdaLeft.shape[-1] != pdaRight.shape[0]:
-            raise ValueError("Mismatch in dimensions of arguments for matmul.")
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pdaLeft.shape} and {pdaRight.shape}"
+            )
         else:
             cmd = f"matmul<{pdaLeft.dtype},{pdaRight.dtype},{pdaLeft.ndim}>"
             args = {
@@ -3082,7 +3084,9 @@ def _matmul2D(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
                 )
             )
     else:
-        raise ValueError("Mismatch in dimensions of arguments for matmul.")
+        raise ValueError(
+            f"Mismatch in dimensions of arguments for matmul: {pdaLeft.shape} and {pdaRight.shape}"
+        )
 
 
 @typechecked
@@ -3140,7 +3144,9 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
 
     elif pdaLeft.ndim == 1 and pdaRight.ndim == 1:
         if pdaLeft.size != pdaRight.size:
-            raise ValueError("Mismatch in dimensions of arguments for matmul.")
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pdaLeft.shape} and {pdaRight.shape}"
+            )
         else:
             return dot(pdaLeft, pdaRight)
 
@@ -3153,13 +3159,17 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
 
     elif pdaLeft.ndim == 1:
         if pdaLeft.size != pdaRight.shape[-2]:
-            raise ValueError("Mismatch in dimensions of arguments for matmul.")
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pdaLeft.shape} and {pdaRight.shape}"
+            )
         else:
             return dot(pdaLeft, pdaRight)
 
     elif pdaRight.ndim == 1:
         if pdaRight.size != pdaLeft.shape[-1]:
-            raise ValueError("Mismatch in dimensions of arguments for matmul.")
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pdaLeft.shape} and {pdaRight.shape}"
+            )
         else:
             return dot(pdaLeft, pdaRight)
 
@@ -3192,7 +3202,9 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
                 )
             )
         except Exception as e:
-            raise ValueError("Mismatch in dimensions of arguments for matmul.") from e
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pdaLeft.shape} and {pdaRight.shape}"
+            ) from e
 
 
 @typechecked
