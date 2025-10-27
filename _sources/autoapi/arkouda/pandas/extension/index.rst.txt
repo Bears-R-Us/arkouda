@@ -332,48 +332,6 @@ Package Contents
 
 
 
-   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
-
-      Encode the extension array as an enumerated type.
-
-      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
-                              NaN values will be encoded as non-negative integers and will not drop the
-                              NaN from the uniques of the values.
-
-                              .. versionadded:: 1.5.0
-      :type use_na_sentinel: bool, default True
-
-      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
-                  ExtensionArray.
-                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
-
-                  .. note::
-
-                     uniques will *not* contain an entry for the NA value of
-                     the ExtensionArray if there are any missing values present
-                     in `self`.
-
-      .. seealso::
-
-         :py:obj:`factorize`
-             Top-level factorize method that dispatches here.
-
-      .. rubric:: Notes
-
-      :meth:`pandas.factorize` offers a `sort` keyword as well.
-
-      .. rubric:: Examples
-
-      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
-      ...                       "2014-03", "2014-03"], freq="M")
-      >>> arr, idx = idx1.factorize()
-      >>> arr
-      array([0, 0, 1, 1, 2, 2])
-      >>> idx
-      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
-
-
-
    .. py:method:: isna() -> pandas.api.extensions.ExtensionArray | numpy.ndarray[Any, Any]
 
       A 1-D array indicating if each value is missing.
@@ -824,48 +782,6 @@ Package Contents
       Int64Dtype()
 
 
-   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
-
-      Encode the extension array as an enumerated type.
-
-      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
-                              NaN values will be encoded as non-negative integers and will not drop the
-                              NaN from the uniques of the values.
-
-                              .. versionadded:: 1.5.0
-      :type use_na_sentinel: bool, default True
-
-      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
-                  ExtensionArray.
-                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
-
-                  .. note::
-
-                     uniques will *not* contain an entry for the NA value of
-                     the ExtensionArray if there are any missing values present
-                     in `self`.
-
-      .. seealso::
-
-         :py:obj:`factorize`
-             Top-level factorize method that dispatches here.
-
-      .. rubric:: Notes
-
-      :meth:`pandas.factorize` offers a `sort` keyword as well.
-
-      .. rubric:: Examples
-
-      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
-      ...                       "2014-03", "2014-03"], freq="M")
-      >>> arr, idx = idx1.factorize()
-      >>> arr
-      array([0, 0, 1, 1, 2, 2])
-      >>> idx
-      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
-
-
-
    .. py:method:: isna()
 
       A 1-D array indicating if each value is missing.
@@ -1301,6 +1217,52 @@ Package Contents
 
    .. py:method:: expand_dims(x, /, *, axis)
       :abstractmethod:
+
+
+
+   .. py:method:: factorize(use_na_sentinel=True, sort=False, **kwargs) -> Tuple[ArkoudaExtensionArray, ArkoudaExtensionArray]
+
+      Encode the values of this array as integer codes and uniques,
+      similar to :func:`pandas.factorize`, but implemented with Arkouda.
+
+      Each distinct non-missing value is assigned a unique integer code.
+      Missing values (NaN in floating dtypes) are encoded as -1 by default.
+
+      :param use_na_sentinel: If True, missing values are encoded as -1 in the codes array.
+                              If False, missing values are assigned a valid code equal to
+                              ``len(uniques)``.
+      :type use_na_sentinel: bool, default True
+      :param sort: Whether to sort the unique values. If False, the unique values
+                   appear in the order of first appearance in the array. If True,
+                   the unique values are sorted, and codes are assigned accordingly.
+      :type sort: bool, default False
+      :param \*\*kwargs: Ignored for compatibility.
+
+      :returns: A pair ``(codes, uniques)`` where:
+                - ``codes`` is a NumPy ``int64`` array of factor labels, one per element.
+                  Missing values are ``-1`` if ``use_na_sentinel=True``; otherwise they
+                  receive the code ``len(uniques)``.
+                - ``uniques`` is a NumPy array of the unique values.
+      :rtype: Tuple[pdarray, ArkoudaExtensionArray]
+
+      .. rubric:: Notes
+
+      * Only floating-point dtypes treat ``NaN`` as missing; for other dtypes,
+        no values are considered missing.
+      * This method executes all grouping and factorization in Arkouda,
+        returning results as NumPy arrays for compatibility with pandas.
+      * Unlike pandas, string/None/null handling is not yet unified.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaArray
+      >>> arr = ArkoudaArray(ak.array([1, 2, 1, 3]))
+      >>> codes, uniques = arr.factorize()
+      >>> codes
+      ArkoudaArray([0 1 0 2])
+      >>> uniques
+      ArkoudaArray([1 2 3])
 
 
 
@@ -1804,48 +1766,6 @@ Package Contents
 
       >>> pd.array([1, 2, 3]).dtype
       Int64Dtype()
-
-
-   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
-
-      Encode the extension array as an enumerated type.
-
-      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
-                              NaN values will be encoded as non-negative integers and will not drop the
-                              NaN from the uniques of the values.
-
-                              .. versionadded:: 1.5.0
-      :type use_na_sentinel: bool, default True
-
-      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
-                  ExtensionArray.
-                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
-
-                  .. note::
-
-                     uniques will *not* contain an entry for the NA value of
-                     the ExtensionArray if there are any missing values present
-                     in `self`.
-
-      .. seealso::
-
-         :py:obj:`factorize`
-             Top-level factorize method that dispatches here.
-
-      .. rubric:: Notes
-
-      :meth:`pandas.factorize` offers a `sort` keyword as well.
-
-      .. rubric:: Examples
-
-      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
-      ...                       "2014-03", "2014-03"], freq="M")
-      >>> arr, idx = idx1.factorize()
-      >>> arr
-      array([0, 0, 1, 1, 2, 2])
-      >>> idx
-      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
-
 
 
    .. py:method:: isna()

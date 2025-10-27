@@ -412,7 +412,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
@@ -422,6 +422,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span> <span class="k">as</span> <span class="n">ak_concat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_ensure_numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;ArkoudaExtensionArray&quot;</span><span class="p">]</span>
@@ -565,6 +566,145 @@
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">gathered</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="ArkoudaExtensionArray.factorize">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.factorize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">factorize</span><span class="p">(</span>  <span class="c1"># type: ignore[override]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">use_na_sentinel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;ArkoudaExtensionArray&quot;</span><span class="p">,</span> <span class="s2">&quot;ArkoudaExtensionArray&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Encode the values of this array as integer codes and uniques,</span>
+<span class="sd">        similar to :func:`pandas.factorize`, but implemented with Arkouda.</span>
+
+<span class="sd">        Each distinct non-missing value is assigned a unique integer code.</span>
+<span class="sd">        Missing values (NaN in floating dtypes) are encoded as -1 by default.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        use_na_sentinel : bool, default True</span>
+<span class="sd">            If True, missing values are encoded as -1 in the codes array.</span>
+<span class="sd">            If False, missing values are assigned a valid code equal to</span>
+<span class="sd">            ``len(uniques)``.</span>
+<span class="sd">        sort : bool, default False</span>
+<span class="sd">            Whether to sort the unique values. If False, the unique values</span>
+<span class="sd">            appear in the order of first appearance in the array. If True,</span>
+<span class="sd">            the unique values are sorted, and codes are assigned accordingly.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Ignored for compatibility.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[pdarray, ArkoudaExtensionArray]</span>
+<span class="sd">            A pair ``(codes, uniques)`` where:</span>
+<span class="sd">            - ``codes`` is a NumPy ``int64`` array of factor labels, one per element.</span>
+<span class="sd">              Missing values are ``-1`` if ``use_na_sentinel=True``; otherwise they</span>
+<span class="sd">              receive the code ``len(uniques)``.</span>
+<span class="sd">            - ``uniques`` is a NumPy array of the unique values.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        * Only floating-point dtypes treat ``NaN`` as missing; for other dtypes,</span>
+<span class="sd">          no values are considered missing.</span>
+<span class="sd">        * This method executes all grouping and factorization in Arkouda,</span>
+<span class="sd">          returning results as NumPy arrays for compatibility with pandas.</span>
+<span class="sd">        * Unlike pandas, string/None/null handling is not yet unified.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.array([1, 2, 1, 3]))</span>
+<span class="sd">        &gt;&gt;&gt; codes, uniques = arr.factorize()</span>
+<span class="sd">        &gt;&gt;&gt; codes</span>
+<span class="sd">        ArkoudaArray([0 1 0 2])</span>
+<span class="sd">        &gt;&gt;&gt; uniques</span>
+<span class="sd">        ArkoudaArray([1 2 3])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ARKOUDA_SUPPORTED_FLOATS</span><span class="p">,</span> <span class="n">bool_</span><span class="p">,</span> <span class="n">int64</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span> <span class="k">as</span> <span class="n">ak_isnan</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
+
+        <span class="c1"># Arkouda array backing</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="c1"># Only floats treat NaN as NA (pandas-like); others: no NA</span>
+        <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">ARKOUDA_SUPPORTED_FLOATS</span><span class="p">:</span>
+            <span class="n">non_na</span> <span class="o">=</span> <span class="o">~</span><span class="n">ak_isnan</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">non_na</span> <span class="o">=</span> <span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bool_</span><span class="p">)</span>
+
+        <span class="n">arr_nn</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">non_na</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">arr_nn</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sent</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">use_na_sentinel</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span> <span class="k">as</span> <span class="n">ak_full</span>
+
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak_full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">sent</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)),</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span>
+                <span class="n">ak_array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Group non-missing values</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">arr_nn</span><span class="p">)</span>
+        <span class="n">uniques_ak</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span>  <span class="c1"># one per group</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uniques_ak</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span>
+
+            <span class="n">uniques_ak</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span><span class="n">uniques_ak</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sort</span><span class="p">:</span>
+            <span class="c1"># Keys already sorted; group id -&gt; 0..k-1</span>
+            <span class="n">groupid_to_code</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">uniques_ak</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+
+            <span class="c1"># Work around to account GroupBy not sorting Categorical properly</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="n">uniques_ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+                <span class="c1">#   Inverse argsort:</span>
+                <span class="n">groupid_to_code</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">uniques_ak</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+                <span class="n">uniques_ak</span> <span class="o">=</span> <span class="n">uniques_ak</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># First-appearance order</span>
+            <span class="n">_keys</span><span class="p">,</span> <span class="n">first_idx_per_group</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="n">arr_nn</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">))</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="n">first_idx_per_group</span><span class="p">)</span>
+
+            <span class="c1"># Reorder uniques by first appearance</span>
+            <span class="n">uniques_ak</span> <span class="o">=</span> <span class="n">uniques_ak</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+
+            <span class="c1"># Map group_id -&gt; code in first-appearance order</span>
+            <span class="n">groupid_to_code</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+            <span class="n">groupid_to_code</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+
+        <span class="c1"># Per-element codes on the non-NA slice</span>
+        <span class="n">codes_nn</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">groupid_to_code</span><span class="p">)</span>
+
+        <span class="c1"># Assemble full codes with sentinel</span>
+        <span class="n">sentinel</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">use_na_sentinel</span> <span class="k">else</span> <span class="n">uniques_ak</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">codes_ak</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">sentinel</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">codes_ak</span><span class="p">[</span><span class="n">non_na</span><span class="p">]</span> <span class="o">=</span> <span class="n">codes_nn</span>
+
+        <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">codes_ak</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">uniques_ak</span><span class="p">)</span></div>
+
+
+    <span class="c1"># In each EA</span>
+<div class="viewcode-block" id="ArkoudaExtensionArray._values_for_factorize">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray._values_for_factorize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_values_for_factorize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Return a small NumPy &quot;codes-like&quot; view + na_value</span>
+        <span class="c1"># If you can&#39;t return codes here, still return a compact NumPy representation.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_factorize_view</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>  <span class="c1"># both NumPy</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaExtensionArray._from_factorized">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray._from_factorized">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_factorized</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">original</span><span class="p">):</span>
+        <span class="c1"># Build EA back from factorized NumPy values</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_numpy</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="ArkoudaExtensionArray.to_numpy">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.to_numpy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -703,6 +843,7 @@
                     <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">]])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported argsort dtype: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">perm</span></div>
 
 

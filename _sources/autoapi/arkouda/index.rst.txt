@@ -770,48 +770,6 @@ Package Contents
 
 
 
-   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
-
-      Encode the extension array as an enumerated type.
-
-      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
-                              NaN values will be encoded as non-negative integers and will not drop the
-                              NaN from the uniques of the values.
-
-                              .. versionadded:: 1.5.0
-      :type use_na_sentinel: bool, default True
-
-      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
-                  ExtensionArray.
-                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
-
-                  .. note::
-
-                     uniques will *not* contain an entry for the NA value of
-                     the ExtensionArray if there are any missing values present
-                     in `self`.
-
-      .. seealso::
-
-         :py:obj:`factorize`
-             Top-level factorize method that dispatches here.
-
-      .. rubric:: Notes
-
-      :meth:`pandas.factorize` offers a `sort` keyword as well.
-
-      .. rubric:: Examples
-
-      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
-      ...                       "2014-03", "2014-03"], freq="M")
-      >>> arr, idx = idx1.factorize()
-      >>> arr
-      array([0, 0, 1, 1, 2, 2])
-      >>> idx
-      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
-
-
-
    .. py:method:: isna() -> pandas.api.extensions.ExtensionArray | numpy.ndarray[Any, Any]
 
       A 1-D array indicating if each value is missing.
@@ -1260,48 +1218,6 @@ Package Contents
 
       >>> pd.array([1, 2, 3]).dtype
       Int64Dtype()
-
-
-   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
-
-      Encode the extension array as an enumerated type.
-
-      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
-                              NaN values will be encoded as non-negative integers and will not drop the
-                              NaN from the uniques of the values.
-
-                              .. versionadded:: 1.5.0
-      :type use_na_sentinel: bool, default True
-
-      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
-                  ExtensionArray.
-                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
-
-                  .. note::
-
-                     uniques will *not* contain an entry for the NA value of
-                     the ExtensionArray if there are any missing values present
-                     in `self`.
-
-      .. seealso::
-
-         :py:obj:`factorize`
-             Top-level factorize method that dispatches here.
-
-      .. rubric:: Notes
-
-      :meth:`pandas.factorize` offers a `sort` keyword as well.
-
-      .. rubric:: Examples
-
-      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
-      ...                       "2014-03", "2014-03"], freq="M")
-      >>> arr, idx = idx1.factorize()
-      >>> arr
-      array([0, 0, 1, 1, 2, 2])
-      >>> idx
-      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
-
 
 
    .. py:method:: isna()
@@ -1832,48 +1748,6 @@ Package Contents
 
       >>> pd.array([1, 2, 3]).dtype
       Int64Dtype()
-
-
-   .. py:method:: factorize(*, sort=False, use_na_sentinel=True, **kwargs)
-
-      Encode the extension array as an enumerated type.
-
-      :param use_na_sentinel: If True, the sentinel -1 will be used for NaN values. If False,
-                              NaN values will be encoded as non-negative integers and will not drop the
-                              NaN from the uniques of the values.
-
-                              .. versionadded:: 1.5.0
-      :type use_na_sentinel: bool, default True
-
-      :returns: * **codes** (*ndarray*) -- An integer NumPy array that's an indexer into the original
-                  ExtensionArray.
-                * **uniques** (*ExtensionArray*) -- An ExtensionArray containing the unique values of `self`.
-
-                  .. note::
-
-                     uniques will *not* contain an entry for the NA value of
-                     the ExtensionArray if there are any missing values present
-                     in `self`.
-
-      .. seealso::
-
-         :py:obj:`factorize`
-             Top-level factorize method that dispatches here.
-
-      .. rubric:: Notes
-
-      :meth:`pandas.factorize` offers a `sort` keyword as well.
-
-      .. rubric:: Examples
-
-      >>> idx1 = pd.PeriodIndex(["2014-01", "2014-01", "2014-02", "2014-02",
-      ...                       "2014-03", "2014-03"], freq="M")
-      >>> arr, idx = idx1.factorize()
-      >>> arr
-      array([0, 0, 1, 1, 2, 2])
-      >>> idx
-      PeriodIndex(['2014-01', '2014-02', '2014-03'], dtype='period[M]')
-
 
 
    .. py:method:: isna()
