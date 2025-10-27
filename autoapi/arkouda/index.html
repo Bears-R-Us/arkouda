@@ -16250,7 +16250,14 @@ array([‘four’, ‘one’, ‘two’]))</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.matmul">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">matmul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdaLeft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdaRight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/numeric.html#matmul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.matmul" title="Link to this definition">¶</a></dt>
-<dd><p>Compute the product of two matrices.</p>
+<dd><p>Compute the product of two matrices.
+If both are 1D, this returns a simple dot product.
+If both are 2D, it returns a conventional matrix multiplication.
+If only one is 1D, the result matches the “dot” function, so we use that.
+If neither is 1D and at least one is &gt; 2D, then broadcasting is involved.
+If pdaLeft’s shape is [(leftshape),m,n] and pdaRight’s shape is [(rightshape),n,k],
+then the result will have shape [(common shape),m,k] where common shape is a
+shape that both leftshape and rightshape can be broadcast to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -16280,9 +16287,11 @@ array([‘four’, ‘one’, ‘two’]))</p>
 <span class="go">array([1.10000000... 5.30000000... 14.6000000...])])</span>
 </pre></div>
 </div>
-<p class="rubric">Notes</p>
-<p>Server returns an error if shapes of pdaLeft and pdaRight
-are incompatible with matrix multiplication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if shapes are incompatible with matrix multiplication.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

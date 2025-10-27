@@ -4497,7 +4497,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_array_ranks</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">matmul</span> <span class="k">as</span> <span class="n">akmatmul</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">_matmul2D</span> <span class="k">as</span> <span class="n">akmatmul2D</span>
 
     <span class="n">specialCase</span> <span class="o">=</span> <span class="n">int_uint_case</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>  <span class="c1"># used to handle the (int,uint)-&gt;(float) case</span>
 
@@ -4517,14 +4517,14 @@
 
         <span class="c1">#   Second case is two 2D arrays.</span>
 
-        <span class="k">elif</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># matmul will do the shape check</span>
-            <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">akmatmul</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">specialCase</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">elif</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># matmul2D will do the shape check</span>
+            <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">akmatmul2D</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">specialCase</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
-        <span class="c1">#   Third and fourth cases involve a left argument of N-dimensions, and a right argument</span>
-        <span class="c1">#   of 1 or more.  The 1-D right argument is handled by reshaping it to 2-D and then</span>
-        <span class="c1">#   reshaping the answer to remove the extra dimension.</span>
+        <span class="c1">#   Third and fourth cases involve left or right argument of N-dimensions, and right</span>
+        <span class="c1">#   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,</span>
+        <span class="c1">#   and squeezing the answer to remove the extra dimension.</span>
 
-        <span class="k">elif</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">s3</span> <span class="o">=</span> <span class="n">_compute_dot_result_shape</span><span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pda2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_array_ranks</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -4532,18 +4532,27 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">d1_case</span> <span class="o">=</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="n">d2_case</span> <span class="o">=</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
                 <span class="n">temp_pda2</span> <span class="o">=</span> <span class="n">pda2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">pda2</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">d1_case</span> <span class="k">else</span> <span class="n">pda2</span>  <span class="c1"># type: ignore</span>
+                <span class="n">temp_pda1</span> <span class="o">=</span> <span class="n">pda1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">if</span> <span class="n">d2_case</span> <span class="k">else</span> <span class="n">pda1</span>
                 <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dot&lt;</span><span class="si">{</span><span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">temp_pda2</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dot&lt;</span><span class="si">{</span><span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">temp_pda1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">temp_pda2</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">pda1</span><span class="p">,</span>
+                        <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">temp_pda1</span><span class="p">,</span>
                         <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">temp_pda2</span><span class="p">,</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">d1_case</span><span class="p">:</span>
                     <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
                     <span class="n">newshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp_ans</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># these steps remove</span>
                     <span class="k">del</span> <span class="n">newshape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># the padded 1 from</span>
+                    <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">temp_ans</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">newshape</span><span class="p">))</span>  <span class="c1"># the shape of result</span>
+                    <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">temp_ans</span><span class="p">,</span> <span class="n">specialCase</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">d2_case</span><span class="p">:</span>
+                    <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                    <span class="n">newshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp_ans</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># these steps remove</span>
+                    <span class="k">del</span> <span class="n">newshape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># the padded 1 from</span>
                     <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">temp_ans</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">newshape</span><span class="p">))</span>  <span class="c1"># the shape of result</span>
                     <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">temp_ans</span><span class="p">,</span> <span class="n">specialCase</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
