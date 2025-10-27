@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 import builtins
 from enum import Enum
 import sys
