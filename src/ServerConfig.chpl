@@ -220,7 +220,7 @@ module ServerConfig
             serverHostname = serverHostname,
             ServerPort = ServerPort,
             numLocales = numLocales,
-            numNodes = numLocales*here.numColocales,
+            numNodes = numLocales/here.numColocales,
             numPUs = here.numPUs(),
             maxTaskPar = here.maxTaskPar,
             physicalMemory = getPhysicalMemHere(),
