@@ -44,6 +44,15 @@ class TestClient:
 
         assert ak.client.connected
 
+    def test_locale_info(self):
+        config = ak.client.get_config()
+        assert config["numLocales"] > 0
+        assert config["numNodes"] > 0
+        assert config["numPUs"] > 0
+        assert config["maxTaskPar"] > 0
+        assert config["physicalMemory"] > 0
+        assert config["numNodes"] <= config["numLocales"]
+
     def test_disconnect_on_disconnected_client(self):
         """
         Tests the ak.disconnect() method invoked on a client that is already
