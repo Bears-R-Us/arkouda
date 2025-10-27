@@ -91,7 +91,7 @@ def argsort(
     from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pandas.categorical import Categorical
 
-    check_type("pda", value=pda, expected_type=Union[pdarray, Strings, Categorical])
+    check_type("argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
     ndim = pda.ndim
     valid, axis_ = _integer_axis_validation(axis, ndim)
@@ -101,7 +101,6 @@ def argsort(
     size = pda.size
     if size == 0:
         return zeros(0, dtype=int64)
-    check_type("pda", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
     # Categorical / Strings (always 1D; axis must be 0)
     if isinstance(pda, Categorical):
@@ -182,7 +181,7 @@ def coargsort(
     from arkouda.numpy import cast as akcast
     from arkouda.pandas.categorical import Categorical
 
-    check_type("arrays", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
+    check_type("coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
 
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
