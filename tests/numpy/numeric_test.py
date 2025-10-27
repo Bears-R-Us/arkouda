@@ -9,6 +9,7 @@ import arkouda as ak
 from arkouda.client import get_array_ranks, get_max_array_rank
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import str_
+from arkouda.testing import assert_almost_equal
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent
 
@@ -1068,12 +1069,6 @@ class TestNumeric:
     def test_tril(self, data_type, prob_size):
         size = int(sqrt(prob_size))
 
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
-
         # test on one square and two non-square matrices
 
         for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
@@ -1083,7 +1078,7 @@ class TestNumeric:
             for diag in sweep:
                 npa = np.tril(nda, diag)
                 ppa = ak.tril(pda, diag).to_ndarray()
-                assert check(npa, ppa, data_type)
+                assert_almost_equal(npa, ppa)
 
     # triu works on ints, floats, or bool
 
@@ -1092,12 +1087,6 @@ class TestNumeric:
     @pytest.mark.skip_if_rank_not_compiled(2)
     def test_triu(self, data_type, prob_size):
         size = int(sqrt(prob_size))
-
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
 
         # test on one square and two non-square matrices
 
@@ -1108,7 +1097,7 @@ class TestNumeric:
             for diag in sweep:
                 npa = np.triu(nda, diag)
                 ppa = ak.triu(pda, diag).to_ndarray()
-                assert check(npa, ppa, data_type)
+                assert_almost_equal(npa, ppa)
 
     # transpose works on ints, floats, or bool
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
@@ -1146,12 +1135,6 @@ class TestNumeric:
     def test_eye(self, data_type, prob_size):
         size = int(sqrt(prob_size))
 
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
-
         # test on one square and two non-square matrices
 
         for N, M in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
@@ -1159,7 +1142,7 @@ class TestNumeric:
             for k in sweep:
                 nda = np.eye(N, M, k, dtype=data_type)
                 pda = ak.eye(N, M, k, dt=data_type).to_ndarray()
-                assert check(nda, pda, data_type)
+                assert_almost_equal(nda, pda)
 
     # matmul works on ints, floats, or bool
     @pytest.mark.skip_if_rank_not_compiled(2)
@@ -1171,12 +1154,6 @@ class TestNumeric:
         high1 = 10 if data_type1 != ak.bool_ else 2
         high2 = 10 if data_type2 != ak.bool_ else 2
 
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
-
         # test on one square and two non-square products
 
         for rows, cols in [(size, size), (size + 1, size - 1), (size - 1, size + 1)]:
@@ -1186,7 +1163,41 @@ class TestNumeric:
             ndaRight = pdaRight.to_ndarray()
             akProduct = ak.matmul(pdaLeft, pdaRight)
             npProduct = np.matmul(ndaLeft, ndaRight)
-            assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
+            assert_almost_equal(npProduct, akProduct.to_ndarray())
+
+    @pytest.mark.skip_if_rank_not_compiled((2, 3))
+    @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_matmulmultidim(self, data_type1, data_type2, prob_size):
+        # In the pdarray generations below, using .astype avoids a TypeError when the
+        # type is bool.
+        # Note that the left argument is always data_type1, and the right data_type2.
+
+        nda_1d = np.arange(10).astype(data_type2)
+        pda_1d = ak.array(nda_1d)
+        nda_nd = np.arange(60).reshape(2, 3, 10).astype(data_type1)
+        pda_nd = ak.array(nda_nd)
+        akProduct = ak.matmul(pda_nd, pda_1d)
+        npProduct = np.matmul(nda_nd, nda_1d)
+        assert_almost_equal(npProduct, akProduct.to_ndarray())
+
+        nda_1d = np.arange(10).astype(data_type1)
+        nda_nd = np.arange(60).reshape(2, 10, 3).astype(data_type2)
+        pda_1d = ak.array(nda_1d)
+        pda_nd = ak.array(nda_nd)
+        akProduct = ak.matmul(pda_1d, pda_nd)
+        npProduct = np.matmul(nda_1d, nda_nd)
+        assert_almost_equal(npProduct, akProduct.to_ndarray())
+
+        ssize = prob_size // 20 if prob_size > 20 else 3
+        nda_nd = np.arange(20 * ssize).reshape(2, 10, ssize).astype(data_type1)
+        pda_nd = ak.array(nda_nd)
+        nda_md = np.arange(5 * ssize).astype(data_type2).reshape(1, ssize, 5)
+        pda_md = ak.array(nda_md)
+        akProduct = ak.matmul(pda_nd, pda_md)
+        npProduct = np.matmul(nda_nd, nda_md)
+        assert_almost_equal(npProduct, akProduct.to_ndarray())
 
     # Notes about array_equal:
     #   Strings compared to non-strings are always not equal.

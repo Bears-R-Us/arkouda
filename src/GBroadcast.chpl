@@ -1,4 +1,4 @@
-module Broadcast {
+module GBroadcast {
   use AryUtil;
   use SymArrayDmap;
   use CommAggregation;
@@ -21,7 +21,7 @@ module Broadcast {
    * then return the array of group labels corresponding to the 
    * original array. Intended to be used with arkouda.GroupBy.
    */
-  proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] ?t) throws {
+  proc gBroadcastImpl(perm: [?D] int, segs: [?sD] int, vals: [sD] ?t) throws {
     if sD.size == 0 {
       // early out if size 0
       return makeDistArray(D.size, t);
@@ -114,7 +114,7 @@ module Broadcast {
    * then return the array of group labels corresponding to the 
    * original array. Intended to be used with arkouda.GroupBy.
    */
-  proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] bool) throws {
+  proc gBroadcastImpl(perm: [?D] int, segs: [?sD] int, vals: [sD] bool) throws {
     if sD.size == 0 {
       // early out if size 0
       return makeDistArray(D.size, bool);
@@ -202,7 +202,7 @@ module Broadcast {
    * is a compressed sparse row matrix, then expand a row
    * vector such that each nonzero receives its row's value.
    */
-  proc broadcast(segs: [?sD] int, vals: [sD] ?t, size: int) throws {
+  proc gBroadcastImpl(segs: [?sD] int, vals: [sD] ?t, size: int) throws {
     if sD.size == 0 {
       // early out if size 0
       return makeDistArray(size, t);
@@ -276,7 +276,7 @@ module Broadcast {
     }
   }
 
-  proc broadcast(segs: [?sD] int, vals: [sD] bool, size: int) throws {
+  proc gBroadcastImpl(segs: [?sD] int, vals: [sD] bool, size: int) throws {
     if sD.size == 0 {
       // early out if size 0
       return makeDistArray(size, bool);
