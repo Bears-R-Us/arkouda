@@ -3034,6 +3034,40 @@ class Strings:
 
         return Strings.from_return_msg(cast(str, rep_msg))
 
+    @staticmethod
+    def concatenate_uniquely2(strings: List[Strings]) -> Strings:
+        """
+        Concatenates a list of Strings into a single Strings object
+        containing only unique strings. Order may not be preserved.
+
+        Parameters
+        ----------
+        strings : List[Strings]
+            List of segmented string objects to concatenate.
+
+        Returns
+        -------
+        Strings
+            A new Strings object containing the unique values.
+        """
+        from arkouda.client import generic_msg
+
+        if not strings:
+            raise ValueError("Must provide at least one Strings object")
+
+        # Extract name of each SegmentedString
+        names = [s.name for s in strings]
+
+        # Send the command to the server
+        rep_msg = generic_msg(
+            cmd="concatenateUniquely2",
+            args={
+                "names": names,
+            },
+        )
+
+        return Strings.from_return_msg(cast(str, rep_msg))
+
     def argsort(
         self,
         algorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD,

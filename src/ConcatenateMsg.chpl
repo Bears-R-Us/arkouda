@@ -653,4 +653,100 @@ module ConcatenateMsg
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     registerFunction("concatenateUniquely", concatenateUniqueStrMsg, getModuleName());
+
+    proc concatenateUniqueStrMsg2(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+
+        var repMsg: string;
+        var names = msgArgs.get("names").toScalarList(string);
+        var n = names.size;
+
+
+        cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                    "concatenate unique strings from %i arrays: %?".format(n, names));
+
+        // Each locale gets its own set
+        var localeSets = makeDistArray(numLocales, set(string));
+
+        // Initialize sets
+        coforall loc in Locales do on loc {
+            localeSets[here.id] = new set(string);
+        }
+
+        var stringsInLocale: [PrivateSpace] innerArray(string);
+
+        // Collect all unique strings from each input SegmentedString
+        for i in 0..#names.size {
+            var rawName = names[i];
+            var (strName, _) = rawName.splitMsgToTuple('+', 2);
+            try {
+                var segString = getSegString(strName, st);
+                cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                            "Processing SegString: %s".format(strName));
+
+                // Grab the strings by locale and throw them in the sets.
+                var stringArrays = balancedSegStringRetrieval(segString);
+                coforall loc in Locales do on loc {
+                    ref myStrings = stringArrays[here.id].Arr;
+                    var locSet = new set(string);
+                    
+                    // Reduce to unique strings within this locale
+                    forall str in myStrings with (+ reduce locSet) {
+                        locSet.add(str);
+                    }
+
+                    // Throw it in my locale's set
+                    localeSets[here.id] |= locSet;
+
+                    // Convert to innerArray
+                    if i == names.size - 1 {
+                      stringsInLocale[here.id] = new innerArray({0..#localeSets[here.id].size}, string);
+                      stringsInLocale[here.id].Arr = localeSets[here.id].toArray();
+                    }
+                }
+
+            } catch e: Error {
+                throw getErrorWithContext(
+                    msg="lookup for %s failed".format(rawName),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");
+            }
+        }
+
+        // Repartition the strings by their hash
+        var distributedStrings = repartitionByHashArray(string, stringsInLocale);
+
+        coforall loc in Locales do on loc {
+
+            ref myStrings = distributedStrings[here.id].Arr;
+            var strSet = new set(string);
+
+            // Perform another reduction by uniqueness on the strings in this set
+            forall str in myStrings with (+ reduce strSet) {
+              strSet.add(str);
+            }
+
+            // This is maybe a little unusual. I tried just overwriting myStrings directly
+            // But I think that caused some memory error for some reason.
+            // I think because the domain didn't match...?
+            distributedStrings[here.id] = new innerArray({0..#strSet.size}, string);
+            ref myStrings2 = distributedStrings[here.id].Arr;
+            myStrings2 = strSet.toArray();
+
+        }
+
+        // Convert back from innerArray(string) to SegString
+        var retString = segStringFromInnerArray(distributedStrings, st);
+
+        // Store the result in the symbol table and return
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
+
+        cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                    "Created unique concatenated SegmentedString: %s".format(st.attrib(retString.name)));
+
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+registerFunction("concatenateUniquely2", concatenateUniqueStrMsg2, getModuleName());
 }
