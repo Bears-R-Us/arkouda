@@ -562,6 +562,7 @@
     <span class="s2">&quot;rotl&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rotr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cov&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;allclose&quot;</span><span class="p">,</span>
     <span class="s2">&quot;corr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;divmod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
@@ -4617,6 +4618,73 @@
 
     <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cov&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">})</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="allclose">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.allclose">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">allclose</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns True if all elements of ``a`` and ``b`` are equal within a tolerance.</span>
+
+<span class="sd">    This function compares two arrays elementwise and returns True if they are</span>
+<span class="sd">    equal within the tolerance defined by the parameters ``rtol`` and ``atol``.</span>
+<span class="sd">    The comparison uses the formula: absolute(a - b) &lt;= (atol + rtol * absolute(b))</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : pdarray</span>
+<span class="sd">        First array to compare.</span>
+<span class="sd">    b : pdarray</span>
+<span class="sd">        Second array to compare.</span>
+<span class="sd">    rtol : float, optional</span>
+<span class="sd">        Relative tolerance. Default is 1e-5.</span>
+<span class="sd">    atol : float, optional</span>
+<span class="sd">        Absolute tolerance. Default is 1e-8.</span>
+<span class="sd">    equal_nan : bool, optional</span>
+<span class="sd">        Whether to consider NaNs in corresponding positions as equal.</span>
+<span class="sd">        Default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if all elements are equal within the specified tolerance,</span>
+<span class="sd">        False otherwise.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If either ``a`` or ``b`` is not a ``pdarray``.</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If either array has dtype ``bigint``, which is not supported.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``a`` and ``b`` have different shapes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.array([1.0, 2.0, 3.0])</span>
+<span class="sd">    &gt;&gt;&gt; y = ak.array([1.0, 2.00001, 2.99999])</span>
+<span class="sd">    &gt;&gt;&gt; ak.allclose(x, y)</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;a and b must be pdarray instances&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">bigint</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">bigint</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;bigint is not supported for allclose&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span>
+        <span class="n">parse_single_value</span><span class="p">(</span>
+            <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;allclose&lt;</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s2">&quot;rtol&quot;</span><span class="p">:</span> <span class="n">rtol</span><span class="p">,</span> <span class="s2">&quot;atol&quot;</span><span class="p">:</span> <span class="n">atol</span><span class="p">,</span> <span class="s2">&quot;equal_nan&quot;</span><span class="p">:</span> <span class="n">equal_nan</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
     <span class="p">)</span></div>
 
 

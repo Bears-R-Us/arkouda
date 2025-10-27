@@ -179,6 +179,7 @@ Functions
 .. autoapisummary::
 
    arkouda.numpy.abs
+   arkouda.numpy.allclose
    arkouda.numpy.append
    arkouda.numpy.arange
    arkouda.numpy.arccos
@@ -4313,6 +4314,43 @@ Package Contents
 
 
    .. py:method:: copy_with(params)
+
+
+.. py:function:: allclose(a: pdarray, b: pdarray, rtol: float = 1e-05, atol: float = 1e-08, equal_nan: bool = False) -> bool
+
+   Returns True if all elements of ``a`` and ``b`` are equal within a tolerance.
+
+   This function compares two arrays elementwise and returns True if they are
+   equal within the tolerance defined by the parameters ``rtol`` and ``atol``.
+   The comparison uses the formula: absolute(a - b) <= (atol + rtol * absolute(b))
+
+   :param a: First array to compare.
+   :type a: pdarray
+   :param b: Second array to compare.
+   :type b: pdarray
+   :param rtol: Relative tolerance. Default is 1e-5.
+   :type rtol: float, optional
+   :param atol: Absolute tolerance. Default is 1e-8.
+   :type atol: float, optional
+   :param equal_nan: Whether to consider NaNs in corresponding positions as equal.
+                     Default is False.
+   :type equal_nan: bool, optional
+
+   :returns: True if all elements are equal within the specified tolerance,
+             False otherwise.
+   :rtype: bool
+
+   :raises TypeError: If either ``a`` or ``b`` is not a ``pdarray``.
+   :raises TypeError: If either array has dtype ``bigint``, which is not supported.
+   :raises ValueError: If ``a`` and ``b`` have different shapes.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> x = ak.array([1.0, 2.0, 3.0])
+   >>> y = ak.array([1.0, 2.00001, 2.99999])
+   >>> ak.allclose(x, y)
+   True
 
 
 .. py:function:: append(arr: arkouda.numpy.pdarrayclass.pdarray, values: arkouda.numpy.pdarrayclass.pdarray, axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
