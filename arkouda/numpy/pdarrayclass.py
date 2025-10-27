@@ -194,6 +194,7 @@ __all__ = [
     "rotl",
     "rotr",
     "cov",
+    "allclose",
     "corr",
     "divmod",
     "sqrt",
@@ -4088,6 +4089,70 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
 
     return parse_single_value(
         generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
+    )
+
+
+@typechecked
+def allclose(
+    a: pdarray, b: pdarray, rtol: float = 1e-5, atol: float = 1e-8, equal_nan: bool = False
+) -> bool:
+    """
+    Returns True if all elements of ``a`` and ``b`` are equal within a tolerance.
+
+    This function compares two arrays elementwise and returns True if they are
+    equal within the tolerance defined by the parameters ``rtol`` and ``atol``.
+    The comparison uses the formula: absolute(a - b) <= (atol + rtol * absolute(b))
+
+    Parameters
+    ----------
+    a : pdarray
+        First array to compare.
+    b : pdarray
+        Second array to compare.
+    rtol : float, optional
+        Relative tolerance. Default is 1e-5.
+    atol : float, optional
+        Absolute tolerance. Default is 1e-8.
+    equal_nan : bool, optional
+        Whether to consider NaNs in corresponding positions as equal.
+        Default is False.
+
+    Returns
+    -------
+    bool
+        True if all elements are equal within the specified tolerance,
+        False otherwise.
+
+    Raises
+    ------
+    TypeError
+        If either ``a`` or ``b`` is not a ``pdarray``.
+    TypeError
+        If either array has dtype ``bigint``, which is not supported.
+    ValueError
+        If ``a`` and ``b`` have different shapes.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> x = ak.array([1.0, 2.0, 3.0])
+    >>> y = ak.array([1.0, 2.00001, 2.99999])
+    >>> ak.allclose(x, y)
+    True
+    """
+    from arkouda.client import generic_msg
+
+    if not isinstance(a, pdarray) or not isinstance(b, pdarray):
+        raise TypeError("a and b must be pdarray instances")
+    if (a.dtype in [bigint]) or (b.dtype in [bigint]):
+        raise TypeError("bigint is not supported for allclose")
+    return bool(
+        parse_single_value(
+            generic_msg(
+                cmd=f"allclose<{a.dtype},{a.ndim},{b.dtype},{b.ndim}>",
+                args={"a": a, "b": b, "rtol": rtol, "atol": atol, "equal_nan": equal_nan},
+            )
+        )
     )
 
 
