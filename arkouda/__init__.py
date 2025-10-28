@@ -376,6 +376,7 @@ from arkouda.pandas import (
     ArkoudaBigintDtype,
     ArkoudaStringDtype,
     ArkoudaFloat64Dtype,
+    ArkoudaArrayLike,
 )
 from arkouda.client import (
     connect,

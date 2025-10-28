@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import builtins
-from typing import List, Optional, Sequence, Union, cast
+from typing import List, Optional, Sequence, Union
+from typing import cast
+from typing import cast as type_cast
 
 import numpy as np
 from typeguard import typechecked
@@ -141,7 +143,7 @@ class sparray:
         responseArrays = generic_msg(
             cmd=f"sparse_to_pdarrays<{self.dtype},{self.layout}>", args={"matrix": self}
         )
-        array_list = create_pdarrays(responseArrays)
+        array_list = create_pdarrays(type_cast(str, responseArrays))
         return array_list
 
     """"""

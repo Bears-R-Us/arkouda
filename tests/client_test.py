@@ -68,18 +68,14 @@ class TestClient:
         reason="should not stop/start the server in the CLIENT mode",
     )
     def test_shutdown(self):
-        """
-        Tests the ak.shutdown() method
-        """
+        """Tests the ak.shutdown() method."""
         ak.shutdown()
         pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
         # reconnect to server so subsequent tests will pass
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
 
     def test_server_sleep(self):
-        """
-        Tests ak.client.server_sleep().
-        """
+        """Tests ak.client.server_sleep()."""
         seconds = 1
         start = time.time()
         ak.client.server_sleep(seconds)

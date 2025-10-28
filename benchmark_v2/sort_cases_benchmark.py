@@ -89,9 +89,7 @@ def _generate_power_law_data():
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_power_law(benchmark, algo, dtype):
-    """
-    Power law distributed (alpha = 2.5) reals and integers in (1, 2**32).
-    """
+    """Power law distributed (alpha = 2.5) reals and integers in (1, 2**32)."""
     if dtype in pytest.dtype:
         data = _generate_power_law_data()
 
@@ -104,9 +102,7 @@ def bench_power_law(benchmark, algo, dtype):
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_rmat(benchmark, algo):
-    """
-    RMAT-generated edges (coargsort of two vertex arrays).
-    """
+    """RMAT-generated edges (coargsort of two vertex arrays)."""
     # N = number of edges = number of elements / 2
     N = pytest.prob_size // 2
     avgdegree = 10
@@ -205,9 +201,7 @@ def bench_time_like(benchmark, algo):
 @pytest.mark.benchmark(group="AK_Sort_Cases")
 @pytest.mark.parametrize("algo", SortingAlgorithm)
 def bench_ip_like(benchmark, algo):
-    """
-    Data like a 90/10 mix of IPv4 and IPv6 addresses.
-    """
+    """Data like a 90/10 mix of IPv4 and IPv6 addresses."""
     N = pytest.prob_size
     multiplicity = 10
     nunique = N // (2 * multiplicity) if N >= (2 * multiplicity) else 1

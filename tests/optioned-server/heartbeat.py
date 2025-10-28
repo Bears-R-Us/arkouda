@@ -11,9 +11,7 @@ class TestHeartbeat:
     class_server_args = []  # have 'class_server_args' => start server per class
 
     def test_heartbeat(self):
-        """
-        Ensure the client recognizes server disconnect reasonably soon.
-        """
+        """Ensure the client recognizes server disconnect reasonably soon."""
         hb_timeout = 1
         kill_delay = 0.5
         # reconnect with the specified timeout
