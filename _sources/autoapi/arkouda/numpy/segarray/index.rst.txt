@@ -544,7 +544,7 @@ Module Contents
 
 
 
-   .. py:method:: to_parquet(prefix_path, dataset='segarray', mode: str = 'truncate', compression: Optional[str] = None)
+   .. py:method:: to_parquet(prefix_path, dataset='segarray', mode: Literal['truncate', 'append'] = 'truncate', compression: Optional[str] = None)
 
       Save the SegArray object to Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
@@ -560,7 +560,7 @@ Module Contents
                    supported.
                    By default, truncate (overwrite) output files, if they exist.
                    If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {'truncate', 'append'}
       :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
                           Sets the compression type used with Parquet files
       :type compression: str (Optional)
@@ -662,7 +662,7 @@ Module Contents
 
 
 
-   .. py:method:: unique(x=None)
+   .. py:method:: unique(x=None) -> SegArray
 
       Return sub-arrays of unique values.
 

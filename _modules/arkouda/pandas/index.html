@@ -305,6 +305,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/typing/index.html">arkouda.pandas.typing</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
@@ -1081,11 +1082,11 @@
             <span class="n">perm</span> <span class="o">=</span> <span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">is_float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">):</span>
-                <span class="n">is_nan</span> <span class="o">=</span> <span class="n">ak_isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)[</span><span class="n">perm</span><span class="p">]</span>
+                <span class="n">is_nan</span> <span class="o">=</span> <span class="n">ak_isnan</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">))[</span><span class="n">perm</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">na_position</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
-                    <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">]])</span>
+                    <span class="n">perm</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">]]))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">]])</span>
+                    <span class="n">perm</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">]]))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported index dtype: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1682,7 +1683,7 @@
 <span class="sd">        determine the file format.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
@@ -1714,7 +1715,7 @@
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">]</span>
-        <span class="k">return</span> <span class="n">typecast</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>
@@ -2686,7 +2687,7 @@
 <span class="sd">        determine the file format.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">typecast</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
@@ -2708,7 +2709,7 @@
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span>
         <span class="p">]</span>
-        <span class="k">return</span> <span class="n">typecast</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;tohdf&quot;</span><span class="p">,</span>

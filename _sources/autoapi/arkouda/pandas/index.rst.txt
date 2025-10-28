@@ -22,6 +22,15 @@ Submodules
    /autoapi/arkouda/pandas/matcher/index
    /autoapi/arkouda/pandas/row/index
    /autoapi/arkouda/pandas/series/index
+   /autoapi/arkouda/pandas/typing/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.pandas.ArkoudaArrayLike
 
 
 Classes
@@ -379,6 +388,8 @@ Package Contents
       >>> pd.array([1, 2, 3]).nbytes
       27
 
+
+.. py:data:: ArkoudaArrayLike
 
 .. py:class:: ArkoudaBigintDtype
 

@@ -393,7 +393,7 @@ Module Contents
 
 
 
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute')
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute')
 
       Override of the pdarray to_hdf to store the special object type.
 

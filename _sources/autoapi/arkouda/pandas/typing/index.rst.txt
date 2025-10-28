@@ -1,0 +1,22 @@
+arkouda.pandas.typing
+=====================
+
+.. py:module:: arkouda.pandas.typing
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   arkouda.pandas.typing.ArkoudaArrayLike
+   arkouda.pandas.typing.Categorical
+
+
+Module Contents
+---------------
+
+.. py:data:: ArkoudaArrayLike
+
+.. py:data:: Categorical
+

@@ -84,7 +84,7 @@ Module Contents
    array([array([1 2]) array([3 4]) array([3 4])])
 
 
-.. py:function:: squeeze(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars], /, axis: Union[None, int, Tuple[int, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: squeeze(x: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars], /, axis: Union[None, arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Remove degenerate (size one) dimensions from an array.
 
