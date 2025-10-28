@@ -3176,9 +3176,15 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
     # Handle the multi-dim cases.  This involves finding a common shape for broadcast.
 
     else:
+        if pdaLeft.shape[-1] != pdaRight.shape[-2]:
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pdaLeft.shape} and {pdaRight.shape}"
+            )
         left_preshape = pdaLeft.shape[0:-2]  # pull off all but last 2 dims of
         right_preshape = pdaRight.shape[0:-2]  # both shapes
         try:
+            #  if the shapes are incompatible for broadcast, broadcast_shapes
+            #  will raise an error, which will be caught below.
             tmp_preshape = broadcast_shapes(left_preshape, right_preshape)
             tmp_pdaLeftshape = list(tmp_preshape)
             tmp_pdaLeftshape.append(pdaLeft.shape[-2])  # restore the last 2 dims
