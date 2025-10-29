@@ -913,9 +913,9 @@ module SegmentedString {
 
       forall (off, len, rlen) in zip(origOffsets, lengths, replacedLens) {
         if chars.isEmpty() {
-          rlen = interpretAsBytes(origVals, off..#len).strip().size + 1;
+          rlen = interpretAsBytes(origVals, off..#len, true).strip().size + 1;
         } else {
-          rlen = interpretAsBytes(origVals, off..#len).strip(chars:bytes).size + 1;
+          rlen = interpretAsBytes(origVals, off..#len, true).strip(chars:bytes).size + 1;
         }
       }
       var retVals: [makeDistDom(+ reduce replacedLens)] uint(8);
@@ -924,12 +924,12 @@ module SegmentedString {
       forall (off, len, roff) in zip(origOffsets, lengths, retOffs) with (var valAgg = newDstAggregator(uint(8))) {
         var i = 0;
         if chars.isEmpty() {
-          for b in interpretAsBytes(origVals, off..#len).strip() {
+          for b in interpretAsBytes(origVals, off..#len, true).strip() {
             valAgg.copy(retVals[roff+i], b:uint(8));
             i += 1;
           }
         } else {
-          for b in interpretAsBytes(origVals, off..#len).strip(chars:bytes) {
+          for b in interpretAsBytes(origVals, off..#len, true).strip(chars:bytes) {
             valAgg.copy(retVals[roff+i], b:uint(8));
             i += 1;
           }
@@ -1764,7 +1764,7 @@ module SegmentedString {
         localSlice.isOwned = false;
         return bytes.createAdoptingBuffer(localSlice.ptr, region.size-1, region.size);
       } else if borrow {
-        return string.createBorrowingBuffer(localSlice.ptr, region.size-1, region.size);
+        return bytes.createBorrowingBuffer(localSlice.ptr, region.size-1, region.size);
       } else {
         return bytes.createCopyingBuffer(localSlice.ptr, region.size-1, region.size);
       }
