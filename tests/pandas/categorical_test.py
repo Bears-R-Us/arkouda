@@ -341,9 +341,7 @@ class TestCategorical:
         assert ak.concatenate((a, b), ordered=False).tolist() == ak.array(["a", "b"]).tolist()
 
     def test_save_and_load_categorical(self, df_test_base_tmp):
-        """
-        Test to save categorical to hdf5 and read it back successfully
-        """
+        """Test to save categorical to hdf5 and read it back successfully."""
         num_elems = 51  # create_basic_categorical starts counting at 1, so the size is really off by one
         cat = self.create_basic_categorical(size=num_elems)
         with pytest.raises(TypeError):

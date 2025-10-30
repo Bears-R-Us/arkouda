@@ -677,9 +677,7 @@ class TestNumeric:
             ak.isnan(ark_s_string)
 
     def test_isinf_isfinite(self):
-        """
-        Test isinf and isfinite.  These return pdarrays of T/F values as appropriate.
-        """
+        """Test isinf and isfinite.  These return pdarrays of T/F values as appropriate."""
         nda = np.array([0, 9999.9999])
         pda = ak.array(nda)
         warnings.filterwarnings("ignore")

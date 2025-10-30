@@ -3,6 +3,7 @@
 from arkouda.numpy.pdarrayclass import (
     RegistrationError,
     all,
+    allclose,
     any,
     argmax,
     argmaxk,
@@ -11,7 +12,6 @@ from arkouda.numpy.pdarrayclass import (
     clear,
     clz,
     corr,
-    allclose,
     cov,
     ctz,
     divmod,
