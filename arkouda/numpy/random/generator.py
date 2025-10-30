@@ -937,8 +937,7 @@ class Generator:
         from arkouda.client import generic_msg
         from arkouda.numpy import cast as akcast
         from arkouda.numpy.pdarraycreation import array as akarray
-        from arkouda.numpy.util import _infer_shape_from_size
-        from arkouda.numpy.util import broadcast_to as bcast_to
+        from arkouda.numpy.util import _infer_shape_from_size, broadcast_to
 
         # if size == 0, that means return an empty pdarray
 
@@ -963,7 +962,9 @@ class Generator:
         # server-side poisson generation does not yet handle multi-dim, so we flatten
         # here, and will reshape the pdarray returned by the server.
 
-        _lam = bcast_to(lam, shape).flatten()
+        _lam = broadcast_to(lam, shape)
+        if ndim > 1:
+            _lam = _lam.flatten()
 
         # _lam must be float and non-negative
 
@@ -989,7 +990,7 @@ class Generator:
         # so we only advance the state by 1.
 
         self._state += 1
-        return create_pdarray(rep_msg).reshape(shape)
+        return create_pdarray(rep_msg) if ndim == 1 else create_pdarray(rep_msg).reshape(shape)
 
     def uniform(self, low=0.0, high=1.0, size=None):
         """
