@@ -391,15 +391,15 @@ jobs:
         retry_on: error
         command: |
           make install-hdf5  DEP_BUILD_DIR=$DEP_BUILD_DIR
-    - name: Make install-pytables
-      uses: nick-fields/retry@v2
-      with:
-        timeout_seconds: 1200  # or use timeout_minutes
-        max_attempts: 2
-        retry_wait_seconds: 60
-        retry_on: error
-        command: |
-          HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables DEP_BUILD_DIR=$DEP_BUILD_DIR
+#    - name: Make install-pytables
+#      uses: nick-fields/retry@v2
+#      with:
+#        timeout_seconds: 1200  # or use timeout_minutes
+#        max_attempts: 2
+#        retry_wait_seconds: 60
+#        retry_on: error
+#        command: |
+#          HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables DEP_BUILD_DIR=$DEP_BUILD_DIR
 
 
   arkouda_chpl_portability:
