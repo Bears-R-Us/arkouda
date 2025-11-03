@@ -167,6 +167,7 @@ module ServerConfig
             const id: int;
             const name: string;
             const numPUs: int;
+            const numColocales: int;
             const maxTaskPar: int;
             const physicalMemory: int;
 
@@ -175,6 +176,7 @@ module ServerConfig
                     this.id = here.id;
                     this.name = here.name;
                     this.numPUs = here.numPUs();
+                    this.numColocales = here.numColocales;
                     this.maxTaskPar = here.maxTaskPar;
                     this.physicalMemory = getPhysicalMemHere();
                 }
@@ -190,6 +192,7 @@ module ServerConfig
             const serverHostname: string;
             const ServerPort: int;
             const numLocales: int;
+            const numNodes: int;
             const numPUs: int;
             const maxTaskPar: int;
             const physicalMemory: int;
@@ -217,6 +220,7 @@ module ServerConfig
             serverHostname = serverHostname,
             ServerPort = ServerPort,
             numLocales = numLocales,
+            numNodes = numLocales/here.numColocales,
             numPUs = here.numPUs(),
             maxTaskPar = here.maxTaskPar,
             physicalMemory = getPhysicalMemHere(),

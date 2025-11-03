@@ -44,6 +44,15 @@ class TestClient:
 
         assert ak.client.connected
 
+    def test_locale_info(self):
+        config = ak.client.get_config()
+        assert config["numLocales"] > 0
+        assert config["numNodes"] > 0
+        assert config["numPUs"] > 0
+        assert config["maxTaskPar"] > 0
+        assert config["physicalMemory"] > 0
+        assert config["numNodes"] <= config["numLocales"]
+
     def test_disconnect_on_disconnected_client(self):
         """
         Tests the ak.disconnect() method invoked on a client that is already
@@ -59,18 +68,14 @@ class TestClient:
         reason="should not stop/start the server in the CLIENT mode",
     )
     def test_shutdown(self):
-        """
-        Tests the ak.shutdown() method
-        """
+        """Tests the ak.shutdown() method."""
         ak.shutdown()
         pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
         # reconnect to server so subsequent tests will pass
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
 
     def test_server_sleep(self):
-        """
-        Tests ak.client.server_sleep().
-        """
+        """Tests ak.client.server_sleep()."""
         seconds = 1
         start = time.time()
         ak.client.server_sleep(seconds)

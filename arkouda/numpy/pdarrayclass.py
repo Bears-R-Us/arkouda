@@ -194,6 +194,7 @@ __all__ = [
     "rotl",
     "rotr",
     "cov",
+    "allclose",
     "corr",
     "divmod",
     "sqrt",
@@ -3970,7 +3971,7 @@ def dot(
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy.numeric import matmul as akmatmul
+    from arkouda.numpy.numeric import _matmul2D as akmatmul2D
 
     specialCase = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
 
@@ -3990,14 +3991,14 @@ def dot(
 
         #   Second case is two 2D arrays.
 
-        elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul will do the shape check
-            return ship(akmatmul(pda1, pda2), specialCase)  # type: ignore
+        elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul2D will do the shape check
+            return ship(akmatmul2D(pda1, pda2), specialCase)  # type: ignore
 
-        #   Third and fourth cases involve a left argument of N-dimensions, and a right argument
-        #   of 1 or more.  The 1-D right argument is handled by reshaping it to 2-D and then
-        #   reshaping the answer to remove the extra dimension.
+        #   Third and fourth cases involve left or right argument of N-dimensions, and right
+        #   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,
+        #   and squeezing the answer to remove the extra dimension.
 
-        elif pda1.ndim > 1 and pda2.ndim >= 1:
+        elif pda1.ndim >= 1 and pda2.ndim >= 1:
             s3 = _compute_dot_result_shape(pda1.shape, pda2.shape)
             if len(s3) not in get_array_ranks():
                 raise ValueError(
@@ -4005,18 +4006,27 @@ def dot(
                 )
             else:
                 d1_case = pda2.ndim == 1
+                d2_case = pda1.ndim == 1
                 temp_pda2 = pda2.reshape(pda2.size, 1) if d1_case else pda2  # type: ignore
+                temp_pda1 = pda1.reshape(1, pda1.size) if d2_case else pda1
                 repMsg = generic_msg(
-                    cmd=f"dot<{pda1.dtype},{pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
+                    cmd=f"dot<{pda1.dtype},{temp_pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
                     args={
-                        "a": pda1,
+                        "a": temp_pda1,
                         "b": temp_pda2,
                     },
                 )
+
                 if d1_case:
                     temp_ans = create_pdarray(repMsg)
                     newshape = list(temp_ans.shape)  # these steps remove
                     del newshape[-1]  # the padded 1 from
+                    temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
+                    return ship(temp_ans, specialCase)
+                elif d2_case:
+                    temp_ans = create_pdarray(repMsg)
+                    newshape = list(temp_ans.shape)  # these steps remove
+                    del newshape[0]  # the padded 1 from
                     temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
                     return ship(temp_ans, specialCase)
                 else:
@@ -4088,6 +4098,70 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
 
     return parse_single_value(
         generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
+    )
+
+
+@typechecked
+def allclose(
+    a: pdarray, b: pdarray, rtol: float = 1e-5, atol: float = 1e-8, equal_nan: bool = False
+) -> bool:
+    """
+    Returns True if all elements of ``a`` and ``b`` are equal within a tolerance.
+
+    This function compares two arrays elementwise and returns True if they are
+    equal within the tolerance defined by the parameters ``rtol`` and ``atol``.
+    The comparison uses the formula: absolute(a - b) <= (atol + rtol * absolute(b))
+
+    Parameters
+    ----------
+    a : pdarray
+        First array to compare.
+    b : pdarray
+        Second array to compare.
+    rtol : float, optional
+        Relative tolerance. Default is 1e-5.
+    atol : float, optional
+        Absolute tolerance. Default is 1e-8.
+    equal_nan : bool, optional
+        Whether to consider NaNs in corresponding positions as equal.
+        Default is False.
+
+    Returns
+    -------
+    bool
+        True if all elements are equal within the specified tolerance,
+        False otherwise.
+
+    Raises
+    ------
+    TypeError
+        If either ``a`` or ``b`` is not a ``pdarray``.
+    TypeError
+        If either array has dtype ``bigint``, which is not supported.
+    ValueError
+        If ``a`` and ``b`` have different shapes.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> x = ak.array([1.0, 2.0, 3.0])
+    >>> y = ak.array([1.0, 2.00001, 2.99999])
+    >>> ak.allclose(x, y)
+    True
+    """
+    from arkouda.client import generic_msg
+
+    if not isinstance(a, pdarray) or not isinstance(b, pdarray):
+        raise TypeError("a and b must be pdarray instances")
+    if (a.dtype in [bigint]) or (b.dtype in [bigint]):
+        raise TypeError("bigint is not supported for allclose")
+    return bool(
+        parse_single_value(
+            generic_msg(
+                cmd=f"allclose<{a.dtype},{a.ndim},{b.dtype},{b.ndim}>",
+                args={"a": a, "b": b, "rtol": rtol, "atol": atol, "equal_nan": equal_nan},
+            )
+        )
     )
 
 

@@ -30,13 +30,13 @@ from arkouda import array_api
 from arkouda.numpy.pdarraycreation import scalar_array
 
 from ._dtypes import (
+    _boolean_dtypes,
     _complex_floating_dtypes,
     _dtype_categories,
     _floating_dtypes,
     _integer_dtypes,
     _result_type,
 )
-from ._dtypes import _boolean_dtypes  # _all_dtypes,; _integer_or_boolean_dtypes,; _numeric_dtypes,
 from .creation_functions import asarray
 
 

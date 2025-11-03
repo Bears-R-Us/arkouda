@@ -42,9 +42,7 @@ def _create_np_array(size, op, dtype, seed):
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_create(benchmark, op, dtype):
-    """
-    Measures array creation performance (Arkouda or NumPy based on flags).
-    """
+    """Measures array creation performance (Arkouda or NumPy based on flags)."""
     N = pytest.N
 
     if dtype in pytest.dtype:

@@ -95,6 +95,7 @@ from arkouda.numpy import (
     add_docstring,
     add_newdoc,
     all,
+    allclose,
     all_scalars,
     any,
     append,
@@ -375,6 +376,7 @@ from arkouda.pandas import (
     ArkoudaBigintDtype,
     ArkoudaStringDtype,
     ArkoudaFloat64Dtype,
+    ArkoudaArrayLike,
 )
 from arkouda.client import (
     connect,

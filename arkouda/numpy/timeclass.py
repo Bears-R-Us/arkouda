@@ -233,12 +233,12 @@ class _AbstractBaseTime(pdarray):
         file_type: str = "distribute",
     ):
         """Override of the pdarray to_hdf to store the special dtype."""
-        from typing import cast as typecast
+        from typing import cast as type_cast
 
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
-        return typecast(
+        return type_cast(
             str,
             generic_msg(
                 cmd="tohdf",

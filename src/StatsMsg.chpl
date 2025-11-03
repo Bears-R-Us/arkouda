@@ -1,6 +1,6 @@
 module StatsMsg {
     use ServerConfig;
-
+    use BigInteger;
     use AryUtil;
     use Reflection;
     use ServerErrors;
@@ -103,6 +103,35 @@ module StatsMsg {
             my = mean(y);
 
       return (+ reduce ((x:real - mx) * (y:real - my))) / (dx.size - 1):real;
+    }
+    
+    @arkouda.registerCommand()
+    proc allclose(const ref a: [?da] ?ta, const ref b: [?db] ?tb,
+                  rtol: real, atol: real, equal_nan: bool = false): bool throws
+      where da.rank == db.rank && ta!=bigint && tb!=bigint
+    {
+      if da.shape != db.shape then
+        throw new Error("a and b must have the same shape");
+
+      // Convert bools to real
+      const ra = if ta == bool then a:int(32):real else a:real;
+      const rb = if tb == bool then b:int(32):real else b:real;
+
+      const a_isnan = isNan(ra);
+      const b_isnan = isNan(rb);
+      const a_isinf = isInf(ra);
+      const b_isinf = isInf(rb);
+
+      // inf handling
+      const inf_ok = (a_isinf & b_isinf) & (((ra > 0.0) == (rb > 0.0)));
+
+      // NaN handling
+      const nan_ok = equal_nan & (a_isnan & b_isnan);
+
+      const finite = !(a_isnan | b_isnan | a_isinf | b_isinf);
+      const close_ok = finite & (abs(ra - rb) <= atol + rtol * abs(rb));
+
+      return && reduce (inf_ok | nan_ok | close_ok);
     }
 
     @arkouda.registerCommand()
