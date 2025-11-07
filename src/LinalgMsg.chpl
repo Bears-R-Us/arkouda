@@ -426,8 +426,8 @@ module LinalgMsg {
     // m,n and n,k, giving a product of m,k).
 
     @arkouda.registerCommand(name="multidimmatmul")
-    proc multidimmatmul(a: [?d] ?ta, b: [d] ?tb): [] np_ret_type(ta,tb) throws
-    where ( (d.rank >=2)
+    proc multidimmatmul(a: [?da] ?ta, b: [?db] ?tb): [] np_ret_type(ta,tb) throws
+    where ( (da.rank >=2 && da.rank == db.rank)
         && (ta == int || ta == real || ta == bool || ta == uint )
         && (tb == int || tb == real || tb == bool || tb == uint )
            ) {
@@ -445,9 +445,9 @@ module LinalgMsg {
             var bIdx = outIdx;
 
             var total: np_ret_type(ta,tb) = 0:np_ret_type(ta,tb);
-            for i in 0..<a.shape(d.rank-1) {
-                aIdx = outIdx; aIdx[d.rank-1] = i; // aIdx = ( (front dims), m, loop variable)
-                bIdx = outIdx; bIdx[d.rank-2] = i; // bIdx = ( (front dims), loop variable, k)
+            for i in 0..<a.shape(da.rank-1) {
+                aIdx = outIdx; aIdx[da.rank-1] = i; // aIdx = ( (front dims), m, loop variable)
+                bIdx = outIdx; bIdx[da.rank-2] = i; // bIdx = ( (front dims), loop variable, k)
                 if np_ret_type(ta,tb) == bool {
                     total |= a[aIdx]:bool && b[bIdx]:bool;
                 } else {
