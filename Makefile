@@ -114,8 +114,8 @@ install-deps: install-zmq install-hdf5 install-arrow install-iconv install-idn2
 deps-download-source: zmq-download-source hdf5-download-source arrow-download-source iconv-download-source idn2-download-source
 
 DEP_DIR := dep
-DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
-DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)/build
+DEP_INSTALL_DIR ?= $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
+DEP_BUILD_DIR ?= $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)/build
 
 ZMQ_VER := 4.3.5
 ZMQ_NAME_VER := zeromq-$(ZMQ_VER)
@@ -254,7 +254,7 @@ pytables-download-source:
 
 install-pytables: pytables-download-source
 	@echo "Installing PyTables"
-	cd $(DEP_BUILD_DIR) && python3 -m pip install PyTables/
+	cd $(DEP_BUILD_DIR) && python3 -m pip install --no-binary=PyTables ./PyTables
 
 pytables-clean:
 	rm -rf $(DEP_BUILD_DIR)/PyTables

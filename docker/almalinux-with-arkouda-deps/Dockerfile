@@ -16,6 +16,22 @@ ENV CHPL_HOME=/chapel-$CHPL_VERSION \
     ARKOUDA_QUICK_COMPILE=true \
     ARKOUDA_SKIP_CHECK_DEPS=True
 
+ENV DEP_BUILD_DIR=/opt/dep/build \
+    DEP_INSTALL_DIR=/opt/dep
+
+# HDF5 layout
+ENV HDF5_DIR=${DEP_INSTALL_DIR}/hdf5-install
+ENV HDF5_INCDIR=${HDF5_DIR}/include \
+    HDF5_LIBDIR=${HDF5_DIR}/lib
+
+# Safe prepend to PKG_CONFIG_PATH:
+# - If PKG_CONFIG_PATH was already set, keep it and prepend ours
+# - If not set, just set ours
+ENV PKG_CONFIG_PATH=${HDF5_DIR}/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
+
+# C/C++ flags that use the HDF5 dirs
+ENV CFLAGS="-I${HDF5_INCDIR}" \
+    LDFLAGS="-L${HDF5_LIBDIR}"
 
 
 #   Set up environment variables
@@ -43,7 +59,7 @@ RUN env >> ~/.bashrc.chpl
 #   Download all the dependencies necessary for make install-deps
 #  Fix specific commit https://github.com/Bears-R-Us/arkouda/pull/4342
 RUN cd /opt && git clone https://github.com/Bears-R-Us/arkouda.git  && cd /opt/arkouda && git checkout 33298be6ab0d75125ee6513e1d5375485c70676c
-RUN cd /opt/arkouda && source ~/.bashrc && make install-deps DEP_BUILD_DIR=/dep/build
+RUN cd /opt/arkouda && source ~/.bashrc && make install-deps DEP_BUILD_DIR=$DEP_BUILD_DIR DEP_INSTALL_DIR=$DEP_INSTALL_DIR
 
 #   Download all the python packages necessary for the pip install
 COPY requirements.txt /root/
