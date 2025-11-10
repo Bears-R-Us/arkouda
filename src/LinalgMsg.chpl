@@ -427,11 +427,12 @@ module LinalgMsg {
 
     @arkouda.registerCommand(name="multidimmatmul")
     proc multidimmatmul(a: [?da] ?ta, b: [?db] ?tb): [] np_ret_type(ta,tb) throws
-    where ( (da.rank >=2 && da.rank == db.rank)
+    where ( (da.rank >= 2 && da.rank == db.rank)
         && (ta == int || ta == real || ta == bool || ta == uint )
         && (tb == int || tb == real || tb == bool || tb == uint )
            ) {
         param pn = Reflection.getRoutineName();
+        const dRank = da.rank;  // since da.rank must == db.rank, we'll just refer to one rank below
 
         // make an array of the appropriate shape and type to hold the output
 
@@ -445,9 +446,9 @@ module LinalgMsg {
             var bIdx = outIdx;
 
             var total: np_ret_type(ta,tb) = 0:np_ret_type(ta,tb);
-            for i in 0..<a.shape(da.rank-1) {
-                aIdx = outIdx; aIdx[da.rank-1] = i; // aIdx = ( (front dims), m, loop variable)
-                bIdx = outIdx; bIdx[da.rank-2] = i; // bIdx = ( (front dims), loop variable, k)
+            for i in 0..<a.shape(dRank-1) {
+                aIdx = outIdx; aIdx[dRank-1] = i; // aIdx = ( (front dims), m, loop variable)
+                bIdx = outIdx; bIdx[dRank-2] = i; // bIdx = ( (front dims), loop variable, k)
                 if np_ret_type(ta,tb) == bool {
                     total |= a[aIdx]:bool && b[bIdx]:bool;
                 } else {
