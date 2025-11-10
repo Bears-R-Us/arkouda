@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Usage: time python3 server_util/test/parallel_start_test.py -d `pwd`/test
-"""
+"""Usage: time python3 server_util/test/parallel_start_test.py -d `pwd`/test."""
 
 import optparse
 import os

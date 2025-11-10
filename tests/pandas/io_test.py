@@ -1849,9 +1849,7 @@ class TestHDF5:
                 assert (arr == ret_arr).all()
 
     def test_uint64_to_from_HDF5(self, hdf_test_base_tmp):
-        """
-        Test our ability to read/write uint64 to HDF5
-        """
+        """Test our ability to read/write uint64 to HDF5."""
         npa1 = np.array(
             [18446744073709551500, 18446744073709551501, 18446744073709551502],
             dtype=np.uint64,
@@ -1867,7 +1865,9 @@ class TestHDF5:
 
     def test_uint64_to_from_array(self, hdf_test_base_tmp):
         """
-        Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
+        Test conversion to and from numpy array / pdarray.
+
+        Uses unsigned 64bit integer (uint64).
         """
         npa1 = np.array(
             [18446744073709551500, 18446744073709551501, 18446744073709551502],

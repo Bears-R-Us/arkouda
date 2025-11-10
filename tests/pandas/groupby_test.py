@@ -689,7 +689,9 @@ class TestGroupBy:
 
     def test_zero_length_groupby(self):
         """
-        This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details
+        This tests groupby boundary condition on a zero length pdarray.
+
+        See Issue #900 for details.
         """
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail

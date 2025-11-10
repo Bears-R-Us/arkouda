@@ -42,17 +42,13 @@ class TestJoin:
         assert res_size == x.size == y.size
 
     def test_join_on_eq_with_abs_dt_outside_window(self):
-        """
-        Should get 0 answers because N^2 matches but 0 within dt window
-        """
+        """Should get 0 answers because N^2 matches but 0 within dt window."""
         for arr in self.a1, self.a2:
             x, y = ak.join_on_eq_with_dt(arr, self.a1, self.t1, self.t2, dt=8, pred="abs_dt")
             assert 0 == x.size == y.size
 
     def test_join_on_eq_with_pos_dt_outside_window(self):
-        """
-        Should get 0 answers because N matches but 0 within dt window
-        """
+        """Should get 0 answers because N matches but 0 within dt window."""
         for dt in 8, np.int64(8):
             x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt")
             assert 0 == x.size == y.size
@@ -232,9 +228,7 @@ class TestJoin:
             ak.lookup(keys, values, args)
 
     def test_error_handling(self):
-        """
-        Tests error TypeError and ValueError handling
-        """
+        """Tests error TypeError and ValueError handling."""
         with pytest.raises(TypeError):
             ak.join_on_eq_with_dt([list(range(0, 11))], self.a1, self.t1, self.t2, 8, "pos_dt")
         with pytest.raises(TypeError):

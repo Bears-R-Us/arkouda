@@ -435,9 +435,7 @@ class TestArkoudaExtensionArray:
 
     @pytest.mark.parametrize("sort", [False, True])
     def test_factorize_float_with_nan_default_sentinel(self, sort):
-        """
-        Float array treats NaN as missing -> -1 sentinel by default.
-        """
+        """Float array treats NaN as missing -> -1 sentinel by default."""
         a = ArkoudaArray(ak.array([1.0, np.nan, 1.0, 2.0]))
         codes, uniques = a.factorize(sort=sort)
 
@@ -451,9 +449,7 @@ class TestArkoudaExtensionArray:
             assert_arkouda_array_equal(codes._data, ak.array([0, -1, 0, 1]))
 
     def test_factorize_float_with_nan_no_sentinel(self):
-        """
-        With use_na_sentinel=False, NaNs get a valid code == len(uniques).
-        """
+        """With use_na_sentinel=False, NaNs get a valid code == len(uniques)."""
         a = ArkoudaArray(ak.array([1.0, np.nan, 1.0, 2.0]))
         codes, uniques = a.factorize(sort=False, use_na_sentinel=False)
         # uniques from first appearance: [1.0, 2.0]; NaN code == 2
@@ -461,9 +457,7 @@ class TestArkoudaExtensionArray:
         assert_arkouda_array_equal(codes._data, ak.array([0, 2, 0, 1]))
 
     def test_factorize_float_all_nan(self):
-        """
-        Edge case: all values are NaN -> codes all sentinel, uniques empty.
-        """
+        """Edge case: all values are NaN -> codes all sentinel, uniques empty."""
         a = ArkoudaArray(ak.array([np.nan, np.nan]))
         codes, uniques = a.factorize()
         assert_arkouda_array_equal(uniques._data, ak.array([], dtype=float))
@@ -471,9 +465,7 @@ class TestArkoudaExtensionArray:
 
     @pytest.mark.parametrize("sort", [False, True])
     def test_factorize_strings_basic(self, sort):
-        """
-        Strings: no NA handling; empty strings are treated as normal values.
-        """
+        """Strings: no NA handling; empty strings are treated as normal values."""
         s = ak.array(["a", "b", "a", "c"])
         a = ArkoudaStringArray(s)
         codes, uniques = a.factorize(sort=sort)
@@ -487,9 +479,7 @@ class TestArkoudaExtensionArray:
             assert_arkouda_array_equal(codes._data, ak.array([0, 1, 0, 2]))
 
     def test_factorize_strings_with_empty_string(self):
-        """
-        Explicitly ensure "" is treated as a normal value (not missing).
-        """
+        """Explicitly ensure "" is treated as a normal value (not missing)."""
         s = ak.array(["", "x", "", "y"])
         a = ArkoudaStringArray(s)
         codes, uniques = a.factorize(sort=False)
@@ -519,9 +509,7 @@ class TestArkoudaExtensionArray:
             assert_arkouda_array_equal(codes._data, ak.array([2, 0, 2, 1]))
 
     def test_factorize_stability_first_appearance_vs_sorted(self):
-        """
-        Sanity check that switching sort changes code assignments consistently.
-        """
+        """Sanity check that switching sort changes code assignments consistently."""
         x = ak.array([2, 1, 3, 2])
         a = ArkoudaArray(x)
 

@@ -112,7 +112,9 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation(self, size, subtests):
         """
-        Test large-array creation using various Arkouda constructors. Ensures correct length and type.
+        Test large-array creation using various Arkouda constructors.
+
+        Ensures correct length and type.
         """
         test_cases = [
             ("ak.ones", lambda: ak.ones(size, int)),
@@ -206,9 +208,7 @@ class TestPdarrayCreation:
         ],
     )
     def test_array_creation_misc(self, input_data, subtests):
-        """
-        Ensure that ak.array() rejects unsupported inputs with a TypeError.
-        """
+        """Ensure that ak.array() rejects unsupported inputs with a TypeError."""
         with subtests.test(input_data=input_data):
             with pytest.raises(TypeError):
                 ak.array(input_data)
