@@ -408,7 +408,7 @@ def array(
         except TypeError:
             raise RuntimeError(f"Unhandled dtype {a.dtype}")
 
-    if a.ndim != 1 and a.dtype.name not in NumericDTypes:
+    if a.ndim == 0 and a.dtype.name not in NumericDTypes:
         raise TypeError("Must be an iterable or have a numeric DType")
 
     # Return multi-dimensional pdarray if a.ndim in get_array_ranks()
@@ -416,6 +416,16 @@ def array(
 
     if a.ndim not in get_array_ranks():
         raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
+
+    if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a.ravel()) and dtype is None:
+        dtype = bigint
+    if a.dtype.kind in ("i", "u", "f", "O") and (dtype == bigint or dtype == "bigint"):
+        return _bigint_from_numpy(a, max_bits)
+    elif not (
+        np.issubdtype(a.dtype, np.str_)
+        or (a.dtype == np.object_ and a.size > 0 and isinstance(a[0], str))
+    ) and (dtype == bigint or dtype == "bigint"):
+        raise TypeError("Cannot convert type to bigint")
 
     # Check if array of strings
     # if a.dtype == numpy.object_ need to check first element
@@ -441,67 +451,125 @@ def array(
         return strings if dtype is None else type_cast(Union[pdarray, Strings], akcast(strings, dtype))
 
     # If not strings, then check that dtype is supported in arkouda
-    if dtype == bigint or a.dtype.name not in DTypes:
-        # 2 situations result in attempting to call `bigint_from_uint_arrays`
-        # 1. user specified i.e. dtype=ak.bigint
-        # 2. too big to fit into other numpy types (dtype = object)
-        try:
-            # attempt to break bigint into multiple uint64 arrays
-            # early out if we would have more uint arrays than can fit in max_bits
-            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
-            if all(a == 0):
-                return zeros(a.shape, dtype=bigint, max_bits=max_bits)
-            while any(a != 0) and len(uint_arrays) < early_out:
-                if isinstance(a, np.ndarray):
-                    low, a = a.astype("O") % 2**64, a.astype("O") // 2**64
-                else:
-                    low, a = a % 2**64, a // 2**64
-                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
-            return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
-        except TypeError:
-            raise RuntimeError(f"Unhandled dtype {a.dtype}")
+
+    from arkouda.numpy.util import _infer_shape_from_size
+
+    shape, ndim, full_size = _infer_shape_from_size(a.shape)
+
+    # Do not allow arrays that are too large
+    if (full_size * a.itemsize) > maxTransferBytes:
+        raise RuntimeError(
+            "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
+        )
+    if a.ndim > 1 and a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
+        # Make a copy if the array was shallow-transposed (to avoid error #3757)
+        a_ = a.copy()
     else:
-        from arkouda.numpy.util import _infer_shape_from_size
+        a_ = a
+    # Pack binary array data into a bytes object with a command header
+    # including the dtype and size. If the server has a different byteorder
+    # than our numpy array we need to swap to match since the server expects
+    # native endian bytes
+    aview = _array_memview(a_)
 
-        shape, ndim, full_size = _infer_shape_from_size(a.shape)
+    server_byte_order = get_server_byteorder()
+    if (server_byte_order == "big" and a.dtype.byteorder == "<") or (
+        server_byte_order == "little" and a.dtype.byteorder == ">"
+    ):
+        a = a.view(a.dtype.newbyteorder("S")).byteswap()
 
-        # Do not allow arrays that are too large
-        if (full_size * a.itemsize) > maxTransferBytes:
-            raise RuntimeError(
-                "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
-            )
-        if a.ndim > 1 and a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
-            # Make a copy if the array was shallow-transposed (to avoid error #3757)
-            a_ = a.copy()
+    rep_msg = generic_msg(
+        cmd=f"array<{a_.dtype.name},{ndim}>",
+        args={
+            "dtype": a_.dtype.name,
+            "shape": tuple(a_.shape),
+            "seg_string": False,
+        },
+        payload=aview,
+        send_binary=True,
+    )
+    return (
+        create_pdarray(rep_msg)
+        if dtype is None
+        else type_cast(Union[pdarray, Strings], akcast(create_pdarray(rep_msg), dtype))
+    )
+
+
+def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
+    from arkouda.client import generic_msg
+
+    a = np.asarray(np_a)
+    out_shape = a.shape
+    flat = a.ravel()
+
+    # Empty → empty bigint (shape-preserving)
+    if a.size == 0:
+        return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+
+    # Only ints/object should reach here (strings handled upstream)
+    if a.dtype.kind not in ("i", "u", "f", "O"):
+        raise TypeError(f"bigint requires numeric input, got dtype={a.dtype}")
+
+    if a.dtype.kind == "O":
+        # Only allow Python ints
+        if not all(isinstance(x, (int, float)) for x in flat):
+            raise TypeError("bigint requires numeric input, got non-numeric object")
+        if any(isinstance(x, float) for x in flat):
+            a = a.astype(np.float64, copy=False)
+
+    # Fast all-zero path or single limb path
+    if a.dtype.kind in ("i", "u", "f"):
+        if not np.any(a):
+            return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+
+        if a.dtype.kind == "i":
+            ak_a = array(a.astype(np.int64, copy=False))
+        elif a.dtype.kind == "u":
+            ak_a = array(a.astype(np.uint64, copy=False))
         else:
-            a_ = a
-        # Pack binary array data into a bytes object with a command header
-        # including the dtype and size. If the server has a different byteorder
-        # than our numpy array we need to swap to match since the server expects
-        # native endian bytes
-        aview = _array_memview(a_)
+            ak_a = array(a.astype(np.float64, copy=False))
 
-        server_byte_order = get_server_byteorder()
-        if (server_byte_order == "big" and a.dtype.byteorder == "<") or (
-            server_byte_order == "little" and a.dtype.byteorder == ">"
-        ):
-            a = a.view(a.dtype.newbyteorder("S")).byteswap()
-
-        rep_msg = generic_msg(
-            cmd=f"array<{a_.dtype.name},{ndim}>",
+        # Send a single limb array
+        return create_pdarray(
+            generic_msg(
+                cmd=f"big_int_creation_one_limb<{ak_a.dtype},{ak_a.ndim}>",
+                args={
+                    "array": ak_a,
+                    "shape": ak_a.shape,
+                    "max_bits": max_bits,
+                },
+            )
+        )
+    else:
+        if all(int(x) == 0 for x in flat):
+            return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+    any_neg = np.any(flat < 0)
+    req_bits: int
+    if any_neg:
+        req_bits = max(flat.max().bit_length(), (-flat.min()).bit_length()) + 1
+    else:
+        req_bits = flat.max().bit_length()
+    req_limbs = (req_bits + 63) // 64
+    mask = (1 << 64) - 1
+    uint_arrays: List[Union[pdarray, Strings]] = []
+    # attempt to break bigint into multiple uint64 arrays
+    while (flat != 0).any() and len(uint_arrays) < req_limbs:
+        low = flat & mask
+        flat = flat >> 64  # type: ignore
+        # low, flat = flat & mask, flat >> 64
+        uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
+    return create_pdarray(
+        generic_msg(
+            cmd=f"big_int_creation_multi_limb<{uint_arrays[0].dtype},1>",
             args={
-                "dtype": a_.dtype.name,
-                "shape": tuple(a_.shape),
-                "seg_string": False,
+                "arrays": uint_arrays,
+                "num_arrays": len(uint_arrays),
+                "signed": any_neg,
+                "shape": flat.shape,
+                "max_bits": max_bits,
             },
-            payload=aview,
-            send_binary=True,
         )
-        return (
-            create_pdarray(rep_msg)
-            if dtype is None
-            else type_cast(Union[pdarray, Strings], akcast(create_pdarray(rep_msg), dtype))
-        )
+    ).reshape(out_shape)
 
 
 @typechecked
