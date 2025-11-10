@@ -293,6 +293,8 @@ def array(
 
     if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a) and dtype is None:
         dtype = bigint
+    if a.dtype.kind in ("i", "u") and (dtype == bigint or dtype == "bigint"):
+        return _bigint_from_numpy(a, max_bits)
 
     #   Special case, to get around error when putting negative numbers in a bigint
 
@@ -418,6 +420,74 @@ def array(
             send_binary=True,
         )
         return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
+
+
+def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
+    from arkouda.client import generic_msg
+
+    a = np.asarray(np_a)
+    out_shape = a.shape
+    flat = a.ravel()
+
+    # Empty → empty bigint (shape-preserving)
+    if a.size == 0:
+        return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+
+    # Only ints/object should reach here (strings handled upstream)
+    if a.dtype.kind not in ("i", "u", "O"):
+        raise TypeError(f"bigint requires integer-like input, got dtype={a.dtype}")
+
+    # Fast all-zero path or single limb path
+    if a.dtype.kind in ("i", "u"):
+        if not np.any(a):
+            return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+
+        if a.dtype.kind == "i":
+            ak_a = array(a.astype(np.int64, copy=False))
+        else:
+            ak_a = array(a.astype(np.uint64, copy=False))
+
+        # Send a single limb array
+        return create_pdarray(
+            generic_msg(
+                cmd=f"big_int_creation_one_limb<{ak_a.dtype},{ak_a.ndim}>",
+                args={
+                    "array": ak_a,
+                    "shape": ak_a.shape,
+                    "max_bits": max_bits,
+                },
+            )
+        )
+    else:
+        if all(int(x) == 0 for x in flat):
+            return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+    signs = zeros(size=(flat.size + 63) // 64, dtype=akuint64)
+    for i in range(len(flat)):
+        if flat[i] < 0:
+            signs[i >> 6] += 1 << (i & 63)
+            flat[i] *= -1
+    mask = (1 << 64) - 1
+    uint_arrays: List[Union[pdarray, Strings]] = []
+    # attempt to break bigint into multiple uint64 arrays
+    # early out if we would have more uint arrays than can fit in max_bits
+    early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
+    while (flat != 0).any() and len(uint_arrays) < early_out:
+        low = flat & mask
+        flat = flat >> 64  # type: ignore
+        # low, flat = flat & mask, flat >> 64
+        uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
+    return create_pdarray(
+        generic_msg(
+            cmd=f"big_int_creation_multi_limb<{uint_arrays[0].dtype},1>",
+            args={
+                "arrays": uint_arrays,
+                "num_arrays": len(uint_arrays),
+                "signs": signs,
+                "shape": flat.shape,
+                "max_bits": max_bits,
+            },
+        )
+    ).reshape(out_shape)
 
 
 @typechecked
