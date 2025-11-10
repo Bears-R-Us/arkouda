@@ -1,61 +1,82 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# install_arrow_quick.sh
+# Quickly install prebuilt Apache Arrow/Parquet packages from local artifacts.
+# Usage: ./install_arrow_quick.sh /path/to/build-dir
+# Expects *.deb on Debian/Ubuntu, *.rpm on RHEL/Alma/Rocky.
+# Falls back with clear errors if artifacts are missing.
 
-DEP_BUILD_DIR=$1
+set -euo pipefail
 
-
-# Check the necessary programs are installed
-if ! command -v lsb_release 2>&1 >/dev/null
-then
-    printf "\nExiting.
-    The program lsb_release could not be found.
-    Please install lsb_release and try again, or use 'make install-arrow' instead.\n\n"
-    exit 1
-fi
-
-#   get the OS, ubuntu, etc...
-OS=$(lsb_release --id --short | tr 'A-Z' 'a-z')
-
-#   If pop, replace with ubuntu
-OS_FINAL=$(echo ${OS} | awk '{gsub(/pop/,"ubuntu")}1')
-
-#   System release, such as "jammy" for "ubuntu jammy"
-OS_CODENAME=$(lsb_release --codename --short)
-
-#   System release, for example, 22 extracted from 22.04
-OS_RELEASE=$(lsb_release -rs | cut -d'.' -f1)
-
-if [[ $OS_FINAL == *"ubuntu"* ]] || [[ $OS_FINAL == *"debian"* ]]; then
-	ARROW_LINK="https://apache.jfrog.io/artifactory/arrow/${OS_FINAL}/apache-arrow-apt-source-latest-${OS_CODENAME}.deb"
-elif [[ $OS_FINAL == *"almalinux"* ]]; then
-    ARROW_LINK="https://apache.jfrog.io/ui/native/arrow/${OS_FINAL}/${OS_RELEASE}/apache-arrow-release-latest.rpm"
-elif [[ $OS_FINAL == *"centos-rc"* ]]; then
-    ARROW_LINK="https://apache.jfrog.io/ui/native/arrow/centos-rc/9-stream/apache-arrow-release-latest.rpm"
-fi
+DEP_BUILD_DIR="${1:-/opt/dep/build}"
 
 echo "Installing Apache Arrow/Parquet"
 echo "from build directory: ${DEP_BUILD_DIR}"
-mkdir -p ${DEP_BUILD_DIR}
 
-#   If the BUILD_DIR does not contain the apache-arrow file, use wget to fetch it
-if ! find ${DEP_BUILD_DIR} -name "apache-arrow*" -type f -print -quit | grep -q .; then
-	cd ${DEP_BUILD_DIR} && wget ${ARROW_LINK}
+if [[ ! -d "${DEP_BUILD_DIR}" ]]; then
+  echo "ERROR: Build directory '${DEP_BUILD_DIR}' does not exist."
+  echo "       Use 'make install-arrow' or create the directory and place artifacts there."
+  exit 2
 fi
 
-#   Now do the installs
-if [[ $OS_FINAL == *"ubuntu"* ]] || [[ $OS_FINAL == *"debian"* ]]; then
-    if [ "$EUID" -ne 0 ]; then
-        cd $DEP_BUILD_DIR && sudo apt install -y -V ./apache-arrow*.deb
-    else 
-        cd $DEP_BUILD_DIR && apt install -y -V ./apache-arrow*.deb
-    fi
-elif [[ $OS_FINAL == *"almalinux"* ]]; then
-    if [ "$EUID" -ne 0]; then
-        cd $DEP_BUILD_DIR && sudo dnf install -y ./apache-arrow*.rpm
-    else 
-        cd $DEP_BUILD_DIR && dnf install -y ./apache-arrow*.rpm
-    fi
+# ---- OS detection ----
+OS_ID=""
+if [[ -r /etc/os-release ]]; then
+  . /etc/os-release
+  OS_ID="${ID,,}"
+elif command -v lsb_release >/dev/null 2>&1; then
+  OS_ID="$(lsb_release -is 2>/dev/null | tr '[:upper:]' '[:lower:]')"
 else
-    echo "make install-arrow-quick does not support ${OS}.  Please use make install-arrow instead."
+  echo "ERROR: Cannot detect OS (no /etc/os-release, no lsb_release)."
+  echo "       Use 'make install-arrow' (source build) instead."
+  exit 1
 fi
 
+cd "${DEP_BUILD_DIR}"
 
+# Ensure globs that don't match expand to nothing
+shopt -s nullglob
+
+is_root() {
+  # POSIX-safe root detection
+  [[ "${EUID:-$(id -u)}" -eq 0 ]]
+}
+
+case "${OS_ID}" in
+  ubuntu|debian)
+    debs=(./apache-arrow*.deb)
+    if ((${#debs[@]} == 0)); then
+      echo "ERROR: No apache-arrow*.deb files found in ${DEP_BUILD_DIR}."
+      echo "       Place .deb artifacts here or use 'make install-arrow'."
+      exit 3
+    fi
+    if ! is_root; then
+      sudo apt-get update
+      sudo apt-get install -y -V "${debs[@]}"
+    else
+      apt-get update
+      apt-get install -y -V "${debs[@]}"
+    fi
+    ;;
+
+  almalinux|rhel|centos|rocky|ol|fedora)
+    rpms=(./apache-arrow*.rpm)
+    if ((${#rpms[@]} == 0)); then
+      echo "ERROR: No apache-arrow*.rpm files found in ${DEP_BUILD_DIR}."
+      echo "       Place .rpm artifacts here or use 'make install-arrow'."
+      exit 3
+    fi
+    if ! is_root; then
+      sudo dnf install -y "${rpms[@]}"
+    else
+      dnf install -y "${rpms[@]}"
+    fi
+    ;;
+
+  *)
+    echo "ERROR: install-arrow-quick is not supported on OS '${OS_ID}'."
+    echo "       Use 'make install-arrow' for a source build."
+    exit 4
+    ;;
+esac
+
+echo "✔ Arrow quick install complete."
