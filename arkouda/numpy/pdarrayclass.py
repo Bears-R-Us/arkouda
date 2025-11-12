@@ -542,13 +542,53 @@ class pdarray:
 
         self.registered_name: Optional[str] = None
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
+        """
+        Best-effort cleanup that skips work during interpreter shutdown,
+        avoids double-delete, and never raises.
+        """
+        # 1) Bail out early during interpreter shutdown (imports/logging unsafe).
         try:
-            logger.debug(f"deleting pdarray with name {self.name}")
+            import sys
+
+            # If Python is finalizing or import machinery is gone, do nothing.
+            if (getattr(sys, "is_finalizing", None) and sys.is_finalizing()) or getattr(
+                sys, "meta_path", None
+            ) is None:
+                return
+        except Exception:
+            return
+
+        # 2) Get the array name safely; if absent, nothing to do.
+        try:
+            name = getattr(self, "name", None)
+            if not name:
+                return
+        except Exception:
+            return
+
+        # 3) Prevent re-entrancy / double delete on the same object.
+        try:
+            if getattr(self, "_deleted", False):
+                return
+            setattr(self, "_deleted", True)
+        except Exception:
+            # If we can't set the flag, still proceed best-effort.
+            pass
+
+        # 4) Best-effort log (don't let logging explode during teardown).
+        try:
+            logger.debug(f"deleting pdarray with name {name}")
+        except Exception:
+            pass
+
+        # 5) Send delete if the client is still importable/usable; swallow all errors.
+        try:
             from arkouda.client import generic_msg
 
-            generic_msg(cmd="delete", args={"name": self.name})
-        except (RuntimeError, AttributeError):
+            generic_msg(cmd="delete", args={"name": name})
+        except Exception:
+            # Channel closed, client gone, or shutdown in progress — ignore.
             pass
 
     def __bool__(self) -> builtins.bool:

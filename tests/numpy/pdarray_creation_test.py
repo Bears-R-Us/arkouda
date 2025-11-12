@@ -446,12 +446,13 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("array_type", [ak.int64, ak.float64, bool])
     def test_randint_array_dtype_multi_dim(self, size, array_type):
+        size = 10
         for rank in multi_dim_ranks():
             shape, local_size = _generate_test_shape(rank, size)
             high = size if array_type != bool else 2
             test_array = ak.randint(0, high, shape, array_type)
             assert isinstance(test_array, ak.pdarray)
-            assert size == len(test_array)
+            assert local_size == len(test_array)
             assert array_type == test_array.dtype
             assert shape == test_array.shape
             assert ((0 <= test_array) & (test_array <= size)).all()

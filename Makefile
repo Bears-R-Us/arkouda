@@ -786,6 +786,10 @@ test-python:
 	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) --skip_doctest=$(skip_doctest) --html=.pytest/report.html --self-contained-html
 	python3 -m pytest -c pytest.opts.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
+COV_MIN ?= 100
+coverage:
+	python3 -m pytest -c pytest.ini  --cov --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=$(COV_MIN) --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) --skip_doctest=$(skip_doctest) --html=.pytest/report.html --self-contained-html
+
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
 test-clean:

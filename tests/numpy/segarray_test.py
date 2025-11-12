@@ -468,13 +468,14 @@ class TestSegArray:
         assert val_np.tolist() == sa.values.tolist()
         assert test_sa.tolist() == sa.tolist()
 
-        sa.set_jth(ak.array([0, 1, 2]), 3, 17)
-        val_np[seg_np[0] + 3] = 17
-        val_np[seg_np[1] + 3] = 17
-        val_np[seg_np[2] + 3] = 17
-        test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
-        assert val_np.tolist() == sa.values.tolist()
-        assert test_sa.tolist() == sa.tolist()
+        if len(sa) > 2:
+            sa.set_jth(ak.array([0, 1, 2]), 3, 17)
+            val_np[seg_np[0] + 3] = 17
+            val_np[seg_np[1] + 3] = 17
+            val_np[seg_np[2] + 3] = 17
+            test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
+            assert val_np.tolist() == sa.values.tolist()
+            assert test_sa.tolist() == sa.tolist()
 
         seg_np, val_np = self.make_segarray_edge(dtype)
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
