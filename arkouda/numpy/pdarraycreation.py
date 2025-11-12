@@ -472,10 +472,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
         req_bits = max(flat.max().bit_length(), (-flat.min()).bit_length()) + 1
     else:
         req_bits = flat.max().bit_length()
-    print(any_neg)
-    print(req_bits)
     req_limbs = (req_bits + 63) // 64
-    print(req_limbs)
     mask = (1 << 64) - 1
     uint_arrays: List[pdarray] = []
     # attempt to break bigint into multiple uint64 arrays

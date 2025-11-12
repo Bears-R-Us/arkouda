@@ -103,18 +103,11 @@ module BigIntMsg {
     {
         var repMsg: string;
 
-        writeln("Here");
-
         const num_arrays = msgArgs.get("num_arrays").getIntValue();
-        writeln("First is fine");
         const shape      = msgArgs.get("shape").toScalarTuple(int, array_nd);
-        writeln("Second is fine");
         const arrayNames = msgArgs.get("arrays").getList(num_arrays);
-        writeln("Third is fine");
         const max_bits   = msgArgs.get("max_bits").getIntValue();
-        writeln("Fourth is fine");
         const signed  = msgArgs.get("signed").toScalar(bool);
-        writeln("Problem is below this I guess");
 
         var bigIntArray = makeDistArray((...shape), bigint);
         var signs = makeDistArray((...shape), bool);
@@ -135,9 +128,7 @@ module BigIntMsg {
         if signed {
             var i = num_arrays - 1;
             const name  = arrayNames[i];
-            writeln("Maybe it's here");
             const entry = st[name]: SymEntry(array_dtype, array_nd);
-            writeln("Did we die?");
             ref   limbA = entry.a;
 
             // Per-element fold; keep everything local
@@ -162,10 +153,7 @@ module BigIntMsg {
         if num_arrays-(1 + (signed: int)) >= 0 {
             for i in num_arrays-(1 + (signed: int))..0 by -1 {
                 const name  = arrayNames[i];
-                writeln(i);
-                writeln("maybe this next one");
                 const entry = st[name]: SymEntry(array_dtype, array_nd);
-                writeln("Was it here?");
                 ref   limbA = entry.a;
 
                 // Per-element fold; keep everything local
