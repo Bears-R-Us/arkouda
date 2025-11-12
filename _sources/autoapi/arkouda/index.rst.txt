@@ -12814,23 +12814,23 @@ Package Contents
    array(['four', 'one', 'two']))
 
 
-.. py:function:: matmul(pdaLeft: arkouda.numpy.pdarrayclass.pdarray, pdaRight: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: matmul(pda_L: arkouda.numpy.pdarrayclass.pdarray, pda_R: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
 
    Compute the product of two matrices.
    If both are 1D, this returns a simple dot product.
    If both are 2D, it returns a conventional matrix multiplication.
    If only one is 1D, the result matches the "dot" function, so we use that.
    If neither is 1D and at least one is > 2D, then broadcasting is involved.
-   If pdaLeft's shape is [(leftshape),m,n] and pdaRight's shape is [(rightshape),n,k],
+   If pda_L's shape is [(leftshape),m,n] and pda_R's shape is [(rightshape),n,k],
    then the result will have shape [(common shape),m,k] where common shape is a
    shape that both leftshape and rightshape can be broadcast to.
 
-   :param pdaLeft:
-   :type pdaLeft: pdarray
-   :param pdaRight:
-   :type pdaRight: pdarray
+   :param pda_L:
+   :type pda_L: pdarray
+   :param pda_R:
+   :type pda_R: pdarray
 
-   :returns: the matrix product pdaLeft x pdaRight
+   :returns: the matrix product pda_L x pda_R
    :rtype: pdarray
 
    .. rubric:: Examples
