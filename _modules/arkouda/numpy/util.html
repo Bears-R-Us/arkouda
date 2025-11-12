@@ -1066,16 +1066,24 @@
 <div class="viewcode-block" id="broadcast_to">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.broadcast_to">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">],</span> <span class="n">shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadcast the array to the specified shape.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x: pdarray</span>
-<span class="sd">        The array to be broadcast.</span>
-<span class="sd">    shape: Tuple[int, ...]</span>
+<span class="sd">    x: int, pdarray</span>
+<span class="sd">        The int or array to be broadcast.</span>
+<span class="sd">    shape: int, Tuple[int, ...]</span>
 <span class="sd">        The shape to which the array is to be broadcast.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If x and shape are both integers, the result has shape (shape,).</span>
+<span class="sd">    If x is an int and shape is a tuple, the result has shape (shape,).</span>
+<span class="sd">    if x is a pdarray and shape is an int, then if x.shape == (shape,)</span>
+<span class="sd">        x is unchanged.  Otherwise a ValueError is raised.</span>
+<span class="sd">    If x is a pdarray and shape is a tuple, then x is broadcast to shape, if possible.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1085,7 +1093,8 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised server-side if the broadcast fails.</span>
+<span class="sd">        Raised server-side if the broadcast fails, or client-side in the case where</span>
+<span class="sd">        x is a pdarray, shape is an int, and x.shape != (shape,).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1097,22 +1106,34 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">_val_isinstance_of_union</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span> <span class="k">as</span> <span class="n">akfull</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
-            <span class="n">cast</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">,</span>
-                <span class="n">generic_msg</span><span class="p">(</span>
-                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;broadcast&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
-                        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
-                    <span class="p">},</span>
-                <span class="p">),</span>
+    <span class="k">if</span> <span class="n">_val_isinstance_of_union</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">akfull</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">shape</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operands could not be broadcast together: </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+                <span class="n">cast</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">generic_msg</span><span class="p">(</span>
+                        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;broadcast&lt;</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
+                            <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
             <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to broadcast array: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to broadcast array: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operands could not be broadcast.&quot;</span><span class="p">)</span></div>
 
 
 

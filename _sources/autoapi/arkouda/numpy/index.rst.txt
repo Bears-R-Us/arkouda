@@ -5259,19 +5259,28 @@ Package Contents
    (4, 2, 3)
 
 
-.. py:function:: broadcast_to(x: arkouda.numpy.pdarrayclass.pdarray, shape: Tuple[int, Ellipsis]) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: broadcast_to(x: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], shape: Union[int, Tuple[int, Ellipsis]]) -> arkouda.numpy.pdarrayclass.pdarray
 
    Broadcast the array to the specified shape.
 
-   :param x: The array to be broadcast.
-   :type x: pdarray
+   :param x: The int or array to be broadcast.
+   :type x: int, pdarray
    :param shape: The shape to which the array is to be broadcast.
-   :type shape: Tuple[int, ...]
+   :type shape: int, Tuple[int, ...]
+
+   .. rubric:: Notes
+
+   If x and shape are both integers, the result has shape (shape,).
+   If x is an int and shape is a tuple, the result has shape (shape,).
+   if x is a pdarray and shape is an int, then if x.shape == (shape,)
+       x is unchanged.  Otherwise a ValueError is raised.
+   If x is a pdarray and shape is a tuple, then x is broadcast to shape, if possible.
 
    :returns: A new array which is x broadcast to the provided shape.
    :rtype: pdarray
 
-   :raises ValueError: Raised server-side if the broadcast fails.
+   :raises ValueError: Raised server-side if the broadcast fails, or client-side in the case where
+       x is a pdarray, shape is an int, and x.shape != (shape,).
 
    .. rubric:: Examples
 
