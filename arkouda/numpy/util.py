@@ -647,16 +647,24 @@ def broadcast_arrays(*arrays: pdarray) -> List[pdarray]:
 
 
 @typechecked
-def broadcast_to(x: pdarray, shape: Tuple[int, ...]) -> pdarray:
+def broadcast_to(x: Union[numeric_scalars, pdarray], shape: Union[int, Tuple[int, ...]]) -> pdarray:
     """
     Broadcast the array to the specified shape.
 
     Parameters
     ----------
-    x: pdarray
-        The array to be broadcast.
-    shape: Tuple[int, ...]
+    x: int, pdarray
+        The int or array to be broadcast.
+    shape: int, Tuple[int, ...]
         The shape to which the array is to be broadcast.
+
+    Notes
+    -----
+    If x and shape are both integers, the result has shape (shape,).
+    If x is an int and shape is a tuple, the result has shape (shape,).
+    if x is a pdarray and shape is an int, then if x.shape == (shape,)
+        x is unchanged.  Otherwise a ValueError is raised.
+    If x is a pdarray and shape is a tuple, then x is broadcast to shape, if possible.
 
     Returns
     -------
@@ -666,7 +674,8 @@ def broadcast_to(x: pdarray, shape: Tuple[int, ...]) -> pdarray:
     Raises
     ------
     ValueError
-        Raised server-side if the broadcast fails.
+        Raised server-side if the broadcast fails, or client-side in the case where
+        x is a pdarray, shape is an int, and x.shape != (shape,).
 
     Examples
     --------
@@ -678,22 +687,34 @@ def broadcast_to(x: pdarray, shape: Tuple[int, ...]) -> pdarray:
 
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.dtypes import _val_isinstance_of_union
+    from arkouda.numpy.pdarraycreation import full as akfull
 
-    try:
-        return create_pdarray(
-            cast(
-                str,
-                generic_msg(
-                    cmd=f"broadcast<{x.dtype},{x.ndim},{len(shape)}>",
-                    args={
-                        "name": x,
-                        "shape": shape,
-                    },
-                ),
+    if _val_isinstance_of_union(x, numeric_scalars):
+        return akfull(shape, x, dtype=type(x))
+    elif isinstance(x, pdarray) and isinstance(shape, int):
+        if x.ndim == 1 and x.size == shape:
+            return x
+        else:
+            raise ValueError(f"Operands could not be broadcast together: {x.shape} and {shape}")
+    elif isinstance(x, pdarray) and isinstance(shape, tuple):
+        try:
+            return create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"broadcast<{x.dtype},{x.ndim},{len(shape)}>",
+                        args={
+                            "name": x,
+                            "shape": shape,
+                        },
+                    ),
+                )
             )
-        )
-    except RuntimeError as e:
-        raise ValueError(f"Failed to broadcast array: {e}")
+        except RuntimeError as e:
+            raise ValueError(f"Failed to broadcast array: {e}")
+    else:
+        raise ValueError("Operands could not be broadcast.")
 
 
 @typechecked
