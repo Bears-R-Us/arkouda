@@ -293,7 +293,7 @@ def array(
 
     if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a) and dtype is None:
         dtype = bigint
-    if a.dtype.kind in ("i", "u") and (dtype == bigint or dtype == "bigint"):
+    if a.dtype.kind in ("i", "u", "O") and (dtype == bigint or dtype == "bigint"):
         return _bigint_from_numpy(a, max_bits)
 
     #   Special case, to get around error when putting negative numbers in a bigint
@@ -437,6 +437,11 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
     if a.dtype.kind not in ("i", "u", "O"):
         raise TypeError(f"bigint requires integer-like input, got dtype={a.dtype}")
 
+    if a.dtype.kind == "O":
+        # Only allow Python ints
+        if not all(isinstance(x, int) for x in flat):
+            raise TypeError("bigint requires integer-like input, got non-int object")
+
     # Fast all-zero path or single limb path
     if a.dtype.kind in ("i", "u"):
         if not np.any(a):
@@ -461,17 +466,20 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
     else:
         if all(int(x) == 0 for x in flat):
             return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
-    signs = zeros(size=(flat.size + 63) // 64, dtype=akuint64)
-    for i in range(len(flat)):
-        if flat[i] < 0:
-            signs[i >> 6] += 1 << (i & 63)
-            flat[i] *= -1
+    any_neg = np.any(flat < 0)
+    req_bits: int
+    if any_neg:
+        req_bits = max(flat.max().bit_length(), (-flat.min()).bit_length()) + 1
+    else:
+        req_bits = flat.max().bit_length()
+    print(any_neg)
+    print(req_bits)
+    req_limbs = (req_bits + 63) // 64
+    print(req_limbs)
     mask = (1 << 64) - 1
-    uint_arrays: List[Union[pdarray, Strings]] = []
+    uint_arrays: List[pdarray] = []
     # attempt to break bigint into multiple uint64 arrays
-    # early out if we would have more uint arrays than can fit in max_bits
-    early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
-    while (flat != 0).any() and len(uint_arrays) < early_out:
+    while (flat != 0).any() and len(uint_arrays) < req_limbs:
         low = flat & mask
         flat = flat >> 64  # type: ignore
         # low, flat = flat & mask, flat >> 64
@@ -482,7 +490,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
             args={
                 "arrays": uint_arrays,
                 "num_arrays": len(uint_arrays),
-                "signs": signs,
+                "signed": any_neg,
                 "shape": flat.shape,
                 "max_bits": max_bits,
             },

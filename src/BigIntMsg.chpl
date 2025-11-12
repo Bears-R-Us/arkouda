@@ -103,15 +103,21 @@ module BigIntMsg {
     {
         var repMsg: string;
 
-        const num_arrays = msgArgs.get("num_arrays").getIntValue();
-        const shape      = msgArgs.get("shape").toScalarTuple(int, array_nd);
-        const arrayNames = msgArgs.get("arrays").getList(num_arrays);
-        const max_bits   = msgArgs.get("max_bits").getIntValue();
+        writeln("Here");
 
-        // Optional signs bitmap (1D uint(64)); may be empty (no negatives)
-        const signsName  = msgArgs.get("signs");
+        const num_arrays = msgArgs.get("num_arrays").getIntValue();
+        writeln("First is fine");
+        const shape      = msgArgs.get("shape").toScalarTuple(int, array_nd);
+        writeln("Second is fine");
+        const arrayNames = msgArgs.get("arrays").getList(num_arrays);
+        writeln("Third is fine");
+        const max_bits   = msgArgs.get("max_bits").getIntValue();
+        writeln("Fourth is fine");
+        const signed  = msgArgs.get("signed").toScalar(bool);
+        writeln("Problem is below this I guess");
 
         var bigIntArray = makeDistArray((...shape), bigint);
+        var signs = makeDistArray((...shape), bool);
 
         // --------------------------------------------------------------------------
         // (1) Horner-fold limbs into bigIntArray
@@ -126,25 +132,56 @@ module BigIntMsg {
             mask -= 1;
         }
 
-        // Fold from highest index to 0: b = (b << 64) + limb[i]
-        for i in num_arrays-1..0 by -1 {
+        if signed {
+            var i = num_arrays - 1;
             const name  = arrayNames[i];
+            writeln("Maybe it's here");
             const entry = st[name]: SymEntry(array_dtype, array_nd);
+            writeln("Did we die?");
             ref   limbA = entry.a;
 
             // Per-element fold; keep everything local
             if doMask {
-                forall (u, b) in zip(limbA, bigIntArray) with (var tmp: bigint, const localMask = mask) {
-                    b <<= 64;
+                forall (u, b, s) in zip(limbA, bigIntArray, signs)
+                with (var tmp: bigint, const localMask = mask) {
+                    s = (u >> 63): bool;
                     tmp = (u: uint(64)): bigint;  // treat limb as magnitude
-                    b  += tmp;
-                    b  &= localMask;
+                    b  += (u & ((1 << 63) - 1));
                 }
             } else {
-                forall (u, b) in zip(limbA, bigIntArray) with (var tmp: bigint) {
-                    b <<= 64;
+                forall (u, b, s) in zip(limbA, bigIntArray, signs) with (var tmp: bigint) {
+                    s = (u >> 63): bool;
                     tmp = (u: uint(64)): bigint;
-                    b  += tmp;
+                    b  += (u & ((1 << 63) - 1));
+                }
+            }
+        }
+
+
+        // Fold from highest index to 0: b = (b << 64) + limb[i]
+        if num_arrays-(1 + (signed: int)) >= 0 {
+            for i in num_arrays-(1 + (signed: int))..0 by -1 {
+                const name  = arrayNames[i];
+                writeln(i);
+                writeln("maybe this next one");
+                const entry = st[name]: SymEntry(array_dtype, array_nd);
+                writeln("Was it here?");
+                ref   limbA = entry.a;
+
+                // Per-element fold; keep everything local
+                if doMask {
+                    forall (u, b) in zip(limbA, bigIntArray) with (var tmp: bigint, const localMask = mask) {
+                        b <<= 64;
+                        tmp = (u: uint(64)): bigint;  // treat limb as magnitude
+                        b  += tmp;
+                        b  &= localMask;
+                    }
+                } else {
+                    forall (u, b) in zip(limbA, bigIntArray) with (var tmp: bigint) {
+                        b <<= 64;
+                        tmp = (u: uint(64)): bigint;
+                        b  += tmp;
+                    }
                 }
             }
         }
@@ -153,43 +190,17 @@ module BigIntMsg {
         // (2) Apply signs with per-locale bulk fetch of sign words
         // --------------------------------------------------------------------------
 
-        const signsEntry = st[signsName]: SymEntry(uint(64), 1);
-        ref   signsA     = signsEntry.a;
+        if signed {
 
-        if signsA.size > 0 {
+            const negAmount = (1: bigint) << (64 * num_arrays - 1);
 
-            coforall loc in Locales do on loc {
-                const locDom = bigIntArray.localSubdomain();
-                if !locDom.isEmpty() {
-
-                    const lo     = locDom.low;
-                    const hi     = locDom.high;
-
-                    const wordLo = lo >> 6;
-                    const wordHi = hi >> 6;
-                    const wordR  = wordLo..wordHi;
-
-                    // One bulk slice per locale; then only local accesses
-                    var signsChunk : [wordR] uint(64);
-                    signsChunk = signsA[wordR];
-
+            forall (b, s) in zip(bigIntArray, signs) {
+                if s {
                     if doMask {
-                        forall i in locDom with (const ref sc = signsChunk, const localMask = mask) {
-                            const w   = sc[(i >> 6)];
-                            const bit = (w >> (i & 63)) & 1:uint(64);
-                            if bit == 1:uint(64) {
-                                bigIntArray[i] = -bigIntArray[i];
-                                bigIntArray[i] &= localMask;          // keep within max_bits after negation
-                            }
-                        }
+                        b = b - negAmount;
+                        b &= mask;
                     } else {
-                        forall i in locDom with (const ref sc = signsChunk) {
-                            const w   = sc[(i >> 6)];
-                            const bit = (w >> (i & 63)) & 1:uint(64);
-                            if bit == 1:uint(64) {
-                                bigIntArray[i] = -bigIntArray[i];
-                            }
-                        }
+                        b = b - negAmount;
                     }
                 }
             }
