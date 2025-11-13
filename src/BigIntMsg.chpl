@@ -151,7 +151,7 @@ module BigIntMsg {
 
         // Fold from highest index to 0: b = (b << 64) + limb[i]
         if num_arrays-(1 + (signed: int)) >= 0 {
-            for i in num_arrays-(1 + (signed: int))..0 by -1 {
+            for i in 0..num_arrays-(1 + (signed: int)) by -1 {
                 const name  = arrayNames[i];
                 const entry = st[name]: SymEntry(array_dtype, array_nd);
                 ref   limbA = entry.a;
