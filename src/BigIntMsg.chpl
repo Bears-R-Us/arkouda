@@ -133,17 +133,14 @@ module BigIntMsg {
 
             // Per-element fold; keep everything local
             if doMask {
-                forall (u, b, s) in zip(limbA, bigIntArray, signs)
-                with (var tmp: bigint, const localMask = mask) {
+                forall (u, b, s) in zip(limbA, bigIntArray, signs) {
                     s = (u >> 63): bool;
-                    tmp = (u: uint(64)): bigint;  // treat limb as magnitude
-                    b  += (u & ((1 << 63) - 1));
+                    b += (u & ((1 << 63) - 1));
                 }
             } else {
-                forall (u, b, s) in zip(limbA, bigIntArray, signs) with (var tmp: bigint) {
+                forall (u, b, s) in zip(limbA, bigIntArray, signs) {
                     s = (u >> 63): bool;
-                    tmp = (u: uint(64)): bigint;
-                    b  += (u & ((1 << 63) - 1));
+                    b += (u & ((1 << 63) - 1));
                 }
             }
         }
