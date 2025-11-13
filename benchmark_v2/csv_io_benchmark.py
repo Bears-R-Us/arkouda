@@ -1,9 +1,11 @@
-from glob import glob
 import os
+
+from glob import glob
 
 import pytest
 
 import arkouda as ak
+
 from benchmark_v2.benchmark_utils import calc_num_bytes
 
 

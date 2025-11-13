@@ -19,13 +19,25 @@ of ndarray.
 
 from __future__ import annotations
 
-from enum import IntEnum
 import types
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union, cast
+
+from enum import IntEnum
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 import numpy as np
 
 import arkouda as ak
+
 from arkouda import array_api
 from arkouda.numpy.pdarraycreation import scalar_array
 

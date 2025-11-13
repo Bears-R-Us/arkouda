@@ -47,6 +47,7 @@ array([ 1, 99,  3])
 from typing import Optional, Tuple, Union
 
 import numpy as np
+
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import all_scalars
@@ -137,6 +138,7 @@ class ArkoudaExtensionArray(ExtensionArray):
           * gathers once, then fills masked positions in a single pass.
         """
         import arkouda as ak
+
         from arkouda.numpy.pdarrayclass import pdarray
 
         # Normalize indexer to ak int64

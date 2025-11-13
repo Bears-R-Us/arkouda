@@ -2,14 +2,17 @@ import numpy as np
 import numpy.random as np_random
 
 from arkouda.client import get_registration_config
-from arkouda.numpy.dtypes import _val_isinstance_of_union
+from arkouda.numpy.dtypes import (
+    _val_isinstance_of_union,
+    dtype_for_chapel,
+    float_scalars,
+    int_scalars,
+    numeric_scalars,
+)
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import dtype as to_numpy_dtype
-from arkouda.numpy.dtypes import dtype_for_chapel
 from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
 

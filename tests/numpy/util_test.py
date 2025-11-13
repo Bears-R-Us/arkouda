@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import util
 from arkouda.numpy.util import may_share_memory, shares_memory
 from arkouda.testing import assert_arkouda_array_equivalent

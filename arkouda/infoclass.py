@@ -57,8 +57,9 @@ array([0 1 2 3 4])
 """
 
 import json
-from json import JSONEncoder
 import sys
+
+from json import JSONEncoder
 from typing import TYPE_CHECKING, List, TypeVar, Union, cast
 
 from typeguard import typechecked

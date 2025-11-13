@@ -1,6 +1,7 @@
 import pytest
 
 import arkouda as ak
+
 from arkouda import comm_diagnostics
 from arkouda.comm_diagnostics import (
     get_comm_diagnostics,

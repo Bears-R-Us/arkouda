@@ -1,10 +1,12 @@
-from collections.abc import Iterator  # or: from typing import Iterator
 import logging
+
+from collections.abc import Iterator  # or: from typing import Iterator
 from typing import Literal
 
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import err as akerr
 
 
@@ -162,7 +164,9 @@ class TestErr:
         from arkouda.numpy import err as akerr
 
         # Use the exact logger the module uses
-        from arkouda.numpy.err import _logger as module_logger  # test-only import of private symbol
+        from arkouda.numpy.err import (
+            _logger as module_logger,  # test-only import of private symbol
+        )
 
         class ListHandler(logging.Handler):
             def __init__(self, level=logging.ERROR):

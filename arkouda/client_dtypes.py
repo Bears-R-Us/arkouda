@@ -54,6 +54,7 @@ from ipaddress import ip_address as _ip_address
 from typing import TYPE_CHECKING, Literal, Optional, TypeVar, Union
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
@@ -929,7 +930,12 @@ class IPv4(pdarray):
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
+        from arkouda.pandas.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")

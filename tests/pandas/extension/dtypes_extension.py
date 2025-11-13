@@ -175,6 +175,7 @@ class TestArkoudaDtypesExtension:
         import pandas.testing as pdt
 
         import arkouda as ak
+
         from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 
         ak_arr = ak.array(data, dtype=dtype_cls().name)
@@ -189,6 +190,7 @@ class TestArkoudaDtypesExtension:
 
     def test_series_with_strings_dtype(self):
         import arkouda as ak
+
         from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
 
         a = ak.array(["a", "b", ""])
@@ -200,7 +202,10 @@ class TestArkoudaDtypesExtension:
 
     def test_series_with_categorical_dtype(self):
         import arkouda as ak
-        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
+
+        from arkouda.pandas.extension._arkouda_categorical_array import (
+            ArkoudaCategoricalArray,
+        )
 
         a = ak.Categorical(ak.array(["x", "y", "x"]))
         cea = ArkoudaCategoricalArray(a)

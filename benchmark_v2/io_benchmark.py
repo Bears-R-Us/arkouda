@@ -1,11 +1,14 @@
-from glob import glob
 import os
 import shutil
 
-from benchmark_utils import calc_num_bytes
+from glob import glob
+
 import pytest
 
+from benchmark_utils import calc_num_bytes
+
 import arkouda as ak
+
 from arkouda.pandas.io import to_parquet
 
 

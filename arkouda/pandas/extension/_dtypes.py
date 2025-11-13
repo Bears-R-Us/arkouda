@@ -44,13 +44,13 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+
 from numpy import dtype as np_dtype
 from pandas.api.extensions import ExtensionDtype
 
-from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import bigint, float64, int64, str_, uint8, uint64
 from arkouda.numpy.dtypes import bool as ak_bool
 from arkouda.numpy.dtypes import dtype as ak_dtype
-from arkouda.numpy.dtypes import float64, int64, str_, uint8, uint64
 
 
 # ---- Base dtype -------------------------------------------------------------

@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda import Strings
 from arkouda.numpy import strings
 from arkouda.testing import assert_equal as ak_assert_equal

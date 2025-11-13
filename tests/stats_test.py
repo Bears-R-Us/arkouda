@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy.dtypes import bigint
 
 

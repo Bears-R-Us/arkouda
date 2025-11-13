@@ -6,6 +6,7 @@ import os
 from IO import FileFormat, check_correctness, remove_files, time_ak_read, time_ak_write
 
 import arkouda as ak
+
 from server_util.test.server_test_util import get_default_temp_directory
 
 

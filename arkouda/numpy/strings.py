@@ -3,23 +3,40 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypeVar, Union
-from typing import cast
+
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 from typing import cast as type_cast
 
 import numpy as np
+
 from numpy import dtype as npdtype
 from typeguard import typechecked
 
+import arkouda.numpy.dtypes
+
 from arkouda.infoclass import information, list_symbol_table
 from arkouda.logger import ArkoudaLogger, getArkoudaLogger
-import arkouda.numpy.dtypes
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
+from arkouda.numpy.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    bool_scalars,
+    int_scalars,
+    numeric_scalars,
+    resolve_scalar_dtype,
+    str_scalars,
+)
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, numeric_scalars, resolve_scalar_dtype, str_scalars
-from arkouda.numpy.pdarrayclass import RegistrationError
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, parse_single_value, pdarray
 from arkouda.numpy.pdarrayclass import all as akall
-from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
 from arkouda.pandas.match import Match, MatchType
 
 
@@ -2713,7 +2730,12 @@ class Strings:
         - If the dataset provided does not exist, it will be added
         """
         from arkouda.client import generic_msg
-        from arkouda.pandas.io import _file_type_to_int, _get_hdf_filetype, _mode_str_to_int, _repack_hdf
+        from arkouda.pandas.io import (
+            _file_type_to_int,
+            _get_hdf_filetype,
+            _mode_str_to_int,
+            _repack_hdf,
+        )
 
         # determine the format (single/distribute) that the file was saved in
         file_type = _get_hdf_filetype(prefix_path + "*")

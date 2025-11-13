@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 import builtins
+
 from typing import Any, Iterable, Literal, TypeAlias, TypeGuard
 from typing import Union as _Union
 
 import numpy as np
 
-from arkouda.numpy.dtypes import bigint
+from arkouda.numpy.dtypes import bigint, str_
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
-from arkouda.numpy.dtypes import str_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
 from arkouda.numpy.strings import Strings
 
