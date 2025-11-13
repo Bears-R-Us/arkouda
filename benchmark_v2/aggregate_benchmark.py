@@ -1,5 +1,5 @@
-from benchmark_utils import calc_num_bytes
 import pytest
+from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
 

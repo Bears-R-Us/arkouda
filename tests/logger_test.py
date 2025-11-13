@@ -1,5 +1,5 @@
-from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 import tempfile
+from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 
 import pytest
 

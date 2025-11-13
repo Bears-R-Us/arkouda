@@ -12,7 +12,6 @@ import arkouda as ak
 # Import targets under test
 from arkouda.plotting import plot_dist
 
-
 matplotlib.use("Agg")  # must be set before importing pyplot
 
 

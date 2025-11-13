@@ -15,7 +15,6 @@ from arkouda.numpy.pdarraycreation import scalar_array
 
 from .array_object import Array, implements_numpy
 
-
 __all__ = [
     "broadcast_arrays",
     "broadcast_to",

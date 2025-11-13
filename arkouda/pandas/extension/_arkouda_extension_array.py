@@ -56,7 +56,6 @@ from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.categorical import Categorical
 
-
 __all__ = ["_ensure_numpy", "ArkoudaExtensionArray"]
 
 

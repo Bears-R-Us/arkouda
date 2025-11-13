@@ -63,20 +63,25 @@ Examples
 
 """
 
-from enum import Enum
 import json
 import os
 import sys
-from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 import warnings
+from enum import Enum
+from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
 import zmq  # for typechecking
 
 from arkouda import __version__, security
 from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
-from arkouda.message import MessageFormat, MessageType, ParameterObject, ReplyMessage, RequestMessage
+from arkouda.message import (
+    MessageFormat,
+    MessageType,
+    ParameterObject,
+    ReplyMessage,
+    RequestMessage,
+)
 from arkouda.pandas import io_util
-
 
 __all__ = [
     "connect",

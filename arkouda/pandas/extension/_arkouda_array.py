@@ -20,7 +20,6 @@ from ._dtypes import (
     _ArkoudaBaseDtype,
 )
 
-
 __all__ = ["ArkoudaArray"]
 
 

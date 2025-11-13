@@ -312,12 +312,11 @@ import errno
 import functools
 import json
 import os
-from pathlib import Path
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any, Callable, Dict, List, NoReturn, Optional, Tuple, Union, cast
-
 
 have_tomllib = True
 if sys.version_info >= (3, 11):

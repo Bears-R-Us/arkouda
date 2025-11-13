@@ -12,7 +12,6 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NumericDTypes, dtype, int_scalars
 from arkouda.numpy.pdarrayclass import create_pdarrays, pdarray
 
-
 logger = getArkoudaLogger(name="sparrayclass")
 
 __all__ = [

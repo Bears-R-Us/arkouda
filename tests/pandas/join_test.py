@@ -4,7 +4,6 @@ import pytest
 import arkouda as ak
 from arkouda.pandas import join
 
-
 """
 Encapsulates a variety of arkouda join_on_eq_with_dt test cases.
 """

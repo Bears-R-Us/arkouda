@@ -5,7 +5,6 @@ import pytest
 import arkouda as ak
 from arkouda.numpy.dtypes import bigint
 
-
 NUMERIC_TYPES = ["int64", "uint64", "float64", "bool"]
 
 

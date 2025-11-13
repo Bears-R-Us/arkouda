@@ -1,5 +1,16 @@
 import itertools
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 
 import numpy as np
 import pandas as pd
@@ -13,6 +24,9 @@ from arkouda.numpy.dtypes import (
     bigint,
     bool_scalars,
 )
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
@@ -21,13 +35,9 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
     str_,
 )
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
-from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
-
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks
@@ -623,7 +633,9 @@ def zeros(
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
+    from arkouda.numpy.util import (
+        _infer_shape_from_size,  # placed here to avoid circ import
+    )
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -768,7 +780,9 @@ def full(
     # check dtype for error
     if dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
+    from arkouda.numpy.util import (
+        _infer_shape_from_size,  # placed here to avoid circ import
+    )
 
     shape, ndim, full_size = _infer_shape_from_size(size)
 
@@ -1332,7 +1346,11 @@ def linspace(
     from arkouda import newaxis
     from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
-    from arkouda.numpy.util import _integer_axis_validation, broadcast_shapes, broadcast_to
+    from arkouda.numpy.util import (
+        _integer_axis_validation,
+        broadcast_shapes,
+        broadcast_to,
+    )
 
     if dtype not in (None, float64):
         raise TypeError("dtype must be None or float64")

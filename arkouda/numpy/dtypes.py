@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import builtins
-from enum import Enum
 import sys
+from enum import Enum
 from typing import TYPE_CHECKING, List, Union, cast
 
 import numpy as np
@@ -58,7 +58,6 @@ from numpy.dtypes import (
     UShortDType,
     VoidDType,
 )
-
 
 if TYPE_CHECKING:
     from arkouda.pdarrayclass import pdarray

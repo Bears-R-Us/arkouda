@@ -1,8 +1,7 @@
-from benchmark_utils import calc_num_bytes
 import pytest
+from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
-
 
 OPS = ("sum", "prod", "min", "max", "argmin", "argmax")
 TYPES = ("int64", "float64")

@@ -43,19 +43,29 @@ Examples
 
 from __future__ import annotations
 
-from collections import UserDict
-from functools import reduce
 import json
 import os
 import random
 import sys
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, TypeVar, Union, cast
+from collections import UserDict
+from functools import reduce
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 from warnings import warn
 
 import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
-import pandas as pd  # type: ignore
 from typeguard import typechecked
 
 from arkouda.client import maxTransferBytes
@@ -77,7 +87,6 @@ from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
-
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
@@ -3226,7 +3235,11 @@ class DataFrame(UserDict):
         4 -4  4 (5 rows x 2 columns)
 
         """
-        from arkouda.pandas.io import _dict_recombine_segarrays_categoricals, get_filetype, load_all
+        from arkouda.pandas.io import (
+            _dict_recombine_segarrays_categoricals,
+            get_filetype,
+            load_all,
+        )
 
         prefix, extension = os.path.splitext(prefix_path)
         first_file = f"{prefix}_LOCALE0000{extension}"

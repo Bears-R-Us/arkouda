@@ -7,7 +7,6 @@ from arkouda.numpy.strings import Strings
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import ArkoudaStringDtype
 
-
 __all__ = ["ArkoudaStringArray"]
 
 

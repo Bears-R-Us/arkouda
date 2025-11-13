@@ -62,15 +62,14 @@ See Also
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from enum import Enum
-import json
 from typing import Dict, Optional
 
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import isSupportedNumber, resolve_scalar_dtype
-
 
 __all__ = [
     "MessageFormat",

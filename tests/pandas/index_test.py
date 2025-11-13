@@ -3,12 +3,12 @@ import os
 import tempfile
 
 import numpy as np
-from numpy import dtype as npdtype
 import pandas as pd
+import pytest
+from numpy import dtype as npdtype
 from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from pandas.testing import assert_index_equal as pd_assert_index_equal
-import pytest
 
 import arkouda as ak
 from arkouda.numpy.dtypes import dtype

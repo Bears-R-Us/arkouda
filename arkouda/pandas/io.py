@@ -66,7 +66,17 @@ arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 import glob
 import json
 import os
-from typing import TYPE_CHECKING, Dict, List, Literal, Mapping, Optional, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 from warnings import warn
 
 import pandas as pd
@@ -83,7 +93,6 @@ from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.dataframe import DataFrame
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.index import Index, MultiIndex
-
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
+from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
-
 
 OPS = ["_get_head_tail_server", "_get_head_tail"]
 

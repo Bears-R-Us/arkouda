@@ -1,8 +1,7 @@
-from benchmark_utils import calc_num_bytes
 import pytest
+from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
-
 
 SEARCHES = {
     "Non_Regex": ["1 string 1", False],

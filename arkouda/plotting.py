@@ -57,9 +57,9 @@ from __future__ import annotations
 import math
 from typing import Optional, Tuple
 
-from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.figure import Figure
 from numpy.typing import NDArray
 
 import arkouda as ak
@@ -72,7 +72,6 @@ from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_range
 from arkouda.pdarrayclass import pdarray
-
 
 __all__ = [
     "hist_all",

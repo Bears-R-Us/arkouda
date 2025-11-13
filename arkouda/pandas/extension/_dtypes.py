@@ -52,7 +52,6 @@ from arkouda.numpy.dtypes import bool as ak_bool
 from arkouda.numpy.dtypes import dtype as ak_dtype
 from arkouda.numpy.dtypes import float64, int64, str_, uint8, uint64
 
-
 # ---- Base dtype -------------------------------------------------------------
 
 

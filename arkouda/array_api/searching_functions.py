@@ -10,7 +10,6 @@ from ._dtypes import _real_floating_dtypes, _real_numeric_dtypes
 from .array_object import Array
 from .manipulation_functions import broadcast_arrays
 
-
 __all__ = [
     "argmax",
     "argmin",

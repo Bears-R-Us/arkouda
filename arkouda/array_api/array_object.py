@@ -19,9 +19,19 @@ of ndarray.
 
 from __future__ import annotations
 
-from enum import IntEnum
 import types
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union, cast
+from enum import IntEnum
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 import numpy as np
 
@@ -38,7 +48,6 @@ from ._dtypes import (
     _result_type,
 )
 from .creation_functions import asarray
-
 
 if TYPE_CHECKING:
     from ._typing import Device, Dtype
