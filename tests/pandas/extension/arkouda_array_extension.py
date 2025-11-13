@@ -7,6 +7,8 @@ import arkouda as ak
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
+from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+from arkouda.pandas.extension._dtypes import ArkoudaBoolDtype, ArkoudaFloat64Dtype, ArkoudaInt64Dtype
 from arkouda.testing import assert_equivalent
 
 
@@ -39,6 +41,78 @@ class TestArkoudaArrayExtension:
         arr = ArkoudaArray(np.array([10, 20, 30]))
         assert isinstance(arr, ArkoudaArray)
         assert len(arr) == 3
+
+    def test_init_from_pdarray_reuses_underlying(self):
+        base = ak.arange(5)
+        arr = ArkoudaArray(base)
+        assert isinstance(arr._data, pdarray)
+        # Reuse: same object identity is the clearest signal
+        assert arr._data is base
+        # Round-trip equality
+        assert np.array_equal(arr.to_ndarray(), np.arange(5))
+
+    def test_init_from_pdarray_copy_when_requested(self):
+        base = ak.arange(5)
+        arr = ArkoudaArray(base, copy=True)
+        assert isinstance(arr._data, pdarray)
+        # Should not be the same object when copy=True
+        assert arr._data is not base
+        assert base.name != arr._data.name
+        assert np.array_equal(arr.to_ndarray(), np.arange(5))
+
+    @pytest.mark.parametrize(
+        "payload, expected",
+        [
+            (np.array([1, 2, 3], dtype=np.int64), np.array([1, 2, 3])),
+            (np.array([1.5, 2.5, 3.5], dtype=np.float64), np.array([1.5, 2.5, 3.5])),
+            ([True, False, True], np.array([True, False, True])),
+            ((10, 20, 30), np.array([10, 20, 30])),
+        ],
+    )
+    def test_init_converts_numpy_and_python_sequences(self, payload, expected):
+        arr = ArkoudaArray(payload)
+        out = arr.to_ndarray()
+        assert isinstance(arr._data, pdarray)
+        assert out.dtype == expected.dtype
+        assert np.array_equal(out, expected)
+
+    def test_init_from_arkoudaarray_reuses_backing_pdarray(self):
+        base = ak.arange(4)
+        a1 = ArkoudaArray(base)
+        a2 = ArkoudaArray(a1)  # should reuse pdarray, not wrap twice
+        assert a2._data is a1._data
+        assert np.array_equal(a2.to_ndarray(), np.arange(4))
+
+    @pytest.mark.parametrize(
+        "src,dtype_cls,values",
+        [
+            ([1, 2, 3], ArkoudaInt64Dtype, np.array([1, 2, 3], dtype=np.int64)),
+            ([1.0, 2.0], ArkoudaFloat64Dtype, np.array([1.0, 2.0], dtype=np.float64)),
+            ([1, 0, 1], ArkoudaBoolDtype, np.array([True, False, True], dtype=bool)),
+        ],
+    )
+    def test_init_with_explicit_dtype_casts(self, src, dtype_cls, values):
+        # dtype may be provided as NumPy dtype strings or objects
+        # We test a representative set: int64, float64, bool
+        if dtype_cls is ArkoudaInt64Dtype:
+            dtype = np.int64
+        elif dtype_cls is ArkoudaFloat64Dtype:
+            dtype = np.float64
+        else:
+            dtype = bool
+
+        arr = ArkoudaArray(src, dtype=dtype)
+        assert isinstance(arr.dtype, dtype_cls)
+        assert np.array_equal(arr.to_ndarray(), values)
+
+    def test_init_rejects_2d_input(self):
+        two_d = np.array([[1, 2], [3, 4]], dtype=np.int64)
+        with pytest.raises(ValueError):
+            ArkoudaArray(two_d)
+
+    def test_init_rejects_unsupported_type(self):
+        with pytest.raises(TypeError):
+            ArkoudaArray({"a": 1, "b": 2})
 
     def test_getitem_scalar(self):
         ak_data = ak.arange(10)

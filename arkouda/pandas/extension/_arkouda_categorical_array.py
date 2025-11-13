@@ -1,5 +1,8 @@
-from typing import TYPE_CHECKING, TypeVar
+from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Sequence, TypeVar
+
+from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
 import arkouda as ak
@@ -18,11 +21,50 @@ __all__ = ["ArkoudaCategoricalArray"]
 
 
 class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
+    """
+    Arkouda-backed categorical pandas ExtensionArray.
+
+    Ensures the underlying data is an Arkouda ``Categorical``. Accepts an existing
+    ``Categorical`` or converts from Python/NumPy sequences of labels.
+
+    Parameters
+    ----------
+    data : Categorical | ArkoudaCategoricalArray | ndarray | Sequence[Any]
+        Input to wrap or convert.
+        - If ``Categorical``, used directly.
+        - If another ``ArkoudaCategoricalArray``, its backing object is reused.
+        - If list/tuple/ndarray, converted via ``ak.Categorical(ak.array(data))``.
+
+    Raises
+    ------
+    TypeError
+        If ``data`` cannot be converted to Arkouda ``Categorical``.
+
+    Attributes
+    ----------
+    default_fill_value : str
+        Sentinel used when filling missing values (default: "").
+    """
+
     default_fill_value: str = ""
 
-    def __init__(self, data):
-        if not isinstance(data, ak.Categorical):
-            raise TypeError("Expected arkouda Categorical")
+    def __init__(self, data: Categorical | "ArkoudaCategoricalArray" | ndarray | Sequence[Any]):
+        from arkouda import Categorical as AkCategorical
+        from arkouda import array
+
+        if isinstance(data, ArkoudaCategoricalArray):
+            self._data = data._data
+            return
+
+        if not isinstance(data, AkCategorical):
+            try:
+                data = AkCategorical(array(data))
+            except Exception as e:
+                raise TypeError(
+                    f"Expected arkouda.Categorical or sequence convertible to one, "
+                    f"got {type(data).__name__}"
+                ) from e
+
         self._data = data
 
     @classmethod
