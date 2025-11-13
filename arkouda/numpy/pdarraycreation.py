@@ -474,7 +474,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
         req_bits = flat.max().bit_length()
     req_limbs = (req_bits + 63) // 64
     mask = (1 << 64) - 1
-    uint_arrays: List[pdarray] = []
+    uint_arrays: List[Union[pdarray, Strings]] = []
     # attempt to break bigint into multiple uint64 arrays
     while (flat != 0).any() and len(uint_arrays) < req_limbs:
         low = flat & mask
