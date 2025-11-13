@@ -96,7 +96,7 @@ def bench_power_law(benchmark, algo, dtype):
         if dtype == "int64":
             data = ak.cast(data, ak.int64)
 
-        run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
+        run_sort(benchmark, "power_law", data, lambda x: do_argsort(x, algo))
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -128,7 +128,7 @@ def bench_rmat(benchmark, algo):
 
     data = (ii, jj)
 
-    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
+    run_sort(benchmark, "rmat", data, lambda x: do_argsort(x, algo))
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -153,7 +153,7 @@ def bench_block_sorted(benchmark, algo, mode):
     b = ak.arange(Nb)
     data = ak.concatenate((a, b), ordered=(mode == "concat"))
 
-    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
+    run_sort(benchmark, "block_sorted", data, lambda x: do_argsort(x, algo))
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -171,7 +171,7 @@ def bench_refinement(benchmark, algo):
     b = ak.randint(0, 2**32, N // 2)
     data = (a, b)
 
-    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
+    run_sort(benchmark, "refinement", data, lambda x: do_argsort(x, algo))
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -195,7 +195,7 @@ def bench_time_like(benchmark, algo):
     a *= 10**9
     data = a
 
-    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
+    run_sort(benchmark, "time_like", data, lambda x: do_argsort(x, algo))
 
 
 @pytest.mark.benchmark(group="AK_Sort_Cases")
@@ -220,4 +220,4 @@ def bench_ip_like(benchmark, algo):
     IP2 = u2[sample]
     data = (IP1, IP2)
 
-    run_sort(benchmark, "random_uniform", data, lambda x: do_argsort(x, algo))
+    run_sort(benchmark, "ip_like", data, lambda x: do_argsort(x, algo))
