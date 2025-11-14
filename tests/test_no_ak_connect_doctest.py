@@ -5,8 +5,9 @@ docstrings, finds their "Examples" sections, and flags any doctest prompt lines 
 call ``ak.connect``. Failures report file, line number, and a small context block.
 """
 
-from pathlib import Path
 import re
+
+from pathlib import Path
 from typing import Generator, List, Tuple
 
 

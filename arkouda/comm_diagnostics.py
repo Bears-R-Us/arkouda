@@ -87,6 +87,7 @@ arkouda.DataFrame, arkouda.client.generic_msg
 """
 
 import sys
+
 from typing import cast as type_cast
 
 from arkouda.numpy.pdarrayclass import create_pdarray

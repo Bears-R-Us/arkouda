@@ -55,14 +55,17 @@ See Also
 from __future__ import annotations
 
 import math
+
 from typing import Optional, Tuple
 
-from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
+
+from matplotlib.figure import Figure
 from numpy.typing import NDArray
 
 import arkouda as ak
+
 from arkouda.categorical import Categorical
 from arkouda.dataframe import DataFrame
 from arkouda.groupbyclass import GroupBy

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector
@@ -16,7 +17,12 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, ones, zeros, zeros_like
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.strings import Strings
-from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type, unique
+from arkouda.pandas.groupbyclass import (
+    GroupBy,
+    groupable,
+    groupable_element_type,
+    unique,
+)
 
 
 if TYPE_CHECKING:

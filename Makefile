@@ -693,13 +693,9 @@ ruff-format:
 	ruff check $(ARKOUDA_PROJECT_DIR)/arkouda --fix
 	#  Verify if it will pass the CI check:
 	ruff format --check --diff
-	isort --settings-path $(ARKOUDA_PROJECT_DIR)/pyproject.toml  --gitignore --float-to-top .
 
 isort:
-	isort --version-number
-	isort --settings-path $(ARKOUDA_PROJECT_DIR)/pyproject.toml  --gitignore --float-to-top .
-	#  Verify if it will pass the CI check:
-	isort --settings-path $(ARKOUDA_PROJECT_DIR)/pyproject.toml --check-only --diff .
+	ruff check --select I --fix .
 
 
 .PHONY: check-doc-examples

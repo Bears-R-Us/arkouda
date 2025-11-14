@@ -2,7 +2,12 @@ import numpy as np
 import pytest
 
 import arkouda as ak
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
+
+from arkouda.pandas.extension import (
+    ArkoudaArray,
+    ArkoudaCategoricalArray,
+    ArkoudaStringArray,
+)
 from arkouda.pandas.extension._arkouda_extension_array import ArkoudaExtensionArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.testing import assert_arkouda_array_equal, assert_equal

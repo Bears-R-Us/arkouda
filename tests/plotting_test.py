@@ -9,6 +9,7 @@ import pytest
 
 import arkouda as ak
 
+
 # Import targets under test
 from arkouda.plotting import plot_dist
 

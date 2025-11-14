@@ -1,6 +1,7 @@
 import pytest
 
 import arkouda as ak
+
 from arkouda import Categorical, DataFrame, Index, MultiIndex, Series, cast
 from arkouda.testing import (
     assert_almost_equal,

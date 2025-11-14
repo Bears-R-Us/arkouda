@@ -56,9 +56,20 @@ See Also
 
 """
 
-from enum import Enum
-from logging import CRITICAL, DEBUG, ERROR, INFO, WARN, Formatter, Handler, Logger, StreamHandler
 import os
+
+from enum import Enum
+from logging import (
+    CRITICAL,
+    DEBUG,
+    ERROR,
+    INFO,
+    WARN,
+    Formatter,
+    Handler,
+    Logger,
+    StreamHandler,
+)
 from typing import List, Optional, cast
 
 from typeguard import typechecked

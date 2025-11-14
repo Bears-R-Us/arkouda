@@ -3,20 +3,21 @@ import os
 import tempfile
 
 import numpy as np
-from numpy import dtype as npdtype
 import pandas as pd
+import pytest
+
+from numpy import dtype as npdtype
 from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from pandas.testing import assert_index_equal as pd_assert_index_equal
-import pytest
 
 import arkouda as ak
+
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas import io_util
 from arkouda.pandas.index import Index
-from arkouda.testing import assert_equal, assert_equivalent
-from arkouda.testing import assert_index_equal
+from arkouda.testing import assert_equal, assert_equivalent, assert_index_equal
 from arkouda.testing import assert_index_equal as ak_assert_index_equal
 
 

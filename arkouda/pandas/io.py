@@ -66,10 +66,22 @@ arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 import glob
 import json
 import os
-from typing import TYPE_CHECKING, Dict, List, Literal, Mapping, Optional, TypeVar, Union, cast
+
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 from warnings import warn
 
 import pandas as pd
+
 from typeguard import typechecked
 
 from arkouda.client_dtypes import IPv4
@@ -2397,6 +2409,7 @@ def snapshot(filename):
 
     """
     import inspect
+
     from types import ModuleType
 
     from arkouda.numpy.segarray import SegArray

@@ -56,10 +56,11 @@ from __future__ import annotations
 
 import contextlib
 import sys
-from typing import Callable, Dict, Iterator, Literal, Optional
 
 # --- add near the top of arkouda/err.py ---
 import warnings
+
+from typing import Callable, Dict, Iterator, Literal, Optional
 
 from arkouda.logger import getArkoudaLogger
 

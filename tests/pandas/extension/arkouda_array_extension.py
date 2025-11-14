@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray

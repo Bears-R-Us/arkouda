@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda.pandas.extension import ArkoudaCategoricalArray
 from arkouda.testing import assert_equivalent
 

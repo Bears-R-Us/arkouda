@@ -3,19 +3,21 @@ import importlib.util
 import os
 import subprocess
 import sys
+
 from typing import Iterable, Iterator
 
 import pytest
 import scipy
 
 import arkouda as ak
+
 from server_util.test.server_test_util import (
     TestRunningMode,
     get_default_temp_directory,
+    is_multilocale_arkouda,  # TODO probably not needed
     start_arkouda_server,
     stop_arkouda_server,
 )
-from server_util.test.server_test_util import is_multilocale_arkouda  # TODO probably not needed
 
 
 os.environ["ARKOUDA_CLIENT_MODE"] = "API"

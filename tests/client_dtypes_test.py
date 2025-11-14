@@ -4,6 +4,7 @@ import random
 import pytest
 
 import arkouda as ak
+
 from arkouda import client_dtypes
 
 

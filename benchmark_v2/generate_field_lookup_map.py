@@ -34,6 +34,7 @@ import re
 
 # Aggregate operations explicitly defined
 import arkouda as ak
+
 from arkouda.logger import getArkoudaLogger
 
 

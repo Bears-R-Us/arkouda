@@ -1,18 +1,19 @@
-from collections import deque
 import datetime as dt
 import math
 import statistics
+
+from collections import deque
 
 import numpy as np
 import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import newaxis, pdarraycreation
 from arkouda.numpy.util import _generate_test_shape, _infer_shape_from_size
-from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
+from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal, assert_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
-from arkouda.testing import assert_equivalent
 
 
 INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
