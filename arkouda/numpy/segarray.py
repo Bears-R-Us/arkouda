@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from typing import TYPE_CHECKING, Literal, Optional, Sequence, Tuple, TypeVar
-from typing import cast as type_cast
 
 import numpy as np
 
@@ -824,17 +823,14 @@ class SegArray:
         """
         from arkouda.client import generic_msg
 
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd="segmentedHash",
-                args={
-                    "objType": self.objType,
-                    "values": self.values,
-                    "segments": self.segments,
-                    "valObjType": self.values.objType,
-                },
-            ),
+        repMsg = generic_msg(
+            cmd="segmentedHash",
+            args={
+                "objType": self.objType,
+                "values": self.values,
+                "segments": self.segments,
+                "valObjType": self.values.objType,
+            },
         )
         h1, h2 = repMsg.split("+")
         return create_pdarray(h1), create_pdarray(h2)
@@ -876,21 +872,18 @@ class SegArray:
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
-        return type_cast(
-            str,
-            generic_msg(
-                cmd="tohdf",
-                args={
-                    "values": self.values.name,
-                    "segments": self.segments.name,
-                    "dset": dataset,
-                    "write_mode": _mode_str_to_int(mode),
-                    "filename": prefix_path,
-                    "dtype": self.dtype,
-                    "objType": self.objType,
-                    "file_format": _file_type_to_int(file_type),
-                },
-            ),
+        return generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self.values.name,
+                "segments": self.segments.name,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int(mode),
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "objType": self.objType,
+                "file_format": _file_type_to_int(file_type),
+            },
         )
 
     def update_hdf(
@@ -1017,20 +1010,17 @@ class SegArray:
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
 
-        return type_cast(
-            str,
-            generic_msg(
-                "writeParquet",
-                {
-                    "values": self.values.name,
-                    "segments": self.segments.name,
-                    "dset": dataset,
-                    "mode": _mode_str_to_int(mode),
-                    "prefix": prefix_path,
-                    "objType": self.objType,
-                    "compression": compression,
-                },
-            ),
+        return generic_msg(
+            "writeParquet",
+            {
+                "values": self.values.name,
+                "segments": self.segments.name,
+                "dset": dataset,
+                "mode": _mode_str_to_int(mode),
+                "prefix": prefix_path,
+                "objType": self.objType,
+                "compression": compression,
+            },
         )
 
     @classmethod
