@@ -1,4 +1,5 @@
 import numpy as np
+
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.pdarraycreation import array as ak_array
@@ -6,6 +7,7 @@ from arkouda.numpy.strings import Strings
 
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import ArkoudaStringDtype
+
 
 __all__ = ["ArkoudaStringArray"]
 

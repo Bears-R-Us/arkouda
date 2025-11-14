@@ -1,12 +1,16 @@
 import os
 import shutil
+
 from glob import glob
 
 import pytest
+
 from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
+
 from arkouda.pandas.io import to_parquet
+
 
 TYPES = ("int64", "float64", "uint64", "str")
 FILETYPES = ("HDF5", "PARQUET")

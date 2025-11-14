@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 import builtins
-from typing import List, Optional, Sequence, Union
-from typing import cast
+
+from typing import List, Optional, Sequence, Union, cast
 from typing import cast as type_cast
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import NumericDTypes, dtype, int_scalars
 from arkouda.numpy.pdarrayclass import create_pdarrays, pdarray
+
 
 logger = getArkoudaLogger(name="sparrayclass")
 

@@ -67,6 +67,7 @@ import json
 import os
 import sys
 import warnings
+
 from enum import Enum
 from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
 
@@ -82,6 +83,7 @@ from arkouda.message import (
     RequestMessage,
 )
 from arkouda.pandas import io_util
+
 
 __all__ = [
     "connect",

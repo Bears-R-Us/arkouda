@@ -59,9 +59,11 @@ import sys
 
 # --- add near the top of arkouda/err.py ---
 import warnings
+
 from typing import Callable, Dict, Iterator, Literal, Optional
 
 from arkouda.logger import getArkoudaLogger
+
 
 __all__ = [
     "geterr",

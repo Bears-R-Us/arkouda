@@ -3,11 +3,13 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda import GroupBy, concatenate
 from arkouda import sort as aksort
 from arkouda import sum as aksum
 from arkouda.pandas.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
+
 
 #  block of variables and functions used in test_unique
 

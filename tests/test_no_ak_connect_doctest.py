@@ -6,8 +6,10 @@ call ``ak.connect``. Failures report file, line number, and a small context bloc
 """
 
 import re
+
 from pathlib import Path
 from typing import Generator, List, Tuple
+
 
 # --- Heuristics that mirror the stripper script ---
 TRIPLE_QUOTE_RE = re.compile(r'(?P<q>"""|\'\'\')(?P<body>.*?)(?P=q)', re.DOTALL)

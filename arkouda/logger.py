@@ -57,6 +57,7 @@ See Also
 """
 
 import os
+
 from enum import Enum
 from logging import (
     CRITICAL,
@@ -72,6 +73,7 @@ from logging import (
 from typing import List, Optional, cast
 
 from typeguard import typechecked
+
 
 __all__ = ["LogLevel", "enableVerbose", "disableVerbose", "write_log"]
 

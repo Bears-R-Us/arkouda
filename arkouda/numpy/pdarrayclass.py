@@ -2,23 +2,26 @@ from __future__ import annotations
 
 import builtins
 import json
+
 from functools import reduce
 from math import ceil
 from sys import modules
 from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union, cast, overload
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.infoclass import information, pretty_print_information
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
-from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars, dtype
-from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
-from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    DTypes,
+    bigint,
+    bool_scalars,
+    dtype,
+    get_byteorder,
+    get_server_byteorder,
     int_scalars,
     isSupportedBool,
     isSupportedInt,
@@ -28,8 +31,12 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
     result_type,
 )
+from arkouda.numpy.dtypes import bool_ as akbool
+from arkouda.numpy.dtypes import float64 as akfloat64
+from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks

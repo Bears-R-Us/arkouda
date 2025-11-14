@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import char
 from arkouda.testing import assert_arkouda_array_equivalent
 

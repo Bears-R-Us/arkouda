@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import Literal, Optional, Tuple, cast
 
 import arkouda as ak
+
 from arkouda.numpy import cast as akcast
 from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 
 from ._dtypes import _real_floating_dtypes, _real_numeric_dtypes
 from .array_object import Array
 from .manipulation_functions import broadcast_arrays
+
 
 __all__ = [
     "argmax",

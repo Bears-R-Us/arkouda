@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from typing import Union
-from typing import cast
+from typing import Union, cast
 from typing import cast as type_cast
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import NumericDTypes
+from arkouda.numpy.dtypes import NumericDTypes, int64
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import int64
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.scipy.sparrayclass import create_sparray, sparray
+
 
 __all__ = ["random_sparse_matrix", "sparse_matrix_matrix_mult", "create_sparse_matrix"]
 

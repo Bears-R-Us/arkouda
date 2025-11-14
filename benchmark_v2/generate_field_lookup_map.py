@@ -34,7 +34,9 @@ import re
 
 # Aggregate operations explicitly defined
 import arkouda as ak
+
 from arkouda.logger import getArkoudaLogger
+
 
 GRAPH_INFRA_DIR = "benchmark_v2/graph_infra"
 OUTPUT_JSON = "benchmark_v2/datdir/configs/field_lookup_map.json"

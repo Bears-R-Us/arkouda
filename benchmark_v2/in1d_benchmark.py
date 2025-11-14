@@ -1,7 +1,9 @@
 import pytest
+
 from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
+
 
 TYPES = ("int64", "uint64", "str")
 # Tied to src/In1d.chpl:threshold, which defaults to 2**23

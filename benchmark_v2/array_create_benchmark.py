@@ -1,8 +1,10 @@
 import numpy as np
 import pytest
+
 from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
+
 
 OPS = ("zeros", "ones", "randint")
 TYPES = ("int64", "float64", "uint64")

@@ -14,8 +14,10 @@ import os
 import re
 import subprocess
 import sys
+
 from datetime import datetime
 from typing import Union
+
 
 benchmark_dir = os.path.dirname(__file__)
 util_dir = os.path.join(benchmark_dir, "..", "server_util", "test")

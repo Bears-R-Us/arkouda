@@ -43,6 +43,7 @@ array([100 200 200])
 """
 
 import functools
+
 from typing import TYPE_CHECKING, Sequence, TypeVar
 from warnings import warn
 
@@ -58,6 +59,7 @@ from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
+
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical

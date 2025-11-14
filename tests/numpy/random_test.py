@@ -1,16 +1,20 @@
 import math
 import os
+
 from collections import Counter
 from itertools import product
 
 import numpy as np
 import pytest
+
 from scipy import stats as sp_stats
 
 import arkouda as ak
+
 from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
 from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
+
 
 INT_FLOAT = [ak.int64, ak.float64]
 RANDOM_METHODS = [

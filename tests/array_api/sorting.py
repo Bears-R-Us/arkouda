@@ -3,7 +3,9 @@ import pytest
 
 import arkouda as ak
 import arkouda.array_api as xp
+
 from arkouda.testing import assert_equivalent
+
 
 # requires the server to be built with 2D array support
 SHAPES = [(1,), (25,), (5, 10), (10, 5)]

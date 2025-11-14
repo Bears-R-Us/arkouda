@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import json
 import sys
+
 from math import prod as maprod
 from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union, cast
 
@@ -24,6 +25,7 @@ from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GroupBy
+
 
 __all__ = [
     "attach",

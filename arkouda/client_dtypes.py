@@ -54,6 +54,7 @@ from ipaddress import ip_address as _ip_address
 from typing import TYPE_CHECKING, Literal, Optional, TypeVar, Union
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
@@ -62,6 +63,7 @@ from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
+
 
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast

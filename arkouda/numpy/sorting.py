@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union
-from typing import cast
+from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
 from typing import cast as type_cast
 
 from typeguard import check_type, typechecked
@@ -11,6 +10,7 @@ from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uin
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, zeros
 from arkouda.numpy.strings import Strings
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg

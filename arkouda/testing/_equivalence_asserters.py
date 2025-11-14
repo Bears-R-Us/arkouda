@@ -3,6 +3,7 @@ from __future__ import annotations
 # Third Party
 import numpy as np
 import pandas as pd
+
 from numpy import bool_, floating, integer, str_
 
 # First Party
@@ -24,6 +25,7 @@ from arkouda.testing import (
     assert_index_equal,
     assert_series_equal,
 )
+
 
 DEBUG = True
 

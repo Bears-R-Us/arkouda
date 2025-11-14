@@ -1,4 +1,5 @@
 import itertools
+
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -14,6 +15,7 @@ from typing import (
 
 import numpy as np
 import pandas as pd
+
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import (
@@ -23,11 +25,9 @@ from arkouda.numpy.dtypes import (
     SeriesDTypes,
     bigint,
     bool_scalars,
-)
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
-from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import (
+    float64,
+    get_byteorder,
+    get_server_byteorder,
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
@@ -35,9 +35,12 @@ from arkouda.numpy.dtypes import (
     resolve_scalar_dtype,
     str_,
 )
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg, get_array_ranks

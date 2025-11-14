@@ -39,11 +39,13 @@ Examples
 """
 
 import shutil
+
 from os.path import isdir
 from pathlib import Path
 from typing import Any, Dict, Mapping
 
 from arkouda.logger import getArkoudaLogger
+
 
 __all__ = [
     "delete_directory",

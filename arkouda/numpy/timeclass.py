@@ -1,8 +1,10 @@
 import datetime
 import json
+
 from typing import TYPE_CHECKING, Optional, TypeVar, Union
 
 import numpy as np
+
 from pandas import Series as pdSeries
 from pandas import Timedelta as pdTimedelta
 from pandas import Timestamp as pdTimestamp
@@ -13,6 +15,7 @@ from pandas import to_datetime, to_timedelta
 from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import from_series
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg

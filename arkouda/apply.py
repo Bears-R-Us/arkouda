@@ -53,16 +53,19 @@ See Also
 
 import base64
 import sys
+
 from typing import Callable, Optional, Union, cast
 
 import cloudpickle
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.client import get_config
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import parse_single_value, pdarray
 from arkouda.numpy.pdarraycreation import create_pdarray
+
 
 __all__ = [
     "apply",

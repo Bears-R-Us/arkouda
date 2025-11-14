@@ -58,10 +58,12 @@ array([0 1 2 3 4])
 
 import json
 import sys
+
 from json import JSONEncoder
 from typing import TYPE_CHECKING, List, TypeVar, Union, cast
 
 from typeguard import typechecked
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg

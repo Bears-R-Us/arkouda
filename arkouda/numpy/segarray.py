@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+
 from typing import TYPE_CHECKING, Literal, Optional, Sequence, Tuple, TypeVar
 from typing import cast as type_cast
 
@@ -22,6 +23,7 @@ from arkouda.numpy.pdarraysetops import concatenate
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.pandas.join import gen_ranges
+
 
 __all__ = [
     "SegArray",

@@ -1,9 +1,12 @@
 import numpy as np
 import pytest
+
 from benchmark_utils import calc_num_bytes
 
 import arkouda as ak
+
 from arkouda.numpy.sorting import SortingAlgorithm
+
 
 TYPES = ("int64", "float64")
 

@@ -66,6 +66,7 @@ arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 import glob
 import json
 import os
+
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -80,6 +81,7 @@ from typing import (
 from warnings import warn
 
 import pandas as pd
+
 from typeguard import typechecked
 
 from arkouda.client_dtypes import IPv4
@@ -93,6 +95,7 @@ from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.dataframe import DataFrame
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.index import Index, MultiIndex
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg
@@ -2406,6 +2409,7 @@ def snapshot(filename):
 
     """
     import inspect
+
     from types import ModuleType
 
     from arkouda.numpy.segarray import SegArray

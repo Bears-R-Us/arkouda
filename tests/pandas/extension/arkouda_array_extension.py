@@ -3,10 +3,12 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.testing import assert_equivalent
+
 
 SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.float64]
 

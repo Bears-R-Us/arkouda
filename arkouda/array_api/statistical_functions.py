@@ -9,8 +9,8 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.numpy.util import _axis_validation
 
-from ._dtypes import _numeric_dtypes  # _complex_floating_dtypes,; complex128,
 from ._dtypes import (
+    _numeric_dtypes,  # _complex_floating_dtypes,; complex128,
     _real_floating_dtypes,
     _real_numeric_dtypes,
     _signed_integer_dtypes,
@@ -20,6 +20,7 @@ from ._dtypes import (
 )
 from .array_object import Array, implements_numpy
 from .manipulation_functions import squeeze
+
 
 __all__ = [
     "_prod_sum_dtype",

@@ -2,11 +2,13 @@ import importlib
 import importlib.util
 import os
 import sys
+
 from typing import Iterable, Iterator
 
 import pytest
 
 import arkouda as ak
+
 from arkouda.client import get_array_ranks
 from server_util.test.server_test_util import (
     TestRunningMode,
@@ -14,6 +16,7 @@ from server_util.test.server_test_util import (
     start_arkouda_server,
     stop_arkouda_server,
 )
+
 
 default_dtype = ["int64", "uint64", "float64", "bool", "str", "bigint", "mixed"]
 default_encoding = ["ascii", "idna"]

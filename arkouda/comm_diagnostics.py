@@ -87,10 +87,12 @@ arkouda.DataFrame, arkouda.client.generic_msg
 """
 
 import sys
+
 from typing import cast as type_cast
 
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.pandas.dataframe import DataFrame
+
 
 __all__ = [
     "start_comm_diagnostics",

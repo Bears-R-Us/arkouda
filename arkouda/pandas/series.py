@@ -2,15 +2,18 @@ from __future__ import annotations
 
 import json
 import operator
+
 from builtins import str as builtin_str
 from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
 import pandas as pd
+
 from pandas._config import get_option
 from typeguard import typechecked
 
 import arkouda.pandas.dataframe
+
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.alignment import lookup
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
@@ -27,6 +30,7 @@ from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import get_callback, is_float
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
+
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical

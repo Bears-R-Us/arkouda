@@ -1,6 +1,7 @@
 from typing import Any
 
 import numpy as np
+
 from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
@@ -19,6 +20,7 @@ from ._dtypes import (
     ArkoudaUint64Dtype,
     _ArkoudaBaseDtype,
 )
+
 
 __all__ = ["ArkoudaArray"]
 

@@ -1,10 +1,12 @@
 import re
+
 from itertools import chain
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.pandas import match, matcher
 
 

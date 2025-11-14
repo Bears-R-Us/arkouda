@@ -59,11 +59,13 @@ from __future__ import annotations
 
 import builtins
 import json
+
 from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union
 from typing import cast as type_cast
 
 import numpy as np
 import pandas as pd
+
 from numpy import array as ndarray
 from numpy import dtype as npdtype
 from typeguard import typechecked
@@ -79,6 +81,7 @@ from arkouda.numpy.strings import Strings
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
 from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.sorting import coargsort
+
 
 __all__ = [
     "Index",
@@ -664,6 +667,7 @@ class Index:
 
         """
         import numpy as np
+
         from numpy import argsort as np_argsort
         from numpy import flip as np_flip
         from numpy import isnan as np_isnan

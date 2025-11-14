@@ -20,6 +20,7 @@ of ndarray.
 from __future__ import annotations
 
 import types
+
 from enum import IntEnum
 from typing import (
     TYPE_CHECKING,
@@ -36,6 +37,7 @@ from typing import (
 import numpy as np
 
 import arkouda as ak
+
 from arkouda import array_api
 from arkouda.numpy.pdarraycreation import scalar_array
 
@@ -48,6 +50,7 @@ from ._dtypes import (
     _result_type,
 )
 from .creation_functions import asarray
+
 
 if TYPE_CHECKING:
     from ._typing import Device, Dtype

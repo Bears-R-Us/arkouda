@@ -13,7 +13,9 @@ from IO import (
 )
 
 import arkouda as ak
+
 from server_util.test.server_test_util import get_default_temp_directory
+
 
 TYPES = ("int64", "float64", "uint64", "str")
 

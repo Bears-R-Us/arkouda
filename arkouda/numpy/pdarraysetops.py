@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector
@@ -22,6 +23,7 @@ from arkouda.pandas.groupbyclass import (
     groupable_element_type,
     unique,
 )
+
 
 if TYPE_CHECKING:
     from arkouda.client import generic_msg

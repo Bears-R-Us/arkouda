@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, Tuple, Union, cast
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool as akbool
@@ -14,6 +15,7 @@ from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 from arkouda.numpy.pdarraycreation import scalar_array
 
 from .array_object import Array, implements_numpy
+
 
 __all__ = [
     "broadcast_arrays",

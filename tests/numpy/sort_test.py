@@ -2,9 +2,11 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.client import get_array_ranks
 from arkouda.numpy.sorting import SortingAlgorithm
 from arkouda.testing import assert_arkouda_array_equivalent
+
 
 NUMERIC_AND_BIGINT_TYPES = ["int64", "float64", "uint64", "bigint"]
 
