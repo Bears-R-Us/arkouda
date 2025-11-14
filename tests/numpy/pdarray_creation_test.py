@@ -451,7 +451,7 @@ class TestPdarrayCreation:
             high = size if array_type != bool else 2
             test_array = ak.randint(0, high, shape, array_type)
             assert isinstance(test_array, ak.pdarray)
-            assert size == len(test_array)
+            assert local_size == len(test_array)
             assert array_type == test_array.dtype
             assert shape == test_array.shape
             assert ((0 <= test_array) & (test_array <= size)).all()
