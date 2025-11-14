@@ -5,9 +5,11 @@ from typing import cast as type_cast
 from typing import overload
 
 import numpy as np
+from numpy.typing import NDArray
 import pandas as pd
 from typeguard import typechecked
 
+from arkouda.numpy._typing._typing import _NumericLikeDType, _StringDType
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -165,6 +167,68 @@ def _deepcopy(a: pdarray) -> pdarray:
         args={"x": a},
     )
     return create_pdarray(rep_msg)
+
+
+# ======================
+# Overloads for ak.array
+# ======================
+
+
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: _StringDType = ...,
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> Strings: ...
+
+
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: _NumericLikeDType = ...,  # object covers np.dtype, type, int/float/bool dtypes, etc.
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> pdarray: ...
+
+
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype=None,
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> Union[pdarray, Strings]: ...
+
+
+@overload
+def array(
+    a: Union[pdarray, List[_NumericLikeDType]],
+    dtype: Union[_StringDType, _NumericLikeDType, None] = None,
+    copy: bool = False,
+    max_bits: int = -1,
+) -> pdarray: ...
+
+
+@overload
+def array(
+    a: Union[Strings, Iterable[_StringDType]],
+    dtype: Union[_StringDType, _NumericLikeDType, None] = None,
+    copy: bool = False,
+    max_bits: int = -1,
+) -> Strings: ...
+
+
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: Union[_StringDType, _NumericLikeDType, None] = None,
+    copy: bool = False,
+    max_bits: int = -1,
+) -> Union[pdarray, Strings]: ...
 
 
 def array(
