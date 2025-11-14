@@ -67,7 +67,7 @@ from enum import Enum
 import json
 import os
 import sys
-from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
+from typing import Dict, List, Literal, Mapping, Optional, Tuple, Union, cast, overload
 import warnings
 
 import zmq  # for typechecking
@@ -1047,6 +1047,46 @@ def _json_args_to_str(json_obj: Optional[Dict] = None) -> Tuple[int, str]:
         param = ParameterObject.factory(key, val)
         j.append(json.dumps(param.dict))
     return len(j), json.dumps(j)
+
+
+@overload
+def generic_msg(
+    cmd: str,
+    args: Optional[Dict] = ...,
+    payload: None = ...,
+    send_binary: Literal[False] = ...,
+    recv_binary: Literal[False] = ...,
+) -> str: ...
+
+
+@overload
+def generic_msg(
+    cmd: str,
+    args: Optional[Dict] = ...,
+    payload: None = ...,
+    send_binary: Literal[False] = ...,
+    recv_binary: Literal[True] = ...,
+) -> memoryview: ...
+
+
+@overload
+def generic_msg(
+    cmd: str,
+    args: Optional[Dict],
+    payload: memoryview,
+    send_binary: Literal[True],
+    recv_binary: Literal[False] = ...,
+) -> str: ...
+
+
+@overload
+def generic_msg(
+    cmd: str,
+    args: Optional[Dict],
+    payload: memoryview,
+    send_binary: Literal[True],
+    recv_binary: Literal[True],
+) -> memoryview: ...
 
 
 def generic_msg(

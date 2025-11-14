@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import Union
-from typing import cast
-from typing import cast as type_cast
+from typing import Union, cast
 
 import numpy as np
 from typeguard import typechecked
@@ -66,7 +64,7 @@ def random_sparse_matrix(
         },
     )
 
-    return create_sparray(type_cast(str, repMsg))
+    return create_sparray(repMsg)
 
 
 @typechecked
@@ -97,7 +95,7 @@ def sparse_matrix_matrix_mult(A, B: sparray) -> sparray:
         args={"arg1": A.name, "arg2": B.name},
     )
 
-    return create_sparray(type_cast(str, repMsg))
+    return create_sparray(repMsg)
 
 
 def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray, layout: str) -> sparray:
@@ -144,4 +142,4 @@ def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray,
         args={"rows": rows.name, "cols": cols.name, "vals": vals.name, "shape": shape},
     )
 
-    return create_sparray(type_cast(str, repMsg))
+    return create_sparray(repMsg)

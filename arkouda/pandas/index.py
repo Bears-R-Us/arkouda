@@ -1259,8 +1259,6 @@ class Index:
         determine the file format.
 
         """
-        from typing import cast as type_cast
-
         from arkouda.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
@@ -1291,22 +1289,19 @@ class Index:
                 )
             )
         ]
-        return type_cast(
-            str,
-            generic_msg(
-                cmd="tohdf",
-                args={
-                    "filename": prefix_path,
-                    "dset": dataset,
-                    "file_format": _file_type_to_int(file_type),
-                    "write_mode": _mode_str_to_int(mode),
-                    "objType": self.objType,
-                    "num_idx": 1,
-                    "idx": index_data,
-                    "idx_objTypes": [self.values.objType],  # this will be pdarray, strings, or cat
-                    "idx_dtypes": [str(self.values.dtype)],
-                },
-            ),
+        return generic_msg(
+            cmd="tohdf",
+            args={
+                "filename": prefix_path,
+                "dset": dataset,
+                "file_format": _file_type_to_int(file_type),
+                "write_mode": _mode_str_to_int(mode),
+                "objType": self.objType,
+                "num_idx": 1,
+                "idx": index_data,
+                "idx_objTypes": [self.values.objType],  # this will be pdarray, strings, or cat
+                "idx_dtypes": [str(self.values.dtype)],
+            },
         )
 
     def update_hdf(
@@ -2206,8 +2201,6 @@ class MultiIndex(Index):
         determine the file format.
 
         """
-        from typing import cast as type_cast
-
         from arkouda.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
@@ -2228,22 +2221,19 @@ class MultiIndex(Index):
             )
             for obj in self.levels
         ]
-        return type_cast(
-            str,
-            generic_msg(
-                cmd="tohdf",
-                args={
-                    "filename": prefix_path,
-                    "dset": dataset,
-                    "file_format": _file_type_to_int(file_type),
-                    "write_mode": _mode_str_to_int(mode),
-                    "objType": self.objType,
-                    "num_idx": len(self.levels),
-                    "idx": index_data,
-                    "idx_objTypes": [obj.objType for obj in self.levels],
-                    "idx_dtypes": [str(obj.dtype) for obj in self.levels],
-                },
-            ),
+        return generic_msg(
+            cmd="tohdf",
+            args={
+                "filename": prefix_path,
+                "dset": dataset,
+                "file_format": _file_type_to_int(file_type),
+                "write_mode": _mode_str_to_int(mode),
+                "objType": self.objType,
+                "num_idx": len(self.levels),
+                "idx": index_data,
+                "idx_objTypes": [obj.objType for obj in self.levels],
+                "idx_dtypes": [str(obj.dtype) for obj in self.levels],
+            },
         )
 
     def update_hdf(
