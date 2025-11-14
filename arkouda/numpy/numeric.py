@@ -230,10 +230,10 @@ def cast(
                 },
             )
             if errors == ErrorMode.return_validity:
-                a, b = type_cast(str, repMsg).split("+")
+                a, b = repMsg.split("+")
                 return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
             else:
-                return create_pdarray(type_cast(str, repMsg))
+                return create_pdarray(repMsg)
     elif isinstance(pda, Categorical):  # type: ignore
         if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda.categories[pda.codes]
@@ -280,7 +280,7 @@ def abs(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -489,7 +489,7 @@ def sign(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -528,7 +528,7 @@ def isfinite(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -567,7 +567,7 @@ def isinf(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -614,7 +614,7 @@ def isnan(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -666,7 +666,7 @@ def log(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -699,7 +699,7 @@ def log10(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -732,7 +732,7 @@ def log2(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -877,7 +877,7 @@ def exp(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -918,7 +918,7 @@ def expm1(pda: pdarray) -> pdarray:
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -1021,7 +1021,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
             "includeInitial": False,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -1091,7 +1091,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
             "includeInitial": False,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -1400,10 +1400,7 @@ def arctan2(
                 raise TypeError(f"{ts} is not an allowed num type for arctan2")
             argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
 
-        repMsg = type_cast(
-            str,
-            generic_msg(cmd=cmdstring, args=argdict),
-        )
+        repMsg = generic_msg(cmd=cmdstring, args=argdict)
         ret = create_pdarray(repMsg)
         if where is True:
             return ret
@@ -1648,14 +1645,11 @@ def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True)
 
     _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
     if where is True:
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-                args={
-                    "x": pda,
-                },
-            ),
+        repMsg = generic_msg(
+            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
+            args={
+                "x": pda,
+            },
         )
         return create_pdarray(repMsg)
     elif where is False:
@@ -1663,14 +1657,11 @@ def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True)
     else:
         if where.dtype != bool:
             raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-                args={
-                    "x": pda[where],
-                },
-            ),
+        repMsg = generic_msg(
+            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
+            args={
+                "x": pda[where],
+            },
         )
         return _merge_where(pda[:], where, create_pdarray(repMsg))
 
@@ -1863,17 +1854,14 @@ def hash(
                 expanded_pda.append(a)
         types_list = [a.objType for a in expanded_pda]
         names_list = [_hash_helper(a) for a in expanded_pda]
-        rep_msg = type_cast(
-            str,
-            generic_msg(
-                cmd="hashList",
-                args={
-                    "nameslist": names_list,
-                    "typeslist": types_list,
-                    "length": len(expanded_pda),
-                    "size": len(expanded_pda[0]),
-                },
-            ),
+        rep_msg = generic_msg(
+            cmd="hashList",
+            args={
+                "nameslist": names_list,
+                "typeslist": types_list,
+                "length": len(expanded_pda),
+                "size": len(expanded_pda[0]),
+            },
         )
         hashes = json.loads(rep_msg)
         return create_pdarray(hashes["upperHash"]), create_pdarray(hashes["lowerHash"])
@@ -1892,14 +1880,11 @@ def _hash_single(pda: pdarray, full: bool = True):
         return hash(pda.bigint_to_uint_arrays())
     _datatype_check(pda.dtype, [float, int, ak_uint64], "hash")
     hname = "hash128" if full else "hash64"
-    repMsg = type_cast(
-        str,
-        generic_msg(
-            cmd=f"{hname}<{pda.dtype},{pda.ndim}>",
-            args={
-                "x": pda,
-            },
-        ),
+    repMsg = generic_msg(
+        cmd=f"{hname}<{pda.dtype},{pda.ndim}>",
+        args={
+            "x": pda,
+        },
     )
     if full:
         a, b = repMsg.split("+")
@@ -2448,7 +2433,7 @@ def histogramdd(
             "num_samples": sample[0].size,
         },
     )
-    return create_pdarray(type_cast(str, repMsg)).reshape(bins), bin_boundaries
+    return create_pdarray(repMsg).reshape(bins), bin_boundaries
 
 
 @typechecked
