@@ -1,21 +1,29 @@
+from __future__ import annotations
+
 from enum import Enum
 import json
-from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Any, List, Literal, Optional, Sequence, Tuple, TypeVar
+from typing import Union
+from typing import Union as _Union
 from typing import cast as type_cast
-from typing import no_type_check
+from typing import no_type_check, overload
 
 import numpy as np
 from typeguard import typechecked
 
 from arkouda.groupbyclass import GroupBy, groupable
+from arkouda.numpy.dtypes import (
+    int_scalars,
+    isSupportedNumber,
+    numeric_scalars,
+    resolve_scalar_dtype,
+    str_,
+)
 from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_INTS, _datatype_check, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
-from arkouda.numpy.dtypes import int_scalars, isSupportedNumber, numeric_scalars, resolve_scalar_dtype
-from arkouda.numpy.dtypes import str_
-from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
 from arkouda.numpy.pdarrayclass import (
     argmax,
@@ -31,6 +39,8 @@ from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
+
+from ._typing import ArkoudaNumericTypes, BuiltinNumericTypes, NumericDTypeTypes, StringDTypeTypes
 
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
@@ -136,6 +146,78 @@ def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
+
+
+@overload
+def cast(
+    pda: pdarray,
+    dt: StringDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> Strings: ...
+
+
+@overload
+def cast(
+    pda: pdarray,
+    dt: NumericDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> pdarray: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: _Union[ArkoudaNumericTypes, BuiltinNumericTypes, np.dtype[Any], bigint],
+    errors: Literal[ErrorMode.return_validity],
+) -> Tuple[pdarray, pdarray]: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: _Union[ArkoudaNumericTypes, BuiltinNumericTypes, np.dtype[Any], bigint],
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> pdarray: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: StringDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> Strings: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: type["Categorical"],
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> "Categorical": ...
+
+
+@overload
+def cast(
+    pda: "Categorical",
+    dt: StringDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> Strings: ...
+
+
+@overload
+def cast(
+    pda: _Union[pdarray, numeric_scalars],
+    dt: _Union[ArkoudaNumericTypes, BuiltinNumericTypes, np.dtype[Any], bigint, None],
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> pdarray: ...
+
+
+@overload
+def cast(
+    pda: _Union[pdarray, Strings, "Categorical", numeric_scalars],
+    dt: str,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> _Union[pdarray, Strings, "Categorical"]: ...
 
 
 @typechecked
@@ -2743,7 +2825,7 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False) -> bool
     >>> ak.array_equal(a,b,True)
     True
     """
-    if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == akstr_) ^ (pda_b.dtype == akstr_)):
+    if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == str_) ^ (pda_b.dtype == str_)):
         return False
     elif equal_nan:
         return bool(ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b)))

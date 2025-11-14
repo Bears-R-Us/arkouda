@@ -215,7 +215,9 @@ class Categorical:
             self.NAvalue = kwargs.get("NAvalue", "N/A")
             findNA = self.categories == self.NAvalue
             if findNA.any():
-                self._NAcode = int(akcast(findNA, akint64).argmax())
+                self._NAcode = int(
+                    type_cast(Union[np.uint, np.integer], akcast(findNA, akint64).argmax())
+                )
             else:
                 # Append NA value
                 self.categories = concatenate((self.categories, array([self.NAvalue])))
