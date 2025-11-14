@@ -252,7 +252,9 @@ class ArkoudaExtensionArray(ExtensionArray):
         from arkouda.numpy.numeric import isnan as ak_isnan
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
+        from arkouda.numpy.pdarraycreation import array as ak_array
         from arkouda.numpy.sorting import argsort
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.extension import ArkoudaArray
         from arkouda.pandas.groupbyclass import GroupBy
 
@@ -440,6 +442,7 @@ class ArkoudaExtensionArray(ExtensionArray):
         from arkouda.numpy.pdarraysetops import concatenate
         from arkouda.numpy.util import is_float
         from arkouda.pandas.categorical import Categorical
+        from arkouda.numpy.strings import Strings
 
         if na_position not in {"first", "last"}:
             raise ValueError("na_position must be 'first' or 'last'.")
