@@ -155,8 +155,9 @@ class TestPdarrayClass:
         b = ak.flip(a)
         assert not ak.is_sorted(b, axis=axis)
 
-        c = ak.randint(0, size // 10, size, seed=seed)
-        assert not ak.is_sorted(c, axis=axis)
+        if size > 99:
+            c = ak.randint(0, size // 10, size, seed=seed)
+            assert not ak.is_sorted(c, axis=axis)
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("dtype", list(set(DTYPES) - set(["bool"])))
@@ -187,8 +188,9 @@ class TestPdarrayClass:
 
         assert not is_locally_sorted(ak.flip(a), axis=axis)
 
-        b = ak.randint(0, size // 10, size)
-        assert not is_locally_sorted(b, axis=axis)
+        if size > 99:
+            b = ak.randint(0, size // 10, size, seed=pytest.seed)
+            assert not is_locally_sorted(b, axis=axis)
 
     @pytest.mark.skip_if_nl_greater_than(2)
     @pytest.mark.skip_if_nl_less_than(2)
