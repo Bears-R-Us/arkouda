@@ -23,6 +23,7 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
     def __init__(self, data):
         from arkouda.numpy.strings import Strings
+
         if isinstance(data, np.ndarray):
             from arkouda.numpy.pdarraycreation import array as ak_array
 
