@@ -1,13 +1,45 @@
 from itertools import product
+import operator as op_
 import warnings
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equivalent
 
 
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
+NOT_FLOAT_TYPES = ["bool", "uint64", "int64", "bigint"]
+ARKOUDA_SUPPORTED_TYPES = ["bool", "uint64", "int64", "bigint", "float64"]
+VALUE_OPS = ["&", "|", "^", "+", "-", "/", "*", "//", "%", "<<", ">>", "**", "<<<", ">>>"]
+SMALL_OPS = ["&", "|", "^", "+", "-", "/", "*", "//", "%", "<<<", ">>>"]
+LARGE_OPS = ["<<", ">>", "**"]
+ARITHMETIC_OPS = ["+", "-", "/", "*", "//", "%", "**"]
+BOOL_OPS = ["<", "<=", ">", ">=", "==", "!="]
+
+OP_MAP = {
+    # value / bitwise / arithmetic
+    "&": op_.and_,
+    "|": op_.or_,
+    "^": op_.xor,
+    "+": op_.add,
+    "-": op_.sub,
+    "/": op_.truediv,
+    "*": op_.mul,
+    "//": op_.floordiv,
+    "%": op_.mod,
+    "<<": op_.lshift,
+    ">>": op_.rshift,  # arithmetic right shift in Python
+    "**": op_.pow,
+    # comparisons
+    "<": op_.lt,
+    "<=": op_.le,
+    ">": op_.gt,
+    ">=": op_.ge,
+    "==": op_.eq,
+    "!=": op_.ne,
+}
 
 
 def make_np_arrays(size, dtype):
@@ -671,8 +703,125 @@ class TestOperator:
         f_arr += u_arr
         f_arr += u
 
+    @pytest.mark.parametrize("op", SMALL_OPS)
+    @pytest.mark.parametrize("other_type", NOT_FLOAT_TYPES)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_bigint_binops_not_float_dtype_small_ops(self, op, other_type, size):
+        seed = pytest.seed if pytest.seed is not None else 1
+        bigint_arr = ak.randint(0, 2**64, size, dtype=ak.uint64, seed=seed) + 2**200
+        other_dtype = other_type if other_type != "bigint" else "uint64"
+        min_val = 1
+        max_val = 2**64
+
+        if other_type == "bool":
+            max_val = 2
+        if other_type == "uint8":  # Although not yet supported, the hope is that it will be
+            max_val = 256
+        if other_type == "int64":
+            min_val = -(2**63)
+            max_val = 2**63
+        other_arr = ak.randint(min_val, max_val, size, dtype=other_dtype, seed=seed + 1)
+        if other_dtype == "int64":
+            other_arr = ak.where(other_arr == 0, 1, other_arr)
+        if other_type == "bigint":
+            other_arr = other_arr + 2**200
+        if op in {"<<<", ">>>"}:
+            bigint_arr.max_bits = 256
+            # Just testing that it doesn't crash, since numpy doesn't have this
+            if op == "<<<":
+                bigint_arr.rotl(other_arr)
+                if other_type != "bool":
+                    other_arr.rotl(bigint_arr)
+            else:
+                bigint_arr.rotr(other_arr)
+                if other_type != "bool":
+                    other_arr.rotr(bigint_arr)
+            return
+
+        np_bigint = bigint_arr.to_ndarray()  # noqa: F841
+        np_other = other_arr.to_ndarray()  # noqa: F841
+
+        op_fcn = OP_MAP[op]
+
+        ak_result = op_fcn(bigint_arr, other_arr)
+        np_result = op_fcn(np_bigint, np_other)
+
+        if op == "/":
+            np_result = ak.array(np_result, dtype="float64")
+            assert_almost_equivalent(ak_result, np_result)
+        else:
+            assert_arkouda_array_equivalent(ak_result, np_result)
+
+        ak_result = op_fcn(other_arr, bigint_arr)
+        np_result = op_fcn(np_other, np_bigint)
+
+        if op == "/":
+            np_result = ak.array(np_result, dtype="float64")
+            assert_almost_equivalent(ak_result, np_result)
+        else:
+            assert_arkouda_array_equivalent(ak_result, np_result)
+
+    @pytest.mark.parametrize("op", ARITHMETIC_OPS)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_bigint_binops_float_dtype_arith_ops(self, op, size):
+        seed = pytest.seed if pytest.seed is not None else 1
+        bigint_arr = ak.randint(0, 2**64, size, dtype=ak.uint64, seed=seed) + 2**200
+        min_val = 1
+        max_val = 2**64
+
+        other_arr = ak.randint(min_val, max_val, size, dtype=ak.float64, seed=seed + 1)
+
+        if op == "**":
+            other_arr = other_arr % 5
+
+        np_bigint = bigint_arr.to_ndarray()  # noqa: F841
+        np_other = other_arr.to_ndarray()  # noqa: F841
+
+        op_fcn = OP_MAP[op]
+
+        ak_result = op_fcn(bigint_arr, other_arr)
+        np_result = op_fcn(np_bigint, np_other)
+
+        np_result = ak.array(np_result, dtype="float64")
+        assert_almost_equivalent(ak_result, np_result)
+
+    @pytest.mark.parametrize("op", BOOL_OPS)
+    @pytest.mark.parametrize("other_type", ARKOUDA_SUPPORTED_TYPES)
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_bigint_comparison_ops(self, op, other_type, size):
+        seed = pytest.seed if pytest.seed is not None else 1
+        bigint_arr = ak.randint(0, 2**64, size, dtype=ak.uint64, seed=seed) + 2**200
+        other_dtype = other_type if other_type != "bigint" else "uint64"
+        min_val = 1
+        max_val = 2**64
+
+        if other_type == "bool":
+            max_val = 2
+        if other_type == "uint8":  # Although not yet supported, the hope is that it will be
+            max_val = 255
+        if other_type == "int64":
+            max_val = 2**63
+        other_arr = ak.randint(min_val, max_val, size, dtype=other_dtype, seed=seed + 1)
+        if other_type == "bigint":
+            other_arr = other_arr + 2**200
+
+        np_bigint = bigint_arr.to_ndarray()  # noqa: F841
+        np_other = other_arr.to_ndarray()  # noqa: F841
+
+        op_fcn = OP_MAP[op]
+
+        ak_result = op_fcn(bigint_arr, other_arr)
+        np_result = op_fcn(np_bigint, np_other)
+
+        assert_arkouda_array_equivalent(ak_result, np_result)
+
+        ak_result = op_fcn(bigint_arr, other_arr)
+        np_result = op_fcn(np_bigint, np_other)
+
+        assert_almost_equivalent(ak_result, np_result)
+
     def test_error_handling(self):
-        # Test NotImplmentedError that prevents pddarray / Strings iteration
+        # Test NotImplmentedError that prevents pdarray / Strings iteration
         for arr in ak.ones(100), ak.array([f"String {i}" for i in range(10)]):
             with pytest.raises(NotImplementedError):
                 iter(arr)

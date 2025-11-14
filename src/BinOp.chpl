@@ -184,6 +184,8 @@ module BinOp
   // symbol table entry.
   const boolOps = new set(string, ["<", "<=", ">", ">=", "==", "!="]);
 
+  const smallOps = new set(string, ["<<", ">>", "**"]);
+
   proc doBoolBoolBitOp(
     op: string, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
   ): bool {
@@ -618,159 +620,23 @@ module BinOp
     ref la = l.a;
     ref ra = r.a;
     var tmp = if l.etype == bigint then la else la:bigint;
-    // these cases are not mutually exclusive,
-    // so we have a flag to track if tmp is ever populated
-    var visted = false;
 
     // had to create bigint specific BinOp procs which return
     // the distributed array because we need it at SymEntry creation time
-    if l.etype == bigint && r.etype == bigint {
-      // first we try the ops that only work with
-      // both being bigint
+    if l.etype == bigint && r.etype != bigint && smallOps.contains(op) {
+      // ops that only work with a left hand side of bigint and right hand side non-bigint
+      // Just bitshifts and exponentiation without local_max_size
       select op {
-        when "&" {
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            t &= ri;
-            if has_max_bits {
-              t &= local_max_size;
-            }
-          }
-          visted = true;
+        when "<<" {
+          forall (t, ri) in zip(tmp, ra) do
+            t = if has_max_bits && ri >= max_bits then 0: bigint else t << ri;
         }
-        when "|" {
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            t |= ri;
-            if has_max_bits {
-              t &= local_max_size;
-            }
-          }
-          visted = true;
-        }
-        when "^" {
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            t ^= ri;
-            if has_max_bits {
-              t &= local_max_size;
-            }
-          }
-          visted = true;
-        }
-        when "/" {
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            t /= ri;
-            if has_max_bits {
-              t &= local_max_size;
-            }
-          }
-          visted = true;
-        }
-      }
-    }
-    if l.etype == bigint && (r.etype == bigint || r.etype == int || r.etype == uint) {
-      // then we try the ops that only work with a
-      // left hand side of bigint
-      if r.etype != bigint {
-        // can't shift a bigint by a bigint
-        select op {
-          when "<<" {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              if has_max_bits {
-                if ri >= max_bits {
-                  t = 0;
-                }
-                else {
-                  t <<= ri;
-                  t &= local_max_size;
-                }
-              }
-              else {
-                t <<= ri;
-              }
-            }
-            visted = true;
-          }
-          when ">>" {
-            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-              if has_max_bits {
-                if ri >= max_bits {
-                  t = 0;
-                }
-                else {
-                  t >>= ri;
-                  t &= local_max_size;
-                }
-              }
-              else {
-                t >>= ri;
-              }
-            }
-            visted = true;
-          }
-          when "<<<" {
-            if !has_max_bits {
-              throw new Error("Must set max_bits to rotl");
-            }
-            var botBits = la;
-            forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var local_max_size = max_size) {
-              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-              t <<= modded_shift;
-              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
-              bot_bits >>= shift_amt;
-              t += bot_bits;
-              t &= local_max_size;
-            }
-            visted = true;
-          }
-          when ">>>" {
-            if !has_max_bits {
-              throw new Error("Must set max_bits to rotr");
-            }
-            var topBits = la;
-            forall (t, ri, tB) in zip(tmp, ra, topBits) with (var local_max_size = max_size) {
-              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
-              t >>= modded_shift;
-              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
-              tB <<= shift_amt;
-              t += tB;
-              t &= local_max_size;
-            }
-            visted = true;
-          }
-        }
-      }
-      select op {
-        when "//" { // floordiv
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            if ri != 0 {
-              t /= ri;
-            }
-            else {
-              t = 0:bigint;
-            }
-            if has_max_bits {
-              t &= local_max_size;
-            }
-          }
-          visted = true;
-        }
-        when "%" { // modulo " <- quote is workaround for syntax highlighter bug
-          // we only do in place mod when ri != 0, tmp will be 0 in other locations
-          // we can't use ei = li % ri because this can result in negatives
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            if ri != 0 {
-              mod(t, t, ri);
-            }
-            else {
-              t = 0:bigint;
-            }
-            if has_max_bits {
-              t &= local_max_size;
-            }
-          }
-          visted = true;
+        when ">>" {
+          forall (t, ri) in zip(tmp, ra) do
+            t = if has_max_bits && ri >= max_bits then 0: bigint else t >> ri;
         }
         when "**" {
-          if || reduce (ra<0) {
+          if || reduce (ra<0) { // In the future, this should actually lead into real number territory
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
           if has_max_bits {
@@ -779,76 +645,281 @@ module BinOp
             }
           }
           else {
-            forall (t, ri) in zip(tmp, ra) {
-              t **= ri:uint;
-            }
+            forall (t, ri) in zip(tmp, ra) do t **= ri:uint;
           }
-          visted = true;
         }
       }
     }
-    if (l.etype == bigint && r.etype == bigint) ||
-       (l.etype == bigint && (r.etype == int || r.etype == uint || r.etype == bool)) ||
-       (r.etype == bigint && (l.etype == int || l.etype == uint || l.etype == bool)) {
+    else {
       select op {
-        when "+" {
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            t += ri;
-            if has_max_bits {
-              t &= local_max_size;
+        when "&" { forall (t, ri) in zip(tmp, ra) do t &= ri: bigint; }
+        when "|" { forall (t, ri) in zip(tmp, ra) do t |= ri: bigint; }
+        when "^" { forall (t, ri) in zip(tmp, ra) do t ^= ri: bigint; }
+        when "+" { forall (t, ri) in zip(tmp, ra) do t += ri: bigint; }
+        when "-" { forall (t, ri) in zip(tmp, ra) do t -= ri: bigint; }
+        when "*" { forall (t, ri) in zip(tmp, ra) do t *= ri: bigint; }
+        when "//" {
+          forall (t, ri) in zip(tmp, ra) {
+            const denom: bigint = ri: bigint;   // <- cast bool/int/uint/etc to bigint
+            if denom != 0 {
+              var q: bigint;
+              // floor-style integer division, like Python's //
+              div(q, t, denom, roundingMode.down);
+              t = q;
+            } else {
+              // whatever semantics you want for division by zero:
+              t = 0: bigint;
             }
           }
-          visted = true;
         }
-        when "-" {
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            t -= ri;
-            if has_max_bits {
-              t &= local_max_size;
+        when "%" {
+          forall (t, ri) in zip(tmp, ra) {
+            if ri != 0 {
+              mod(t, t, ri: bigint);
+            } else {
+              t = 0: bigint;
             }
           }
-          visted = true;
         }
-        when "*" {
-          forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
-            t *= ri;
-            if has_max_bits {
-              t &= local_max_size;
+        when "**" {
+          if || reduce (ra<0) {
+            throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
+          }
+          if has_max_bits {
+            forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
+              powMod(t, t, ri: bigint, local_max_size + 1);
             }
           }
-          visted = true;
+          else {
+            throw new Error("Attempt to exponentiate base of type BigInt to BigInt without max_bits");
+          }
         }
+        when "<<<" {
+          if !has_max_bits { // This could be expanded if l.etype is not bigint but r.etype is
+            throw new Error("Must set max_bits to rotl");
+          }
+          var botBits = la: bigint;
+          if r.etype == bigint {
+            var modded_shift = 0: bigint;
+            forall (t, ri, bot_bits) in zip(tmp, ra, botBits) with (var loc_modded_shift = modded_shift) {
+              mod(loc_modded_shift, ri: bigint, max_bits); // If max_bits is an int, loc_modded_shift is no bigger than int size
+              t <<= loc_modded_shift: int;
+              var shift_amt = max_bits - loc_modded_shift: int;
+              bot_bits >>= shift_amt;
+              t += bot_bits;
+            }
+          } else {
+            forall (t, ri, bot_bits) in zip(tmp, ra, botBits) {
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+              t <<= modded_shift;
+              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+              bot_bits >>= shift_amt;
+              t += bot_bits;
+            }
+          }
+        }
+        when ">>>" {
+          if !has_max_bits {
+            throw new Error("Must set max_bits to rotr");
+          }
+          var topBits = la: bigint;
+          if r.etype == bigint {
+            var modded_shift = 0:bigint;
+            forall (t, ri, tB) in zip(tmp, ra, topBits) with (var loc_modded_shift = modded_shift) {
+              mod(loc_modded_shift, ri: bigint, max_bits);
+              t >>= loc_modded_shift: int;
+              var shift_amt = max_bits - loc_modded_shift: int;
+              tB <<= shift_amt;
+              t += tB;
+            }
+          } else {
+            forall (t, ri, tB) in zip(tmp, ra, topBits) {
+              var modded_shift = if r.etype == int then ri % max_bits else ri % max_bits:uint;
+              t >>= modded_shift;
+              var shift_amt = if r.etype == int then max_bits - modded_shift else max_bits:uint - modded_shift;
+              tB <<= shift_amt;
+              t += tB;
+            }
+          }
+        }
+        otherwise do throw new Error("Unsupported operation: " + l.etype:string +" "+ op +" "+ r.etype:string);
       }
     }
-    if !visted {
-      throw new Error("Unsupported operation: " + l.etype:string +" "+ op +" "+ r.etype:string);
-    }
+
+    if has_max_bits then forall t in tmp with (const local_max_size = max_size) do t &= local_max_size;
+
     return (tmp, max_bits);
   }
 
   proc doBigIntBinOpvvBoolReturn(l, r, op: string) throws {
     select op {
-      when "<" {
-        return l.a < r.a;
-      }
-      when ">" {
-        return l.a > r.a;
-      }
-      when "<=" {
-        return l.a <= r.a;
-      }
-      when ">=" {
-        return l.a >= r.a;
-      }
-      when "==" {
-        return l.a == r.a;
-      }
-      when "!=" {
-        return l.a != r.a;
-      }
+      when "<" { return l.a < r.a; }
+      when ">" { return l.a > r.a; }
+      when "<=" { return l.a <= r.a; }
+      when ">=" { return l.a >= r.a; }
+      when "==" { return l.a == r.a; }
+      when "!=" { return l.a != r.a; }
       otherwise {
         // we should never reach this since we only enter this proc
         // if boolOps.contains(op)
+        throw new Error("Unsupported operation: " + l.etype:string +" "+ op +" "+ r.etype:string);
+      }
+    }
+  }
+
+  // Compare a bigint to a real(64).
+  // Returns -1 if b < r, 0 if b == r, 1 if b > r.
+  // (Assumes r is not NaN; NaN handled by wrappers below.)
+  inline proc cmpBigReal(b: bigint, r: real(64)): int {
+    // infinities
+    if !isFinite(r) {
+      if r > 0.0 {
+        return -1; // b < +inf
+      } else {
+        return 1;  // b > -inf
+      }
+    }
+
+    // Check if r is integer-valued in real64
+    const ri = trunc(r);     // ri is real(64), trunc toward zero
+    if r == ri {
+      var zi: bigint;        // exact integer to compare against
+      zi.set(ri);            // safe because r == ri (no fractional part)
+      if b < zi then return -1;
+      else if b > zi then return 1;
+      else return 0;
+    }
+
+    // Non-integer r: use the integer part to bound r
+    var tz: bigint;          // tz = trunc(r) as bigint
+    tz.set(ri);
+
+    // non-integer cases
+    if r > 0.0 {
+      // r in (tz, tz+1)
+      if b <= tz {
+        return -1;
+      } else {
+        return 1;
+      }
+    } else {
+      // r in (tz-1, tz)
+      if b >= tz {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+  }
+
+  // Convenience predicates derived from cmpBigReal + NaN rules
+  inline proc ltBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) < 0;
+  }
+  inline proc gtBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) > 0;
+  }
+  inline proc leBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) <= 0;
+  }
+  inline proc geBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) >= 0;
+  }
+  inline proc eqBigReal(b: bigint, r: real(64)): bool {
+    return !isNan(r) && cmpBigReal(b, r) == 0;
+  }
+  inline proc neBigReal(b: bigint, r: real(64)): bool {
+    return isNan(r) || cmpBigReal(b, r) != 0;
+  }
+
+  proc doBigIntBinOpvvBoolReturnRealInput(const ref la: [?d] ?t1, const ref ra: [d] ?t2, op: string) throws
+    where ( (t1 == bigint && t2 == real(64)) ||
+            (t1 == real(64) && t2 == bigint) )
+  {
+
+    var e = makeDistArray(d, bool);
+    ref ea = e;
+    select op {
+      when "<"  {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = ltBigReal(li, ri);
+        } else { // t2 == bigint
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = gtBigReal(ri, li); // li<ri  <=>  ri>li
+        }
+      }
+      when ">"  {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = gtBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = ltBigReal(ri, li);
+        }
+      }
+      when "<=" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = leBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = geBigReal(ri, li);
+        }
+      }
+      when ">=" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = geBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = leBigReal(ri, li);
+        }
+      }
+      when "==" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = eqBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = eqBigReal(ri, li);
+        }
+      }
+      when "!=" {
+        if t1 == bigint {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = neBigReal(li, ri);
+        } else {
+          forall (ei, li, ri) in zip(ea, la, ra) do ei = neBigReal(ri, li);
+        }
+      }
+      otherwise do
+        throw new Error("Unsupported operation: " + t1:string + " " + op + " " + t2:string);
+    }
+
+    return e;
+  }
+
+  proc doBigIntBinOpvvBoolReturnRealInput(const ref la: [?d] ?t1, const ref ra: [d] ?t2, op: string) throws
+    where ( (t1 != bigint || t2 != real(64)) &&
+            (t1 != real(64) || t2 != bigint) )
+  {
+    throw new Error("Unsupported operation: " + t1:string +" "+ op +" "+ t2:string);
+  }
+
+  proc doBigIntBinOpvvRealReturn(l, r, op: string) throws {
+    select op {
+      when "+" { return l.a: real + r.a: real; }
+      when "-" { return l.a: real - r.a: real; }
+      when "*" { return l.a: real * r.a: real; }
+      when "/" { return l.a: real / r.a: real; }
+      when "**" { return l.a: real ** r.a: real; }
+      when "%" {
+        var e = makeDistArray((...l.tupShape), real);
+        ref ea = e;
+        ref la = l.a;
+        ref ra = r.a;
+        [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li: real, ri: real): real;
+        return e;
+      }
+      when "//" {
+        var e = makeDistArray((...l.tupShape), real);
+        ref ea = e;
+        ref la = l.a;
+        ref ra = r.a;
+        [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li: real, ri: real): real;
+        return e;
+      }
+      otherwise {
         throw new Error("Unsupported operation: " + l.etype:string +" "+ op +" "+ r.etype:string);
       }
     }
