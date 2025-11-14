@@ -1,5 +1,8 @@
 import itertools
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union, cast, overload
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union
+from typing import cast
+from typing import cast as type_cast
+from typing import overload
 
 import numpy as np
 import pandas as pd
@@ -260,9 +263,9 @@ def array(
 
     if isinstance(a, pdarray):
         casted = akcast(a, dtype)  # the "dtype is None" case was covered above
-        if dtype == bigint and max_bits != -1:
+        if isinstance(casted, pdarray) and dtype == bigint and max_bits != -1:
             casted.max_bits = max_bits
-        return casted
+        return type_cast(Union[pdarray, Strings], casted)
 
     from arkouda.client import maxTransferBytes
 
@@ -358,7 +361,7 @@ def array(
             send_binary=True,
         )
         strings = Strings.from_return_msg(cast(str, rep_msg))
-        return strings if dtype is None else akcast(strings, dtype)
+        return strings if dtype is None else type_cast(Union[pdarray, Strings], akcast(strings, dtype))
 
     # If not strings, then check that dtype is supported in arkouda
     if dtype == bigint or a.dtype.name not in DTypes:
@@ -417,7 +420,11 @@ def array(
             payload=aview,
             send_binary=True,
         )
-        return create_pdarray(rep_msg) if dtype is None else akcast(create_pdarray(rep_msg), dtype)
+        return (
+            create_pdarray(rep_msg)
+            if dtype is None
+            else type_cast(Union[pdarray, Strings], akcast(create_pdarray(rep_msg), dtype))
+        )
 
 
 @typechecked
@@ -1133,7 +1140,7 @@ def arange(
     # This matters for several tests in tests/series_test.py
 
     if (start == stop) | ((np.sign(stop - start) * np.sign(step)) <= 0):
-        return akcast(array([], dtype=akint64), dt=aktype)
+        return type_cast(Union[pdarray], akcast(array([], dtype=akint64), dt=aktype))
 
     if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(step):
         arg_dtypes = [resolve_scalar_dtype(arg) for arg in (start, stop, step)]

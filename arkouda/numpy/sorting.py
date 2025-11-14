@@ -197,7 +197,7 @@ def coargsort(
             if a.dtype == bigint:
                 expanded_arrays.extend(a.bigint_to_uint_arrays())
             elif a.dtype == bool:
-                expanded_arrays.append(type_cast(pdarray, akcast(a, "int")))
+                expanded_arrays.append(akcast(a, "int"))
             else:
                 expanded_arrays.append(a)
         else:
