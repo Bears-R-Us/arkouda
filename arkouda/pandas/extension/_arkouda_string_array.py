@@ -22,9 +22,9 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
     default_fill_value = ""
 
     def __init__(self, data):
+        from arkouda.numpy.strings import Strings
         if isinstance(data, np.ndarray):
             from arkouda.numpy.pdarraycreation import array as ak_array
-            from arkouda.numpy.strings import Strings
 
             data = ak_array(data)
 
