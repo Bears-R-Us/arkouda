@@ -5,7 +5,7 @@ module DynamicSort {
       if Data._instance.isDefaultRectangular() {
         ArkoudaSortCompat.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
       } else {
-        ArkoudaSortCompat.TwoArrayDistributedRadixSort.twoArrayDistributedRadixSort(Data, comparator);
+        ArkoudaSortCompat.sort(Data, comparator);
       }
     }
 
