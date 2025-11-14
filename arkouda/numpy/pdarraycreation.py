@@ -1,7 +1,24 @@
+import builtins
 import itertools
-from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Tuple, TypeVar, Union, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    TypeAlias,
+    TypeGuard,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
 
 import numpy as np
+from numpy import str_ as np_str_
+from numpy.typing import NDArray
 import pandas as pd
 from typeguard import typechecked
 
@@ -14,16 +31,28 @@ from arkouda.numpy.dtypes import (
     bool_scalars,
 )
 from arkouda.numpy.dtypes import (
+    float32,
+    float64,
+    get_byteorder,
+    get_server_byteorder,
+    int8,
+    int16,
+    int32,
+)
+from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedInt,
     isSupportedNumber,
     numeric_scalars,
     resolve_scalar_dtype,
-    str_,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import float64, get_byteorder, get_server_byteorder
+from arkouda.numpy.dtypes import int64
 from arkouda.numpy.dtypes import int64 as akint64
+from arkouda.numpy.dtypes import str_
+from arkouda.numpy.dtypes import str_ as ak_str_
+from arkouda.numpy.dtypes import uint8, uint16, uint32
+from arkouda.numpy.dtypes import uint64
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
@@ -162,6 +191,116 @@ def _deepcopy(a: pdarray) -> pdarray:
         args={"x": a},
     )
     return create_pdarray(rep_msg)
+
+
+_ArrayLikeNum = Union[
+    NDArray[np.bool_],
+    NDArray[np.int64],
+    NDArray[np.uint64],
+    NDArray[np.float64],
+    Iterable[int],
+    Iterable[float],
+    Iterable[bool],
+]
+
+_ArrayLikeStr = Union[
+    NDArray[np.str_],
+    Iterable[str],
+]
+
+
+# ---- dtype helper aliases ----
+_StringDType: TypeAlias = Union[Literal["str", "str_"], type[ak_str_], type[str], type[Strings]]
+# Explicitly enumerate Arkouda numeric dtypes
+
+_NumericLikeDType: TypeAlias = Union[
+    Literal["bigint", "float64", "int8", "int64", "uint8", "uint64", "bool", "bool_"],
+    type[builtins.bool],
+    type[np.bool_],
+    type[bigint],
+    type[float],
+    type[float64],
+    type[float32],
+    type[int],
+    type[int8],
+    type[int16],
+    type[int32],
+    type[int64],
+    type[uint8],
+    type[uint16],
+    type[uint32],
+    type[uint64],
+]
+
+
+def is_string_dtype_hint(x: object) -> TypeGuard["_StringDType"]:
+    # accept the spellings you want to map to Arkouda Strings
+    return x in ("str", "str_") or x is ak_str_ or x is np_str_ or x is Strings
+
+
+# ======================
+# Overloads for ak.array
+# ======================
+
+
+# Strings input -> Strings (only None or string-like dtype is permitted at runtime)
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: _StringDType = ...,
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> Strings: ...
+
+
+# pdarray + (no dtype or non-string dtype) -> pdarray
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: _NumericLikeDType = ...,  # object covers np.dtype, type, int/float/bool dtypes, etc.
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> pdarray: ...
+
+
+# Clearly string-like python/NumPy inputs -> Strings
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype=None,
+    *,
+    copy: bool = ...,
+    max_bits: int = ...,
+) -> Union[pdarray, Strings]: ...
+
+
+@overload
+def array(
+    a: Union[pdarray, List[_NumericLikeDType]],
+    dtype: Union[_StringDType, _NumericLikeDType, None] = None,
+    copy: bool = False,
+    max_bits: int = -1,
+) -> pdarray: ...
+
+
+@overload
+def array(
+    a: Union[Strings, Iterable[_StringDType]],
+    dtype: Union[_StringDType, _NumericLikeDType, None] = None,
+    copy: bool = False,
+    max_bits: int = -1,
+) -> Strings: ...
+
+
+@overload
+def array(
+    a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
+    dtype: Union[_StringDType, _NumericLikeDType, None] = None,
+    copy: bool = False,
+    max_bits: int = -1,
+) -> Union[pdarray, Strings]: ...
 
 
 def array(

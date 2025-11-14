@@ -364,9 +364,11 @@ class Series:
             Raised if val is not one of the supported types
 
         """
+        from typing import get_args
+
         if isinstance(val, list):
-            val = array(val)
-        if is_supported_scalar(val):
+            return array(val)
+        if isinstance(val, get_args(supported_scalars)):
             if dtype(type(val)) != self.values.dtype:
                 raise TypeError(
                     "Unexpected value type. Received {} but expected {}".format(
@@ -375,6 +377,7 @@ class Series:
                 )
             if isinstance(val, str):
                 raise TypeError("Cannot modify string type dataframes")
+            return val
         elif isinstance(val, Strings):
             raise TypeError("Cannot modify string type dataframes")
         elif isinstance(val, pdarray):
@@ -384,9 +387,9 @@ class Series:
                         dtype(type(val)), self.values.dtype
                     )
                 )
+            return val
         else:
             raise TypeError("cannot set with unsupported value type: {}".format(type(val)))
-        return val
 
     def __setitem__(
         self,
