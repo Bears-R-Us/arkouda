@@ -1157,7 +1157,14 @@ module ReductionMsg
     }
 
     proc segMin(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t throws {
-      var res: [D] t = if t != bigint then max(t) else (1:bigint << class_lvl_max_bits) - 1;
+      var res: [D] t =
+        if t == bigint then
+          (1:bigint << class_lvl_max_bits) - 1
+        else if isRealType(t) then
+          +nan:t
+        else
+          max(t);
+
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
       var kv: [keys.domain] (int, t);
@@ -1178,15 +1185,36 @@ module ReductionMsg
       } else {
         cummin = segmentedBigintMinScanOp scan kv;
       }
-      forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
-        var vi: int;
-        if (i < D.high) {
-          vi = segments[i+1] - 1;
-        } else {
-          vi = values.domain.high;
+
+      if (isRealType(t) && skipNan) {
+        const valid = [elem in values] !isNan(elem);
+        var validCum = + scan valid;       
+        forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
+          var vi: int;
+          if (i < D.high) {
+            vi = segments[i+1] - 1;
+          } else {
+            vi = values.domain.high;
+          }
+          if (vi >= low) {
+            const segValid =
+          validCum[vi] - (if low > values.domain.low then validCum[low-1] else 0);
+            if segValid{
+              agg.copy(r, cummin[vi][1]);
+            }
+          }
         }
-        if (vi >= low) {
-          agg.copy(r, cummin[vi][1]);
+      } else {
+        forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
+          var vi: int;
+          if (i < D.high) {
+            vi = segments[i+1] - 1;
+          } else {
+            vi = values.domain.high;
+          }
+          if (vi >= low) {
+            agg.copy(r, cummin[vi][1]);
+          }
         }
       }
       return res;

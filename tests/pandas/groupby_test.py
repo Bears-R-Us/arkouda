@@ -8,6 +8,7 @@ from arkouda import sort as aksort
 from arkouda import sum as aksum
 from arkouda.pandas.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
+from arkouda.testing import assert_equal
 
 
 #  block of variables and functions used in test_unique
@@ -1012,3 +1013,18 @@ class TestGroupBy:
         expected_nuniq = [8, 3]
         assert expected_unique_keys == unique_keys.tolist()
         assert expected_nuniq == nuniq.tolist()
+
+    def test_groupby_min_all_nan(self):
+        """
+        Verify that GroupBy.aggregate(..., 'min') correctly handles
+        segments where all values are NaN — the result for that segment
+        should be NaN.
+        """
+        # Three groups: 0 has all NaN, 1 has valid values, 2 is mixed
+        keys = ak.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+        vals = ak.array([np.nan, np.nan, np.nan, 3.5, 7.2, 5.1, np.nan, 2, 4])
+
+        g = ak.GroupBy(keys)
+        ak_keys, ak_vals = g.aggregate(vals, "min", skipna=True)
+
+        assert_equal(ak_vals, ak.array([np.nan, 3.5, 2]))
