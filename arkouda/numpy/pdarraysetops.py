@@ -478,7 +478,7 @@ def concatenate(
             prev_arr = arrays[i - 1]
             if isinstance(prev_arr, pdarray):
                 shape1 = prev_arr.shape
-                offsets[i] = offsets[i - 1] + shape1[0]
+                offsets[i] = offsets[i - 1] + shape1[axis]
         valid, axis_ = _integer_axis_validation(axis, arrays[0].ndim)
         if not valid:
             raise IndexError(f"{axis} is not a valid axis for array of rank {arrays[0].ndim}")
