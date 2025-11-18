@@ -32,7 +32,7 @@ from ._dtypes import (
     ArkoudaUint8Dtype,
     ArkoudaUint64Dtype,
 )
-
+from ._series_accessor import ArkoudaSeriesAccessor
 
 __all__ = [
     "ArkoudaInt64Dtype",
@@ -47,4 +47,5 @@ __all__ = [
     "ArkoudaStringArray",
     "ArkoudaCategoricalArray",
     "ArkoudaExtensionArray",
+    "ArkoudaSeriesAccessor",
 ]
