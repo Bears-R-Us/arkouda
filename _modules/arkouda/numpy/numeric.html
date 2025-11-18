@@ -367,24 +367,32 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.numpy.numeric</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span> <span class="k">as</span> <span class="n">_Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">no_type_check</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">no_type_check</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">groupable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">int_scalars</span><span class="p">,</span>
+    <span class="n">isSupportedNumber</span><span class="p">,</span>
+    <span class="n">numeric_scalars</span><span class="p">,</span>
+    <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
+    <span class="n">str_</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">,</span> <span class="n">_datatype_check</span><span class="p">,</span> <span class="n">bigint</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span> <span class="k">as</span> <span class="n">ak_bool</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">ak_float64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">ak_int64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int_scalars</span><span class="p">,</span> <span class="n">isSupportedNumber</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">resolve_scalar_dtype</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">ak_uint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">argmax</span><span class="p">,</span>
@@ -400,6 +408,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">scalar_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">sort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaNumericTypes</span><span class="p">,</span> <span class="n">BuiltinNumericTypes</span><span class="p">,</span> <span class="n">NumericDTypeTypes</span><span class="p">,</span> <span class="n">StringDTypeTypes</span>
 
 
 <span class="n">NUMERIC_TYPES</span> <span class="o">=</span> <span class="p">[</span><span class="n">ak_int64</span><span class="p">,</span> <span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">]</span>
@@ -508,6 +518,78 @@
     <span class="n">new_pda</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">new_pda</span><span class="p">,</span> <span class="n">ret</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">new_pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span>
     <span class="k">return</span> <span class="n">new_pda</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">StringDTypeTypes</span><span class="p">,</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">NumericDTypeTypes</span><span class="p">,</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">_Union</span><span class="p">[</span><span class="n">ArkoudaNumericTypes</span><span class="p">,</span> <span class="n">BuiltinNumericTypes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">bigint</span><span class="p">],</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">return_validity</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">_Union</span><span class="p">[</span><span class="n">ArkoudaNumericTypes</span><span class="p">,</span> <span class="n">BuiltinNumericTypes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">bigint</span><span class="p">],</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">StringDTypeTypes</span><span class="p">,</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Strings</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="s2">&quot;Categorical&quot;</span><span class="p">],</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">StringDTypeTypes</span><span class="p">,</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">_Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="n">_Union</span><span class="p">[</span><span class="n">ArkoudaNumericTypes</span><span class="p">,</span> <span class="n">BuiltinNumericTypes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">bigint</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cast</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">_Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">ignore</span><span class="p">]</span> <span class="o">=</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">strict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="s2">&quot;Categorical&quot;</span><span class="p">]:</span> <span class="o">...</span>
 
 
 <div class="viewcode-block" id="cast">
@@ -3252,7 +3334,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.array_equal(a,b,True)</span>
 <span class="sd">    True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">pda_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">pda_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">pda_a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">pda_b</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">akstr_</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pda_a</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">pda_b</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">or</span> <span class="p">((</span><span class="n">pda_a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">str_</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">pda_b</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">str_</span><span class="p">)):</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">elif</span> <span class="n">equal_nan</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ak_all</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">pda_a</span><span class="p">),</span> <span class="n">isnan</span><span class="p">(</span><span class="n">pda_b</span><span class="p">),</span> <span class="n">pda_a</span> <span class="o">==</span> <span class="n">pda_b</span><span class="p">)))</span>

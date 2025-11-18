@@ -4853,7 +4853,7 @@ Package Contents
 
 
 
-   .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> arkouda.numpy.pdarrayclass.pdarray
+   .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> Union[arkouda.numpy.pdarrayclass.pdarray, Strings]
 
       Cast values of Strings object to provided dtype.
 
@@ -6228,7 +6228,7 @@ Package Contents
 
 
 
-   .. py:method:: take(indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+   .. py:method:: take(indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> Strings
 
       Take elements from the array along an axis.
 
@@ -6241,8 +6241,8 @@ Package Contents
       :param axis: The axis over which to select values. By default, the flattened input array is used.
       :type axis: int, optional
 
-      :returns: The returned array has the same type as `a`.
-      :rtype: pdarray
+      :returns: A Strings containing the selected elements.
+      :rtype: Strings
 
       .. rubric:: Examples
 
@@ -9142,7 +9142,15 @@ Package Contents
    :rtype: builtins.bool
 
 
-.. py:function:: cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], dt: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint], errors: ErrorMode = ErrorMode.strict) -> Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]]
+.. py:function:: cast(pda: arkouda.numpy.pdarrayclass.pdarray, dt: arkouda.numpy._typing.StringDTypeTypes, errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.numpy.strings.Strings
+                 cast(pda: arkouda.numpy.pdarrayclass.pdarray, dt: arkouda.numpy._typing.NumericDTypeTypes, errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.numpy.pdarrayclass.pdarray
+                 cast(pda: arkouda.numpy.strings.Strings, dt: Union[arkouda.numpy._typing.ArkoudaNumericTypes, arkouda.numpy._typing.BuiltinNumericTypes, numpy.dtype[Any], arkouda.numpy.dtypes.bigint], errors: Literal[ErrorMode]) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
+                 cast(pda: arkouda.numpy.strings.Strings, dt: Union[arkouda.numpy._typing.ArkoudaNumericTypes, arkouda.numpy._typing.BuiltinNumericTypes, numpy.dtype[Any], arkouda.numpy.dtypes.bigint], errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.numpy.pdarrayclass.pdarray
+                 cast(pda: arkouda.numpy.strings.Strings, dt: arkouda.numpy._typing.StringDTypeTypes, errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.numpy.strings.Strings
+                 cast(pda: arkouda.numpy.strings.Strings, dt: type[arkouda.pandas.categorical.Categorical], errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.pandas.categorical.Categorical
+                 cast(pda: arkouda.pandas.categorical.Categorical, dt: arkouda.numpy._typing.StringDTypeTypes, errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.numpy.strings.Strings
+                 cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], dt: Union[arkouda.numpy._typing.ArkoudaNumericTypes, arkouda.numpy._typing.BuiltinNumericTypes, numpy.dtype[Any], arkouda.numpy.dtypes.bigint, None], errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.numpy.pdarrayclass.pdarray
+                 cast(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.numpy.dtypes.numeric_scalars], dt: str, errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]
 
    Cast an array to another dtype.
 

@@ -193,6 +193,8 @@ Module Contents
 
 
    .. py:attribute:: values
+      :value: None
+
 
 
    .. py:attribute:: width
@@ -418,6 +420,8 @@ Module Contents
 
 
    .. py:attribute:: values
+      :value: None
+
 
 
 .. py:function:: ip_address(values)

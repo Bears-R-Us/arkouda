@@ -90,7 +90,7 @@ Module Contents
 
 
 
-   .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> arkouda.numpy.pdarrayclass.pdarray
+   .. py:method:: astype(dtype: Union[numpy.dtype, str]) -> Union[arkouda.numpy.pdarrayclass.pdarray, Strings]
 
       Cast values of Strings object to provided dtype.
 
@@ -1465,7 +1465,7 @@ Module Contents
 
 
 
-   .. py:method:: take(indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+   .. py:method:: take(indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> Strings
 
       Take elements from the array along an axis.
 
@@ -1478,8 +1478,8 @@ Module Contents
       :param axis: The axis over which to select values. By default, the flattened input array is used.
       :type axis: int, optional
 
-      :returns: The returned array has the same type as `a`.
-      :rtype: pdarray
+      :returns: A Strings containing the selected elements.
+      :rtype: Strings
 
       .. rubric:: Examples
 
