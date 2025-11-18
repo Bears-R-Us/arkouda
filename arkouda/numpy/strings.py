@@ -3,7 +3,9 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
-from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypeVar, Union
+from typing import cast
+from typing import cast as type_cast
 
 import numpy as np
 from numpy import dtype as npdtype
@@ -2492,7 +2494,7 @@ class Strings:
             else np.frombuffer(rep_msg, dt).copy()
         )
 
-    def astype(self, dtype: Union[np.dtype, str]) -> pdarray:
+    def astype(self, dtype: Union[np.dtype, str]) -> Union[pdarray, Strings]:
         """
         Cast values of Strings object to provided dtype.
 
@@ -2512,7 +2514,7 @@ class Strings:
         """
         from arkouda.numpy import cast as akcast
 
-        return akcast(self, dtype)
+        return type_cast(Union[pdarray, Strings], akcast(self, dtype))
 
     def to_parquet(
         self,
@@ -3055,7 +3057,7 @@ class Strings:
         sorted_array = create_pdarray(cast(str, repMsg))
         return sorted_array if ascending else flip(sorted_array)
 
-    def take(self, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray:
+    def take(self, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> Strings:
         """
         Take elements from the array along an axis.
 
@@ -3072,8 +3074,8 @@ class Strings:
 
         Returns
         -------
-        pdarray
-            The returned array has the same type as `a`.
+        Strings
+             A Strings containing the selected elements.
 
         Examples
         --------

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Union
-from typing import cast
 from typing import cast as type_cast
 
 import numpy as np
@@ -133,7 +132,7 @@ def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray,
     if layout not in ["CSR", "CSC"]:
         raise ValueError("layout must be 'CSR' or 'CSC'")
 
-    vals_dtype_name = cast(np.dtype, vals.dtype).name
+    vals_dtype_name = type_cast(np.dtype, vals.dtype).name
     # check dtype for error
     if vals_dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {vals.dtype}")
