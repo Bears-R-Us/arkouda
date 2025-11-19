@@ -713,14 +713,8 @@ check-doc-examples:
 	
 	
 format: ruff-format isort check-doc-examples
-	#   Run docstring linter
-	pydocstyle
 	#   Run flake8
 	flake8 $(ARKOUDA_PROJECT_DIR)/arkouda
-
-darglint: 
-	#   Check darglint linter for doc strings:
-	darglint -v 2 arkouda
 	
 docstr-coverage:
 	#   Check coverage for doc strings:

@@ -60,9 +60,7 @@ dev = [
   "pandas-stubs",
   "types-python-dateutil",
   "ipython",
-  "pydocstyle>=6.3.0",
   "pre-commit",
-  "darglint>=1.8.1",
   "pydoclint[flake8]==0.6.10",
   "numba",
 ]
@@ -149,8 +147,4 @@ extend_skip_glob = [
   "arkouda/benchmark_v2/*",
   "arkouda/server_util/test/*",
 ]
-    
-[tool.pydocstyle]
-convention = "numpy"
-match-dir = "arkouda"
 

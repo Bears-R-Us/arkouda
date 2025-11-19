@@ -43,9 +43,7 @@ dependencies:
   - mathjax
   - pandas-stubs
   - types-python-dateutil
-  - pydocstyle>=6.3.0
   - pre-commit
-  - darglint>=1.8.1
   - pytest-subtests
   - pytest-timeout
 
