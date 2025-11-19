@@ -19,13 +19,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pydocstyle>=6.3.0
     - name: Check for tabs
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
-    - name: Run linter (pydocstyle)
-      run: |
-        pydocstyle
     - name: Run doc-example check
       run: make check-doc-examples
 
