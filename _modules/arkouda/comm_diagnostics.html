@@ -456,7 +456,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.dataframe</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataFrame</span>
@@ -511,7 +510,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;startCommDiagnostics&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rep_msg</span></div>
 
 
 
@@ -533,7 +532,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;stopCommDiagnostics&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rep_msg</span></div>
 
 
 
@@ -555,7 +554,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;resetCommDiagnostics&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rep_msg</span></div>
 
 
 
@@ -597,7 +596,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">ak_sum</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">())</span>
 
-    <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rep_msg</span></div>
 
 
 
@@ -623,7 +622,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;startVerboseComm&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rep_msg</span></div>
 
 
 
@@ -645,7 +644,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;stopVerboseComm&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rep_msg</span></div>
 
 
 
@@ -668,7 +667,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsPut&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -691,7 +690,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsGet&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -714,7 +713,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsPutNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -737,7 +736,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsGetNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -758,7 +757,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsTestNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_comm_diagnostics_wait_nb">
@@ -780,7 +779,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsWaitNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -803,7 +802,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsTryNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -826,7 +825,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsAmo&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -849,7 +848,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOn&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -872,7 +871,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOnFast&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -895,7 +894,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsExecuteOnNb&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -920,7 +919,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheGetHits&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -943,7 +942,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheGetMisses&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -966,7 +965,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePutHits&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -989,7 +988,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePutMisses&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1014,7 +1013,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheNumPrefetches&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1037,7 +1036,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheNumPageReadaheads&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1063,7 +1062,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePrefetchUnused&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1089,7 +1088,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCachePrefetchWaited&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1115,7 +1114,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheReadaheadUnused&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1142,7 +1141,7 @@
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;getCommDiagnosticsCacheReadaheadWaited&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
