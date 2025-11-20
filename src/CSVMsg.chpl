@@ -86,7 +86,12 @@ module CSVMsg {
 
         var col_delim: string = msgArgs.getValueOf("col_delim");
         if hasHeader then line = reader.readLine(stripNewline = true);
-        var column_names = line.split(col_delim).strip();
+        var column_names: [0..#0] string; // Start with empty array
+        var columnList: list(string);
+        for column in parseCSVLine(line, col_delim) {
+            columnList.pushBack(column.strip());
+        }
+        column_names = columnList.toArray();
         return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
 
     }
@@ -352,7 +357,11 @@ module CSVMsg {
             column_names = reader.readLine(stripNewline = true);
         else
             column_names = line;
-        var columns = column_names.split(col_delim).strip();
+        var columnList: list(string);
+        for column in parseCSVLine(column_names, col_delim) {
+            columnList.pushBack(column.strip());
+        }
+        var columns = columnList.toArray();
         var file_dtypes: [0..#columns.size] string;
         if hasHeader {
             file_dtypes = line.split(",").strip(); // Line was already read above
@@ -397,7 +406,7 @@ module CSVMsg {
     }
 
     proc read_csv_pattern(ref A: [] ?t, filename: string, filedom: domain(1), colName: string, colDelim: string, hasHeaders: bool, lineOffset: int, allowErrors: bool, ref hadError: bool) throws {
-        // We do a check to see if the filedome even intersects with
+        // We do a check to see if the filedom even intersects with
         // A.localSubdomain before even opening the file
         // The implementation assumes a single local subdomain so we make
         // sure that is the case first
@@ -432,12 +441,16 @@ module CSVMsg {
             }
         }
         var colIdx = -1;
-        // This next line will have the columns
-        for (column,i) in zip(fr.readLine(stripNewline = true).split(colDelim), 0..) {
+        // This next line will have the column header
+        // Use proper CSV parsing to handle quoted delimiters
+        var headerLine = fr.readLine(stripNewline = true);
+        var columnIndex = 0;
+        for column in parseCSVLine(headerLine, colDelim) {
             if column == colName {
-                colIdx=i;
+                colIdx = columnIndex;
                 break;
             }
+            columnIndex += 1;
         }
 
         if(colIdx == -1) then
@@ -487,34 +500,152 @@ module CSVMsg {
     }
 
     use Regex;
+
+    // Read a complete CSV record from the reader, handling multi-line quoted fields
+    proc readCSVRecord(reader: fileReader(?)) throws {
+        var csvRecord = "";
+        var inQuotes = false;
+        var line: string;
+
+        try {
+            // Read the first line
+            line = reader.readLine(stripNewline=true);
+            csvRecord = line;
+
+            // Check if we have unclosed quotes in this line
+            for ch in line {
+                if ch == "\"" {
+                    inQuotes = !inQuotes;
+                }
+            }
+
+            // If we're still in quotes, keep reading lines until quotes are closed
+            while inQuotes {
+                try {
+                    line = reader.readLine(stripNewline=true);
+                    csvRecord += "\n" + line;
+
+                    // Check this line for quote state changes
+                    for ch in line {
+                        if ch == "\"" {
+                            inQuotes = !inQuotes;
+                        }
+                    }
+                } catch e: EofError {
+                    // End of file while in quotes - this is malformed CSV but we'll take it
+                    break;
+                } catch e: UnexpectedEofError {
+                    break;
+                }
+            }
+        } catch e: EofError {
+            throw e; // Re-throw EOF to signal end of file
+        } catch e: UnexpectedEofError {
+            throw e;
+        }
+
+        return csvRecord;
+    }
+
+    // Iterator to parse CSV fields from a complete CSV record string
+    iter parseCSVLine(csvRecord: string, colDelim: string) throws {
+        var field = "";
+        var inQuotes = false;
+        var i = 0;
+        var recordLen = csvRecord.size;
+        var delimLen = colDelim.size;
+
+        while i < recordLen {
+            var ch = csvRecord[i];
+
+            if ch == "\"" {
+                if inQuotes {
+                    // Check if next character is also a quote (escaped quote)
+                    if i + 1 < recordLen && csvRecord[i + 1] == "\"" {
+                        // Escaped quote - add single quote to field and skip both characters
+                        field += "\"";
+                        i += 2;
+                    } else {
+                        // End of quoted field
+                        inQuotes = false;
+                        i += 1;
+                    }
+                } else {
+                    // Start of quoted field
+                    inQuotes = true;
+                    i += 1;
+                }
+            } else if !inQuotes && delimLen == 1 && ch == colDelim {
+                // Found single-character delimiter outside quotes
+                yield field;
+                field = "";
+                i += 1;
+            } else if !inQuotes && delimLen > 1 && i + delimLen <= recordLen && csvRecord[i..#delimLen] == colDelim {
+                // Found multi-character delimiter outside quotes
+                yield field;
+                field = "";
+                i += delimLen;
+            } else {
+                // Regular character - add to field
+                field += ch;
+                i += 1;
+            }
+        }
+
+        // Yield the final field
+        yield field;
+    }
+
     record csvLine: readDeserializable {
 
         type itemType;
         var item: itemType;
         const colIdx: int;
         const colDelim: string;
-        var r: regex(string);
 
         proc init(type itemType, colIdx: int, colDelim: string) throws {
             this.itemType = itemType;
             this.colIdx = colIdx;
             this.colDelim = colDelim;
             init this;
-            if this.itemType == string then
-                this.r = new regex("[\n"+this.colDelim+"]");
         }
 
         proc ref deserialize(reader: fileReader(?), ref deserializer) throws {
-            // read the comma delimited items in a single line
-            for 0..<colIdx {
-                reader.advanceThrough(this.colDelim:bytes);  // Skip over the columns we don't care about
+            // Read the complete CSV record (handling multi-line quoted fields)
+            var csvRecord = readCSVRecord(reader);
+
+            var fieldCount = 0;
+            var targetField = "";
+            var foundTarget = false;
+
+            // Parse the CSV record using the iterator
+            for field in parseCSVLine(csvRecord, this.colDelim) {
+                if fieldCount == this.colIdx {
+                    targetField = field;
+                    foundTarget = true;
+                    // Continue parsing to consume the rest of the record
+                }
+                fieldCount += 1;
             }
-            if itemType == string then
-                this.item = reader.readTo(this.r); // Throws BadFormatError if no "," or "\n"
-            else
-                var success = reader.read(this.item);
-            // stop reading once a '\n' is encountered
-            reader.advanceThrough(b'\n'); // Will throw BadFormatError if no newline
+
+            if !foundTarget {
+                throw new BadFormatError("CSV record does not have enough fields (need field " + this.colIdx:string + ")");
+            }
+
+            if itemType == string {
+                this.item = targetField;
+            } else {
+                // Convert string field to target type
+                try {
+                    var tempReader = openStringReader(targetField);
+                    var success = tempReader.read(this.item);
+                    if !success {
+                        throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                    }
+                } catch {
+                    throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                }
+            }
         }
     }
 
