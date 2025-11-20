@@ -2479,6 +2479,86 @@ class TestCSV:
             assert data["ColB"].tolist() == d["ColB"].tolist()
             assert data["ColC"].tolist() == d["ColC"].tolist()
 
+    @pytest.mark.parametrize("delimiter", [",", "|", ";", "\t"])
+    def test_csv_quoted_strings_with_delimiters(self, csv_test_base_tmp, delimiter):
+        """Test that column delimiters inside quoted strings are ignored."""
+        cols = ["Name", "Description", "Experience"]
+        # Test data with delimiters inside quoted strings
+        expected_names = ["Smith, John", "Wilson, Bob", "Jane Doe"]
+        expected_descriptions = ["Senior Manager, R&D", "Junior Developer", "CEO, Founder"]
+        expected_values = ["3", "2", "5"]
+
+        # Create safe filename by mapping delimiters to names
+        delimiter_names = {",": "comma", "|": "pipe", ";": "semicolon", "\t": "tab"}
+        delimiter_name = delimiter_names.get(delimiter, "unknown")
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/quoted_strings_{delimiter_name}.csv"
+            with open(file_name, "w") as f:
+                f.write(delimiter.join(cols) + "\n")
+                # Create delimiter-specific versions of the expected data for quoted strings
+                delim_names = [name.replace(",", delimiter) for name in expected_names]
+                delim_descriptions = [desc.replace(",", delimiter) for desc in expected_descriptions]
+                for i in range(len(delim_names)):
+                    f.write(f'"{delim_names[i]}"{delimiter}"{delim_descriptions[i]}"{delimiter}{expected_values[i]}\n')
+
+            data = ak.read_csv(file_name, column_delim=delimiter)
+            assert list(data.keys()) == cols
+            assert data["Name"].tolist() == delim_names
+            assert data["Description"].tolist() == delim_descriptions
+            assert data["Experience"].tolist() == expected_values
+
+    @pytest.mark.parametrize("delimiter", [",", "|", ";"])
+    def test_csv_escaped_quotes(self, csv_test_base_tmp, delimiter):
+        """Test that escaped quotes within quoted strings are handled correctly."""
+        cols = ["Title", "Quote", "Author"]
+        # Test data with escaped quotes (double quotes to escape)
+        expected_titles = ['Book "One"', 'Article "Two"', 'Paper "Three"']
+        expected_quotes = ['He said "Hello"', 'She replied "Hi there"', 'They shouted "Welcome!"']
+        expected_authors = ["Smith", "Jones", "Brown"]
+
+        # Create safe filename by mapping delimiters to names
+        delimiter_names = {",": "comma", "|": "pipe", ";": "semicolon"}
+        delimiter_name = delimiter_names.get(delimiter, "unknown")
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/escaped_quotes_{delimiter_name}.csv"
+            with open(file_name, "w") as f:
+                f.write(delimiter.join(cols) + "\n")
+                # Using double quotes to escape quotes within quoted strings
+                for i in range(len(expected_titles)):
+                    # Escape quotes by doubling them and wrap in quotes
+                    title = expected_titles[i].replace('"', '""')
+                    quote = expected_quotes[i].replace('"', '""')
+                    f.write(f'"{title}"{delimiter}"{quote}"{delimiter}{expected_authors[i]}\n')
+
+            data = ak.read_csv(file_name, column_delim=delimiter)
+            assert list(data.keys()) == cols
+            assert data["Title"].tolist() == expected_titles
+            assert data["Quote"].tolist() == expected_quotes
+            assert data["Author"].tolist() == expected_authors
+
+    def test_csv_mixed_escaped_quotes_and_delimiters(self, csv_test_base_tmp):
+        """Test mixed scenarios: escaped quotes and embedded delimiters."""
+        cols = ["Title", "Quote", "Author"]
+        expected_titles = ['Title, "Special"', 'Normal Title', 'Title "End"']
+        expected_quotes = ['Quote, "with comma"', 'Simple quote', 'Quote, says "end"']
+        expected_authors = ["Author1", "Author2", "Author3"]
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/mixed_quotes.csv"
+            with open(file_name, "w") as f:
+                f.write(",".join(cols) + "\n")
+                f.write('"Title, ""Special""","Quote, ""with comma""",Author1\n')
+                f.write('"Normal Title","Simple quote",Author2\n')
+                f.write('"Title ""End""","Quote, says ""end""",Author3\n')
+
+            data = ak.read_csv(file_name)
+            assert list(data.keys()) == cols
+            assert data["Title"].tolist() == expected_titles
+            assert data["Quote"].tolist() == expected_quotes
+            assert data["Author"].tolist() == expected_authors
+
 
 class TestImportExport:
     @classmethod
