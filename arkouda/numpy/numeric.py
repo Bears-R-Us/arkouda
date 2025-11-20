@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from enum import Enum
 import json
-from typing import TYPE_CHECKING, Any, List, Literal, Optional, Sequence, Tuple, TypeVar
+from typing import TYPE_CHECKING, Any, Iterable, List, Literal, Optional, Sequence, Tuple, TypeVar
 from typing import Union
 from typing import Union as _Union
 from typing import cast as type_cast
-from typing import no_type_check, overload
+from typing import get_args, no_type_check, overload
 
 import numpy as np
 from typeguard import typechecked
@@ -3620,7 +3620,9 @@ def percentile(
 
 
 def take(
-    a: Union[pdarray, Strings], indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None
+    a: Union[pdarray, Strings],
+    indices: Union[numeric_scalars, pdarray, Iterable[numeric_scalars]],
+    axis: Optional[int] = None,
 ) -> pdarray:
     """
     Take elements from an array along an axis.
@@ -3631,9 +3633,9 @@ def take(
 
     Parameters
     ----------
-    a : pdarray
+    a : pdarray or Strings
         The array from which to take elements
-    indices : numeric_scalars or pdarray
+    indices : numeric_scalars or pdarray or Iterable[numeric_scalars]
         The indices of the values to extract. Also allow scalars for indices.
     axis : int, optional
         The axis over which to select values. By default, the flattened input array is used.
@@ -3673,11 +3675,12 @@ def take(
     if isinstance(indices, pdarray) and indices.ndim != 1:
         raise ValueError("indices must be 1D")
 
-    if not isinstance(indices, pdarray) and isinstance(indices, list):
-        indices_ = array(indices)
-    elif not isinstance(indices, pdarray):
+    indices_: pdarray
+    if isinstance(indices, Iterable):
+        indices_ = type_cast(pdarray, array(indices))
+    elif isinstance(indices, get_args(numeric_scalars)):
         indices_ = array([indices])
-    else:
+    elif isinstance(indices, pdarray):
         indices_ = indices
 
     result = create_pdarray(
