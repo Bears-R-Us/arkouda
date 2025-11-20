@@ -20,14 +20,14 @@ module CSVMsg {
 
     const CSV_HEADER_OPEN = "**HEADER**";
     const CSV_HEADER_CLOSE = "*/HEADER/*";
-    const LINE_DELIM = "\n"; // currently assumed all files are newline delimited. 
+    const LINE_DELIM = "\n"; // currently assumed all files are newline delimited.
 
     private config const logLevel = ServerConfig.logLevel;
     const csvLogger = new Logger(logLevel);
 
     // Future Work (TODO)
     //  - write to single file
-    //  - Custom Line Delimiters 
+    //  - Custom Line Delimiters
     //  - Handle CSV without column names
 
     proc lsCSVMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -50,11 +50,11 @@ module CSVMsg {
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
-            
+
             // Set filename to globbed filename corresponding to locale 0
             filename = tmp[tmp.domain.first];
         }
-        
+
         // Check to see if the file exists. If not, return an error message
         if !exists(filename) {
             var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
@@ -112,7 +112,7 @@ module CSVMsg {
             throw getErrorWithContext(
                 msg="Filenames for the provided name exist. Overwrite must be set to true in order to save with the name %s".format(filename),
                 lineNumber=getLineNumber(),
-                routineName=getRoutineName(), 
+                routineName=getRoutineName(),
                 moduleName=getModuleName(),
                 errorClass="InvalidArgumentError");
         }
@@ -128,11 +128,11 @@ module CSVMsg {
                 }
             }
         }
-        return filenames; 
+        return filenames;
     }
 
     proc getLocalDomain(GSE: GenSymEntry) throws {
-        select GSE.dtype {    
+        select GSE.dtype {
             when DType.Int64 {
                 var e = toSymEntry(GSE, int);
                 return e.a.localSubdomain();
@@ -158,7 +158,7 @@ module CSVMsg {
                 throw getErrorWithContext(
                     msg="Invalid DType Found, %s".format(dtype2str(GSE.dtype)),
                     lineNumber=getLineNumber(),
-                    routineName=getRoutineName(), 
+                    routineName=getRoutineName(),
                     moduleName=getModuleName(),
                     errorClass="DataTypeError");
             }
@@ -315,7 +315,7 @@ module CSVMsg {
             throw getErrorWithContext(
                            msg="The file %s does not exist".format(filename),
                            lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
+                           routineName=getRoutineName(),
                            moduleName=getModuleName(),
                            errorClass="FileNotFoundError");
         }
@@ -628,9 +628,9 @@ module CSVMsg {
                 otherwise {
                     throw getErrorWithContext(
                                     msg="Data Type %s cannot be read into Arkouda.".format(dtypes[i]),
-                                    lineNumber=getLineNumber(), 
-                                    routineName=getRoutineName(), 
-                                    moduleName=getModuleName(), 
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
                                     errorClass="IOError"
                             );
                 }
@@ -727,7 +727,7 @@ module CSVMsg {
             filedom = tmp.domain;
             filenames = tmp;
         } else {
-            // assumes that we are providing 
+            // assumes that we are providing
             filenames = filelist;
         }
 
@@ -819,7 +819,7 @@ module CSVMsg {
             return new MsgTuple(errMsg, MsgType.ERROR);
         }
         return new MsgTuple(rtnMsg, MsgType.NORMAL);
-    } 
+    }
 
     use CommandMap;
     registerFunction("readcsv", readCSVMsg, getModuleName());
