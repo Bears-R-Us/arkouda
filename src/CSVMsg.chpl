@@ -65,8 +65,7 @@ module CSVMsg {
         // open file and determine if header exists.
         var idx = 0;
         var reader = openReader(filename);
-        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
-        var line = reader.readLine(stripNewline=true);
+        var line = readCSVRecord(reader);
         var hasHeader = false;
         if line == CSV_HEADER_OPEN {
             hasHeader=true;
@@ -88,10 +87,13 @@ module CSVMsg {
         var col_delim: string = msgArgs.getValueOf("col_delim");
         // If the CSV File has headers, then we haven't actually read the column names yet
         // so read the next line
-        if hasHeader then line = reader.readLine(stripNewline = true);
-        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
-        var column_names = line.split(col_delim).strip();
-        return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
+        if hasHeader then line = readCSVRecord(reader);
+        var column_names: list(string);
+        for field in parseCSVRecord(line, col_delim) {
+            column_names.pushBack(field.strip());
+        }
+        var column_names_array: [0..<column_names.size] string = column_names.toArray();
+        return new MsgTuple(formatJson(column_names_array), MsgType.NORMAL);
 
     }
 
@@ -327,15 +329,14 @@ module CSVMsg {
         var reader = openReader(filename);
         var hasHeader = false;
 
-        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
-        var line = reader.readLine(stripNewline=true);
+        var line = readCSVRecord(reader);
         if line == CSV_HEADER_OPEN {
             hasHeader = true;
             // The first three lines are headers
             for param i in 1..<3 {
                 try {
                     if i==1 {
-                        line = reader.readLine(stripNewline=true);
+                        line = readCSVRecord(reader);
                         // Line has the data types after this
                     } else {
                         // Advance through CSV_HEADER_CLOSE line
@@ -354,24 +355,27 @@ module CSVMsg {
         }
         var column_names: string;
         if hasHeader then
-            column_names = reader.readLine(stripNewline = true);
+            column_names = readCSVRecord(reader);
         else
             column_names = line;
-        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
-        var columns = column_names.split(col_delim).strip();
-        var file_dtypes: [0..#columns.size] string;
+        var columns: list(string);
+        for field in parseCSVRecord(column_names, col_delim) {
+            columns.pushBack(field.strip());
+        }
+        var columns_array: [0..<columns.size] string = columns.toArray();
+        var file_dtypes: [0..<columns_array.size] string;
         if hasHeader {
             file_dtypes = line.split(",").strip(); // Line was already read above
         }
         else {
             file_dtypes = "str";
         }
-        // get the row count
+        // get the row count - use readCSVRecord to properly handle multi-line quoted fields
         var row_ct: int = 0;
         var eof = false;
         while (!eof) {
             try {
-                reader.advanceThrough(b'\n');
+                readCSVRecord(reader); // Read complete CSV record, not just advance to newline
                 row_ct+=1;
             } catch e: EofError {
                 eof = true;
@@ -385,7 +389,7 @@ module CSVMsg {
         var dtypes: [0..#datasets.size] string;
         forall (i, dset) in zip(0..#datasets.size, datasets) {
             var idx: int;
-            var col_exists = columns.find(dset, idx);
+            var col_exists = columns_array.find(dset, idx);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".format(dset)+formatJson(col_exists)+", IDX: %i".format(idx));
             if !col_exists {
                 throw getErrorWithContext(
@@ -440,9 +444,9 @@ module CSVMsg {
         var colIdx = -1;
         // This next line will have the column header
         // Use proper CSV parsing to handle quoted delimiters
-        var headerLine = fr.readLine(stripNewline = true);
+        var headerLine = readCSVRecord(fr);
         var columnIndex = 0;
-        for column in parseCSVLine(headerLine, colDelim) {
+        for column in parseCSVRecord(headerLine, colDelim) {
             if column == colName {
                 colIdx = columnIndex;
                 break;
@@ -529,7 +533,7 @@ module CSVMsg {
                         }
                     }
                 } catch e: EofError {
-                    // End of file while in quotes - this is malformed CSV but we'll take it
+                    // End of file while in quotes - this is malformed CSV but we'll throw an error later
                     break;
                 } catch e: UnexpectedEofError {
                     break;
@@ -540,17 +544,18 @@ module CSVMsg {
         } catch e: UnexpectedEofError {
             throw e;
         }
-
         return csvRecord;
     }
 
     // Iterator to parse CSV fields from a complete CSV record string
-    iter parseCSVLine(csvRecord: string, colDelim: string) throws {
+    iter parseCSVRecord(csvRecord: string, colDelim: string) throws {
         var field = "";
         var inQuotes = false;
         var i = 0;
         var recordLen = csvRecord.size;
         var delimLen = colDelim.size;
+
+        writeln("Parsing CSV Record: \n", csvRecord);
 
         while i < recordLen {
             var ch = csvRecord[i];
@@ -574,6 +579,7 @@ module CSVMsg {
                 }
             } else if !inQuotes && delimLen == 1 && ch == colDelim {
                 // Found single-character delimiter outside quotes
+                writeln("Yielding field: ", field);
                 yield field;
                 field = "";
                 i += 1;
@@ -590,6 +596,7 @@ module CSVMsg {
         }
 
         // Yield the final field
+        writeln("Yielding field: ", field);
         yield field;
     }
 
@@ -616,7 +623,7 @@ module CSVMsg {
             var foundTarget = false;
 
             // Parse the CSV record using the iterator
-            for field in parseCSVLine(csvRecord, this.colDelim) {
+            for field in parseCSVRecord(csvRecord, this.colDelim) {
                 if fieldCount == this.colIdx {
                     targetField = field;
                     foundTarget = true;
