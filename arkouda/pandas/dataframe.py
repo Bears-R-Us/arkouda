@@ -5360,6 +5360,8 @@ def _outer_join_merge(
         Outer-Joined Arkouda DataFrame
 
     """
+    from arkouda.numpy import cast as akcast
+
     inner = _inner_join_merge(
         left,
         right,

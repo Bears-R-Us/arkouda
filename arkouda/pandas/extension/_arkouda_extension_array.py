@@ -90,6 +90,36 @@ class ArkoudaExtensionArray(ExtensionArray):
         """
         return len(self._data)
 
+    def copy(self, deep: bool = True):
+        """
+        Return a copy of the array.
+
+        Parameters
+        ----------
+        deep : bool, default False
+            Whether to make a deep copy of the underlying Arkouda data.
+            - If True, the underlying Arkouda array is copied on the server.
+            - If False, a new ExtensionArray wrapper is created but data
+              is shared (no Arkouda server copy).
+
+        Returns
+        -------
+        ArkoudaExtensionArray
+            A new instance of the same subclass with copied or shared data.
+
+        Notes
+        -----
+        Pandas semantics:
+            - ``deep=False`` returns a new array wrapper but may share memory.
+            - ``deep=True`` must duplicate the underlying data.
+
+        Arkouda semantics:
+            Arkouda arrays do not support views; therefore deep=False
+            returns the same underlying server-side array.
+        """
+        data = self._data.copy() if deep else self._data
+        return type(self)(data)
+
     @classmethod
     def _concat_same_type(cls, to_concat):
         """
@@ -319,6 +349,67 @@ class ArkoudaExtensionArray(ExtensionArray):
     def _from_factorized(cls, values, original):
         # Build EA back from factorized NumPy values
         return cls._from_numpy(values)
+
+    @classmethod
+    def _from_sequence(
+        cls,
+        scalars,
+        dtype=None,
+        copy: bool = False,
+    ) -> "ArkoudaExtensionArray":
+        """
+        Construct an Arkouda-backed ExtensionArray from Arkouda data or scalars.
+
+        This factory inspects ``scalars`` and returns an instance of the
+        appropriate concrete subclass:
+
+        * :class:`ArkoudaArray` for :class:`pdarray`
+        * :class:`ArkoudaStringArray` for :class:`Strings`
+        * :class:`ArkoudaCategoricalArray` for :class:`Categorical`
+
+        If ``scalars`` is not already an Arkouda server-side array, it is
+        treated as a sequence of Python/NumPy scalars and converted to a
+        ``pdarray`` via :func:`arkouda.numpy.pdarraycreation.array`, then
+        wrapped in :class:`ArkoudaArray`.
+
+        Parameters
+        ----------
+        scalars : object
+            Either an Arkouda server-side column (``pdarray``, ``Strings``,
+            or ``Categorical``) or a sequence / array of Python or NumPy
+            scalars.
+        dtype : object, optional
+            Ignored. Present for pandas API compatibility.
+        copy : bool, default False
+            Ignored. Present for pandas API compatibility.
+
+        Returns
+        -------
+        ArkoudaExtensionArray
+            An instance of :class:`ArkoudaArray`,
+            :class:`ArkoudaStringArray`, or
+            :class:`ArkoudaCategoricalArray`, depending on the type of
+            ``scalars``.
+        """
+        # Local imports to avoid circular dependencies at module import time.
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
+        from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
+        from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
+
+        # Fast path: already an Arkouda column. Pick the matching subclass.
+        if isinstance(scalars, pdarray):
+            return ArkoudaArray(scalars)
+        if isinstance(scalars, Strings):
+            return ArkoudaStringArray(scalars)
+        if isinstance(scalars, Categorical):
+            return ArkoudaCategoricalArray(scalars)
+
+        # Fallback: treat as a sequence of scalars and build a pdarray.
+        data = ak_array(scalars)
+        return ArkoudaArray(data)
 
     def to_numpy(self, dtype=None, copy=False, na_value=None):
         """
