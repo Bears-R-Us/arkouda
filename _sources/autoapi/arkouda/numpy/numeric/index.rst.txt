@@ -1593,7 +1593,7 @@ Module Contents
    array([1 4 9 16])
 
 
-.. py:function:: take(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings], indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: take(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings], indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, Iterable[arkouda.numpy.dtypes.numeric_scalars]], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Take elements from an array along an axis.
 
@@ -1602,9 +1602,9 @@ Module Contents
    A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
 
    :param a: The array from which to take elements
-   :type a: pdarray
+   :type a: pdarray or Strings
    :param indices: The indices of the values to extract. Also allow scalars for indices.
-   :type indices: numeric_scalars or pdarray
+   :type indices: numeric_scalars or pdarray or Iterable[numeric_scalars]
    :param axis: The axis over which to select values. By default, the flattened input array is used.
    :type axis: int, optional
 

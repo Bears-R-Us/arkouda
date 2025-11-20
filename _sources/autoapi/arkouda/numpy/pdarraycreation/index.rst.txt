@@ -91,7 +91,12 @@ Module Contents
    array([-5 -6 -7 -8 -9])
 
 
-.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, numpy.ndarray, Iterable, arkouda.numpy.strings.Strings], dtype: Union[numpy.dtype, type, str, None] = None, copy: bool = False, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._StringDType = ..., *, copy: bool = ..., max_bits: int = ...) -> arkouda.numpy.strings.Strings
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._NumericLikeDType = ..., *, copy: bool = ..., max_bits: int = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype=None, *, copy: bool = ..., max_bits: int = ...) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, List[arkouda.numpy._typing._typing._NumericLikeDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> arkouda.numpy.pdarrayclass.pdarray
+                 array(a: Union[arkouda.numpy.strings.Strings, Iterable[arkouda.numpy._typing._typing._StringDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> arkouda.numpy.strings.Strings
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
    transferring data to the Arkouda server.

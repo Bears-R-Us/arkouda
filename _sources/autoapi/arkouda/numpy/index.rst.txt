@@ -4742,7 +4742,12 @@ Package Contents
    array([1 6 0 8 7 2 4 5 3 9])
 
 
-.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, numpy.ndarray, Iterable, arkouda.numpy.strings.Strings], dtype: Union[numpy.dtype, type, str, None] = None, copy: bool = False, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._StringDType = ..., *, copy: bool = ..., max_bits: int = ...) -> arkouda.numpy.strings.Strings
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._NumericLikeDType = ..., *, copy: bool = ..., max_bits: int = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype=None, *, copy: bool = ..., max_bits: int = ...) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, List[arkouda.numpy._typing._typing._NumericLikeDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> arkouda.numpy.pdarrayclass.pdarray
+                 array(a: Union[arkouda.numpy.strings.Strings, Iterable[arkouda.numpy._typing._typing._StringDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> arkouda.numpy.strings.Strings
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
    transferring data to the Arkouda server.
@@ -12521,7 +12526,7 @@ Package Contents
    .. py:method:: copy_with(params)
 
 
-.. py:function:: take(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings], indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: take(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings], indices: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, Iterable[arkouda.numpy.dtypes.numeric_scalars]], axis: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Take elements from an array along an axis.
 
@@ -12530,9 +12535,9 @@ Package Contents
    A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
 
    :param a: The array from which to take elements
-   :type a: pdarray
+   :type a: pdarray or Strings
    :param indices: The indices of the values to extract. Also allow scalars for indices.
-   :type indices: numeric_scalars or pdarray
+   :type indices: numeric_scalars or pdarray or Iterable[numeric_scalars]
    :param axis: The axis over which to select values. By default, the flattened input array is used.
    :type axis: int, optional
 
