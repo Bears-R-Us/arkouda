@@ -65,6 +65,7 @@ module CSVMsg {
         // open file and determine if header exists.
         var idx = 0;
         var reader = openReader(filename);
+        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
         var line = reader.readLine(stripNewline=true);
         var hasHeader = false;
         if line == CSV_HEADER_OPEN {
@@ -85,13 +86,11 @@ module CSVMsg {
         }
 
         var col_delim: string = msgArgs.getValueOf("col_delim");
+        // If the CSV File has headers, then we haven't actually read the column names yet
+        // so read the next line
         if hasHeader then line = reader.readLine(stripNewline = true);
-        var column_names: [0..#0] string; // Start with empty array
-        var columnList: list(string);
-        for column in parseCSVLine(line, col_delim) {
-            columnList.pushBack(column.strip());
-        }
-        column_names = columnList.toArray();
+        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
+        var column_names = line.split(col_delim).strip();
         return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
 
     }
@@ -328,6 +327,7 @@ module CSVMsg {
         var reader = openReader(filename);
         var hasHeader = false;
 
+        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
         var line = reader.readLine(stripNewline=true);
         if line == CSV_HEADER_OPEN {
             hasHeader = true;
@@ -357,11 +357,8 @@ module CSVMsg {
             column_names = reader.readLine(stripNewline = true);
         else
             column_names = line;
-        var columnList: list(string);
-        for column in parseCSVLine(column_names, col_delim) {
-            columnList.pushBack(column.strip());
-        }
-        var columns = columnList.toArray();
+        // FIXME, this does not handle quoted delimiters correctly, multi line fields, etc.
+        var columns = column_names.split(col_delim).strip();
         var file_dtypes: [0..#columns.size] string;
         if hasHeader {
             file_dtypes = line.split(",").strip(); // Line was already read above
