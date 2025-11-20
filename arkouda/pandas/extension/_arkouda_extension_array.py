@@ -129,23 +129,26 @@ class ArkoudaExtensionArray(ExtensionArray):
         copy: bool = False,
     ) -> "ArkoudaExtensionArray":
         """
-        Construct an Arkouda-backed ExtensionArray from Arkouda data or scalars.
+        Construct an Arkouda-backed ExtensionArray from Arkouda objects or
+        Python/NumPy scalars.
+
         This factory inspects ``scalars`` and returns an instance of the
         appropriate concrete subclass:
+
         * :class:`ArkoudaArray` for :class:`pdarray`
         * :class:`ArkoudaStringArray` for :class:`Strings`
         * :class:`ArkoudaCategoricalArray` for :class:`Categorical`
-        If ``scalars`` is not already an Arkouda server-side array, it is
-        treated as a sequence of Python/NumPy scalars and converted to a
-        ``pdarray`` via :func:`arkouda.numpy.pdarraycreation.array`, then
-        wrapped in :class:`ArkoudaArray`.
+
+        If ``scalars`` is **not** already an Arkouda server-side array, it is
+        interpreted as a sequence of Python/NumPy scalars, converted into a
+        server-side ``pdarray`` via :func:`arkouda.numpy.pdarraycreation.array`,
+        and wrapped in :class:`ArkoudaArray`.
 
         Parameters
         ----------
         scalars : object
-            Either an Arkouda server-side column (``pdarray``, ``Strings``,
-            or ``Categorical``) or a sequence / array of Python or NumPy
-            scalars.
+            Either an Arkouda array type (``pdarray``, ``Strings``,
+            or ``Categorical``) or a sequence of Python/NumPy scalars.
         dtype : object, optional
             Ignored. Present for pandas API compatibility.
         copy : bool, default False
@@ -158,6 +161,37 @@ class ArkoudaExtensionArray(ExtensionArray):
             :class:`ArkoudaStringArray`, or
             :class:`ArkoudaCategoricalArray`, depending on the type of
             ``scalars``.
+
+        Examples
+        --------
+        Constructing from Arkouda server-side arrays:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaExtensionArray
+        >>> pda = ak.arange(5)
+        >>> ea = ArkoudaExtensionArray._from_sequence(pda)
+        >>> ea
+        ArkoudaArray([0 1 2 3 4])
+
+        From Arkouda Strings:
+
+        >>> s = ak.array(["red", "green", "blue"])
+        >>> ea = ArkoudaExtensionArray._from_sequence(s)
+        >>> ea
+        ArkoudaStringArray(['red', 'green', 'blue'])
+
+        From Python scalars:
+
+        >>> ea = ArkoudaExtensionArray._from_sequence([10, 20, 30])
+        >>> ea
+        ArkoudaArray([10 20 30])
+
+        From mixed Python/NumPy types:
+
+        >>> import numpy as np
+        >>> ea = ArkoudaExtensionArray._from_sequence([1, np.int64(2), 3])
+        >>> ea
+        ArkoudaArray([1 2 3])
         """
         # Local imports to avoid circular dependencies at module import time.
         from arkouda.numpy.pdarrayclass import pdarray
