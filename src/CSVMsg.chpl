@@ -452,14 +452,16 @@ module CSVMsg {
                 errorClass="DatasetNotFoundError");
 
         // The same file might have data meant to be distributed across locales,
-        // Therefore the 0th line in the file may not correspond to the 0th index of the array
-        // So we skip over lines till we get the lower bound of the intersection
-        // But the filedom may not start at 0, so we need to substract that offset
+        // Therefore the 0th record in the file may not correspond to the 0th index of the array
+        // So we skip over complete CSV records till we get the lower bound of the intersection
+        // But the filedom may not start at 0, so we need to subtract that offset
         for 0..<(intersection.low-filedom.low) {
-            try {fr.advanceThrough(b'\n');}
+            try {
+                skipCSVRecord(fr);  // Skip complete CSV records, not just lines
+            }
             catch {
                 throw getErrorWithContext(
-                    msg="This CSV file is missing lines.",
+                    msg="This CSV file is missing records.",
                     lineNumber=getLineNumber(),
                     routineName=getRoutineName(),
                     moduleName=getModuleName(),
@@ -490,6 +492,31 @@ module CSVMsg {
     }
 
     use Regex;
+
+    // Skip a complete CSV record (handles multi-line quoted fields)
+    proc skipCSVRecord(reader: fileReader(?)) throws {
+        var line: string;
+        line = reader.readLine(stripNewline=true);
+
+        // Quick check for quotes in this line
+        if line.find('"') != -1 {
+            // Count quotes to see if we're in a multi-line quoted field
+            var quoteCount = line.count('"');
+            if quoteCount % 2 == 1 {
+                // Odd number of quotes - we're in a multi-line quoted field
+                // Keep reading lines until we close the quotes
+                while quoteCount % 2 == 1 {
+                    try {
+                        line = reader.readLine(stripNewline=true);
+                        quoteCount += line.count('"');
+                    } catch e: EofError {
+                        break;
+                    }
+                }
+            }
+        }
+        // Record is now completely skipped
+    }
 
     // Fast row counting with quote detection - much faster than readCSVRecord
     proc countRowsAndQuotes(reader: fileReader(?)) : (int, bool) throws {
