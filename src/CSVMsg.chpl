@@ -510,11 +510,14 @@ module CSVMsg {
         try {
             // Read the first line
             line = reader.readLine(stripNewline=true);
-            lines.pushBack(line);
 
             // count quotes
             var totalQuotes = line.count("\"");
+            if totalQuotes % 2 == 0 {
+                return line;
+            }
 
+            lines.pushBack(line);
             // If we have an odd number of quotes, we're in a multi-line quoted field
             while totalQuotes % 2 == 1 {
                 try {
@@ -535,11 +538,8 @@ module CSVMsg {
         }
 
         // Join the lines together into a single string
-        if lines.size == 1 {
-            return lines[0];
-        } else {
-            return "\n".join(lines.toArray());
-        }
+        return "\n".join(lines.toArray());
+
     }
 
     // Core CSV parsing engine that handles both single field extraction and full parsing
@@ -659,6 +659,16 @@ module CSVMsg {
 
     // Optimized function to extract a specific field by index (early exit)
     proc getFieldByIndex(csvRecord: string, colDelim: string, targetIdx: int): string throws {
+        // Fast path: if no quotes, use simple split
+        if csvRecord.find('"') == -1 {
+            var fields = csvRecord.split(colDelim);
+            if targetIdx >= fields.size {
+                throw new BadFormatError("CSV record does not have enough fields (need field " + targetIdx:string + ")");
+            }
+            return fields[targetIdx];
+        }
+        
+        // Slow path: use full parsing for quoted fields
         var (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, targetIdx);
         return targetField;
     }
@@ -699,23 +709,61 @@ module CSVMsg {
             this.itemType = itemType;
             this.colIdx = colIdx;
             this.colDelim = colDelim;
-            init this;
         }
 
         proc ref deserialize(reader: fileReader(?), ref deserializer) throws {
-            // Read the complete CSV record (handling multi-line quoted fields)
-            var csvRecord = readCSVRecord(reader);
+            // Try fast path first: no quotes and single line
+            var line: string;
+            try {
+                line = reader.readLine(stripNewline=true);
+            } catch e: EofError {
+                throw e;
+            }
 
-            // Use optimized field extraction that stops at the target field
-            var targetField = getFieldByIndex(csvRecord, this.colDelim, this.colIdx);
+            // Check if this line has quotes - if not, use fast path
+            if line.find('"') == -1 {
+                var fields = line.split(this.colDelim);
+                if this.colIdx < fields.size {
+                    var targetField = fields[this.colIdx];
+                    try {
+                        this.item = targetField:itemType;
+                        return;
+                    } catch {
+                        throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                    }
+                }
+            }
 
-            // Convert field to target type
+            // If we're here: Fast path failed, need to handle quotes or multi-line
+            // Check if we need to read more lines for multi-line quoted fields
+            var totalQuotes = line.count("\"");
+            if totalQuotes % 2 == 1 {
+                // Multi-line quoted field - need to read more
+                var lines: list(string);
+                lines.pushBack(line);
+
+                while totalQuotes % 2 == 1 {
+                    try {
+                        line = reader.readLine(stripNewline=true);
+                        lines.pushBack(line);
+                        totalQuotes += line.count("\"");
+                    } catch e: EofError {
+                        break;
+                    } catch e: UnexpectedEofError {
+                        break;
+                    }
+                }
+
+                line = "\n".join(lines.toArray());
+            }
+
+            // Use complex parsing for quoted fields
+            var targetField = getFieldByIndex(line, this.colDelim, this.colIdx);
             try {
                 this.item = targetField:itemType;
             } catch {
                 throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
             }
-
         }
     }
 
