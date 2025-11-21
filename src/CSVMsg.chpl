@@ -714,11 +714,7 @@ module CSVMsg {
             } else {
                 // Convert string field to target type
                 try {
-                    var tempReader = openStringReader(targetField);
-                    var success = tempReader.read(this.item);
-                    if !success {
-                        throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
-                    }
+                    this.item = targetField:itemType;
                 } catch {
                     throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
                 }
