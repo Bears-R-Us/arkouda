@@ -373,16 +373,20 @@ module CSVMsg {
         // get the row count - use readCSVRecord to properly handle multi-line quoted fields
         var row_ct: int = 0;
         var eof = false;
+        var numQuotes = 0;
+        var totalQuotes = 0;
         while (!eof) {
             try {
-                readCSVRecord(reader); // Read complete CSV record, not just advance to newline
+                readCSVRecord(reader, numQuotes); // Read complete CSV record, not just advance to newline
                 row_ct+=1;
+                totalQuotes += numQuotes;
             } catch e: EofError {
                 eof = true;
             } catch e:UnexpectedEofError {
                 eof = true;
             }
         }
+        const hasQuotes = totalQuotes > 0;
 
         reader.close();
 
@@ -403,10 +407,10 @@ module CSVMsg {
         }
 
         // get datatype of column
-        return (row_ct, hasHeader, new list(dtypes));
+        return (row_ct, hasHeader, hasQuotes, new list(dtypes));
     }
 
-    proc read_csv_pattern(ref A: [] ?t, filename: string, filedom: domain(1), colName: string, colDelim: string, hasHeaders: bool, lineOffset: int, allowErrors: bool, ref hadError: bool) throws {
+    proc read_csv_pattern(ref A: [] ?t, filename: string, filedom: domain(1), colName: string, colDelim: string, hasHeaders: bool, lineOffset: int, allowErrors: bool, ref hadError: bool, const hasQuotes: bool) throws {
         // We do a check to see if the filedom even intersects with
         // A.localSubdomain before even opening the file
         // The implementation assumes a single local subdomain so we make
@@ -478,7 +482,7 @@ module CSVMsg {
             }
         }
 
-        var line = new csvLine(t, colIdx, colDelim);
+        var line = new csvLine(t, colIdx, colDelim, hasQuotes);
         for x in intersection {
             try {
                 fr.read(line);
@@ -503,7 +507,7 @@ module CSVMsg {
     use Regex;
 
     // Read a complete CSV record from the reader, handling multi-line quoted fields
-    proc readCSVRecord(reader: fileReader(?)) throws {
+    proc readCSVRecord(reader: fileReader(?), out totalQuotes = 0) throws {
         var lines: list(string);
         var line: string;
 
@@ -512,7 +516,7 @@ module CSVMsg {
             line = reader.readLine(stripNewline=true);
 
             // count quotes
-            var totalQuotes = line.count("\"");
+            totalQuotes = line.count("\"");
             if totalQuotes % 2 == 0 {
                 return line;
             }
@@ -704,70 +708,88 @@ module CSVMsg {
         var item: itemType;
         const colIdx: int;
         const colDelim: string;
+        const hasQuotes: bool;
 
-        proc init(type itemType, colIdx: int, colDelim: string) throws {
+        proc init(type itemType, colIdx: int, colDelim: string, hasQuotes: bool) throws {
             this.itemType = itemType;
             this.colIdx = colIdx;
             this.colDelim = colDelim;
+            this.hasQuotes = hasQuotes;
         }
 
         proc ref deserialize(reader: fileReader(?), ref deserializer) throws {
-            // Try fast path first: no quotes and single line
-            var line: string;
-            try {
-                line = reader.readLine(stripNewline=true);
-            } catch e: EofError {
-                throw e;
-            }
-
-            // Check if this line has quotes - if not, use fast path
-            if line.find('"') == -1 {
-                var fields = line.split(this.colDelim);
-                if this.colIdx < fields.size {
-                    var targetField = fields[this.colIdx];
-                    try {
-                        this.item = targetField:itemType;
-                        return;
-                    } catch {
-                        throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
-                    }
+            if !this.hasQuotes && itemType!=string {
+                // Old implementation that didn't care about quotes
+                // It was faster for non-string types
+                // read the comma delimited items in a single line
+                for 0..<colIdx {
+                    reader.advanceThrough(this.colDelim:bytes);  // Skip over the columns we don't care about
                 }
+                var success = reader.read(this.item);
+                if !success {
+                    throw new BadFormatError("Cannot parse field at index " + this.colIdx:string + " as " + itemType:string);
+                }
+                // Advance through the rest of the line to prepare for next read
+                reader.advanceThrough(b'\n');
             }
+            else {
+                // Try fast path first: no quotes and single line
+                var line: string;
+                try {
+                    line = reader.readLine(stripNewline=true);
+                } catch e: EofError {
+                    throw e;
+                }
 
-            // If we're here: Fast path failed, need to handle quotes or multi-line
-            // Check if we need to read more lines for multi-line quoted fields
-            var totalQuotes = line.count("\"");
-            if totalQuotes % 2 == 1 {
-                // Multi-line quoted field - need to read more
-                var lines: list(string);
-                lines.pushBack(line);
-
-                while totalQuotes % 2 == 1 {
-                    try {
-                        line = reader.readLine(stripNewline=true);
-                        lines.pushBack(line);
-                        totalQuotes += line.count("\"");
-                    } catch e: EofError {
-                        break;
-                    } catch e: UnexpectedEofError {
-                        break;
+                // Check if this line has quotes - if not, use fast path
+                if line.find('"') == -1 {
+                    var fields = line.split(this.colDelim);
+                    if this.colIdx < fields.size {
+                        var targetField = fields[this.colIdx];
+                        try {
+                            this.item = targetField:itemType;
+                            return;
+                        } catch {
+                            throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                        }
                     }
                 }
 
-                line = "\n".join(lines.toArray());
-            }
+                // If we're here: Fast path failed, need to handle quotes or multi-line
+                // Check if we need to read more lines for multi-line quoted fields
+                var totalQuotes = line.count("\"");
+                if totalQuotes % 2 == 1 {
+                    // Multi-line quoted field - need to read more
+                    var lines: list(string);
+                    lines.pushBack(line);
 
-            // Use complex parsing for quoted fields
-            var targetField = getFieldByIndex(line, this.colDelim, this.colIdx);
-            try {
-                this.item = targetField:itemType;
-            } catch {
-                throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                    while totalQuotes % 2 == 1 {
+                        try {
+                            line = reader.readLine(stripNewline=true);
+                            lines.pushBack(line);
+                            totalQuotes += line.count("\"");
+                        } catch e: EofError {
+                            break;
+                        } catch e: UnexpectedEofError {
+                            break;
+                        }
+                    }
+
+                    line = "\n".join(lines.toArray());
+                }
+
+                // Use complex parsing for quoted fields
+                var targetField = getFieldByIndex(line, this.colDelim, this.colIdx);
+                try {
+                    this.item = targetField:itemType;
+                } catch {
+                    throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                }
             }
         }
     }
 
-    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int, allowErrors: bool) throws {
+    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int, allowErrors: bool, const hasQuotes: [] bool) throws {
         var hadError = false;
         coforall loc in A.targetLocales() with (ref A, | reduce hadError) do on loc {
             // Create local copies of args
@@ -781,7 +803,7 @@ module CSVMsg {
                              "File %s does not contain data for this dataset, skipping".format(filename));
                     continue;
                 } else {
-                    read_csv_pattern(A, filename, filedom, dset, col_delim, hasHeaders, offsets[file_idx], allowErrors, hadError);
+                    read_csv_pattern(A, filename, filedom, dset, col_delim, hasHeaders, offsets[file_idx], allowErrors, hadError, hasQuotes[file_idx]);
                 }
             }
         }
@@ -811,7 +833,7 @@ module CSVMsg {
         return (subdoms, offsets, skips);
     }
 
-    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file has header since we were able to access type info
         var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
@@ -822,7 +844,7 @@ module CSVMsg {
             select dtype {
                 when DType.Int64 {
                     var a = makeDistArray(record_count, int);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -830,7 +852,7 @@ module CSVMsg {
                 }
                 when DType.UInt64 {
                     var a = makeDistArray(record_count, uint);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -838,7 +860,7 @@ module CSVMsg {
                 }
                 when DType.Float64 {
                     var a = makeDistArray(record_count, real);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -846,7 +868,7 @@ module CSVMsg {
                 }
                 when DType.Bool {
                     var a = makeDistArray(record_count, bool);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -854,7 +876,7 @@ module CSVMsg {
                 }
                 when DType.Strings {
                     var a = makeDistArray(record_count, string);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var col_lens = makeDistArray(record_count, int);
                     forall (i, v) in zip(0..#a.size, a) {
                         var tmp_str = v + "\x00";
@@ -888,7 +910,7 @@ module CSVMsg {
         return rtnData;
     }
 
-    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file does not have a header since we were not able to access type info
         var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
@@ -896,7 +918,7 @@ module CSVMsg {
 
         for (i, dset) in zip(D, datasets) {
             var a = makeDistArray(record_count, string);
-            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets, allowErrors);
+            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets, allowErrors, hasQuotes);
             var col_lens = makeDistArray(record_count, int);
             forall (i, v) in zip(0..#a.size, a) {
                 var tmp_str = v + "\x00";
@@ -983,6 +1005,7 @@ module CSVMsg {
         var row_cts: [filedom] int;
         var data_types: list(list(string));
         var headers: [filedom] bool;
+        var hasQuotes: [filedom] bool;
         var rtnData: list((string, ObjType, string));
         var fileErrors: list(string);
         var fileErrorCount:int = 0;
@@ -992,7 +1015,7 @@ module CSVMsg {
             var hadError = false;
             try {
                 var dtypes: list(string);
-                (row_cts[i], headers[i], dtypes) = get_info(fname, dsetlist, col_delim);
+                (row_cts[i], headers[i], hasQuotes[i], dtypes) = get_info(fname, dsetlist, col_delim);
                 data_types.pushBack(dtypes);
             } catch e: FileNotFoundError {
                 fileErrorMsg = "File %s not found".format(fname);
@@ -1054,11 +1077,11 @@ module CSVMsg {
         var rtnMsg: string;
         try {
             if headers[0] {
-                rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, allowErrors, st);
+                rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, allowErrors, hasQuotes, st);
                 rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
             else {
-                rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, allowErrors, st);
+                rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, allowErrors, hasQuotes, st);
                 rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
         }
