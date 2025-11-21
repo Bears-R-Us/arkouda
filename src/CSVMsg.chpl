@@ -504,36 +504,25 @@ module CSVMsg {
 
     // Read a complete CSV record from the reader, handling multi-line quoted fields
     proc readCSVRecord(reader: fileReader(?)) throws {
-        var csvRecord = "";
-        var inQuotes = false;
+        var lines: list(string);
         var line: string;
 
         try {
             // Read the first line
             line = reader.readLine(stripNewline=true);
-            csvRecord = line;
+            lines.pushBack(line);
 
-            // Check if we have unclosed quotes in this line
-            for ch in line {
-                if ch == "\"" {
-                    inQuotes = !inQuotes;
-                }
-            }
+            // count quotes
+            var totalQuotes = line.count("\"");
 
-            // If we're still in quotes, keep reading lines until quotes are closed
-            while inQuotes {
+            // If we have an odd number of quotes, we're in a multi-line quoted field
+            while totalQuotes % 2 == 1 {
                 try {
                     line = reader.readLine(stripNewline=true);
-                    csvRecord += "\n" + line;
-
-                    // Check this line for quote state changes
-                    for ch in line {
-                        if ch == "\"" {
-                            inQuotes = !inQuotes;
-                        }
-                    }
+                    lines.pushBack(line);
+                    totalQuotes += line.count("\"");
                 } catch e: EofError {
-                    // End of file while in quotes - this is malformed CSV but we'll throw an error later
+                    // End of file while in quotes - this is malformed CSV but we'll break
                     break;
                 } catch e: UnexpectedEofError {
                     break;
@@ -544,18 +533,22 @@ module CSVMsg {
         } catch e: UnexpectedEofError {
             throw e;
         }
-        return csvRecord;
+
+        // Join the lines together into a single string
+        if lines.size == 1 {
+            return lines[0];
+        } else {
+            return "\n".join(lines.toArray());
+        }
     }
 
-    // Iterator to parse CSV fields from a complete CSV record string
-    iter parseCSVRecord(csvRecord: string, colDelim: string) throws {
-        var field = "";
-        var inQuotes = false;
-        var i = 0;
+    // Helper function to find field boundaries in a single pass
+    proc findFieldBoundaries(csvRecord: string, colDelim: string, ref fieldBoundaries: list((int, int))) throws {
         var recordLen = csvRecord.size;
         var delimLen = colDelim.size;
-
-        writeln("Parsing CSV Record: \n", csvRecord);
+        var inQuotes = false;
+        var fieldStart = 0;
+        var i = 0;
 
         while i < recordLen {
             var ch = csvRecord[i];
@@ -564,8 +557,7 @@ module CSVMsg {
                 if inQuotes {
                     // Check if next character is also a quote (escaped quote)
                     if i + 1 < recordLen && csvRecord[i + 1] == "\"" {
-                        // Escaped quote - add single quote to field and skip both characters
-                        field += "\"";
+                        // Escaped quote - skip both characters
                         i += 2;
                     } else {
                         // End of quoted field
@@ -579,25 +571,55 @@ module CSVMsg {
                 }
             } else if !inQuotes && delimLen == 1 && ch == colDelim {
                 // Found single-character delimiter outside quotes
-                writeln("Yielding field: ", field);
-                yield field;
-                field = "";
+                fieldBoundaries.pushBack((fieldStart, i - 1));
+                fieldStart = i + 1;
                 i += 1;
             } else if !inQuotes && delimLen > 1 && i + delimLen <= recordLen && csvRecord[i..#delimLen] == colDelim {
                 // Found multi-character delimiter outside quotes
-                yield field;
-                field = "";
+                fieldBoundaries.pushBack((fieldStart, i - 1));
+                fieldStart = i + delimLen;
                 i += delimLen;
             } else {
-                // Regular character - add to field
-                field += ch;
+                // Regular character - continue
                 i += 1;
             }
         }
 
-        // Yield the final field
-        writeln("Yielding field: ", field);
-        yield field;
+        // Add the final field
+        fieldBoundaries.pushBack((fieldStart, recordLen - 1));
+    }
+
+    // Helper function to process a field and handle quote unescaping
+    proc processField(fieldSlice: string): string throws {
+        var field = fieldSlice;
+
+        // Handle quoted fields - remove outer quotes and unescape inner quotes
+        if field.size >= 2 && field.startsWith("\"") && field.endsWith("\"") {
+            // Remove outer quotes
+            field = field[1..<field.size-1];
+
+            // quote unescaping
+            field = field.replace("\"\"", "\"");
+        }
+
+        return field;
+    }    // Iterator to parse CSV fields from a complete CSV record string
+    iter parseCSVRecord(csvRecord: string, colDelim: string) throws {
+        var fieldBoundaries: list((int, int));
+
+        // Phase 1: Find all field boundaries in a single pass
+        findFieldBoundaries(csvRecord, colDelim, fieldBoundaries);
+
+        // Phase 2: Extract and process fields using efficient string operations
+        for (start, end) in fieldBoundaries {
+            if start <= end {
+                var fieldSlice = csvRecord[start..end];
+                yield processField(fieldSlice);
+            } else {
+                // Empty field
+                yield "";
+            }
+        }
     }
 
     record csvLine: readDeserializable {
