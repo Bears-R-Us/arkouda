@@ -325,6 +325,7 @@ def array(
             Strings(cast(pdarray, array([], dtype="int64")), 0) if a.size == 0 else a[:] if copy else a
         )
 
+    # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
         casted = akcast(a, dtype)  # the "dtype is None" case was covered above
         if isinstance(casted, pdarray) and dtype == bigint and max_bits != -1:
@@ -357,7 +358,8 @@ def array(
                 a = np.array(a)
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
-
+    if dtype is not None and dtype not in [bigint, "bigint"]:
+        a = a.astype(dtype)
     if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a) and dtype is None:
         dtype = bigint
 

@@ -57,24 +57,26 @@ module OperatorMsg
                                           cmd,op,st.attrib(msgArgs['a'].val),
                                           st.attrib(msgArgs['b'].val)));
 
-        // This probably doesn't handle all normal bigint cases, but it handles a decent number.
-        // This, at least, can be expanded when BinOp.chpl is cleaned up
-        // It will be reasonably straightforward to clean up here.
+        // At this point it should handle almost every bigint case
 
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
-                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
+                op != '/'
         {
           if boolOps.contains(op) {
-            // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpvvBoolReturn(l, r, op)));
           }
           // call bigint specific func which returns dist bigint array
           const (tmp, max_bits) = doBigIntBinOpvv(l, r, op);
           return st.insert(new shared SymEntry(tmp, max_bits));
-        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
-          const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
+        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+                    (isRealType(binop_dtype_a) || isRealType(binop_dtype_b)) &&
+                    boolOps.contains(op) {
+          // call bigint specific func which returns distr bool array
+          return st.insert(new shared SymEntry(doBigIntBinOpvvBoolReturnRealInput(l.a, r.a, op)));
+        }
+        else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
+          return st.insert(new shared SymEntry(doBigIntBinOpvvRealReturn(l, r, op)));
         }
 
         if boolOps.contains(op) {
