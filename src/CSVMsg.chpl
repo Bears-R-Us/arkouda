@@ -709,16 +709,13 @@ module CSVMsg {
             // Use optimized field extraction that stops at the target field
             var targetField = getFieldByIndex(csvRecord, this.colDelim, this.colIdx);
 
-            if itemType == string {
-                this.item = targetField;
-            } else {
-                // Convert string field to target type
-                try {
-                    this.item = targetField:itemType;
-                } catch {
-                    throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
-                }
+            // Convert field to target type
+            try {
+                this.item = targetField:itemType;
+            } catch {
+                throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
             }
+
         }
     }
 
