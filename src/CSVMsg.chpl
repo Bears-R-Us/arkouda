@@ -370,23 +370,8 @@ module CSVMsg {
         else {
             file_dtypes = "str";
         }
-        // get the row count - use readCSVRecord to properly handle multi-line quoted fields
-        var row_ct: int = 0;
-        var eof = false;
-        var numQuotes = 0;
-        var totalQuotes = 0;
-        while (!eof) {
-            try {
-                readCSVRecord(reader, numQuotes); // Read complete CSV record, not just advance to newline
-                row_ct+=1;
-                totalQuotes += numQuotes;
-            } catch e: EofError {
-                eof = true;
-            } catch e:UnexpectedEofError {
-                eof = true;
-            }
-        }
-        const hasQuotes = totalQuotes > 0;
+        // get the row count - use fast quote-aware counting
+        var (row_ct, hasQuotes) = countRowsAndQuotes(reader);
 
         reader.close();
 
@@ -506,8 +491,47 @@ module CSVMsg {
 
     use Regex;
 
+    // Fast row counting with quote detection - much faster than readCSVRecord
+    proc countRowsAndQuotes(reader: fileReader(?)) : (int, bool) throws {
+        var rowCount = 0;
+        var hasQuotes = false;
+        var line: string;
+
+        try {
+            while true {
+                line = reader.readLine(stripNewline=true);
+
+                // Quick check for quotes in this line
+                if line.find('"') != -1 {
+                    hasQuotes = true;
+
+                    // Count quotes to see if we're in a multi-line quoted field
+                    var quoteCount = line.count('"');
+                    if quoteCount % 2 == 1 {
+                        // Odd number of quotes - we're in a multi-line quoted field
+                        // Keep reading lines until we close the quotes
+                        while quoteCount % 2 == 1 {
+                            try {
+                                line = reader.readLine(stripNewline=true);
+                                quoteCount += line.count('"');
+                            } catch e: EofError {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                rowCount += 1;
+            }
+        } catch e: EofError {
+            // Normal end of file
+        }
+
+        return (rowCount, hasQuotes);
+    }
+
     // Read a complete CSV record from the reader, handling multi-line quoted fields
-    proc readCSVRecord(reader: fileReader(?), out totalQuotes = 0) throws {
+    proc readCSVRecord(reader: fileReader(?)) throws {
         var lines: list(string);
         var line: string;
 
@@ -516,7 +540,7 @@ module CSVMsg {
             line = reader.readLine(stripNewline=true);
 
             // count quotes
-            totalQuotes = line.count("\"");
+            var totalQuotes = line.count("\"");
             if totalQuotes % 2 == 0 {
                 return line;
             }
