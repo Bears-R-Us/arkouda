@@ -2479,7 +2479,7 @@ class TestCSV:
             assert data["ColB"].tolist() == d["ColB"].tolist()
             assert data["ColC"].tolist() == d["ColC"].tolist()
 
-    @pytest.mark.parametrize("delimiter", [",", "|", ";", "\t"])
+    @pytest.mark.parametrize("delimiter", [",", "|", ";", "\t", "multichardelim"])
     def test_csv_quoted_strings_with_delimiters(self, csv_test_base_tmp, delimiter):
         """Test that column delimiters inside quoted strings are ignored."""
         cols = ["Name", "Description", '"Experience, in years"'] # Column name with comma
