@@ -59,3 +59,5 @@ dependencies:
     - docstr-coverage
     - numba
     - pytest-html
+    - pytest-cov
+    - coverage[toml]
