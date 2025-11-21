@@ -493,108 +493,109 @@ module CSVMsg {
 
     use Regex;
 
-    // Skip a complete CSV record (handles multi-line quoted fields)
-    proc skipCSVRecord(reader: fileReader(?)) throws {
+    // Lightweight helper: advance through a CSV record without storing lines (for skip/count)
+    // Returns: hasQuotes
+    proc advanceCSVRecord(reader: fileReader(?)) : bool throws {
         var line: string;
+        var hasQuotes = false;
+
+        // Read the first line
         line = reader.readLine(stripNewline=true);
 
-        // Quick check for quotes in this line
+        // Quick check for quotes
         if line.find('"') != -1 {
-            // Count quotes to see if we're in a multi-line quoted field
-            var quoteCount = line.count('"');
-            if quoteCount % 2 == 1 {
-                // Odd number of quotes - we're in a multi-line quoted field
-                // Keep reading lines until we close the quotes
-                while quoteCount % 2 == 1 {
-                    try {
-                        line = reader.readLine(stripNewline=true);
-                        quoteCount += line.count('"');
-                    } catch e: EofError {
-                        break;
-                    }
+            hasQuotes = true;
+            var totalQuotes = line.count('"');
+
+            // If odd number of quotes, keep reading until balanced
+            while totalQuotes % 2 == 1 {
+                try {
+                    line = reader.readLine(stripNewline=true);
+                    totalQuotes += line.count('"');
+                } catch e: EofError {
+                    break;
+                } catch e: UnexpectedEofError {
+                    break;
                 }
             }
         }
+
+        return hasQuotes;
+    }
+
+    // Full helper: read and store lines for complete CSV record (for readCSVRecord)
+    proc readCSVRecordLines(reader: fileReader(?)) : list(string) throws {
+        var lines: list(string);
+        var line: string;
+
+        // Read the first line
+        line = reader.readLine(stripNewline=true);
+        lines.pushBack(line);
+
+        // Quick check for quotes
+        if line.find('"') != -1 {
+            var totalQuotes = line.count('"');
+
+            // If odd number of quotes, keep reading until balanced
+            while totalQuotes % 2 == 1 {
+                try {
+                    line = reader.readLine(stripNewline=true);
+                    lines.pushBack(line);
+                    totalQuotes += line.count('"');
+                } catch e: EofError {
+                    break;
+                } catch e: UnexpectedEofError {
+                    break;
+                }
+            }
+        }
+
+        return lines;
+    }
+
+    // Skip a complete CSV record (handles multi-line quoted fields)
+    proc skipCSVRecord(reader: fileReader(?)) throws {
+        advanceCSVRecord(reader);
         // Record is now completely skipped
     }
 
     // Fast row counting with quote detection - much faster than readCSVRecord
     proc countRowsAndQuotes(reader: fileReader(?)) : (int, bool) throws {
         var rowCount = 0;
-        var hasQuotes = false;
-        var line: string;
+        var hasAnyQuotes = false;
 
         try {
             while true {
-                line = reader.readLine(stripNewline=true);
-
-                // Quick check for quotes in this line
-                if line.find('"') != -1 {
-                    hasQuotes = true;
-
-                    // Count quotes to see if we're in a multi-line quoted field
-                    var quoteCount = line.count('"');
-                    if quoteCount % 2 == 1 {
-                        // Odd number of quotes - we're in a multi-line quoted field
-                        // Keep reading lines until we close the quotes
-                        while quoteCount % 2 == 1 {
-                            try {
-                                line = reader.readLine(stripNewline=true);
-                                quoteCount += line.count('"');
-                            } catch e: EofError {
-                                break;
-                            }
-                        }
-                    }
+                var hasQuotes = advanceCSVRecord(reader);
+                if hasQuotes {
+                    hasAnyQuotes = true;
                 }
-
                 rowCount += 1;
             }
         } catch e: EofError {
             // Normal end of file
         }
 
-        return (rowCount, hasQuotes);
+        return (rowCount, hasAnyQuotes);
     }
 
     // Read a complete CSV record from the reader, handling multi-line quoted fields
     proc readCSVRecord(reader: fileReader(?)) throws {
         var lines: list(string);
-        var line: string;
-
         try {
-            // Read the first line
-            line = reader.readLine(stripNewline=true);
-
-            // count quotes
-            var totalQuotes = line.count("\"");
-            if totalQuotes % 2 == 0 {
-                return line;
-            }
-
-            lines.pushBack(line);
-            // If we have an odd number of quotes, we're in a multi-line quoted field
-            while totalQuotes % 2 == 1 {
-                try {
-                    line = reader.readLine(stripNewline=true);
-                    lines.pushBack(line);
-                    totalQuotes += line.count("\"");
-                } catch e: EofError {
-                    // End of file while in quotes - this is malformed CSV but we'll break
-                    break;
-                } catch e: UnexpectedEofError {
-                    break;
-                }
-            }
+            lines = readCSVRecordLines(reader);
         } catch e: EofError {
             throw e; // Re-throw EOF to signal end of file
         } catch e: UnexpectedEofError {
             throw e;
         }
 
-        // Join the lines together into a single string
-        return "\n".join(lines.toArray());
-
+        // Return single line if no multi-line record
+        if lines.size == 1 {
+            return lines[0];
+        } else {
+            return "\n".join(lines.toArray());
+        }
     }
 
     // Core CSV parsing engine that handles both single field extraction and full parsing
