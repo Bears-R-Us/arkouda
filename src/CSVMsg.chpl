@@ -542,13 +542,17 @@ module CSVMsg {
         }
     }
 
-    // Helper function to find field boundaries in a single pass
-    proc findFieldBoundaries(csvRecord: string, colDelim: string, ref fieldBoundaries: list((int, int))) throws {
+    // Core CSV parsing engine that handles both single field extraction and full parsing
+    proc parseCSVCore(csvRecord: string, colDelim: string, targetIdx: int = -1): (list((int, int)), string) throws {
         var recordLen = csvRecord.size;
         var delimLen = colDelim.size;
         var inQuotes = false;
         var fieldStart = 0;
+        var currentFieldIdx = 0;
         var i = 0;
+        var fieldBoundaries: list((int, int));
+        var targetField = "";
+        var foundTarget = false;
 
         while i < recordLen {
             var ch = csvRecord[i];
@@ -571,13 +575,41 @@ module CSVMsg {
                 }
             } else if !inQuotes && delimLen == 1 && ch == colDelim {
                 // Found single-character delimiter outside quotes
+                if targetIdx != -1 && currentFieldIdx == targetIdx {
+                    // Extract target field and return early
+                    if fieldStart <= i - 1 {
+                        var fieldSlice = csvRecord[fieldStart..i-1];
+                        targetField = processField(fieldSlice);
+                    } else {
+                        targetField = "";
+                    }
+                    foundTarget = true;
+                    return (fieldBoundaries, targetField);
+                }
+
+                // Store boundary for full parsing
                 fieldBoundaries.pushBack((fieldStart, i - 1));
                 fieldStart = i + 1;
+                currentFieldIdx += 1;
                 i += 1;
             } else if !inQuotes && delimLen > 1 && i + delimLen <= recordLen && csvRecord[i..#delimLen] == colDelim {
                 // Found multi-character delimiter outside quotes
+                if targetIdx != -1 && currentFieldIdx == targetIdx {
+                    // Extract target field and return early
+                    if fieldStart <= i - 1 {
+                        var fieldSlice = csvRecord[fieldStart..i-1];
+                        targetField = processField(fieldSlice);
+                    } else {
+                        targetField = "";
+                    }
+                    foundTarget = true;
+                    return (fieldBoundaries, targetField);
+                }
+
+                // Store boundary for full parsing
                 fieldBoundaries.pushBack((fieldStart, i - 1));
                 fieldStart = i + delimLen;
+                currentFieldIdx += 1;
                 i += delimLen;
             } else {
                 // Regular character - continue
@@ -585,8 +617,28 @@ module CSVMsg {
             }
         }
 
-        // Add the final field
+        // Handle the final field
+        if targetIdx != -1 && currentFieldIdx == targetIdx {
+            // Extract final target field
+            if fieldStart <= recordLen - 1 {
+                var fieldSlice = csvRecord[fieldStart..recordLen-1];
+                targetField = processField(fieldSlice);
+            } else {
+                targetField = "";
+            }
+            foundTarget = true;
+            return (fieldBoundaries, targetField);
+        }
+
+        // Add final field boundary for full parsing
         fieldBoundaries.pushBack((fieldStart, recordLen - 1));
+
+        // Check if target field was found
+        if targetIdx != -1 && !foundTarget {
+            throw new BadFormatError("CSV record does not have enough fields (need field " + targetIdx:string + ")");
+        }
+
+        return (fieldBoundaries, targetField);
     }
 
     // Helper function to process a field and handle quote unescaping
@@ -603,7 +655,21 @@ module CSVMsg {
         }
 
         return field;
-    }    // Iterator to parse CSV fields from a complete CSV record string
+    }
+
+    // Optimized function to extract a specific field by index (early exit)
+    proc getFieldByIndex(csvRecord: string, colDelim: string, targetIdx: int): string throws {
+        var (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, targetIdx);
+        return targetField;
+    }
+
+    // Helper function to find all field boundaries
+    proc findFieldBoundaries(csvRecord: string, colDelim: string, ref fieldBoundaries: list((int, int))) throws {
+        var (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, -1);
+        fieldBoundaries = boundaries;
+    }
+
+    // Iterator to parse CSV fields from a complete CSV record string
     iter parseCSVRecord(csvRecord: string, colDelim: string) throws {
         var fieldBoundaries: list((int, int));
 
@@ -640,23 +706,8 @@ module CSVMsg {
             // Read the complete CSV record (handling multi-line quoted fields)
             var csvRecord = readCSVRecord(reader);
 
-            var fieldCount = 0;
-            var targetField = "";
-            var foundTarget = false;
-
-            // Parse the CSV record using the iterator
-            for field in parseCSVRecord(csvRecord, this.colDelim) {
-                if fieldCount == this.colIdx {
-                    targetField = field;
-                    foundTarget = true;
-                    // Continue parsing to consume the rest of the record
-                }
-                fieldCount += 1;
-            }
-
-            if !foundTarget {
-                throw new BadFormatError("CSV record does not have enough fields (need field " + this.colIdx:string + ")");
-            }
+            // Use optimized field extraction that stops at the target field
+            var targetField = getFieldByIndex(csvRecord, this.colDelim, this.colIdx);
 
             if itemType == string {
                 this.item = targetField;
