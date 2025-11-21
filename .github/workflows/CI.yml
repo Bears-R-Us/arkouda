@@ -87,7 +87,6 @@ jobs:
       run: |
         python3 -m ensurepip --default-pip
         python3 -m pip install -e .[dev]
-        pip install typeguard==2.11.0
     - name: check mypy version
       run: |
         mypy --version
@@ -179,7 +178,6 @@ jobs:
       run: |
         make
         python3 -m pip install .[dev]
-        pip install typeguard==2.11.0
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -419,7 +417,6 @@ jobs:
       run: |
         make
         python3 -m pip install .[dev]
-        pip install typeguard==2.11.0
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -471,7 +468,6 @@ jobs:
     - name: Install Arkouda
       run: |
         python3 -m pip install .[dev]
-        pip install typeguard==2.11.0
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -514,7 +510,6 @@ jobs:
       run: |
         make
         python3 -m pip install .[dev]
-        pip install typeguard==2.11.0
     - name: Arkouda make check
       run: |
         make check
@@ -564,7 +559,6 @@ jobs:
       run: |
         make
         python3 -m pip install .[dev]
-        pip install typeguard==2.11.0
     - name: Arkouda benchmark
       run: |
         make benchmark size_bm=10
