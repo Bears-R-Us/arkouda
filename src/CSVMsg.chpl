@@ -20,14 +20,14 @@ module CSVMsg {
 
     const CSV_HEADER_OPEN = "**HEADER**";
     const CSV_HEADER_CLOSE = "*/HEADER/*";
-    const LINE_DELIM = "\n"; // currently assumed all files are newline delimited. 
+    const LINE_DELIM = "\n"; // currently assumed all files are newline delimited.
 
     private config const logLevel = ServerConfig.logLevel;
     const csvLogger = new Logger(logLevel);
 
     // Future Work (TODO)
     //  - write to single file
-    //  - Custom Line Delimiters 
+    //  - Custom Line Delimiters
     //  - Handle CSV without column names
 
     proc lsCSVMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
@@ -50,11 +50,11 @@ module CSVMsg {
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
-            
+
             // Set filename to globbed filename corresponding to locale 0
             filename = tmp[tmp.domain.first];
         }
-        
+
         // Check to see if the file exists. If not, return an error message
         if !exists(filename) {
             var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
@@ -65,7 +65,7 @@ module CSVMsg {
         // open file and determine if header exists.
         var idx = 0;
         var reader = openReader(filename);
-        var line = reader.readLine(stripNewline=true);
+        var line = readCSVRecord(reader);
         var hasHeader = false;
         if line == CSV_HEADER_OPEN {
             hasHeader=true;
@@ -85,9 +85,15 @@ module CSVMsg {
         }
 
         var col_delim: string = msgArgs.getValueOf("col_delim");
-        if hasHeader then line = reader.readLine(stripNewline = true);
-        var column_names = line.split(col_delim).strip();
-        return new MsgTuple(formatJson(column_names), MsgType.NORMAL);
+        // If the CSV File has headers, then we haven't actually read the column names yet
+        // so read the next line
+        if hasHeader then line = readCSVRecord(reader);
+        var column_names: list(string);
+        for field in parseCSVRecord(line, col_delim) {
+            column_names.pushBack(field.strip());
+        }
+        var column_names_array: [0..<column_names.size] string = column_names.toArray();
+        return new MsgTuple(formatJson(column_names_array), MsgType.NORMAL);
 
     }
 
@@ -112,7 +118,7 @@ module CSVMsg {
             throw getErrorWithContext(
                 msg="Filenames for the provided name exist. Overwrite must be set to true in order to save with the name %s".format(filename),
                 lineNumber=getLineNumber(),
-                routineName=getRoutineName(), 
+                routineName=getRoutineName(),
                 moduleName=getModuleName(),
                 errorClass="InvalidArgumentError");
         }
@@ -128,11 +134,11 @@ module CSVMsg {
                 }
             }
         }
-        return filenames; 
+        return filenames;
     }
 
     proc getLocalDomain(GSE: GenSymEntry) throws {
-        select GSE.dtype {    
+        select GSE.dtype {
             when DType.Int64 {
                 var e = toSymEntry(GSE, int);
                 return e.a.localSubdomain();
@@ -158,7 +164,7 @@ module CSVMsg {
                 throw getErrorWithContext(
                     msg="Invalid DType Found, %s".format(dtype2str(GSE.dtype)),
                     lineNumber=getLineNumber(),
-                    routineName=getRoutineName(), 
+                    routineName=getRoutineName(),
                     moduleName=getModuleName(),
                     errorClass="DataTypeError");
             }
@@ -315,7 +321,7 @@ module CSVMsg {
             throw getErrorWithContext(
                            msg="The file %s does not exist".format(filename),
                            lineNumber=getLineNumber(),
-                           routineName=getRoutineName(), 
+                           routineName=getRoutineName(),
                            moduleName=getModuleName(),
                            errorClass="FileNotFoundError");
         }
@@ -323,14 +329,14 @@ module CSVMsg {
         var reader = openReader(filename);
         var hasHeader = false;
 
-        var line = reader.readLine(stripNewline=true);
+        var line = readCSVRecord(reader);
         if line == CSV_HEADER_OPEN {
             hasHeader = true;
             // The first three lines are headers
             for param i in 1..<3 {
                 try {
                     if i==1 {
-                        line = reader.readLine(stripNewline=true);
+                        line = readCSVRecord(reader);
                         // Line has the data types after this
                     } else {
                         // Advance through CSV_HEADER_CLOSE line
@@ -349,37 +355,30 @@ module CSVMsg {
         }
         var column_names: string;
         if hasHeader then
-            column_names = reader.readLine(stripNewline = true);
+            column_names = readCSVRecord(reader);
         else
             column_names = line;
-        var columns = column_names.split(col_delim).strip();
-        var file_dtypes: [0..#columns.size] string;
+        var columns: list(string);
+        for field in parseCSVRecord(column_names, col_delim) {
+            columns.pushBack(field.strip());
+        }
+        var columns_array: [0..<columns.size] string = columns.toArray();
+        var file_dtypes: [0..<columns_array.size] string;
         if hasHeader {
             file_dtypes = line.split(",").strip(); // Line was already read above
         }
         else {
             file_dtypes = "str";
         }
-        // get the row count
-        var row_ct: int = 0;
-        var eof = false;
-        while (!eof) {
-            try {
-                reader.advanceThrough(b'\n');
-                row_ct+=1;
-            } catch e: EofError {
-                eof = true;
-            } catch e:UnexpectedEofError {
-                eof = true;
-            }
-        }
+        // get the row count - use fast quote-aware counting
+        var (row_ct, hasQuotes) = countRowsAndQuotes(reader);
 
         reader.close();
 
         var dtypes: [0..#datasets.size] string;
         forall (i, dset) in zip(0..#datasets.size, datasets) {
             var idx: int;
-            var col_exists = columns.find(dset, idx);
+            var col_exists = columns_array.find(dset, idx);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".format(dset)+formatJson(col_exists)+", IDX: %i".format(idx));
             if !col_exists {
                 throw getErrorWithContext(
@@ -393,11 +392,11 @@ module CSVMsg {
         }
 
         // get datatype of column
-        return (row_ct, hasHeader, new list(dtypes));
+        return (row_ct, hasHeader, hasQuotes, new list(dtypes));
     }
 
-    proc read_csv_pattern(ref A: [] ?t, filename: string, filedom: domain(1), colName: string, colDelim: string, hasHeaders: bool, lineOffset: int, allowErrors: bool, ref hadError: bool) throws {
-        // We do a check to see if the filedome even intersects with
+    proc read_csv_pattern(ref A: [] ?t, filename: string, filedom: domain(1), colName: string, colDelim: string, hasHeaders: bool, lineOffset: int, allowErrors: bool, ref hadError: bool, const hasQuotes: bool) throws {
+        // We do a check to see if the filedom even intersects with
         // A.localSubdomain before even opening the file
         // The implementation assumes a single local subdomain so we make
         // sure that is the case first
@@ -432,12 +431,16 @@ module CSVMsg {
             }
         }
         var colIdx = -1;
-        // This next line will have the columns
-        for (column,i) in zip(fr.readLine(stripNewline = true).split(colDelim), 0..) {
+        // This next line will have the column header
+        // Use proper CSV parsing to handle quoted delimiters
+        var headerLine = readCSVRecord(fr);
+        var columnIndex = 0;
+        for column in parseCSVRecord(headerLine, colDelim) {
             if column == colName {
-                colIdx=i;
+                colIdx = columnIndex;
                 break;
             }
+            columnIndex += 1;
         }
 
         if(colIdx == -1) then
@@ -449,14 +452,16 @@ module CSVMsg {
                 errorClass="DatasetNotFoundError");
 
         // The same file might have data meant to be distributed across locales,
-        // Therefore the 0th line in the file may not correspond to the 0th index of the array
-        // So we skip over lines till we get the lower bound of the intersection
-        // But the filedom may not start at 0, so we need to substract that offset
+        // Therefore the 0th record in the file may not correspond to the 0th index of the array
+        // So we skip over complete CSV records till we get the lower bound of the intersection
+        // But the filedom may not start at 0, so we need to subtract that offset
         for 0..<(intersection.low-filedom.low) {
-            try {fr.advanceThrough(b'\n');}
+            try {
+                skipCSVRecord(fr);  // Skip complete CSV records, not just lines
+            }
             catch {
                 throw getErrorWithContext(
-                    msg="This CSV file is missing lines.",
+                    msg="This CSV file is missing records.",
                     lineNumber=getLineNumber(),
                     routineName=getRoutineName(),
                     moduleName=getModuleName(),
@@ -464,7 +469,7 @@ module CSVMsg {
             }
         }
 
-        var line = new csvLine(t, colIdx, colDelim);
+        var line = new csvLine(t, colIdx, colDelim, hasQuotes);
         for x in intersection {
             try {
                 fr.read(line);
@@ -487,38 +492,356 @@ module CSVMsg {
     }
 
     use Regex;
+
+    // Lightweight helper: advance through a CSV record without storing lines (for skip/count)
+    // Returns: hasQuotes
+    proc advanceCSVRecord(reader: fileReader(?)) : bool throws {
+        var line: string;
+        var hasQuotes = false;
+
+        // Read the first line
+        line = reader.readLine(stripNewline=true);
+
+        // Quick check for quotes
+        if line.find('"') != -1 {
+            hasQuotes = true;
+            var totalQuotes = line.count('"');
+
+            // If odd number of quotes, keep reading until balanced
+            while totalQuotes % 2 == 1 {
+                try {
+                    line = reader.readLine(stripNewline=true);
+                    totalQuotes += line.count('"');
+                } catch e: EofError {
+                    break;
+                } catch e: UnexpectedEofError {
+                    break;
+                }
+            }
+        }
+
+        return hasQuotes;
+    }
+
+    // Full helper: read and store lines for complete CSV record (for readCSVRecord)
+    proc readCSVRecordLines(reader: fileReader(?)) : list(string) throws {
+        var lines: list(string);
+        var line: string;
+
+        // Read the first line
+        line = reader.readLine(stripNewline=true);
+        lines.pushBack(line);
+
+        // Quick check for quotes
+        if line.find('"') != -1 {
+            var totalQuotes = line.count('"');
+
+            // If odd number of quotes, keep reading until balanced
+            while totalQuotes % 2 == 1 {
+                try {
+                    line = reader.readLine(stripNewline=true);
+                    lines.pushBack(line);
+                    totalQuotes += line.count('"');
+                } catch e: EofError {
+                    break;
+                } catch e: UnexpectedEofError {
+                    break;
+                }
+            }
+        }
+
+        return lines;
+    }
+
+    // Skip a complete CSV record (handles multi-line quoted fields)
+    proc skipCSVRecord(reader: fileReader(?)) throws {
+        advanceCSVRecord(reader);
+        // Record is now completely skipped
+    }
+
+    // Fast row counting with quote detection - much faster than readCSVRecord
+    proc countRowsAndQuotes(reader: fileReader(?)) : (int, bool) throws {
+        var rowCount = 0;
+        var hasAnyQuotes = false;
+
+        try {
+            while true {
+                var hasQuotes = advanceCSVRecord(reader);
+                if hasQuotes {
+                    hasAnyQuotes = true;
+                }
+                rowCount += 1;
+            }
+        } catch e: EofError {
+            // Normal end of file
+        }
+
+        return (rowCount, hasAnyQuotes);
+    }
+
+    // Read a complete CSV record from the reader, handling multi-line quoted fields
+    proc readCSVRecord(reader: fileReader(?)) throws {
+        var lines: list(string);
+        try {
+            lines = readCSVRecordLines(reader);
+        } catch e: EofError {
+            throw e; // Re-throw EOF to signal end of file
+        } catch e: UnexpectedEofError {
+            throw e;
+        }
+
+        // Return single line if no multi-line record
+        if lines.size == 1 {
+            return lines[0];
+        } else {
+            return "\n".join(lines.toArray());
+        }
+    }
+
+    // Core CSV parsing engine that handles both single field extraction and full parsing
+    proc parseCSVCore(csvRecord: string, colDelim: string, targetIdx: int = -1): (list((int, int)), string) throws {
+        var recordLen = csvRecord.size;
+        var delimLen = colDelim.size;
+        var inQuotes = false;
+        var fieldStart = 0;
+        var currentFieldIdx = 0;
+        var i = 0;
+        var fieldBoundaries: list((int, int));
+        var targetField = "";
+        var foundTarget = false;
+
+        while i < recordLen {
+            var ch = csvRecord[i];
+
+            if ch == "\"" {
+                if inQuotes {
+                    // Check if next character is also a quote (escaped quote)
+                    if i + 1 < recordLen && csvRecord[i + 1] == "\"" {
+                        // Escaped quote - skip both characters
+                        i += 2;
+                    } else {
+                        // End of quoted field
+                        inQuotes = false;
+                        i += 1;
+                    }
+                } else {
+                    // Start of quoted field
+                    inQuotes = true;
+                    i += 1;
+                }
+            } else if !inQuotes && delimLen == 1 && ch == colDelim {
+                // Found single-character delimiter outside quotes
+                if targetIdx != -1 && currentFieldIdx == targetIdx {
+                    // Extract target field and return early
+                    if fieldStart <= i - 1 {
+                        var fieldSlice = csvRecord[fieldStart..i-1];
+                        targetField = processField(fieldSlice);
+                    } else {
+                        targetField = "";
+                    }
+                    foundTarget = true;
+                    return (fieldBoundaries, targetField);
+                }
+
+                // Store boundary for full parsing
+                fieldBoundaries.pushBack((fieldStart, i - 1));
+                fieldStart = i + 1;
+                currentFieldIdx += 1;
+                i += 1;
+            } else if !inQuotes && delimLen > 1 && i + delimLen <= recordLen && csvRecord[i..#delimLen] == colDelim {
+                // Found multi-character delimiter outside quotes
+                if targetIdx != -1 && currentFieldIdx == targetIdx {
+                    // Extract target field and return early
+                    if fieldStart <= i - 1 {
+                        var fieldSlice = csvRecord[fieldStart..i-1];
+                        targetField = processField(fieldSlice);
+                    } else {
+                        targetField = "";
+                    }
+                    foundTarget = true;
+                    return (fieldBoundaries, targetField);
+                }
+
+                // Store boundary for full parsing
+                fieldBoundaries.pushBack((fieldStart, i - 1));
+                fieldStart = i + delimLen;
+                currentFieldIdx += 1;
+                i += delimLen;
+            } else {
+                // Regular character - continue
+                i += 1;
+            }
+        }
+
+        // Handle the final field
+        if targetIdx != -1 && currentFieldIdx == targetIdx {
+            // Extract final target field
+            if fieldStart <= recordLen - 1 {
+                var fieldSlice = csvRecord[fieldStart..recordLen-1];
+                targetField = processField(fieldSlice);
+            } else {
+                targetField = "";
+            }
+            foundTarget = true;
+            return (fieldBoundaries, targetField);
+        }
+
+        // Add final field boundary for full parsing
+        fieldBoundaries.pushBack((fieldStart, recordLen - 1));
+
+        // Check if target field was found
+        if targetIdx != -1 && !foundTarget {
+            throw new BadFormatError("CSV record does not have enough fields (need field " + targetIdx:string + ")");
+        }
+
+        return (fieldBoundaries, targetField);
+    }
+
+    // Helper function to process a field and handle quote unescaping
+    proc processField(fieldSlice: string): string throws {
+        var field = fieldSlice;
+
+        // Handle quoted fields - remove outer quotes and unescape inner quotes
+        if field.size >= 2 && field.startsWith("\"") && field.endsWith("\"") {
+            // Remove outer quotes
+            field = field[1..<field.size-1];
+
+            // quote unescaping
+            field = field.replace("\"\"", "\"");
+        }
+
+        return field;
+    }
+
+    // Optimized function to extract a specific field by index (early exit)
+    proc getFieldByIndex(csvRecord: string, colDelim: string, targetIdx: int): string throws {
+        // Fast path: if no quotes, use simple split
+        if csvRecord.find('"') == -1 {
+            var fields = csvRecord.split(colDelim);
+            if targetIdx >= fields.size {
+                throw new BadFormatError("CSV record does not have enough fields (need field " + targetIdx:string + ")");
+            }
+            return fields[targetIdx];
+        }
+        
+        // Slow path: use full parsing for quoted fields
+        var (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, targetIdx);
+        return targetField;
+    }
+
+    // Helper function to find all field boundaries
+    proc findFieldBoundaries(csvRecord: string, colDelim: string, ref fieldBoundaries: list((int, int))) throws {
+        var (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, -1);
+        fieldBoundaries = boundaries;
+    }
+
+    // Iterator to parse CSV fields from a complete CSV record string
+    iter parseCSVRecord(csvRecord: string, colDelim: string) throws {
+        var fieldBoundaries: list((int, int));
+
+        // Phase 1: Find all field boundaries in a single pass
+        findFieldBoundaries(csvRecord, colDelim, fieldBoundaries);
+
+        // Phase 2: Extract and process fields using efficient string operations
+        for (start, end) in fieldBoundaries {
+            if start <= end {
+                var fieldSlice = csvRecord[start..end];
+                yield processField(fieldSlice);
+            } else {
+                // Empty field
+                yield "";
+            }
+        }
+    }
+
     record csvLine: readDeserializable {
 
         type itemType;
         var item: itemType;
         const colIdx: int;
         const colDelim: string;
-        var r: regex(string);
+        const hasQuotes: bool;
 
-        proc init(type itemType, colIdx: int, colDelim: string) throws {
+        proc init(type itemType, colIdx: int, colDelim: string, hasQuotes: bool) throws {
             this.itemType = itemType;
             this.colIdx = colIdx;
             this.colDelim = colDelim;
-            init this;
-            if this.itemType == string then
-                this.r = new regex("[\n"+this.colDelim+"]");
+            this.hasQuotes = hasQuotes;
         }
 
         proc ref deserialize(reader: fileReader(?), ref deserializer) throws {
-            // read the comma delimited items in a single line
-            for 0..<colIdx {
-                reader.advanceThrough(this.colDelim:bytes);  // Skip over the columns we don't care about
-            }
-            if itemType == string then
-                this.item = reader.readTo(this.r); // Throws BadFormatError if no "," or "\n"
-            else
+            if !this.hasQuotes && itemType!=string {
+                // Old implementation that didn't care about quotes
+                // It was faster for non-string types
+                // read the comma delimited items in a single line
+                for 0..<colIdx {
+                    reader.advanceThrough(this.colDelim:bytes);  // Skip over the columns we don't care about
+                }
                 var success = reader.read(this.item);
-            // stop reading once a '\n' is encountered
-            reader.advanceThrough(b'\n'); // Will throw BadFormatError if no newline
+                if !success {
+                    throw new BadFormatError("Cannot parse field at index " + this.colIdx:string + " as " + itemType:string);
+                }
+                // Advance through the rest of the line to prepare for next read
+                reader.advanceThrough(b'\n');
+            }
+            else {
+                // Try fast path first: no quotes and single line
+                var line: string;
+                try {
+                    line = reader.readLine(stripNewline=true);
+                } catch e: EofError {
+                    throw e;
+                }
+
+                // Check if this line has quotes - if not, use fast path
+                if line.find('"') == -1 {
+                    var fields = line.split(this.colDelim);
+                    if this.colIdx < fields.size {
+                        var targetField = fields[this.colIdx];
+                        try {
+                            this.item = targetField:itemType;
+                            return;
+                        } catch {
+                            throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                        }
+                    }
+                }
+
+                // If we're here: Fast path failed, need to handle quotes or multi-line
+                // Check if we need to read more lines for multi-line quoted fields
+                var totalQuotes = line.count("\"");
+                if totalQuotes % 2 == 1 {
+                    // Multi-line quoted field - need to read more
+                    var lines: list(string);
+                    lines.pushBack(line);
+
+                    while totalQuotes % 2 == 1 {
+                        try {
+                            line = reader.readLine(stripNewline=true);
+                            lines.pushBack(line);
+                            totalQuotes += line.count("\"");
+                        } catch e: EofError {
+                            break;
+                        } catch e: UnexpectedEofError {
+                            break;
+                        }
+                    }
+
+                    line = "\n".join(lines.toArray());
+                }
+
+                // Use complex parsing for quoted fields
+                var targetField = getFieldByIndex(line, this.colDelim, this.colIdx);
+                try {
+                    this.item = targetField:itemType;
+                } catch {
+                    throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                }
+            }
         }
     }
 
-    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int, allowErrors: bool) throws {
+    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int, allowErrors: bool, const hasQuotes: [] bool) throws {
         var hadError = false;
         coforall loc in A.targetLocales() with (ref A, | reduce hadError) do on loc {
             // Create local copies of args
@@ -532,7 +855,7 @@ module CSVMsg {
                              "File %s does not contain data for this dataset, skipping".format(filename));
                     continue;
                 } else {
-                    read_csv_pattern(A, filename, filedom, dset, col_delim, hasHeaders, offsets[file_idx], allowErrors, hadError);
+                    read_csv_pattern(A, filename, filedom, dset, col_delim, hasHeaders, offsets[file_idx], allowErrors, hadError, hasQuotes[file_idx]);
                 }
             }
         }
@@ -562,7 +885,7 @@ module CSVMsg {
         return (subdoms, offsets, skips);
     }
 
-    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file has header since we were able to access type info
         var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
@@ -573,7 +896,7 @@ module CSVMsg {
             select dtype {
                 when DType.Int64 {
                     var a = makeDistArray(record_count, int);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -581,7 +904,7 @@ module CSVMsg {
                 }
                 when DType.UInt64 {
                     var a = makeDistArray(record_count, uint);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -589,7 +912,7 @@ module CSVMsg {
                 }
                 when DType.Float64 {
                     var a = makeDistArray(record_count, real);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -597,7 +920,7 @@ module CSVMsg {
                 }
                 when DType.Bool {
                     var a = makeDistArray(record_count, bool);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var entry = createSymEntry(a);
                     var rname = st.nextName();
                     st.addEntry(rname, entry);
@@ -605,7 +928,7 @@ module CSVMsg {
                 }
                 when DType.Strings {
                     var a = makeDistArray(record_count, string);
-                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors);
+                    read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var col_lens = makeDistArray(record_count, int);
                     forall (i, v) in zip(0..#a.size, a) {
                         var tmp_str = v + "\x00";
@@ -628,9 +951,9 @@ module CSVMsg {
                 otherwise {
                     throw getErrorWithContext(
                                     msg="Data Type %s cannot be read into Arkouda.".format(dtypes[i]),
-                                    lineNumber=getLineNumber(), 
-                                    routineName=getRoutineName(), 
-                                    moduleName=getModuleName(), 
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
                                     errorClass="IOError"
                             );
                 }
@@ -639,7 +962,7 @@ module CSVMsg {
         return rtnData;
     }
 
-    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file does not have a header since we were not able to access type info
         var rtnData: list((string, ObjType, string));
         var record_count = + reduce row_counts;
@@ -647,7 +970,7 @@ module CSVMsg {
 
         for (i, dset) in zip(D, datasets) {
             var a = makeDistArray(record_count, string);
-            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets, allowErrors);
+            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets, allowErrors, hasQuotes);
             var col_lens = makeDistArray(record_count, int);
             forall (i, v) in zip(0..#a.size, a) {
                 var tmp_str = v + "\x00";
@@ -727,13 +1050,14 @@ module CSVMsg {
             filedom = tmp.domain;
             filenames = tmp;
         } else {
-            // assumes that we are providing 
+            // assumes that we are providing
             filenames = filelist;
         }
 
         var row_cts: [filedom] int;
         var data_types: list(list(string));
         var headers: [filedom] bool;
+        var hasQuotes: [filedom] bool;
         var rtnData: list((string, ObjType, string));
         var fileErrors: list(string);
         var fileErrorCount:int = 0;
@@ -743,7 +1067,7 @@ module CSVMsg {
             var hadError = false;
             try {
                 var dtypes: list(string);
-                (row_cts[i], headers[i], dtypes) = get_info(fname, dsetlist, col_delim);
+                (row_cts[i], headers[i], hasQuotes[i], dtypes) = get_info(fname, dsetlist, col_delim);
                 data_types.pushBack(dtypes);
             } catch e: FileNotFoundError {
                 fileErrorMsg = "File %s not found".format(fname);
@@ -805,11 +1129,11 @@ module CSVMsg {
         var rtnMsg: string;
         try {
             if headers[0] {
-                rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, allowErrors, st);
+                rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, allowErrors, hasQuotes, st);
                 rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
             else {
-                rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, allowErrors, st);
+                rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, allowErrors, hasQuotes, st);
                 rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
         }
@@ -819,7 +1143,7 @@ module CSVMsg {
             return new MsgTuple(errMsg, MsgType.ERROR);
         }
         return new MsgTuple(rtnMsg, MsgType.NORMAL);
-    } 
+    }
 
     use CommandMap;
     registerFunction("readcsv", readCSVMsg, getModuleName());
