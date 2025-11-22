@@ -371,11 +371,22 @@
 
 <span class="c1"># Third Party</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span><span class="p">,</span> <span class="n">floating</span><span class="p">,</span> <span class="n">integer</span><span class="p">,</span> <span class="n">str_</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span><span class="p">,</span> <span class="n">floating</span><span class="p">,</span> <span class="n">integer</span><span class="p">,</span> <span class="n">str_</span>
+
 <span class="c1"># First Party</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">pdarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Categorical</span><span class="p">,</span>
+    <span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">Index</span><span class="p">,</span>
+    <span class="n">MultiIndex</span><span class="p">,</span>
+    <span class="n">SegArray</span><span class="p">,</span>
+    <span class="n">Series</span><span class="p">,</span>
+    <span class="n">Strings</span><span class="p">,</span>
+    <span class="n">array</span><span class="p">,</span>
+    <span class="n">pdarray</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.testing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">assert_almost_equal</span><span class="p">,</span>
     <span class="n">assert_arkouda_array_equal</span><span class="p">,</span>
