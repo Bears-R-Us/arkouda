@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union
-from typing import cast
+from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
 from typing import cast as type_cast
 
 from typeguard import check_type, typechecked

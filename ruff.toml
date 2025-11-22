@@ -75,9 +75,9 @@ ignore = ["D100","D101","D102","D103","D105","D205","D401",
 
 [lint.isort]
 known-first-party = ["arkouda"]
-force-sort-within-sections = true
 combine-as-imports = false
 lines-after-imports = 2
+lines-between-types = 1
 force-single-line = false
 
 

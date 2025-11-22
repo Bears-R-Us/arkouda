@@ -1,12 +1,14 @@
 import math
 import os
-from string import ascii_letters, digits
 import tempfile
+
+from string import ascii_letters, digits
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.pandas import io_util
 
 

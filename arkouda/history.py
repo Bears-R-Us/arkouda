@@ -43,6 +43,7 @@ arkouda.generate_history : High-level function for retrieving command history.
 """
 
 import readline
+
 from typing import List, Optional
 
 from IPython.core.history import HistoryAccessor

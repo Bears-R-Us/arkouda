@@ -18,10 +18,3 @@ repos:
       - id: ruff-format
         files: '\.py$'         # make sure it only hits .py files
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2        # or whatever the latest isort version is
-    hooks:
-      - id: isort
-        name: isort (python)
-        args: ["--profile=black"]
-        exclude: ^(tests/deprecated|runs)

@@ -2,11 +2,13 @@ import importlib
 import importlib.util
 import os
 import sys
+
 from typing import Iterable, Iterator
 
 import pytest
 
 import arkouda as ak
+
 from arkouda.client import get_array_ranks
 from server_util.test.server_test_util import (
     TestRunningMode,

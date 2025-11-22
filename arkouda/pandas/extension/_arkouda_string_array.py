@@ -1,4 +1,5 @@
 import numpy as np
+
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.pdarraycreation import array as ak_array

@@ -5,6 +5,7 @@ import pytest
 
 import arkouda as ak
 import arkouda.array_api as xp
+
 from arkouda.testing import assert_almost_equivalent, assert_equivalent
 
 

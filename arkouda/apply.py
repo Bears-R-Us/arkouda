@@ -53,10 +53,12 @@ See Also
 
 import base64
 import sys
+
 from typing import Callable, Optional, Union, cast
 
 import cloudpickle
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.client import get_config

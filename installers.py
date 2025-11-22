@@ -44,8 +44,9 @@ installed via pip or setuptools.
 
 import os
 import shutil
-from subprocess import PIPE, CalledProcessError, Popen, TimeoutExpired, check_call
 import sys
+
+from subprocess import PIPE, CalledProcessError, Popen, TimeoutExpired, check_call
 
 from setuptools.command.build_py import build_py
 

@@ -1,10 +1,12 @@
 from collections import namedtuple
 
 import numpy as np
+
 from numpy import asarray
 from scipy.stats import chi2  # type: ignore
 
 import arkouda as ak
+
 from arkouda.numpy import float64
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.scipy.special import xlogy

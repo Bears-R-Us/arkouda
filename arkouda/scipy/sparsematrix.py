@@ -4,12 +4,12 @@ from typing import Union
 from typing import cast as type_cast
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import NumericDTypes
+from arkouda.numpy.dtypes import NumericDTypes, int64
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import int64
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.scipy.sparrayclass import create_sparray, sparray
 

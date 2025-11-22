@@ -3,6 +3,7 @@ import importlib
 import pytest
 
 import arkouda as ak
+
 from arkouda import Series
 from arkouda.accessor import (
     CachedAccessor,

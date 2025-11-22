@@ -1,8 +1,10 @@
 import numpy as np
 import pytest
+
 from scipy.special import xlogy as scipy_xlogy
 
 import arkouda as ak
+
 from arkouda.scipy.special import xlogy
 
 

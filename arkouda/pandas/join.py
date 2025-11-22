@@ -1,12 +1,21 @@
-from typing import TYPE_CHECKING, Callable, Optional, Sequence, Tuple, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.alignment import right_align
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS
+from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import resolve_scalar_dtype
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d

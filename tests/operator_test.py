@@ -1,11 +1,13 @@
-from itertools import product
 import operator as op_
 import warnings
+
+from itertools import product
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equivalent
 
 

@@ -1,6 +1,7 @@
 from typing import Any
 
 import numpy as np
+
 from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 

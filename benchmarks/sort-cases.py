@@ -6,6 +6,7 @@ import time
 import numpy as np
 
 import arkouda as ak
+
 from arkouda.numpy.sorting import SortingAlgorithm
 
 
