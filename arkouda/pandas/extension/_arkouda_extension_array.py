@@ -318,6 +318,64 @@ class ArkoudaExtensionArray(ExtensionArray):
         return self.to_factorize_view(), np.nan  # both NumPy
 
     @classmethod
+    def _from_sequence(
+        cls,
+        scalars,
+        dtype=None,
+        copy: bool = False,
+    ) -> "ArkoudaExtensionArray":
+        """
+        Construct an Arkouda-backed ExtensionArray from Arkouda data or scalars.
+        This factory inspects ``scalars`` and returns an instance of the
+        appropriate concrete subclass:
+        * :class:`ArkoudaArray` for :class:`pdarray`
+        * :class:`ArkoudaStringArray` for :class:`Strings`
+        * :class:`ArkoudaCategoricalArray` for :class:`Categorical`
+        If ``scalars`` is not already an Arkouda server-side array, it is
+        treated as a sequence of Python/NumPy scalars and converted to a
+        ``pdarray`` via :func:`arkouda.numpy.pdarraycreation.array`, then
+        wrapped in :class:`ArkoudaArray`.
+
+        Parameters
+        ----------
+        scalars : object
+            Either an Arkouda server-side column (``pdarray``, ``Strings``,
+            or ``Categorical``) or a sequence / array of Python or NumPy
+            scalars.
+        dtype : object, optional
+            Ignored. Present for pandas API compatibility.
+        copy : bool, default False
+            Ignored. Present for pandas API compatibility.
+
+        Returns
+        -------
+        ArkoudaExtensionArray
+            An instance of :class:`ArkoudaArray`,
+            :class:`ArkoudaStringArray`, or
+            :class:`ArkoudaCategoricalArray`, depending on the type of
+            ``scalars``.
+        """
+        # Local imports to avoid circular dependencies at module import time.
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
+        from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
+        from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
+
+        # Fast path: already an Arkouda column. Pick the matching subclass.
+        if isinstance(scalars, pdarray):
+            return ArkoudaArray(scalars)
+        if isinstance(scalars, Strings):
+            return ArkoudaStringArray(scalars)
+        if isinstance(scalars, Categorical):
+            return ArkoudaCategoricalArray(scalars)
+
+        # Fallback: treat as a sequence of scalars and build a pdarray.
+        data = ak_array(scalars)
+        return ArkoudaArray(data)
+
+    @classmethod
     def _from_factorized(cls, values, original):
         # Build EA back from factorized NumPy values
         return cls._from_numpy(values)
