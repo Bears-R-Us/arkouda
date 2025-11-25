@@ -41,7 +41,7 @@ module CSVMsg {
         // If the filename represents a glob pattern, retrieve the locale 0 filename
         if isGlobPattern(filename) {
             // Attempt to interpret filename as a glob expression and ls the first result
-            var tmp = glob(filename);
+            const tmp = glob(filename);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "glob-expanded filename: %s to size: %i files".format(filename, tmp.size));
 
@@ -84,7 +84,7 @@ module CSVMsg {
             }
         }
 
-        var col_delim: string = msgArgs.getValueOf("col_delim");
+        const col_delim: string = msgArgs.getValueOf("col_delim");
         // If the CSV File has headers, then we haven't actually read the column names yet
         // so read the next line
         if hasHeader then line = readCSVRecord(reader);
@@ -92,7 +92,7 @@ module CSVMsg {
         for field in parseCSVRecord(line, col_delim) {
             column_names.pushBack(field.strip());
         }
-        var column_names_array: [0..<column_names.size] string = column_names.toArray();
+        const column_names_array: [0..<column_names.size] string = column_names.toArray();
         return new MsgTuple(formatJson(column_names_array), MsgType.NORMAL);
 
     }
@@ -100,7 +100,7 @@ module CSVMsg {
     proc prepFiles(filename: string, overwrite: bool, A) throws {
         const (prefix,extension) = getFileMetadata(filename);
 
-        var targetSize: int = A.targetLocales().size;
+        const targetSize: int = A.targetLocales().size;
         // TODO maybe make filenames distributed? since we are accessing it within a coforall
         // and do forall (i,f) in zip(filesnames.domain, filenames)
         var filenames: [0..#targetSize] string;
@@ -111,8 +111,8 @@ module CSVMsg {
 
         csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Identified %i files for provided name, %s".format(filenames.size, filename));
 
-        var matchingFilenames = glob("%s_LOCALE*%s".format(prefix, extension));
-        var filesExist: bool = matchingFilenames.size > 0;
+        const matchingFilenames = glob("%s_LOCALE*%s".format(prefix, extension));
+        const filesExist: bool = matchingFilenames.size > 0;
 
         if !overwrite && filesExist {
             throw getErrorWithContext(
@@ -125,8 +125,8 @@ module CSVMsg {
         else {
             if overwrite {
                 coforall loc in A.targetLocales() do on loc {
-                    var fn = filenames[loc.id].localize();
-                    var existList = glob(fn);
+                    const fn = filenames[loc.id].localize();
+                    const existList = glob(fn);
                     if existList.size == 1 {
                         remove(fn);
                         csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Overwriting CSV File, %s".format(fn));
@@ -248,8 +248,8 @@ module CSVMsg {
             const localeFilename = filenames[loc.id];
 
             // create the file to write to
-            var csvFile = open(localeFilename, ioMode.cw);
-            var writer = csvFile.writer(locking=false);
+            const csvFile = open(localeFilename, ioMode.cw);
+            const writer = csvFile.writer(locking=false);
 
             // write the header
             writer.write(CSV_HEADER_OPEN + LINE_DELIM);
@@ -258,7 +258,7 @@ module CSVMsg {
             writer.write(col_delim.join(col_names) + LINE_DELIM);
 
             // need to get local subdomain -- should be the same for each element due to sizes being same
-            var localSubdomain = getLocalDomain(gse);
+            const localSubdomain = getLocalDomain(gse);
             const batchSize = (localSubdomain.size / numBatches):int;
             for N in 0..<numBatches {
                 const batchSlice = if (N != (numBatches - 1)) then (N*batchSize + localSubdomain.first)..<((N+1)*batchSize + localSubdomain.first) else (N*batchSize + localSubdomain.first)..localSubdomain.last;
@@ -581,8 +581,8 @@ module CSVMsg {
 
     // Core CSV parsing engine that handles both single field extraction and full parsing
     proc parseCSVCore(csvRecord: string, colDelim: string, targetIdx: int = -1): (list((int, int)), string) throws {
-        var recordLen = csvRecord.size;
-        var delimLen = colDelim.size;
+        const recordLen = csvRecord.size;
+        const delimLen = colDelim.size;
         var inQuotes = false;
         var fieldStart = 0;
         var currentFieldIdx = 0;
@@ -697,15 +697,15 @@ module CSVMsg {
     proc getFieldByIndex(csvRecord: string, colDelim: string, targetIdx: int): string throws {
         // Fast path: if no quotes, use simple split
         if csvRecord.find('"') == -1 {
-            var fields = csvRecord.split(colDelim);
+            const fields = csvRecord.split(colDelim);
             if targetIdx >= fields.size {
                 throw new BadFormatError("CSV record does not have enough fields (need field " + targetIdx:string + ")");
             }
             return fields[targetIdx];
         }
-        
+
         // Slow path: use full parsing for quoted fields
-        var (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, targetIdx);
+        const (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, targetIdx);
         return targetField;
     }
 
@@ -773,9 +773,9 @@ module CSVMsg {
 
                 // Check if this line has quotes - if not, use fast path
                 if line.find('"') == -1 {
-                    var fields = line.split(this.colDelim);
+                    const fields = line.split(this.colDelim);
                     if this.colIdx < fields.size {
-                        var targetField = fields[this.colIdx];
+                        const targetField = fields[this.colIdx];
                         try {
                             this.item = targetField:itemType;
                             return;
@@ -809,7 +809,7 @@ module CSVMsg {
                 }
 
                 // Use complex parsing for quoted fields
-                var targetField = getFieldByIndex(line, this.colDelim, this.colIdx);
+                const targetField = getFieldByIndex(line, this.colDelim, this.colIdx);
                 try {
                     this.item = targetField:itemType;
                 } catch {
@@ -823,8 +823,8 @@ module CSVMsg {
         var hadError = false;
         coforall loc in A.targetLocales() with (ref A, | reduce hadError) do on loc {
             // Create local copies of args
-            var locFiles = filenames;
-            var locFiledoms = filedomains;
+            const locFiles = filenames;
+            const locFiledoms = filedomains;
             /* On this locale, find all files containing data that belongs in
                 this locale's chunk of A */
             forall (filedom, filename, file_idx) in zip(locFiledoms, locFiles, 0..) with (ref A, | reduce hadError) {
@@ -866,7 +866,7 @@ module CSVMsg {
     proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file has header since we were able to access type info
         var rtnData: list((string, ObjType, string));
-        var record_count = + reduce row_counts;
+        const record_count = + reduce row_counts;
         var (subdoms, offsets, skips) = generate_subdoms(filenames, row_counts, validFiles);
 
         for (i, dset) in zip(D, datasets) {
@@ -943,7 +943,7 @@ module CSVMsg {
     proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file does not have a header since we were not able to access type info
         var rtnData: list((string, ObjType, string));
-        var record_count = + reduce row_counts;
+        const record_count = + reduce row_counts;
         var (subdoms, offsets, skips) = generate_subdoms(filenames, row_counts, validFiles);
 
         for (i, dset) in zip(D, datasets) {
@@ -1084,9 +1084,9 @@ module CSVMsg {
             }
         }
 
-        var dtype = data_types[0];
-        var rows = row_cts[0];
-        var hasHeader = headers[0];
+        const dtype = data_types[0];
+        const rows = row_cts[0];
+        const hasHeader = headers[0];
         for (isValid, fname, dt, rc, hh) in zip(validFiles, filenames, data_types, row_cts, headers) {
             if isValid {
                 if (dtype != dt) {
