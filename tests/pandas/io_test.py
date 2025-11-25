@@ -2482,11 +2482,15 @@ class TestCSV:
     @pytest.mark.parametrize("delimiter", [",", "|", ";", "\t", "multichardelim"])
     def test_csv_quoted_strings_with_delimiters(self, csv_test_base_tmp, delimiter):
         """Test that column delimiters inside quoted strings are ignored."""
-        cols = ["Name", "Description", '"Experience, in years"'] # Column name with comma
+        cols = ["Name", "Description", '"Experience, in years"']  # Column name with comma
         expected_cols = ["Name", "Description", "Experience, in years"]
         # Test data with delimiters inside quoted strings
         expected_names = ["Smith, John", "Wilson, Bob", "Jane Doe"]
-        expected_descriptions = ["Senior Manager, R&D", "Junior Developer", "CEO, Founder"] # Descriptions with commas
+        expected_descriptions = [
+            "Senior Manager, R&D",
+            "Junior Developer",
+            "CEO, Founder",
+        ]  # Descriptions with commas
         expected_values = ["3", "2", "5"]
 
         # Create safe filename by mapping delimiters to names
@@ -2501,7 +2505,9 @@ class TestCSV:
                 delim_names = [name.replace(",", delimiter) for name in expected_names]
                 delim_descriptions = [desc.replace(",", delimiter) for desc in expected_descriptions]
                 for i in range(len(delim_names)):
-                    f.write(f'"{delim_names[i]}"{delimiter}"{delim_descriptions[i]}"{delimiter}{expected_values[i]}\n')
+                    f.write(
+                        f'"{delim_names[i]}"{delimiter}"{delim_descriptions[i]}"{delimiter}{expected_values[i]}\n'
+                    )
 
             data = ak.read_csv(file_name, column_delim=delimiter)
             assert list(data.keys()) == expected_cols
@@ -2543,8 +2549,8 @@ class TestCSV:
         """Test mixed scenarios: escaped quotes and embedded delimiters."""
         cols = ["Title", "Quote", "Author"]
         # Test data with both escaped quotes and embedded delimiters
-        expected_titles = ['Title, "Special"', 'Normal Title', 'Title "End"']
-        expected_quotes = ['Quote, "with comma"', 'Simple quote', 'Quote, says "end"']
+        expected_titles = ['Title, "Special"', "Normal Title", 'Title "End"']
+        expected_quotes = ['Quote, "with comma"', "Simple quote", 'Quote, says "end"']
         expected_authors = ["Author1", "Author2", "Author3"]
 
         with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
@@ -2561,13 +2567,15 @@ class TestCSV:
             assert data["Quote"].tolist() == expected_quotes
             assert data["Author"].tolist() == expected_authors
 
-    @pytest.mark.xfail(reason="Quote escaping in column headers needs investigation - JSON serialization escapes quotes TODO file issue")
+    @pytest.mark.xfail(
+        reason="Quote escaping in column headers needs investigation - JSON serialization escapes quotes TODO file issue"
+    )
     def test_csv_mixed_escaped_quotes_in_column_headers(self, csv_test_base_tmp):
         """Test that escaped quotes and delimiters within column headers are handled correctly."""
         # Column headers with escaped quotes and delimiters
-        cols = ['"Title, Info"', '"Quote ""Text"""', 'Author Name']
-        expected_cols = ['Title, Info', 'Quote "Text"', 'Author Name']
-        row = ['Book "One"', 'He said "Hello"', 'Smith']
+        cols = ['"Title, Info"', '"Quote ""Text"""', "Author Name"]
+        expected_cols = ["Title, Info", 'Quote "Text"', "Author Name"]
+        row = ['Book "One"', 'He said "Hello"', "Smith"]
 
         with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/escaped_quotes_headers.csv"
@@ -2581,15 +2589,15 @@ class TestCSV:
             assert data[cols[2]].tolist() == [row[2]]
 
     def test_multi_line_headers_and_rows(self, csv_test_base_tmp):
-        """Test that multi-line headers and rows are handled correctly."""
+        """Test that multi-line rows are handled correctly."""
         cols = ["ID", "Description", "Value"]
         expected_cols = ["ID", "Description", "Value"]
-        expected_ids = ['1', '2']
+        expected_ids = ["1", "2"]
         expected_descriptions = [
             "This is a description\nthat spans \nmultiple lines.",
             "Another description\nwith line breaks.",
         ]
-        expected_values = ['3.14', '5.56']
+        expected_values = ["3.14", "5.56"]
 
         with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/multi_line.csv"
@@ -2603,6 +2611,7 @@ class TestCSV:
             assert data["ID"].tolist() == expected_ids
             assert data["Description"].tolist() == expected_descriptions
             assert data["Value"].tolist() == expected_values
+
 
 class TestImportExport:
     @classmethod
