@@ -30,7 +30,9 @@ module CSVMsg {
     //  - Custom Line Delimiters
     //  - Handle CSV without column names
 
-    proc lsCSVMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc lsCSVMsg(cmd: string,
+                  msgArgs: borrowed MessageArgs,
+                  st: borrowed SymTab): MsgTuple throws {
         var filename = msgArgs.getValueOf("filename");
         if filename.isEmpty() {
             var errorMsg = "Filename was Empty";
@@ -43,10 +45,12 @@ module CSVMsg {
             // Attempt to interpret filename as a glob expression and ls the first result
             const tmp = glob(filename);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "glob-expanded filename: %s to size: %i files".format(filename, tmp.size));
+                      "glob-expanded filename: %s to size: %i files"
+                      .format(filename, tmp.size));
 
             if tmp.size <= 0 {
-                var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+                var errorMsg = "Cannot retrieve filename from glob expression " +
+                               "%s, check file name or format".format(filename);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -92,7 +96,7 @@ module CSVMsg {
         for field in parseCSVRecord(line, col_delim) {
             column_names.pushBack(field.strip());
         }
-        const column_names_array: [0..<column_names.size] string = column_names.toArray();
+        const column_names_array = column_names.toArray();
         return new MsgTuple(formatJson(column_names_array), MsgType.NORMAL);
 
     }
@@ -109,14 +113,18 @@ module CSVMsg {
             filenames[i] = generateFilename(prefix, extension, i);
         }
 
-        csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Identified %i files for provided name, %s".format(filenames.size, filename));
+        csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "Identified %i files for provided name, %s"
+                       .format(filenames.size, filename));
 
         const matchingFilenames = glob("%s_LOCALE*%s".format(prefix, extension));
         const filesExist: bool = matchingFilenames.size > 0;
 
         if !overwrite && filesExist {
             throw getErrorWithContext(
-                msg="Filenames for the provided name exist. Overwrite must be set to true in order to save with the name %s".format(filename),
+                msg="Filenames for the provided name exist. Overwrite must be " +
+                    "set to true in order to save with the name %s"
+                    .format(filename),
                 lineNumber=getLineNumber(),
                 routineName=getRoutineName(),
                 moduleName=getModuleName(),
@@ -129,7 +137,9 @@ module CSVMsg {
                     const existList = glob(fn);
                     if existList.size == 1 {
                         remove(fn);
-                        csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Overwriting CSV File, %s".format(fn));
+                        csvLogger.debug(getModuleName(),getRoutineName(),
+                                       getLineNumber(),
+                                       "Overwriting CSV File, %s".format(fn));
                     }
                 }
             }
@@ -171,7 +181,9 @@ module CSVMsg {
         }
     }
 
-    proc writeCSVMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc writeCSVMsg(cmd: string,
+                     msgArgs: borrowed MessageArgs,
+                     st: borrowed SymTab): MsgTuple throws {
         const filename = msgArgs.getValueOf("filename");
         const ndsets = msgArgs.get("num_dsets").getIntValue();
         const datasets = msgArgs.get("datasets").getList(ndsets);
@@ -240,9 +252,14 @@ module CSVMsg {
         // if we can put the entire df in mem (i.e. memLim > (memUsed + memRequired)), then we can do it all in one go.
         // Otherwise we can only put (memLim - memUsed) in memory at a time, so that's our batchSize
         // if memLim > memUsed then we use chunks no bigger than 5% of total memory (memLim is 90% so dividing by 18 gives us 5%)
-        const numBatches = if memLim > memUsed then ceil(memRequired:real / (memLim - memUsed)):int else ceil(memRequired:real / (memLim / 18)):int;
+        const numBatches =
+            if memLim > memUsed then
+                ceil(memRequired:real / (memLim - memUsed)):int
+            else
+                ceil(memRequired:real / (memLim / 18)):int;
 
-        csvLogger.info(getModuleName(),getRoutineName(),getLineNumber(), "Start csv write with %i batches".format(numBatches));
+        csvLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                      "Start csv write with %i batches".format(numBatches));
 
         coforall loc in Locales do on loc {
             const localeFilename = filenames[loc.id];
@@ -261,7 +278,12 @@ module CSVMsg {
             const localSubdomain = getLocalDomain(gse);
             const batchSize = (localSubdomain.size / numBatches):int;
             for N in 0..<numBatches {
-                const batchSlice = if (N != (numBatches - 1)) then (N*batchSize + localSubdomain.first)..<((N+1)*batchSize + localSubdomain.first) else (N*batchSize + localSubdomain.first)..localSubdomain.last;
+                const batchSlice =
+                    if (N != (numBatches - 1)) then
+                        (N*batchSize + localSubdomain.first)..<
+                        ((N+1)*batchSize + localSubdomain.first)
+                    else
+                        (N*batchSize + localSubdomain.first)..localSubdomain.last;
                 var nativeStr: [batchSlice] string;
                 for (i, cname) in zip(0..#ndsets, datasets) {
                     var col_gen: borrowed GenSymEntry = getGenericTypedArrayEntry(cname, st);
@@ -378,7 +400,9 @@ module CSVMsg {
         forall (i, dset) in zip(0..#datasets.size, datasets) {
             var idx: int;
             const col_exists = columns.find(dset, idx);
-            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".format(dset)+formatJson(col_exists)+", IDX: %i".format(idx));
+            csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "Column: %s, Exists: ".format(dset) +
+                           formatJson(col_exists) + ", IDX: %i".format(idx));
             if !col_exists {
                 throw getErrorWithContext(
                     msg="The dataset %s was not found in %s".format(dset, filename),
@@ -394,14 +418,24 @@ module CSVMsg {
         return (row_ct, hasHeader, hasQuotes, new list(dtypes));
     }
 
-    proc read_csv_pattern(ref A: [] ?t, filename: string, filedom: domain(1), colName: string, colDelim: string, hasHeaders: bool, lineOffset: int, allowErrors: bool, ref hadError: bool, const hasQuotes: bool) throws {
+    proc read_csv_pattern(ref A: [] ?t,
+                          filename: string,
+                          filedom: domain(1),
+                          colName: string,
+                          colDelim: string,
+                          hasHeaders: bool,
+                          lineOffset: int,
+                          allowErrors: bool,
+                          ref hadError: bool,
+                          const hasQuotes: bool) throws {
         // We do a check to see if the filedom even intersects with
         // A.localSubdomain before even opening the file
         // The implementation assumes a single local subdomain so we make
         // sure that is the case first
         if !A.hasSingleLocalSubdomain() then
             throw getErrorWithContext(
-                msg="The array A must have a single local subdomain on locale %i".format(here.id),
+                msg="The array A must have a single local subdomain on " +
+                    "locale %i".format(here.id),
                 lineNumber=getLineNumber(),
                 routineName=getRoutineName(),
                 moduleName=getModuleName(),
@@ -421,7 +455,8 @@ module CSVMsg {
                 try {fr.advanceThrough(b'\n');}
                 catch {
                     throw getErrorWithContext(
-                        msg="This CSV file is missing header values when headers were detected. This error should not arise.",
+                        msg="This CSV file is missing header values when headers were " +
+                            "detected. This error should not arise.",
                         lineNumber=getLineNumber(),
                         routineName=getRoutineName(),
                         moduleName=getModuleName(),
@@ -580,7 +615,9 @@ module CSVMsg {
     }
 
     // Core CSV parsing engine that handles both single field extraction and full parsing
-    proc parseCSVCore(csvRecord: string, colDelim: string, targetIdx: int = -1): (list((int, int)), string) throws {
+    proc parseCSVCore(csvRecord: string,
+                      colDelim: string,
+                      targetIdx: int = -1): (list((int, int)), string) throws {
         const recordLen = csvRecord.size;
         const delimLen = colDelim.size;
         var inQuotes = false;
@@ -629,7 +666,10 @@ module CSVMsg {
                 fieldStart = i + 1;
                 currentFieldIdx += 1;
                 i += 1;
-            } else if !inQuotes && delimLen > 1 && i + delimLen <= recordLen && csvRecord[i..#delimLen] == colDelim {
+            } else if !inQuotes &&
+                      delimLen > 1 &&
+                      i + delimLen <= recordLen &&
+                      csvRecord[i..#delimLen] == colDelim {
                 // Found multi-character delimiter outside quotes
                 if targetIdx != -1 && currentFieldIdx == targetIdx {
                     // Extract target field and return early
@@ -682,7 +722,9 @@ module CSVMsg {
     proc processField(in fieldSlice: string): string throws {
 
         // Handle quoted fields - remove outer quotes and unescape inner quotes
-        if fieldSlice.size >= 2 && fieldSlice.startsWith("\"") && fieldSlice.endsWith("\"") {
+        if fieldSlice.size >= 2 &&
+           fieldSlice.startsWith("\"") &&
+           fieldSlice.endsWith("\"") {
             // Remove outer quotes
             fieldSlice = fieldSlice[1..<fieldSlice.size-1];
 
@@ -699,7 +741,8 @@ module CSVMsg {
         if csvRecord.find('"') == -1 {
             const fields = csvRecord.split(colDelim);
             if targetIdx >= fields.size {
-                throw new BadFormatError("CSV record does not have enough fields (need field " + targetIdx:string + ")");
+                throw new BadFormatError("CSV record does not have enough fields " +
+                                         "(need field " + targetIdx:string + ")");
             }
             return fields[targetIdx];
         }
@@ -757,7 +800,9 @@ module CSVMsg {
                 }
                 var success = reader.read(this.item);
                 if !success {
-                    throw new BadFormatError("Cannot parse field at index " + this.colIdx:string + " as " + itemType:string);
+                    throw new BadFormatError("Cannot parse field at index " +
+                                             this.colIdx:string + " as " +
+                                             itemType:string);
                 }
                 // Advance through the rest of the line to prepare for next read
                 reader.advanceThrough(b'\n');
@@ -780,7 +825,9 @@ module CSVMsg {
                             this.item = targetField:itemType;
                             return;
                         } catch {
-                            throw new BadFormatError("Cannot parse field value '" + targetField + "' as " + itemType:string);
+                            throw new BadFormatError("Cannot parse field value '" +
+                                                     targetField + "' as " +
+                                                     itemType:string);
                         }
                     }
                 }
@@ -819,7 +866,16 @@ module CSVMsg {
         }
     }
 
-    proc read_files_into_dist_array(ref A: [?D] ?t, dset: string, filenames: [] string, filedomains: [] domain(1), skips: set(string), hasHeaders: bool, col_delim: string, offsets: [] int, allowErrors: bool, const hasQuotes: [] bool) throws {
+    proc read_files_into_dist_array(ref A: [?D] ?t,
+                                    dset: string,
+                                    filenames: [] string,
+                                    filedomains: [] domain(1),
+                                    skips: set(string),
+                                    hasHeaders: bool,
+                                    col_delim: string,
+                                    offsets: [] int,
+                                    allowErrors: bool,
+                                    const hasQuotes: [] bool) throws {
         var hadError = false;
         coforall loc in A.targetLocales() with (ref A, | reduce hadError) do on loc {
             // Create local copies of args
@@ -830,16 +886,20 @@ module CSVMsg {
             forall (filedom, filename, file_idx) in zip(locFiledoms, locFiles, 0..) with (ref A, | reduce hadError) {
                 if (skips.contains(filename)) {
                     csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "File %s does not contain data for this dataset, skipping".format(filename));
+                                   "File %s does not contain data for this dataset, " +
+                                   "skipping".format(filename));
                     continue;
                 } else {
-                    read_csv_pattern(A, filename, filedom, dset, col_delim, hasHeaders, offsets[file_idx], allowErrors, hadError, hasQuotes[file_idx]);
+                    read_csv_pattern(A, filename, filedom, dset, col_delim,
+                                    hasHeaders, offsets[file_idx], allowErrors,
+                                    hadError, hasQuotes[file_idx]);
                 }
             }
         }
         if hadError {
             throw getErrorWithContext(
-                msg="This CSV is missing values. To read anyway and replace these with min(col_dtype), set allow_errors to True",
+                msg="This CSV is missing values. To read anyway and replace " +
+                    "these with min(col_dtype), set allow_errors to True",
                 lineNumber=getLineNumber(),
                 routineName=getRoutineName(),
                 moduleName=getModuleName(),
@@ -855,7 +915,7 @@ module CSVMsg {
             if (!vf) {
                 skips.add(fname);
                 csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "Adding invalid file to skips, %s".format(fname));
+                              "Adding invalid file to skips, %s".format(fname));
                 continue;
             }
             subdoms[i] = {off..#ct};
@@ -863,7 +923,15 @@ module CSVMsg {
         return (subdoms, offsets, skips);
     }
 
-    proc readTypedCSV(filenames: [] string, datasets: [?D] string, dtypes: list(string), row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readTypedCSV(filenames: [] string,
+                     datasets: [?D] string,
+                     dtypes: list(string),
+                     row_counts: [] int,
+                     validFiles: [] bool,
+                     col_delim: string,
+                     allowErrors: bool,
+                     const hasQuotes: [] bool,
+                     st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file has header since we were able to access type info
         var rtnData: list((string, ObjType, string));
         const record_count = + reduce row_counts;
@@ -940,7 +1008,14 @@ module CSVMsg {
         return rtnData;
     }
 
-    proc readGenericCSV(filenames: [] string, datasets: [?D] string, row_counts: [] int, validFiles: [] bool, col_delim: string, allowErrors: bool, const hasQuotes: [] bool, st: borrowed SymTab): list((string, ObjType, string)) throws {
+    proc readGenericCSV(filenames: [] string,
+                       datasets: [?D] string,
+                       row_counts: [] int,
+                       validFiles: [] bool,
+                       col_delim: string,
+                       allowErrors: bool,
+                       const hasQuotes: [] bool,
+                       st: borrowed SymTab): list((string, ObjType, string)) throws {
         // assumes the file does not have a header since we were not able to access type info
         var rtnData: list((string, ObjType, string));
         const record_count = + reduce row_counts;
@@ -948,7 +1023,9 @@ module CSVMsg {
 
         for (i, dset) in zip(D, datasets) {
             var a = makeDistArray(record_count, string);
-            read_files_into_dist_array(a, dset, filenames, subdoms, skips, false, col_delim, offsets, allowErrors, hasQuotes);
+            read_files_into_dist_array(a, dset, filenames, subdoms, skips,
+                                      false, col_delim, offsets, allowErrors,
+                                      hasQuotes);
             var col_lens = makeDistArray(record_count, int);
             forall (i, v) in zip(0..#a.size, a) {
                 var tmp_str = v + "\x00";
@@ -971,7 +1048,9 @@ module CSVMsg {
         return rtnData;
     }
 
-    proc readCSVMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc readCSVMsg(cmd: string,
+                    msgArgs: borrowed MessageArgs,
+                    st: borrowed SymTab): MsgTuple throws {
         const col_delim: string = msgArgs.getValueOf("col_delim");
 
         var allowErrors = msgArgs.get("allow_errors").getBoolValue();
@@ -985,7 +1064,8 @@ module CSVMsg {
             var n: int = 1000;
             var jsonfiles = msgArgs.getValueOf("filenames");
             var files: string = if jsonfiles.size > 2*n then jsonfiles[0..#n]+'...'+jsonfiles[jsonfiles.size-n..#n] else jsonfiles;
-            var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, files);
+            var errorMsg = "Could not decode json filenames via tempfile " +
+                           "(%i files: %s)".format(nfiles, files);
             csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -1000,8 +1080,8 @@ module CSVMsg {
             var n: int = 1000;
             var jsondsets = msgArgs.getValueOf("datasets");
             var dsets: string = if jsondsets.size > 2*n then jsondsets[0..#n]+'...'+jsondsets[jsondsets.size-n..#n] else jsondsets;
-            var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
-                                                ndsets, dsets);
+            var errorMsg = "Could not decode json dataset names via tempfile " +
+                           "(%i files: %s)".format(ndsets, dsets);
             csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -1017,9 +1097,11 @@ module CSVMsg {
             }
             var tmp = glob(filelist[0]);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "glob expanded %s to %i files".format(filelist[0], tmp.size));
+                           "glob expanded %s to %i files".format(filelist[0], tmp.size));
             if tmp.size == 0 {
-                var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
+                var errorMsg = "The wildcarded filename %s either corresponds to " +
+                               "files inaccessible to Arkouda or files of an " +
+                               "invalid format".format(filelist[0]);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -1053,7 +1135,8 @@ module CSVMsg {
                 hadError = true;
                 if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
             } catch e: PermissionError {
-                fileErrorMsg = "Permission error %s opening %s".format(e.message(),fname);
+                fileErrorMsg = "Permission error %s opening %s".format(e.message(),
+                                                                      fname);
                 csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
                 hadError = true;
                 if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
@@ -1077,7 +1160,10 @@ module CSVMsg {
             if hadError {
                 // Keep running total, but we'll only report back the first 10
                 if fileErrorCount < 10 {
-                    fileErrors.pushBack(fileErrorMsg.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip());
+                    fileErrors.pushBack(fileErrorMsg.replace("\n", " ")
+                                                .replace("\r", " ")
+                                                .replace("\t", " ")
+                                                .strip());
                 }
                 fileErrorCount += 1;
                 validFiles[i] = false;
@@ -1095,23 +1181,28 @@ module CSVMsg {
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
                 else if (hasHeader != hh){
-                    var errorMsg = "Inconsistent file formatting. %s has no header.".format(fname);
+                    var errorMsg = "Inconsistent file formatting. %s has no header."
+                                   .format(fname);
                     csvLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
             }
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "Verified all dtypes across files for file %s".format(fname));
+                          "Verified all dtypes across files for file %s"
+                          .format(fname));
         }
 
         var rtnMsg: string;
         try {
             if headers[0] {
-                rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts, validFiles, col_delim, allowErrors, hasQuotes, st);
+                rtnData = readTypedCSV(filenames, dsetlist, data_types[0], row_cts,
+                                       validFiles, col_delim, allowErrors,
+                                       hasQuotes, st);
                 rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
             else {
-                rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles, col_delim, allowErrors, hasQuotes, st);
+                rtnData = readGenericCSV(filenames, dsetlist, row_cts, validFiles,
+                                         col_delim, allowErrors, hasQuotes, st);
                 rtnMsg = buildReadAllMsgJson(rtnData, allowErrors, fileErrorCount, fileErrors, st);
             }
         }
