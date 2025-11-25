@@ -489,10 +489,8 @@ module CSVMsg {
         // So we skip over complete CSV records till we get the lower bound of the intersection
         // But the filedom may not start at 0, so we need to subtract that offset
         for 0..<(intersection.low-filedom.low) {
-            try {
-                advanceCSVRecord(fr);  // Skip complete CSV records, not just lines
-            }
-            catch {
+            const (success, _) = advanceCSVRecord(fr);  // Skip complete CSV records, not just lines
+            if !success {
                 throw getErrorWithContext(
                     msg="This CSV file is missing records.",
                     lineNumber=getLineNumber(),
@@ -527,13 +525,19 @@ module CSVMsg {
     use Regex;
 
     // Lightweight helper: advance through a CSV record without storing lines (for skip/count)
-    // Returns: hasQuotes
-    proc advanceCSVRecord(reader: fileReader(?)) : bool throws {
+    // Returns: (success: bool, hasQuotes: bool)
+    proc advanceCSVRecord(reader: fileReader(?)) : (bool, bool) throws {
         var line: string;
         var hasQuotes = false;
 
-        // Read the first line
-        line = reader.readLine(stripNewline=true);
+        // Try to read the first line
+        try {
+            line = reader.readLine(stripNewline=true);
+        } catch e: EofError {
+            return (false, false);  // EOF reached
+        } catch e: UnexpectedEofError {
+            return (false, false);  // EOF reached
+        }
 
         // Quick check for quotes
         if line.find('"') != -1 {
@@ -553,7 +557,7 @@ module CSVMsg {
             }
         }
 
-        return hasQuotes;
+        return (true, hasQuotes);  // Successfully read record
     }
 
     // Full helper: read and store lines for complete CSV record (for readCSVRecord)
@@ -592,7 +596,10 @@ module CSVMsg {
         var hasAnyQuotes = false;
 
         while true {
-            var hasQuotes = try advanceCSVRecord(reader);
+            const (success, hasQuotes) = advanceCSVRecord(reader);
+            if !success {
+                break;  // EOF reached
+            }
             if hasQuotes {
                 hasAnyQuotes = true;
             }
