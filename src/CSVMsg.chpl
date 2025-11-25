@@ -398,12 +398,11 @@ module CSVMsg {
 
         var dtypes: [0..#datasets.size] string;
         forall (i, dset) in zip(0..#datasets.size, datasets) {
-            var idx: int;
-            const col_exists = columns.find(dset, idx);
+            const idx = columns.find(dset);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "Column: %s, Exists: ".format(dset) +
-                           formatJson(col_exists) + ", IDX: %i".format(idx));
-            if !col_exists {
+                           formatJson(idx == -1) + ", IDX: %i".format(idx));
+            if idx == -1 {
                 throw getErrorWithContext(
                     msg="The dataset %s was not found in %s".format(dset, filename),
                     lineNumber=getLineNumber(),
