@@ -362,8 +362,7 @@ module CSVMsg {
         for field in parseCSVRecord(column_names, col_delim) {
             columns.pushBack(field.strip());
         }
-        var columns_array: [0..<columns.size] string = columns.toArray();
-        var file_dtypes: [0..<columns_array.size] string;
+        var file_dtypes: [0..<columns.size] string;
         if hasHeader {
             file_dtypes = line.split(",").strip(); // Line was already read above
         }
@@ -378,7 +377,7 @@ module CSVMsg {
         var dtypes: [0..#datasets.size] string;
         forall (i, dset) in zip(0..#datasets.size, datasets) {
             var idx: int;
-            var col_exists = columns_array.find(dset, idx);
+            const col_exists = columns.find(dset, idx);
             csvLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Column: %s, Exists: ".format(dset)+formatJson(col_exists)+", IDX: %i".format(idx));
             if !col_exists {
                 throw getErrorWithContext(
@@ -433,14 +432,13 @@ module CSVMsg {
         var colIdx = -1;
         // This next line will have the column header
         // Use proper CSV parsing to handle quoted delimiters
-        var headerLine = readCSVRecord(fr);
-        var columnIndex = 0;
-        for column in parseCSVRecord(headerLine, colDelim) {
+        const headerLine = readCSVRecord(fr);
+        const headerFields = parseCSVRecord(headerLine, colDelim);
+        for (column, columnIndex) in zip(headerFields, 0..) {
             if column == colName {
                 colIdx = columnIndex;
                 break;
             }
-            columnIndex += 1;
         }
 
         if(colIdx == -1) then
@@ -457,7 +455,7 @@ module CSVMsg {
         // But the filedom may not start at 0, so we need to subtract that offset
         for 0..<(intersection.low-filedom.low) {
             try {
-                skipCSVRecord(fr);  // Skip complete CSV records, not just lines
+                advanceCSVRecord(fr);  // Skip complete CSV records, not just lines
             }
             catch {
                 throw getErrorWithContext(
@@ -553,27 +551,17 @@ module CSVMsg {
         return lines;
     }
 
-    // Skip a complete CSV record (handles multi-line quoted fields)
-    proc skipCSVRecord(reader: fileReader(?)) throws {
-        advanceCSVRecord(reader);
-        // Record is now completely skipped
-    }
-
     // Fast row counting with quote detection - much faster than readCSVRecord
     proc countRowsAndQuotes(reader: fileReader(?)) : (int, bool) throws {
         var rowCount = 0;
         var hasAnyQuotes = false;
 
-        try {
-            while true {
-                var hasQuotes = advanceCSVRecord(reader);
-                if hasQuotes {
-                    hasAnyQuotes = true;
-                }
-                rowCount += 1;
+        while true {
+            var hasQuotes = try advanceCSVRecord(reader);
+            if hasQuotes {
+                hasAnyQuotes = true;
             }
-        } catch e: EofError {
-            // Normal end of file
+            rowCount += 1;
         }
 
         return (rowCount, hasAnyQuotes);
@@ -581,20 +569,13 @@ module CSVMsg {
 
     // Read a complete CSV record from the reader, handling multi-line quoted fields
     proc readCSVRecord(reader: fileReader(?)) throws {
-        var lines: list(string);
-        try {
-            lines = readCSVRecordLines(reader);
-        } catch e: EofError {
-            throw e; // Re-throw EOF to signal end of file
-        } catch e: UnexpectedEofError {
-            throw e;
-        }
+        var lines = try readCSVRecordLines(reader);
 
         // Return single line if no multi-line record
         if lines.size == 1 {
             return lines[0];
         } else {
-            return "\n".join(lines.toArray());
+            return "\n".join(lines.these());
         }
     }
 
@@ -698,19 +679,18 @@ module CSVMsg {
     }
 
     // Helper function to process a field and handle quote unescaping
-    proc processField(fieldSlice: string): string throws {
-        var field = fieldSlice;
+    proc processField(in fieldSlice: string): string throws {
 
         // Handle quoted fields - remove outer quotes and unescape inner quotes
-        if field.size >= 2 && field.startsWith("\"") && field.endsWith("\"") {
+        if fieldSlice.size >= 2 && fieldSlice.startsWith("\"") && fieldSlice.endsWith("\"") {
             // Remove outer quotes
-            field = field[1..<field.size-1];
+            fieldSlice = fieldSlice[1..<fieldSlice.size-1];
 
             // quote unescaping
-            field = field.replace("\"\"", "\"");
+            fieldSlice = fieldSlice.replace("\"\"", "\"");
         }
 
-        return field;
+        return fieldSlice;
     }
 
     // Optimized function to extract a specific field by index (early exit)
@@ -730,22 +710,20 @@ module CSVMsg {
     }
 
     // Helper function to find all field boundaries
-    proc findFieldBoundaries(csvRecord: string, colDelim: string, ref fieldBoundaries: list((int, int))) throws {
-        var (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, -1);
-        fieldBoundaries = boundaries;
+    proc findFieldBoundaries(csvRecord: string, colDelim: string): list((int, int)) throws {
+        const (boundaries, targetField) = parseCSVCore(csvRecord, colDelim, -1);
+        return boundaries;
     }
 
     // Iterator to parse CSV fields from a complete CSV record string
     iter parseCSVRecord(csvRecord: string, colDelim: string) throws {
-        var fieldBoundaries: list((int, int));
-
         // Phase 1: Find all field boundaries in a single pass
-        findFieldBoundaries(csvRecord, colDelim, fieldBoundaries);
+        const fieldBoundaries = findFieldBoundaries(csvRecord, colDelim);
 
         // Phase 2: Extract and process fields using efficient string operations
         for (start, end) in fieldBoundaries {
             if start <= end {
-                var fieldSlice = csvRecord[start..end];
+                const fieldSlice = csvRecord[start..end];
                 yield processField(fieldSlice);
             } else {
                 // Empty field
@@ -827,7 +805,7 @@ module CSVMsg {
                         }
                     }
 
-                    line = "\n".join(lines.toArray());
+                    line = "\n".join(lines.these());
                 }
 
                 // Use complex parsing for quoted fields
