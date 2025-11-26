@@ -417,8 +417,8 @@ module LinalgMsg {
         where (Nb >= 2 && Na >= 2) {
         param outN = if Nb >= Na then Nb else Na;
         var shapeOut: outN*int;
-	    shapeOut[outN-1] = bShape[Nb-1];
-	    shapeOut[outN-2] = aShape[Na-2];
+        shapeOut[outN-1] = bShape[Nb-1];
+        shapeOut[outN-2] = aShape[Na-2];
         if Nb == 2 || Na == 2 {
             if Nb >= Na {
                 for i in 0..<outN-2 do shapeOut[i] = bShape[i];
@@ -429,10 +429,10 @@ module LinalgMsg {
         }
         var aPreshape: (Na-2)*int;
         var bPreshape: (Nb-2)*int;
-	    for i in 0..<(Na-2) {aPreshape[i] = aShape[i];}
-		for i in 0..<(Nb-2) {bPreshape[i] = bShape[i];}
-    	const cPreshape = try broadcastShape(aPreshape,bPreshape);
-	    for i in 0..<Na-2 {shapeOut[i] = cPreshape[i];}
+        for i in 0..<(Na-2) {aPreshape[i] = aShape[i];}
+        for i in 0..<(Nb-2) {bPreshape[i] = bShape[i];}
+        const cPreshape = try broadcastShape(aPreshape,bPreshape);
+        for i in 0..<Na-2 {shapeOut[i] = cPreshape[i];}
         return shapeOut;
     }
 
