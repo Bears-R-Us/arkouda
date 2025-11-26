@@ -2508,7 +2508,7 @@ class TestCSV:
                     f.write(
                         f'"{delim_names[i]}"{delimiter}'
                         f'"{delim_descriptions[i]}"{delimiter}'
-                        f'{expected_values[i]}\n'
+                        f"{expected_values[i]}\n"
                     )
 
             data = ak.read_csv(file_name, column_delim=delimiter)
