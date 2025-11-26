@@ -2506,7 +2506,9 @@ class TestCSV:
                 delim_descriptions = [desc.replace(",", delimiter) for desc in expected_descriptions]
                 for i in range(len(delim_names)):
                     f.write(
-                        f'"{delim_names[i]}"{delimiter}"{delim_descriptions[i]}"{delimiter}{expected_values[i]}\n'
+                        f'"{delim_names[i]}"{delimiter}'
+                        f'"{delim_descriptions[i]}"{delimiter}'
+                        f'{expected_values[i]}\n'
                     )
 
             data = ak.read_csv(file_name, column_delim=delimiter)
@@ -2568,7 +2570,9 @@ class TestCSV:
             assert data["Author"].tolist() == expected_authors
 
     @pytest.mark.xfail(
-        reason="Quote escaping in column headers needs investigation - JSON serialization escapes quotes TODO file issue"
+        reason="Quote escaping in column headers needs investigation - "
+        "JSON serialization escapes quotes. "
+        "https://github.com/Bears-R-Us/arkouda/issues/5083"
     )
     def test_csv_mixed_escaped_quotes_in_column_headers(self, csv_test_base_tmp):
         """Test that escaped quotes and delimiters within column headers are handled correctly."""
