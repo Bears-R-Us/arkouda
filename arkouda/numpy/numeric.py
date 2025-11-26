@@ -3256,27 +3256,18 @@ def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
         else:
             return dot(pda_L, pda_R)
 
-    # Handle the multi-dim cases.  This involves finding a common shape for broadcast.
+    # Handle the multi-dim cases.  This involves finding a common shape for broadcast,
+    # although the actual broadcast itself is not done.
 
     else:
         left_preshape = pda_L.shape[0:-2]  # pull off all but last 2 dims of
         right_preshape = pda_R.shape[0:-2]  # both shapes
         try:
             tmp_preshape = broadcast_shapes(left_preshape, right_preshape)
-            tmp_pda_Lshape = list(tmp_preshape)
-            tmp_pda_Lshape.append(pda_L.shape[-2])  # restore the last 2 dims
-            tmp_pda_Lshape.append(pda_L.shape[-1])  # of the left shape
-            new_pda_Lshape = tuple(tmp_pda_Lshape)
-            tmp_pda_Rshape = list(tmp_preshape)  # now do the same jiggery-pokery
-            tmp_pda_Rshape.append(pda_R.shape[-2])  # with the shape of pda_R
-            tmp_pda_Rshape.append(pda_R.shape[-1])
-            new_pda_Rshape = tuple(tmp_pda_Rshape)
-            new_pda_L = broadcast_to(pda_L, new_pda_Lshape)
-            new_pda_R = broadcast_to(pda_R, new_pda_Rshape)  # args are now ready
-            cmd = f"multidimmatmul<{pda_L.dtype},{new_pda_L.ndim},{pda_R.dtype},{new_pda_R.ndim}>"
+            cmd = f"multidimmatmul<{pda_L.dtype},{pda_L.ndim},{pda_R.dtype},{pda_R.ndim}>"
             args = {
-                "a": new_pda_L,
-                "b": new_pda_R,
+                "a": pda_L,
+                "b": pda_R,
             }
             return create_pdarray(
                 generic_msg(

@@ -163,7 +163,7 @@ module LinalgMsg {
         var x1E = st[x1Name]: borrowed SymEntry(array_dtype_x1, array_nd),
             x2E = st[x2Name]: borrowed SymEntry(array_dtype_x2, array_nd);
 
-        type resultType = np_ret_type(array_dtype_x1, array_dtype_x2);
+        type resultType = numpyReturnType(array_dtype_x1, array_dtype_x2);
 
         const (valid, outDims, err) = assertValidDims(x1E, x2E);
         if !valid then return err;
@@ -238,6 +238,9 @@ module LinalgMsg {
     // TODO: not performant at all -- use tiled and parallel matrix multiplication
     //  or maybe use the linear algebra module? (do we want to compile Arkouda with that?)
 
+    // Addendum: revised with foralls in the inmost loop.  There is probably still benefit
+    // to trying to distribute the computation.
+
     proc matMult(in A: [?D1] ?t, in B: [?D2] t, ref C: [?D3] t)
         where D1.rank == 2 && D2.rank == 2 && D3.rank == 2
     {
@@ -245,13 +248,16 @@ module LinalgMsg {
               (_ /*k*/, n      ) = D2.shape,
               (_ /*m*/, _ /*n*/) = D2.shape;
 
+        var sum: t;
+
         for i in 0..<m do
-            for j in 0..<n do
-                for l in 0..<k do
-            if t != bool {
-                        C[i, j] += A[i, l] * B[l, j];
-            } else {
-                        C[i,j] |= A[i, l] & B[l, j];
+            for j in 0..<n {
+                if t != bool {
+                    sum = + reduce forall l in 0..<k do (A[i,l] * B[l,j]);
+                } else {
+                    sum = || reduce forall l in 0..<k do (A[i,l] && B[l,j]);
+                }                
+                C[i,j] = sum;
             }
     }
 
@@ -275,11 +281,11 @@ module LinalgMsg {
     }
 
     // For many numeric functions, the return type depends on the type of two inputs.  The
-    // function np_ret_type provides return types that match the behavior of numpy.
+    // function numpyReturnType provides return types that match the behavior of numpy.
 
     // This function is used in dotProd and matMult.
 
-    proc np_ret_type(type ta, type tb) type {
+    proc numpyReturnType(type ta, type tb) type {
         if ( (ta==real || tb==real) || (ta==int && tb==uint) || (ta==uint && tb==int) ) {
             return real ;
         } else if (ta==int || tb==int) {
@@ -300,7 +306,7 @@ module LinalgMsg {
     // This implements the M-D x N-D case of ak.dot, aligning its funcionality to np.dot.
  
     @arkouda.registerCommand(name="dot")
-    proc dotProd(a: [?d] ?ta, b: [?d2] ?tb): [] np_ret_type(ta,tb) throws
+    proc dotProd(a: [?d] ?ta, b: [?d2] ?tb): [] numpyReturnType(ta,tb) throws
     where ((d.rank >=2 && d2.rank>= 2)
         && (ta == int || ta == real || ta == bool || ta == uint )
         && (tb == int || tb == real || tb == bool || tb == uint )
@@ -309,7 +315,7 @@ module LinalgMsg {
 
         // make an array of the appropriate shape and type to hold the output
 
-        var eOut = makeDistArray((...dotShape(a.shape, b.shape)), np_ret_type(ta,tb));
+        var eOut = makeDistArray((...dotShape(a.shape, b.shape)), numpyReturnType(ta,tb));
 
         // aOffset and bOffset will be used to iterate through A and B in the computation
 
@@ -363,16 +369,16 @@ module LinalgMsg {
             tmp1 = a[aDom];                 
             tmp2 = b[bDom];
             
-            var total: np_ret_type(ta,tb) = 0:np_ret_type(ta,tb);
+            var total: numpyReturnType(ta,tb) = 0:numpyReturnType(ta,tb);
 
             // Perform the dot product.
 
             for (i, j) in zip(tmp1, tmp2) {
-                if np_ret_type(ta,tb) == bool {
+                if numpyReturnType(ta,tb) == bool {
                     total |= i:bool && j:bool;
                 }
                 else {
-                    total += i:np_ret_type(ta,tb) * j:np_ret_type(ta,tb);
+                    total += i:numpyReturnType(ta,tb) * j:numpyReturnType(ta,tb);
                 }
             }
             eOut[outIdx] = total;
@@ -400,65 +406,141 @@ module LinalgMsg {
         return shapeOut;
     }
 
-    // matmulShape is similar, but for multi-dimensional matmul
 
-    // If aShape is ( (front dims), m, n) and
-    //    bShape is ( (front dims), n, k), then
-    //    shapeOut is ( (front dims), m, k)
+    // What follows is code to distribute multi-dimensional matrix multiplication.
 
-    // Note that aShape and bShape were created python-side, and all the error
-    // checking was done there.
+    // MatMulShape determines from the shapes of a and b what the shape of the product
+    // should be.  Both ranks must be >= 2, and (in multiDimMatMul below) at least one
+    // must be >= 3.
 
-    proc matmulShape(aShape: ?N*int, bShape: N*int) : N*int
-        where N > 1 {
-        var shapeOut: N*int;
-        for i in 0..<(N-1) do shapeOut[i] = aShape[i];
-        shapeOut[N-1] = bShape[N-1];
+    proc MatMulShape (aShape: ?Na*int, bShape: ?Nb*int) : max(Na, Nb)*int throws
+        where (Nb >= 2 && Na >= 2) {
+        param outN = if Nb >= Na then Nb else Na;
+        var shapeOut: outN*int;
+	    shapeOut[outN-1] = bShape[Nb-1];
+	    shapeOut[outN-2] = aShape[Na-2];
+        if Nb == 2 || Na == 2 {
+            if Nb >= Na {
+                for i in 0..<outN-2 do shapeOut[i] = bShape[i];
+            } else {
+                for i in 0..<outN-2 do shapeOut[i] = aShape[i];
+            }
+            return shapeOut;
+        }
+        var aPreshape: (Na-2)*int;
+        var bPreshape: (Nb-2)*int;
+	    for i in 0..<(Na-2) {aPreshape[i] = aShape[i];}
+		for i in 0..<(Nb-2) {bPreshape[i] = bShape[i];}
+    	const cPreshape = try broadcastShape(aPreshape,bPreshape);
+	    for i in 0..<Na-2 {shapeOut[i] = cPreshape[i];}
         return shapeOut;
     }
 
+    //  Shapes were checked for broadcast compatibility on the python side.  This code
+    //  checks that, uses the above function to determine the shape for c, but doesn't
+    //  actually do any broadcasting -- it just adjusts the indices of a and b as if
+    //  they had been broadcast.
 
-    // Multidimensional matmul has the same functionality as in numpy.  We expect
-    // the shapes to have been managed (and broadcast if need be) client-side before
-    // this proc is invoked.
-    // That is, the shapes of a and b must be identical except for the last 2 dims.
-    // Those 2 dims must be compatible with regular 2D matrix multiplication (i.e.
-    // m,n and n,k, giving a product of m,k).
+    //  For example, if a has shape (2,1,30,15),
+    //              and b has shape (1,3,15,20),
+    //  then the output c has shape (2,3,30,20).
 
+    //  If a and b had actually been broadcast, their new shapes would be:
+    //                         a => (2,3,30,15)
+    //                         b => (2,3,15,20)
+
+    //  and computing c(i,j,m,n) would involves a sum over k of
+    //                a(i,j,m,k) * b(i,j,k,n).
+
+    //  Since actually doing the broadcast takes time and memory, we don't bother.
+    //  In this example, that would mean the the sum for c(i,j,m,n) is the sum over k of
+    //                a(i,0,m,k)*b(0,j,k,n).
+
+    //  This is implemented in the makeAidx and makeBidx functions below.
+        
     @arkouda.registerCommand(name="multidimmatmul")
-    proc multidimmatmul(a: [?da] ?ta, b: [?db] ?tb): [] np_ret_type(ta,tb) throws
-    where ( (da.rank >= 2 && da.rank == db.rank)
+    proc multiDimMatMul(a: [?da] ?ta, b: [?db] ?tb): [] numpyReturnType(ta,tb) throws
+    where ( (da.rank >= 2 && db.rank >= 2 && (da.rank >= 3 || db.rank >= 3))
         && (ta == int || ta == real || ta == bool || ta == uint )
         && (tb == int || tb == real || tb == bool || tb == uint )
            ) {
         param pn = Reflection.getRoutineName();
-        const dRank = da.rank;  // since da.rank must == db.rank, we'll just refer to one rank below
 
-        // make an array of the appropriate shape and type to hold the output
+        type RT = numpyReturnType(ta,tb);
+        var c = makeDistArray((...MatMulShape(a.shape, b.shape)), RT);
+        const kRange = 0..<a.shape[da.rank-1] ; // the loop index
 
-        var eOut = makeDistArray((...matmulShape(a.shape, b.shape)), np_ret_type(ta,tb));
+        coforall loc in Locales do on loc {
+           const ClocDom = c.localSubdomain();
 
-        // loop over all output elements
+           if !ClocDom.isEmpty() {
 
-        forall outIdx in eOut.domain {
+               var aRange: da.rank*range;
+               var bRange: db.rank*range;
+               var aoffset = c.rank - da.rank;
+               var boffset = c.rank - db.rank;
 
-            var aIdx = outIdx;
-            var bIdx = outIdx;
+               for i in 0..<da.rank {
+                   aRange[i] =
+                       if i == da.rank - 1 then kRange
+                       else if a.shape[i] == 1 then 0..0
+                       else ClocDom.dim[i + aoffset];
+               }
+               for i in 0..<db.rank {
+                   bRange[i] =
+                       if i == db.rank - 2 then kRange
+                       else if b.shape[i] == 1 then 0..0
+                       else ClocDom.dim[i + boffset];
+               }
 
-            var total: np_ret_type(ta,tb) = 0:np_ret_type(ta,tb);
-            for i in 0..<a.shape(dRank-1) {
-                aIdx = outIdx; aIdx[dRank-1] = i; // aIdx = ( (front dims), m, loop variable)
-                bIdx = outIdx; bIdx[dRank-2] = i; // bIdx = ( (front dims), loop variable, k)
-                if np_ret_type(ta,tb) == bool {
-                    total |= a[aIdx]:bool && b[bIdx]:bool;
-                } else {
-                    total += a[aIdx]:np_ret_type(ta,tb) * b[bIdx]:np_ret_type(ta,tb);
-                }
+               // Now that we have ranges, we construct the subdomains, and pull the values we need.
+
+               const SubDomA = {(...aRange)};
+               const SubDomB = {(...bRange)};
+
+               var Alocal = a[SubDomA];
+               var Blocal = b[SubDomB];
+
+
+               forall Cidx in ClocDom {
+
+               // Helpers to build Aidx and Bidx for the given k
+
+                   proc makeAidx(k: int): da.rank*int {
+                       var idx: da.rank*int;
+                       for param i in 0..<da.rank-1 do
+                           idx[i] =
+                               if aRange[i] == (0..0) then 0
+                               else Cidx[i+aoffset];
+                       idx[da.rank-1] = k;
+                       return idx;
+                   }
+
+                   proc makeBidx(k: int): db.rank*int {
+                       var idx: db.rank*int;
+                       for param i in 0..<db.rank do
+                           idx[i] =
+                               if i == db.rank-2 then k
+                               else if bRange[i] == (0..0) then 0
+                               else Cidx[i+boffset];
+                       return idx;
+                   }
+
+                   // The computation
+
+                   var sum: RT;
+                   if RT != bool {
+                      sum = + reduce forall k in kRange do
+                                Alocal[ makeAidx(k) ]:RT * Blocal[ makeBidx(k) ]:RT;
+                   } else {
+                      sum = || reduce forall k in kRange do
+                                Alocal[ makeAidx(k) ]:bool && Blocal[ makeBidx(k) ]:bool;
+                   }
+                   c[Cidx] = sum;
+               }
             }
-            eOut[outIdx] = total;
         }
-
-        return eOut;
+        return c;
     }
 
     /*
