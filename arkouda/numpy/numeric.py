@@ -3216,7 +3216,7 @@ def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import dot
-    from arkouda.numpy.util import broadcast_shapes, broadcast_to
+    from arkouda.numpy.util import broadcast_shapes
 
     # Disallow scalar arguments.  That's not a matmul thing.
 
@@ -3263,7 +3263,7 @@ def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
         left_preshape = pda_L.shape[0:-2]  # pull off all but last 2 dims of
         right_preshape = pda_R.shape[0:-2]  # both shapes
         try:
-            tmp_preshape = broadcast_shapes(left_preshape, right_preshape)
+            _ = broadcast_shapes(left_preshape, right_preshape)  # result not needed, only success
             cmd = f"multidimmatmul<{pda_L.dtype},{pda_L.ndim},{pda_R.dtype},{pda_R.ndim}>"
             args = {
                 "a": pda_L,
