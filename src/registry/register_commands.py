@@ -2,6 +2,7 @@ from enum import Enum
 import itertools
 import json
 import sys
+import os
 
 import chapel
 
@@ -1394,6 +1395,25 @@ def watermarkConfig(config):
 
 def main():
     config = json.load(open(sys.argv[1]))
+
+    # Allow user to override number of dimensions from make
+
+    nd_env = os.environ.get("ARRAY_ND_MAX")
+
+    if nd_env is not None:
+        try:
+            n = int(nd_env)
+            if n < 1:
+                raise ValueError("n must be >= 1")
+
+            old = config["parameter_classes"]["array"]["nd"]
+            new = list(range(1, n + 1))
+            config["parameter_classes"]["array"]["nd"] = new
+            print(f"Overriding compile ranks {old} from registration-config.json with {new}")
+        except ValueError:
+            # Optional: fail loudly or just warn
+            print(f"Warning: invalid n/ARRAY_ND_MAX value {nd_env!r}, ignoring", file=sys.stderr)
+
     source_files = getModuleFiles(sys.argv[2], sys.argv[3])
     (chpl_src, n) = register_commands(config, source_files)
     reg_config = make_reg_config_module(config)
