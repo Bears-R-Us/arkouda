@@ -91,6 +91,66 @@ class ArkoudaExtensionArray(ExtensionArray):
         """
         return len(self._data)
 
+    def copy(self, deep: bool = True):
+        """
+        Return a copy of the array.
+
+        Parameters
+        ----------
+        deep : bool, default True
+            Whether to make a deep copy of the underlying Arkouda data.
+            - If ``True``, the underlying server-side array is duplicated.
+            - If ``False``, a new ExtensionArray wrapper is created but the
+              underlying data is shared (no server-side copy).
+
+        Returns
+        -------
+        ArkoudaExtensionArray
+            A new instance of the same concrete subclass containing either a
+            deep copy or a shared reference to the underlying data.
+
+        Notes
+        -----
+        Pandas semantics:
+            ``deep=False`` creates a new wrapper but may share memory.
+            ``deep=True`` must create an independent copy of the data.
+
+        Arkouda semantics:
+            Arkouda arrays do not presently support views. Therefore:
+            - ``deep=False`` returns a new wrapper around the *same*
+              server-side array.
+            - ``deep=True`` forces a full server-side copy.
+
+        Examples
+        --------
+        Shallow copy (shared data):
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> c1 = arr.copy(deep=False)
+        >>> c1
+        ArkoudaArray([0 1 2 3 4])
+
+        Underlying data is the same object:
+
+        >>> arr._data is c1._data
+        True
+
+        Deep copy (independent server-side data):
+
+        >>> c2 = arr.copy(deep=True)
+        >>> c2
+        ArkoudaArray([0 1 2 3 4])
+
+        Underlying data is a distinct pdarray on the server:
+
+        >>> arr._data is c2._data
+        False
+        """
+        data = self._data.copy() if deep else self._data
+        return type(self)(data)
+
     @classmethod
     def _concat_same_type(cls, to_concat):
         """
@@ -120,6 +180,98 @@ class ArkoudaExtensionArray(ExtensionArray):
         data = [x._data for x in seq]
         out = ak_concat(data)
         return cls(out)
+
+    @classmethod
+    def _from_sequence(
+        cls,
+        scalars,
+        dtype=None,
+        copy: bool = False,
+    ) -> "ArkoudaExtensionArray":
+        """
+        Construct an Arkouda-backed ExtensionArray from Arkouda objects or
+        Python/NumPy scalars.
+
+        This factory inspects ``scalars`` and returns an instance of the
+        appropriate concrete subclass:
+
+        * :class:`ArkoudaArray` for :class:`pdarray`
+        * :class:`ArkoudaStringArray` for :class:`Strings`
+        * :class:`ArkoudaCategoricalArray` for :class:`Categorical`
+
+        If ``scalars`` is **not** already an Arkouda server-side array, it is
+        interpreted as a sequence of Python/NumPy scalars, converted into a
+        server-side ``pdarray`` via :func:`arkouda.numpy.pdarraycreation.array`,
+        and wrapped in :class:`ArkoudaArray`.
+
+        Parameters
+        ----------
+        scalars : object
+            Either an Arkouda array type (``pdarray``, ``Strings``,
+            or ``Categorical``) or a sequence of Python/NumPy scalars.
+        dtype : object, optional
+            Ignored. Present for pandas API compatibility.
+        copy : bool, default False
+            Ignored. Present for pandas API compatibility.
+
+        Returns
+        -------
+        ArkoudaExtensionArray
+            An instance of :class:`ArkoudaArray`,
+            :class:`ArkoudaStringArray`, or
+            :class:`ArkoudaCategoricalArray`, depending on the type of
+            ``scalars``.
+
+        Examples
+        --------
+        Constructing from Arkouda server-side arrays:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaExtensionArray
+        >>> pda = ak.arange(5)
+        >>> ea = ArkoudaExtensionArray._from_sequence(pda)
+        >>> ea
+        ArkoudaArray([0 1 2 3 4])
+
+        From Arkouda Strings:
+
+        >>> s = ak.array(["red", "green", "blue"])
+        >>> ea = ArkoudaExtensionArray._from_sequence(s)
+        >>> ea
+        ArkoudaStringArray(['red', 'green', 'blue'])
+
+        From Python scalars:
+
+        >>> ea = ArkoudaExtensionArray._from_sequence([10, 20, 30])
+        >>> ea
+        ArkoudaArray([10 20 30])
+
+        From mixed Python/NumPy types:
+
+        >>> import numpy as np
+        >>> ea = ArkoudaExtensionArray._from_sequence([1, np.int64(2), 3])
+        >>> ea
+        ArkoudaArray([1 2 3])
+        """
+        # Local imports to avoid circular dependencies at module import time.
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
+        from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
+        from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
+
+        # Fast path: already an Arkouda column. Pick the matching subclass.
+        if isinstance(scalars, pdarray):
+            return ArkoudaArray(scalars)
+        if isinstance(scalars, Strings):
+            return ArkoudaStringArray(scalars)
+        if isinstance(scalars, Categorical):
+            return ArkoudaCategoricalArray(scalars)
+
+        # Fallback: treat as a sequence of scalars and build a pdarray.
+        data = ak_array(scalars)
+        return ArkoudaArray(data)
 
     def _fill_missing(self, mask, fill_value):
         raise NotImplementedError("Subclasses must implement _fill_missing")

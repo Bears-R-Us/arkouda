@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Iterable
 
 import numpy as np
 
@@ -29,7 +29,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     default_fill_value = -1
 
     def __init__(self, data):
-        if isinstance(data, np.ndarray):
+        if isinstance(data, (np.ndarray, Iterable)):
             data = ak_array(data)
         if not isinstance(data, pdarray):
             raise TypeError("Expected an Arkouda pdarray")
@@ -40,6 +40,10 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # If pandas passes our own EA dtype, ignore it and infer from data
         if isinstance(dtype, _ArkoudaBaseDtype):
             dtype = dtype.numpy_dtype
+
+        if dtype is not None and hasattr(dtype, "numpy_dtype"):
+            dtype = dtype.numpy_dtype
+
         # If scalars is already a numpy array, we can preserve its dtype
         return cls(ak_array(scalars, dtype=dtype, copy=copy))
 
@@ -114,10 +118,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return ak_full(self._data.size, False, dtype=bool)
 
         return isnan(self._data)
-
-    #   TODO:  use pdarray.copy()
-    def copy(self):
-        return ArkoudaArray(self._data[:])
 
     @property
     def dtype(self):
