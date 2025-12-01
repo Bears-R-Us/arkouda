@@ -43,6 +43,7 @@ array([100 200 200])
 """
 
 import functools
+
 from typing import Sequence
 from warnings import warn
 
@@ -82,14 +83,17 @@ def unsqueeze(p):
     Ensure that the input is returned as a list.
     If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
     Otherwise, return the input unchanged.
+
     Parameters
     ----------
     p : pdarray, Strings, Categorical, or Sequence
         The input object to be wrapped or returned as-is.
+
     Returns
     -------
     Sequence
         A list containing the input, or the input itself if it is already a sequence.
+
     Examples
     --------
     >>> import arkouda as ak
@@ -196,6 +200,7 @@ class NonUniqueError(ValueError):
     Exception raised when duplicate values are found in a set of keys that are expected to be unique.
     This is typically raised in lookup and alignment operations that assume
     a one-to-one mapping between keys and values.
+
     Examples
     --------
     >>> from arkouda.numpy.alignment import NonUniqueError
@@ -204,6 +209,7 @@ class NonUniqueError(ValueError):
         ...
     arkouda.numpy.alignment.NonUniqueError: Duplicate values found in key array.
     """
+
     pass
 
 

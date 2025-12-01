@@ -383,6 +383,7 @@ class Series:
 
         """
         from typing import get_args
+
         from arkouda.numpy.pdarraycreation import array
         from arkouda.numpy.strings import Strings
 

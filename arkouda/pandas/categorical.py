@@ -78,7 +78,6 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarrayclass import all as akall
-from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort

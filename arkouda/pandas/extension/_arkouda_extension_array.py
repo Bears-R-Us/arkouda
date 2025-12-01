@@ -253,9 +253,8 @@ class ArkoudaExtensionArray(ExtensionArray):
         from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_FLOATS, bool_, int64
         from arkouda.numpy.numeric import isnan as ak_isnan
         from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.numpy.pdarraycreation import arange
+        from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
         from arkouda.numpy.pdarraycreation import array as ak_array
-        from arkouda.numpy.pdarraycreation import full, ones, zeros
         from arkouda.numpy.sorting import argsort
         from arkouda.numpy.strings import Strings
         from arkouda.pandas.extension import ArkoudaArray
