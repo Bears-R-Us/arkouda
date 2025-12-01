@@ -339,7 +339,7 @@ module FileIO {
           var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
-            
+
         // Set filename to globbed filename corresponding to locale 0
         filename = tmp[tmp.domain.first];
       }
