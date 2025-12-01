@@ -3,6 +3,8 @@ import pytest
 
 import arkouda as ak
 
+from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.extension import (
     ArkoudaArray,
     ArkoudaCategoricalArray,
@@ -529,3 +531,39 @@ class TestArkoudaExtensionArray:
         assert_arkouda_array_equal(uniques_sorted._data, ak.array([1, 2, 3]))
         # mapping old->new: 2->1, 1->0, 3->2  => [1,0,2,1]
         assert_arkouda_array_equal(codes_sorted._data, ak.array([1, 0, 2, 1]))
+
+    def test_from_sequence_dispatches_to_correct_subclass(self):
+        """
+        Verify that ArkoudaExtensionArray._from_sequence chooses the right subclass.
+        * pdarray          -> ArkoudaArray
+        * Strings          -> ArkoudaStringArray
+        * Categorical      -> ArkoudaCategoricalArray
+        * Python sequence  -> ArkoudaArray (via ak.array -> pdarray)
+        """
+        # pdarray -> ArkoudaArray
+        ak_ints = ak.arange(5)
+        ea_int = ArkoudaExtensionArray._from_sequence(ak_ints)
+        assert isinstance(ea_int, ArkoudaArray)
+        assert isinstance(ea_int._data, pdarray)
+        assert ak.all(ea_int._data == ak_ints)
+
+        # Strings -> ArkoudaStringArray
+        ak_strs = ak.array(["a", "b", "c"])
+        strings = ak.array(ak_strs)
+        ea_str = ArkoudaExtensionArray._from_sequence(strings)
+        assert isinstance(ea_str, ArkoudaStringArray)
+        assert isinstance(ea_str._data, Strings)
+
+        # Categorical -> ArkoudaCategoricalArray
+        ak_labels = ak.array(["low", "low", "high"])
+        cat = Categorical(ak_labels)
+        ea_cat = ArkoudaExtensionArray._from_sequence(cat)
+        assert isinstance(ea_cat, ArkoudaCategoricalArray)
+        assert isinstance(ea_cat._data, Categorical)
+
+        # Plain Python sequence -> ArkoudaArray via ak.array -> pdarray
+        seq = [10, 20, 30]
+        ea_seq = ArkoudaExtensionArray._from_sequence(seq)
+        assert isinstance(ea_seq, ArkoudaArray)
+        assert isinstance(ea_seq._data, pdarray)
+        assert ak.all(ea_seq._data == ak.array(seq))
