@@ -759,12 +759,15 @@ class TestSetOps:
                 if all_unique:
                     # ensure we match find
                     if not are_pdarrays_equal(
-                        idx_of_first_in_second, ak.find(arr1, arr2, remove_missing=True)
+                        idx_of_first_in_second, ak.numpy.alignment.find(arr1, arr2, remove_missing=True)
                     ):
                         print("failed to match find")
                         print("second array all unique: ", all_unique)
                         print(seeds)
-                    assert (idx_of_first_in_second == ak.find(arr1, arr2, remove_missing=True)).all()
+                    assert (
+                        idx_of_first_in_second
+                        == ak.numpy.alignment.find(arr1, arr2, remove_missing=True)
+                    ).all()
 
                     # if an element of arr1 is found in arr2, return the index of that item in arr2
                     if not are_pdarrays_equal(arr2[idx_of_first_in_second], arr1[found_in_second]):
