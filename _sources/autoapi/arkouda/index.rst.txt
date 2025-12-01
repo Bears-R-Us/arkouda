@@ -715,24 +715,6 @@ Package Contents
 
 
 
-   .. py:method:: copy()
-
-      Return a copy of the array.
-
-      :rtype: ExtensionArray
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr2 = arr.copy()
-      >>> arr[0] = 2
-      >>> arr2
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
-
-
-
    .. py:attribute:: default_fill_value
       :value: -1
 
@@ -1186,24 +1168,6 @@ Package Contents
       array([1., 2., 3.])
       >>> arr2.dtype
       dtype('float64')
-
-
-
-   .. py:method:: copy()
-
-      Return a copy of the array.
-
-      :rtype: ExtensionArray
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr2 = arr.copy()
-      >>> arr[0] = 2
-      >>> arr2
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
 
 
 
@@ -1717,24 +1681,6 @@ Package Contents
       array([1., 2., 3.])
       >>> arr2.dtype
       dtype('float64')
-
-
-
-   .. py:method:: copy()
-
-      Return a copy of the array.
-
-      :rtype: ExtensionArray
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr2 = arr.copy()
-      >>> arr[0] = 2
-      >>> arr2
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
 
 
 

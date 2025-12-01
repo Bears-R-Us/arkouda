@@ -462,6 +462,69 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
 
+<div class="viewcode-block" id="ArkoudaExtensionArray.copy">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a copy of the array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        deep : bool, default True</span>
+<span class="sd">            Whether to make a deep copy of the underlying Arkouda data.</span>
+<span class="sd">            - If ``True``, the underlying server-side array is duplicated.</span>
+<span class="sd">            - If ``False``, a new ExtensionArray wrapper is created but the</span>
+<span class="sd">              underlying data is shared (no server-side copy).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ArkoudaExtensionArray</span>
+<span class="sd">            A new instance of the same concrete subclass containing either a</span>
+<span class="sd">            deep copy or a shared reference to the underlying data.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Pandas semantics:</span>
+<span class="sd">            ``deep=False`` creates a new wrapper but may share memory.</span>
+<span class="sd">            ``deep=True`` must create an independent copy of the data.</span>
+
+<span class="sd">        Arkouda semantics:</span>
+<span class="sd">            Arkouda arrays do not presently support views. Therefore:</span>
+<span class="sd">            - ``deep=False`` returns a new wrapper around the *same*</span>
+<span class="sd">              server-side array.</span>
+<span class="sd">            - ``deep=True`` forces a full server-side copy.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Shallow copy (shared data):</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.arange(5))</span>
+<span class="sd">        &gt;&gt;&gt; c1 = arr.copy(deep=False)</span>
+<span class="sd">        &gt;&gt;&gt; c1</span>
+<span class="sd">        ArkoudaArray([0 1 2 3 4])</span>
+
+<span class="sd">        Underlying data is the same object:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr._data is c1._data</span>
+<span class="sd">        True</span>
+
+<span class="sd">        Deep copy (independent server-side data):</span>
+
+<span class="sd">        &gt;&gt;&gt; c2 = arr.copy(deep=True)</span>
+<span class="sd">        &gt;&gt;&gt; c2</span>
+<span class="sd">        ArkoudaArray([0 1 2 3 4])</span>
+
+<span class="sd">        Underlying data is a distinct pdarray on the server:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr._data is c2._data</span>
+<span class="sd">        False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">deep</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">data</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="ArkoudaExtensionArray._concat_same_type">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray._concat_same_type">[docs]</a>
     <span class="nd">@classmethod</span>

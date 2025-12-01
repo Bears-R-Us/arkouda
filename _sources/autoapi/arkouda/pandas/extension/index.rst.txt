@@ -276,24 +276,6 @@ Package Contents
 
 
 
-   .. py:method:: copy()
-
-      Return a copy of the array.
-
-      :rtype: ExtensionArray
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr2 = arr.copy()
-      >>> arr[0] = 2
-      >>> arr2
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
-
-
-
    .. py:attribute:: default_fill_value
       :value: -1
 
@@ -748,24 +730,6 @@ Package Contents
 
 
 
-   .. py:method:: copy()
-
-      Return a copy of the array.
-
-      :rtype: ExtensionArray
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr2 = arr.copy()
-      >>> arr[0] = 2
-      >>> arr2
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
-
-
-
    .. py:attribute:: default_fill_value
       :type:  str
       :value: ''
@@ -1185,6 +1149,61 @@ Package Contents
 
    .. py:method:: concat(arrays, /, *, axis=0)
       :abstractmethod:
+
+
+
+   .. py:method:: copy(deep: bool = True)
+
+      Return a copy of the array.
+
+      :param deep: Whether to make a deep copy of the underlying Arkouda data.
+                   - If ``True``, the underlying server-side array is duplicated.
+                   - If ``False``, a new ExtensionArray wrapper is created but the
+                     underlying data is shared (no server-side copy).
+      :type deep: bool, default True
+
+      :returns: A new instance of the same concrete subclass containing either a
+                deep copy or a shared reference to the underlying data.
+      :rtype: ArkoudaExtensionArray
+
+      .. rubric:: Notes
+
+      Pandas semantics:
+          ``deep=False`` creates a new wrapper but may share memory.
+          ``deep=True`` must create an independent copy of the data.
+
+      Arkouda semantics:
+          Arkouda arrays do not presently support views. Therefore:
+          - ``deep=False`` returns a new wrapper around the *same*
+            server-side array.
+          - ``deep=True`` forces a full server-side copy.
+
+      .. rubric:: Examples
+
+      Shallow copy (shared data):
+
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaArray
+      >>> arr = ArkoudaArray(ak.arange(5))
+      >>> c1 = arr.copy(deep=False)
+      >>> c1
+      ArkoudaArray([0 1 2 3 4])
+
+      Underlying data is the same object:
+
+      >>> arr._data is c1._data
+      True
+
+      Deep copy (independent server-side data):
+
+      >>> c2 = arr.copy(deep=True)
+      >>> c2
+      ArkoudaArray([0 1 2 3 4])
+
+      Underlying data is a distinct pdarray on the server:
+
+      >>> arr._data is c2._data
+      False
 
 
 
@@ -1732,24 +1751,6 @@ Package Contents
       array([1., 2., 3.])
       >>> arr2.dtype
       dtype('float64')
-
-
-
-   .. py:method:: copy()
-
-      Return a copy of the array.
-
-      :rtype: ExtensionArray
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr2 = arr.copy()
-      >>> arr[0] = 2
-      >>> arr2
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
 
 
 
