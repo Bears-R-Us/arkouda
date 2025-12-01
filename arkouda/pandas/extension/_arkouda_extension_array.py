@@ -91,6 +91,66 @@ class ArkoudaExtensionArray(ExtensionArray):
         """
         return len(self._data)
 
+    def copy(self, deep: bool = True):
+        """
+        Return a copy of the array.
+
+        Parameters
+        ----------
+        deep : bool, default True
+            Whether to make a deep copy of the underlying Arkouda data.
+            - If ``True``, the underlying server-side array is duplicated.
+            - If ``False``, a new ExtensionArray wrapper is created but the
+              underlying data is shared (no server-side copy).
+
+        Returns
+        -------
+        ArkoudaExtensionArray
+            A new instance of the same concrete subclass containing either a
+            deep copy or a shared reference to the underlying data.
+
+        Notes
+        -----
+        Pandas semantics:
+            ``deep=False`` creates a new wrapper but may share memory.
+            ``deep=True`` must create an independent copy of the data.
+
+        Arkouda semantics:
+            Arkouda arrays do not presently support views. Therefore:
+            - ``deep=False`` returns a new wrapper around the *same*
+              server-side array.
+            - ``deep=True`` forces a full server-side copy.
+
+        Examples
+        --------
+        Shallow copy (shared data):
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> c1 = arr.copy(deep=False)
+        >>> c1
+        ArkoudaArray([0 1 2 3 4])
+
+        Underlying data is the same object:
+
+        >>> arr._data is c1._data
+        True
+
+        Deep copy (independent server-side data):
+
+        >>> c2 = arr.copy(deep=True)
+        >>> c2
+        ArkoudaArray([0 1 2 3 4])
+
+        Underlying data is a distinct pdarray on the server:
+
+        >>> arr._data is c2._data
+        False
+        """
+        data = self._data.copy() if deep else self._data
+        return type(self)(data)
+
     @classmethod
     def _concat_same_type(cls, to_concat):
         """
