@@ -4,7 +4,7 @@ import json
 import operator
 
 from builtins import str as builtin_str
-from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
 import pandas as pd
@@ -191,7 +191,7 @@ class Series:
                 self.values = array(data)
             else:
                 self.values = data
-            self.index = Index.factory(index) if index is not None else Index(arange(self.values.size))
+            self.index = Index.factory(index) if index is not None else Index(arange(len(self.values)))
 
         if self.index.size != self.values.size:
             raise ValueError(
@@ -446,18 +446,18 @@ class Series:
             self.values = concatenate([self.values, array([val])])
             return
         if is_supported_scalar(val):
-            self.values[indices] = val
+            cast(Any, self.values)[indices] = val
             return
         else:
             val_array = cast(Union[pdarray, Strings], val)
             if val_array.size == 1 and is_supported_scalar(key):
-                self.values[indices] = val_array[0]
+                cast(Any, self.values)[indices] = val_array[0]
                 return
             if update_count != val_array.size:
                 raise ValueError(
                     "Cannot set using a list-like indexer with a different length from the value"
                 )
-            self.values[indices] = val
+            cast(Any, self.values)[indices] = val
             return
 
     def memory_usage(self, index: bool = True, unit: Literal["B", "KB", "MB", "GB"] = "B") -> int:
@@ -585,7 +585,7 @@ class Series:
     @property
     def shape(self) -> Tuple[int]:
         # mimic the pandas return of series shape property
-        return (self.values.size,)
+        return (len(self.values),)
 
     @property
     def dtype(self) -> np.dtype:
@@ -779,6 +779,7 @@ class Series:
             A new Series sorted by its values.
 
         """
+        values_any = cast(Any, self.values)
         if not ascending:
             if isinstance(self.values, pdarray) and self.values.dtype in (
                 int64,
@@ -789,9 +790,9 @@ class Series:
             else:
                 # For non-numeric values, need the descending arange because reverse slicing
                 # is not supported
-                idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
+                idx = argsort(values_any)[arange(self.values.size - 1, -1, -1)]
         else:
-            idx = argsort(self.values)
+            idx = argsort(values_any)
         return self._reindex(idx)
 
     @typechecked
@@ -815,6 +816,8 @@ class Series:
         from arkouda.pandas.categorical import Categorical
 
         idx = self.index.to_pandas()
+
+        val: Any
 
         if isinstance(self.values, Categorical):
             val = self.values.to_pandas()
@@ -1067,7 +1070,7 @@ class Series:
                         }
                     )
                     if isinstance(self.values, Categorical)
-                    else self.values.name
+                    else cast(Any, self.values).name
                 ),
                 "val_type": self.values.objType,
             },
@@ -1329,6 +1332,9 @@ class Series:
         from arkouda import Series
         from arkouda.numpy.util import map
 
+        if not isinstance(self.values, (pdarray, Strings, Categorical)):
+            raise TypeError("Series values must be of type pdarray, Categorical, or Strings to use map")
+
         return Series(map(self.values, arg), index=self.index)
 
     def isna(self) -> Series:
@@ -1361,6 +1367,10 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+        from arkouda.numpy.segarray import SegArray
+
+        if isinstance(self.values, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed Series")
 
         if not is_float(self.values):
             return Series(full(self.values.size, False, dtype=bool), index=self.index)
@@ -1430,6 +1440,10 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+        from arkouda.numpy.segarray import SegArray
+
+        if isinstance(self.values, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed Series")
 
         if not is_float(self.values):
             return Series(full(self.values.size, True, dtype=bool), index=self.index)
@@ -1496,6 +1510,10 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+        from arkouda.numpy.segarray import SegArray
+
+        if isinstance(self.values, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed Series")
 
         if is_float(self.values):
             result = any(isnan(self.values))
@@ -1565,12 +1583,17 @@ class Series:
 
         """
         from arkouda.numpy import isnan, where
+        from arkouda.numpy.segarray import SegArray
+
+        value_: Union[supported_scalars, pdarray, Strings, Categorical, SegArray]
 
         if isinstance(value, Series):
-            value = value.values
+            value_ = value.values
+        else:
+            value_ = value  # scalar or pdarray
 
         if isinstance(self.values, pdarray) and is_float(self.values):
-            return Series(where(isnan(self.values), value, self.values), index=self.index)
+            return Series(where(isnan(self.values), value_, self.values), index=self.index)
         else:
             return Series(self.values, index=self.index)
 
