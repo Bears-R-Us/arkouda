@@ -29,7 +29,7 @@ Examples
 >>> import arkouda as ak
 >>> a = ak.array([10, 20, 30, 40])
 >>> b = ak.array([20, 10, 40, 50])
->>> keep, (a_aligned, b_aligned) = ak.right_align(a, b)
+>>> keep, (a_aligned, b_aligned) = ak.numpy.alignment.right_align(a, b)
 >>> a[keep], a_aligned, b_aligned
 (array([10 20 40]), array([0 1 2]), array([1 0 2 3]))
 
@@ -37,14 +37,14 @@ Examples
 >>> ends = ak.array([3, 10])
 >>> values = ak.array([100, 200])
 >>> x = ak.array([1, 6, 8])
->>> ak.interval_lookup((starts, ends), values, x)
+>>> ak.numpy.alignment.interval_lookup((starts, ends), values, x)
 array([100 200 200])
 
 """
 
 import functools
 
-from typing import TYPE_CHECKING, Sequence, TypeVar
+from typing import Sequence
 from warnings import warn
 
 import numpy as np
@@ -58,14 +58,8 @@ from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
-
-
-if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
-
-else:
-    Categorical = TypeVar("Categorical")
 
 
 __all__ = [
@@ -87,7 +81,6 @@ __all__ = [
 def unsqueeze(p):
     """
     Ensure that the input is returned as a list.
-
     If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
     Otherwise, return the input unchanged.
 
@@ -107,7 +100,6 @@ def unsqueeze(p):
     >>> a = ak.array([1, 2, 3])
     >>> unsqueeze(a)
     [array([1 2 3])]
-
     """
     if isinstance(p, pdarray) or isinstance(p, Strings) or isinstance(p, Categorical):
         return [p]
@@ -206,18 +198,16 @@ def left_align(left, right):
 class NonUniqueError(ValueError):
     """
     Exception raised when duplicate values are found in a set of keys that are expected to be unique.
-
     This is typically raised in lookup and alignment operations that assume
     a one-to-one mapping between keys and values.
 
     Examples
     --------
-    >>> from arkouda.alignment import NonUniqueError
+    >>> from arkouda.numpy.alignment import NonUniqueError
     >>> raise NonUniqueError("Duplicate values found in key array.")
     Traceback (most recent call last):
         ...
-    arkouda.alignment.NonUniqueError: Duplicate values found in key array.
-
+    arkouda.numpy.alignment.NonUniqueError: Duplicate values found in key array.
     """
 
     pass
@@ -268,19 +258,19 @@ def find(query, space, all_occurrences=False, remove_missing=False):
 
     Find with defaults (all_occurrences and remove_missing both False)
 
-    >>> ak.find(arr1, arr2)
+    >>> ak.numpy.alignment.find(arr1, arr2)
     array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])
 
     Set remove_missing to True, only difference from default
     is missing values are excluded
 
-    >>> ak.find(arr1, arr2, remove_missing=True)
+    >>> ak.numpy.alignment.find(arr1, arr2, remove_missing=True)
     array([0 1 2 5 8 5 11 5 0])
 
     Set both remove_missing and all_occurrences to True, missing values
     will be empty segments
 
-    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).tolist()
+    >>> ak.numpy.alignment.find(arr1, arr2, remove_missing=True, all_occurrences=True).tolist()
     [[],
      [],
      [],
@@ -305,8 +295,6 @@ def find(query, space, all_occurrences=False, remove_missing=False):
     """
     from arkouda.client import generic_msg
     from arkouda.numpy import cumsum, where
-    from arkouda.numpy.strings import Strings
-    from arkouda.pandas.categorical import Categorical
 
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
@@ -424,21 +412,19 @@ def lookup(keys, values, arguments, fillvalue=-1):
     >>> values = ak.array([21, 22, 23, 24, 25])
     >>> args1 = ak.array(['twenty', 'thirty', 'twenty'])
     >>> args2 = ak.array(['four', 'two', 'two'])
-    >>> ak.lookup([keys1, keys2], values, [args1, args2])
+    >>> ak.numpy.alignment.lookup([keys1, keys2], values, [args1, args2])
     array([24 -1 22])
 
     Other direction requires an intermediate index
     >>> revkeys = values
     >>> revindices = ak.arange(values.size)
     >>> revargs = ak.array([24, 21, 22])
-    >>> indx = ak.lookup(revkeys, revindices, revargs)
-    >>> keys1[indx], keys2[indx]
+    >>> idx = ak.numpy.alignment.lookup(revkeys, revindices, revargs)
+    >>> keys1[idx], keys2[idx]
     (array(['twenty', 'twenty', 'twenty']),
     array(['four', 'one', 'two']))
 
     """
-    from arkouda.pandas.categorical import Categorical
-
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
         return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
@@ -545,9 +531,9 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
     >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
     >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
-    >>> ak.search_intervals(vals, (starts, ends), hierarchical=False)
+    >>> ak.numpy.alignment.search_intervals(vals, (starts, ends), hierarchical=False)
     array([0 -1 0 0 1 -1 1 -1])
-    >>> ak.search_intervals(vals, (starts, ends))
+    >>> ak.numpy.alignment.search_intervals(vals, (starts, ends))
     array([0 0 0 0 1 1 1 -1])
     >>> bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])
     >>> bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
@@ -557,7 +543,7 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     array([92233720368547758090 166020696663385964564]),
     array([0 20 36893488147419103233 92233720368547758085 92233720368547758095
     110680464442257309696 110680464442257309708 166020696663385964574]))
-    >>> ak.search_intervals(bi_vals, (bi_starts, bi_ends))
+    >>> ak.numpy.alignment.search_intervals(bi_vals, (bi_starts, bi_ends))
     array([0 0 0 0 1 1 1 -1])
 
     """
@@ -852,8 +838,6 @@ def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierar
         in any interval.
 
     """
-    from arkouda.categorical import Categorical
-
     if isinstance(values, Categorical):
         codes = interval_lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
         return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
