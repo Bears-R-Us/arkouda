@@ -33,6 +33,7 @@ from ._dtypes import (
     ArkoudaUint64Dtype,
 )
 from ._index_accessor import ArkoudaIndexAccessor
+from ._series_accessor import ArkoudaSeriesAccessor
 
 
 __all__ = [
@@ -49,4 +50,5 @@ __all__ = [
     "ArkoudaCategoricalArray",
     "ArkoudaExtensionArray",
     "ArkoudaIndexAccessor",
+    "ArkoudaSeriesAccessor",
 ]
