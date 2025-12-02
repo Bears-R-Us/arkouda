@@ -171,6 +171,40 @@ make instantiate_max=1024
 You can substitute `1024` with a higher value if needed.
 This flag passes `--instantiate-max=<value>` to the Chapel compiler during the build.
 
+### Overriding Supported Array Dimensions
+
+Arkouda generates its server-side command registry from a JSON configuration that specifies which array dimensionalities (`nd`) are supported.
+
+By default, this value is set to:
+
+```bash
+"nd": [1]
+```
+
+If you want to build Arkouda with support for additional array dimensions, you can override this at build time by specifying the environment variable `ARRAY_ND_MAX` when invoking `make`.
+
+For example, to support 1-, 2-, and 3-dimensional arrays:
+
+```bash
+make ARRAY_ND_MAX=3
+```
+
+Internally, this automatically expands the allowed dimensions to:
+
+```bash
+[1, 2, 3]
+```
+
+This mechanism is intended for developers experimenting with extended dimensionality and is not needed for standard Arkouda builds.
+
+You can combine this with other build-time overrides, such as increasing Chapel’s instantiation limit:
+
+```bash
+make ARRAY_ND_MAX=3 instantiation_max=1024
+```
+
+All such overrides work independently and can be mixed freely.
+
 ## Building the Arkouda Documentation
 The Arkouda documentation is [here](https://bears-r-us.github.io/arkouda/). This section is only necessary
 if you're updating the documentation.
