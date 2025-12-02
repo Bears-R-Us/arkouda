@@ -528,6 +528,29 @@ make:<span class="w"> </span>***<span class="w"> </span><span class="o">[</span>
 <p>You can substitute <code class="docutils literal notranslate"><span class="pre">1024</span></code> with a higher value if needed.
 This flag passes <code class="docutils literal notranslate"><span class="pre">--instantiate-max=&lt;value&gt;</span></code> to the Chapel compiler during the build.</p>
 </section>
+<section id="overriding-supported-array-dimensions">
+<h3>Overriding Supported Array Dimensions<a class="headerlink" href="#overriding-supported-array-dimensions" title="Link to this heading">¶</a></h3>
+<p>Arkouda generates its server-side command registry from a JSON configuration that specifies which array dimensionalities (<code class="docutils literal notranslate"><span class="pre">nd</span></code>) are supported.</p>
+<p>By default, this value is set to:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;nd&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="m">1</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>If you want to build Arkouda with support for additional array dimensions, you can override this at build time by specifying the environment variable <code class="docutils literal notranslate"><span class="pre">ARRAY_ND_MAX</span></code> when invoking <code class="docutils literal notranslate"><span class="pre">make</span></code>.</p>
+<p>For example, to support 1-, 2-, and 3-dimensional arrays:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nv">ARRAY_ND_MAX</span><span class="o">=</span><span class="m">3</span>
+</pre></div>
+</div>
+<p>Internally, this automatically expands the allowed dimensions to:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>This mechanism is intended for developers experimenting with extended dimensionality and is not needed for standard Arkouda builds.</p>
+<p>You can combine this with other build-time overrides, such as increasing Chapel’s instantiation limit:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span><span class="nv">ARRAY_ND_MAX</span><span class="o">=</span><span class="m">3</span><span class="w"> </span><span class="nv">instantiation_max</span><span class="o">=</span><span class="m">1024</span>
+</pre></div>
+</div>
+<p>All such overrides work independently and can be mixed freely.</p>
+</section>
 </section>
 <section id="building-the-arkouda-documentation">
 <h2>Building the Arkouda Documentation<a class="headerlink" href="#building-the-arkouda-documentation" title="Link to this heading">¶</a></h2>
@@ -655,6 +678,7 @@ Arkouda documentation homepage will be displayed.</p>
 </li>
 <li><a class="reference internal" href="#build-the-server">Build the Server</a><ul>
 <li><a class="reference internal" href="#chapel-instantiation-limit-errors">Chapel Instantiation Limit Errors</a></li>
+<li><a class="reference internal" href="#overriding-supported-array-dimensions">Overriding Supported Array Dimensions</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#building-the-arkouda-documentation">Building the Arkouda Documentation</a></li>
