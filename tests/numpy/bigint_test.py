@@ -8,7 +8,7 @@ import pytest
 import arkouda as ak
 
 from arkouda.numpy import dtypes
-from arkouda.numpy.dtypes import bigint_
+from arkouda.numpy.dtypes import bigint_, can_cast, resolve_scalar_dtype, result_type
 
 
 """
@@ -102,10 +102,8 @@ class TestBigintDtype:
         ],
     )
     def test_bigint_scalar_parsing_from_strings(self, text, expected):
-        try:
-            x = bigint_(text)
-        except TypeError:
-            pytest.skip("bigint_ not present")
+        x = bigint_(text)
+
         assert isinstance(x, bigint_)
         assert int(x) == expected
 
@@ -129,14 +127,12 @@ class TestBigintDtype:
     def test_dtype_accepts_scalar_instance_and_class(
         self,
     ):
-        try:
-            s = bigint_(2**128)
-        except TypeError:
-            pytest.skip("bigint_ not present")
+        s = bigint_(2**128)
+
         assert ak.dtype(s) is ak.bigint()
         assert ak.dtype(type(s)) is ak.bigint()
 
-    def test_supported_sets_if_present(
+    def test_supported_sets(
         self,
     ):
         # If your module exposes these capability sets/helpers, validate bigint entries.
@@ -144,20 +140,15 @@ class TestBigintDtype:
         nums_set = self._get("ARKOUDA_SUPPORTED_NUMBERS")
         if ints_set is not None:
             assert ak.bigint in ints_set
-            if self._has("bigint_"):
-                assert bigint_ in ints_set
+            assert bigint_ in ints_set
         if nums_set is not None:
             assert ak.bigint in nums_set
-            if self._has("bigint_"):
-                assert bigint_ in nums_set
+            assert bigint_ in nums_set
 
-    def test_resolve_scalar_dtype_if_present(
+    def test_resolve_scalar_dtype(
         self,
     ):
-        fn = self._get("resolve_scalar_dtype")
-        if fn is None or not self._has("bigint_"):
-            pytest.skip("resolve_scalar_dtype or bigint_ not present")
-        assert fn(bigint_(123)) == "bigint"
+        assert resolve_scalar_dtype(bigint_(123)) == "bigint"
 
     @pytest.mark.parametrize(
         "args,expect",
@@ -171,11 +162,8 @@ class TestBigintDtype:
             ((ak.bigint(), np.dtype(np.uint64)), "bigint"),
         ],
     )
-    def test_result_type_if_present(self, args, expect):
-        fn = self._get("result_type")
-        if fn is None:
-            pytest.skip("result_type not present")
-        rt = fn(*args)
+    def test_result_type(self, args, expect):
+        rt = result_type(*args)
         if expect == "bigint":
             assert rt is ak.bigint()
         else:
@@ -193,11 +181,8 @@ class TestBigintDtype:
             (ak.bigint(), np.dtype(np.int64), None),
         ],
     )
-    def test_can_cast_if_present(self, from_dt, to_dt, expect):
-        fn = self._get("can_cast")
-        if fn is None:
-            pytest.skip("can_cast not present")
-        out = fn(from_dt, to_dt)
+    def test_can_cast(self, from_dt, to_dt, expect):
+        out = can_cast(from_dt, to_dt)
         if expect is not None:
             assert out is expect
         else:
@@ -211,8 +196,6 @@ class TestBigintDtype:
 
         Only that dtype(...) recognizes a bigint scalar’s dtype.
         """
-        if not self._has("bigint_"):
-            pytest.skip("bigint_ not present")
         s = bigint_(2**200)
         assert ak.dtype(s) is ak.bigint()
 
@@ -227,8 +210,6 @@ class TestBigintDtype:
         ],
     )
     def test_bigint_scalar_python_arithmetic_and_comparisons(self, lhs, rhs, op, expect):
-        if not self._has("bigint_"):
-            pytest.skip("bigint_ not present")
         result = getattr(lhs, op)(rhs)
         if isinstance(expect, bool):
             assert bool(result) is expect
@@ -243,8 +224,6 @@ class TestBigintDtype:
 
         We do not require exact dtype preservation (NumPy has no bigint).
         """
-        if not self._has("bigint_"):
-            pytest.skip("bigint_ not present")
         x = bigint_(2**120 + 3)
         arr = np.array([int(x)], dtype=np.object_)  # safest box
         assert arr.shape == (1,)
