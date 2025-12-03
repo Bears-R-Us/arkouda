@@ -4,6 +4,8 @@ import os
 import subprocess
 import sys
 
+from functools import lru_cache
+from pathlib import Path
 from typing import Iterable, Iterator
 
 import pytest
@@ -305,3 +307,98 @@ def skip_by_scipy_version(request):
         scipy_requirement = request.node.get_closest_marker("skip_if_scipy_version_neq").args[0]
         if scipy.__version__ != scipy_requirement:
             pytest.skip("this test requires scipy version == {}".format(scipy_requirement))
+
+
+def _arkouda_home() -> Path:
+    """
+    Best-effort guess at Arkouda project root.
+
+    Priority:
+      1. $ARKOUDA_HOME if set
+      2. Parent directory of this file (repo root)
+    """
+    if "ARKOUDA_HOME" in os.environ:
+        return Path(os.environ["ARKOUDA_HOME"]).resolve()
+    return Path(__file__).resolve().parents[1]
+
+
+def _resolve_config_file() -> Path:
+    """
+    Locate ServerModules.cfg.
+
+    Priority:
+      1. $ARKOUDA_CONFIG_FILE — if defined explicitly
+      2. $ARKOUDA_HOME/ServerModules.cfg — if ARKOUDA_HOME set
+      3. <repo_root>/ServerModules.cfg — default location
+    """
+    # 1. User override
+    cfg_env = os.environ.get("ARKOUDA_CONFIG_FILE")
+    if cfg_env:
+        return Path(cfg_env).expanduser().resolve()
+
+    # 2. Based on ARKOUDA_HOME or repo root
+    arkouda_home = _arkouda_home()
+    return arkouda_home / "ServerModules.cfg"
+
+
+@lru_cache(maxsize=1)
+def _enabled_chapel_modules() -> frozenset[str]:
+    """
+    Parse ServerModules.cfg once and return a frozenset of module basenames.
+    Ignores commented lines and blank lines.
+    """
+    cfg_path = _resolve_config_file()
+    names: set[str] = set()
+
+    if cfg_path.exists():
+        with cfg_path.open() as f:
+            for raw_line in f:
+                line = raw_line.strip()
+                if not line or line.startswith("#"):
+                    continue
+
+                # Strip inline comments
+                if "#" in line:
+                    line = line.split("#", 1)[0].strip()
+                    if not line:
+                        continue
+
+                # Allow entries like "parquet/ZarrMsg" → compare by basename
+                names.add(Path(line).name)
+
+    # Also honor ARKOUDA_SERVER_USER_MODULES (same semantics as server)
+    extra = os.environ.get("ARKOUDA_SERVER_USER_MODULES")
+    if extra:
+        for entry in extra.split(os.pathsep):
+            entry = entry.strip()
+            if not entry:
+                continue
+            names.add(Path(entry).name)
+
+    return frozenset(names)
+
+
+def chapel_module_exists(modname: str) -> bool:
+    """Fast lookup using the cached enabled-module list."""
+    return modname in _enabled_chapel_modules()
+
+
+def pytest_runtest_setup(item):
+    marker = item.get_closest_marker("requires_chapel_module")
+    if marker is None:
+        return
+
+    # Support both @pytest.mark.requires_chapel_module("LinalgMsg")
+    # and @pytest.mark.requires_chapel_module(name="LinalgMsg")
+    modname = marker.kwargs.get("name")
+    if modname is None and marker.args:
+        modname = marker.args[0]
+
+    if not modname:
+        pytest.fail(
+            "requires_chapel_module marker needs a module name, "
+            "e.g. @pytest.mark.requires_chapel_module('LinalgMsg')"
+        )
+
+    if not chapel_module_exists(modname):
+        pytest.skip(f"Skipping: Chapel module `{modname}` not enabled in ServerModules.cfg")
