@@ -563,15 +563,11 @@ class TestArkoudaExtensionArray:
 
     def test_from_sequence_dispatches_to_correct_subclass(self):
         """
-                Verify that ArkoudaExtensionArray._from_sequence chooses the right subclass.
-        <<<<<<< HEAD
-        =======
-
-        >>>>>>> f9d58a4c5 (Closes #4983:  pandas dataframe accessor for arkouda)
-                * pdarray          -> ArkoudaArray
-                * Strings          -> ArkoudaStringArray
-                * Categorical      -> ArkoudaCategoricalArray
-                * Python sequence  -> ArkoudaArray (via ak.array -> pdarray)
+        Verify that ArkoudaExtensionArray._from_sequence chooses the right subclass.
+        * pdarray          -> ArkoudaArray
+        * Strings          -> ArkoudaStringArray
+        * Categorical      -> ArkoudaCategoricalArray
+        * Python sequence  -> ArkoudaArray (via ak.array -> pdarray)
         """
         # pdarray -> ArkoudaArray
         ak_ints = ak.arange(5)
