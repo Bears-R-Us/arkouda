@@ -18,7 +18,7 @@ N = 100
 UNIQUE = N // 4
 
 
-@pytest.mark.skip_if_max_rank_greater_than(1)
+@pytest.mark.requires_chapel_module("EncodingMsg")
 class TestString:
     def test_strings_docstrings(self):
         import doctest

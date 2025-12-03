@@ -4,6 +4,8 @@ import os
 import subprocess
 import sys
 
+from functools import lru_cache
+from pathlib import Path
 from typing import Iterable, Iterator
 
 import pytest
@@ -305,3 +307,77 @@ def skip_by_scipy_version(request):
         scipy_requirement = request.node.get_closest_marker("skip_if_scipy_version_neq").args[0]
         if scipy.__version__ != scipy_requirement:
             pytest.skip("this test requires scipy version == {}".format(scipy_requirement))
+
+
+def _arkouda_home() -> Path:
+    """
+    Best-effort guess at Arkouda project root.
+
+    Priority:
+      1. $ARKOUDA_HOME if set
+      2. Parent of this file's directory
+    """
+    if "ARKOUDA_HOME" in os.environ:
+        return Path(os.environ["ARKOUDA_HOME"]).resolve()
+    return Path(__file__).resolve().parents[1]
+
+
+@lru_cache(maxsize=1)
+def _enabled_chapel_modules() -> frozenset[str]:
+    """Parse ServerModules.cfg once and return a set of enabled module basenames."""
+    arkouda_home = _arkouda_home()
+    cfg_path = arkouda_home / "ServerModules.cfg"
+
+    names: set[str] = set()
+
+    if cfg_path.exists():
+        with cfg_path.open() as f:
+            for raw_line in f:
+                line = raw_line.strip()
+                if not line or line.startswith("#"):
+                    continue
+
+                # Strip inline comments: "LinalgMsg  # something"
+                if "#" in line:
+                    line = line.split("#", 1)[0].strip()
+                    if not line:
+                        continue
+
+                # Support entries like "parquet/LinalgMsg"
+                names.add(Path(line).name)
+
+    extra = os.environ.get("ARKOUDA_SERVER_USER_MODULES")
+    if extra:
+        for entry in extra.split(os.pathsep):
+            entry = entry.strip()
+            if not entry:
+                continue
+            names.add(Path(entry).name)
+
+    return frozenset(names)
+
+
+def chapel_module_exists(modname: str) -> bool:
+    """Fast membership check against the cached enabled module set."""
+    return modname in _enabled_chapel_modules()
+
+
+def pytest_runtest_setup(item):
+    marker = item.get_closest_marker("requires_chapel_module")
+    if marker is None:
+        return
+
+    # Support both @pytest.mark.requires_chapel_module("LinalgMsg")
+    # and @pytest.mark.requires_chapel_module(name="LinalgMsg")
+    modname = marker.kwargs.get("name")
+    if modname is None and marker.args:
+        modname = marker.args[0]
+
+    if not modname:
+        pytest.fail(
+            "requires_chapel_module marker needs a module name, "
+            "e.g. @pytest.mark.requires_chapel_module('LinalgMsg')"
+        )
+
+    if not chapel_module_exists(modname):
+        pytest.skip(f"Skipping: Chapel module `{modname}` not enabled in ServerModules.cfg")
