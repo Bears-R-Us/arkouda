@@ -234,3 +234,87 @@ class TestArkoudaStringArrayEq:
         arr = ArkoudaStringArray(ak.array(["a", "b", "c"]))
         with pytest.raises(ValueError, match="Lengths must match"):
             _ = arr == ["a", "b"]  # len 2, not 1 and not len(arr)
+
+
+class TestArkoudaStringArrayGetitem:
+    def _make_array(self):
+        data = ak.array(["a", "b", "c", "d"])
+        return ArkoudaStringArray(data)
+
+    def test_getitem_scalar_returns_python_str(self):
+        arr = self._make_array()
+
+        result = arr[1]
+
+        assert isinstance(result, str)
+        assert result == "b"
+
+    def test_getitem_negative_scalar(self):
+        arr = self._make_array()
+
+        result = arr[-1]
+
+        assert isinstance(result, str)
+        assert result == "d"
+
+    def test_getitem_slice_returns_arkouda_string_array(self):
+        arr = self._make_array()
+
+        result = arr[1:3]
+
+        assert isinstance(result, ArkoudaStringArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array(["b", "c"], dtype=object))
+
+    def test_getitem_numpy_int64_indexer(self):
+        arr = self._make_array()
+        idx = np.array([0, 3], dtype=np.int64)
+
+        result = arr[idx]
+
+        assert isinstance(result, ArkoudaStringArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array(["a", "d"], dtype=object))
+
+    def test_getitem_numpy_uint64_indexer(self):
+        arr = self._make_array()
+        idx = np.array([1, 2], dtype=np.uint64)
+
+        result = arr[idx]
+
+        assert isinstance(result, ArkoudaStringArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array(["b", "c"], dtype=object))
+
+    def test_getitem_numpy_bool_mask(self):
+        arr = self._make_array()
+        mask = np.array([True, False, True, False])
+
+        result = arr[mask]
+
+        assert isinstance(result, ArkoudaStringArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array(["a", "c"], dtype=object))
+
+    def test_getitem_empty_numpy_int_indexer(self):
+        arr = self._make_array()
+        idx = np.array([], dtype=np.int64)
+
+        result = arr[idx]
+
+        assert isinstance(result, ArkoudaStringArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([], dtype=object))
+
+    def test_getitem_with_arkouda_int_indexer(self):
+        arr = self._make_array()
+        idx = ak.array([0, 2])
+
+        result = arr[idx]
+
+        assert isinstance(result, ArkoudaStringArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array(["a", "c"], dtype=object))
+
+    def test_getitem_with_arkouda_bool_indexer(self):
+        arr = self._make_array()
+        mask = ak.array([True, False, True, False])
+
+        result = arr[mask]
+
+        assert isinstance(result, ArkoudaStringArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array(["a", "c"], dtype=object))

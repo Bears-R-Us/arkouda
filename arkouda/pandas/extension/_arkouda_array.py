@@ -121,48 +121,189 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # If scalars is already a numpy array, we can preserve its dtype
         return cls(ak_array(scalars, dtype=dtype, copy=copy))
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any) -> Any:
+        """
+        Retrieve one or more values using a pandas/NumPy-style indexer.
+
+        Parameters
+        ----------
+        key : Any
+            A valid indexer for 1D array-like data. This may be:
+            - A scalar integer position (e.g. ``1``)
+            - A Python ``slice`` (e.g. ``1:3``)
+            - A list-like of integer positions
+            - A boolean mask (NumPy array, pandas Series, or Arkouda ``pdarray``)
+            - A NumPy array, pandas Index/Series, or Arkouda ``pdarray``/``Strings``.
+
+        Returns
+        -------
+        Any
+            A scalar value for scalar indexers, or an ``ArkoudaArray`` for sequence-like
+            indexers.
+
+        Raises
+        ------
+        TypeError
+            If ``key`` is not a supported indexer type.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> data = ak.arange(5)
+        >>> arr = ArkoudaArray(data)
+
+        Scalar integer index returns a Python scalar:
+
+        >>> arr[1]
+        np.int64(1)
+
+        Slicing returns another ArkoudaArray:
+
+        >>> arr[1:4]
+        ArkoudaArray([1 2 3])
+
+        List-like integer positions:
+
+        >>> arr[[0, 2, 4]]
+        ArkoudaArray([0 2 4])
+
+        Boolean mask (NumPy array):
+
+        >>> import numpy as np
+        >>> mask = np.array([True, False, True, False, True])
+        >>> arr[mask]
+        ArkoudaArray([0 2 4])
+        """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
 
-        # Convert numpy boolean mask to arkouda pdarray
+        # Normalize NumPy ndarray indexers
         if isinstance(key, np.ndarray):
-            if key.dtype == bool:
-                key = ak_array(key)
-            elif key.dtype.kind in {"i"}:
+            if key.dtype == bool or key.dtype == np.bool_:
+                key = ak_array(key, dtype=bool)
+            elif np.issubdtype(key.dtype, np.integer):
                 key = ak_array(key, dtype="int64")
-            elif key.dtype.kind in {"u"}:
+            elif np.issubdtype(key.dtype, np.unsignedinteger):
                 key = ak_array(key, dtype="uint64")
             else:
-                raise TypeError(f"Unsupported numpy index type {key.dtype}")
+                raise TypeError(f"Unsupported NumPy index type {key.dtype}")
 
-        result = self._data[key]
-        if np.isscalar(key):
-            if isinstance(result, pdarray):
-                return result[0]
+        # Normalize Python lists
+        elif isinstance(key, list):
+            if len(key) == 0:
+                # Empty selection -> empty ArkoudaArray of same dtype
+                empty = ak_array([], dtype=self._data.dtype)
+                return self.__class__(empty)
+
+            first = key[0]
+            if isinstance(first, (bool, np.bool_)):
+                key = ak_array(np.array(key, dtype=bool))
+            elif isinstance(first, (int, np.integer)):
+                key = ak_array(np.array(key, dtype=np.int64))
             else:
-                return result
+                raise TypeError(f"Unsupported list index type: {type(first)}")
+
+        # Perform the indexing operation
+        result = self._data[key]
+
+        # Scalar key → return Python scalar
+        if np.isscalar(key):
+            # If server returned a pdarray of length 1, extract scalar
+            if isinstance(result, pdarray) and result.size == 1:
+                return result[0]
+            return result
+
+        # All other cases → wrap result in same class
         return self.__class__(result)
 
-    #   TODO:  Simplify to use underlying array setter
-    def __setitem__(self, key, value):
-        from arkouda.numpy.dtypes import is_supported_int
+    def __setitem__(self, key: Any, value: Any) -> None:
+        """
+        Assign one or more values to the underlying Arkouda array in-place.
+
+        Parameters
+        ----------
+        key : Any
+            A valid positional indexer for the array. This may be a scalar integer,
+            slice, list-like of integers, boolean mask, NumPy array, pandas Index/Series,
+            or Arkouda ``pdarray``.
+        value : Any
+            A scalar value broadcast to the selected positions, or an array-like
+            (NumPy array, Arkouda ``pdarray``, or ``ArkoudaArray``) that is
+            aligned with ``key``.
+
+        Notes
+        -----
+        This operation mutates the underlying server-side array in-place.
+
+        Examples
+        --------
+        Basic scalar assignment by position:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> data = ak.arange(5)
+        >>> arr = ArkoudaArray(data)
+        >>> arr[0] = 42
+        >>> arr
+        ArkoudaArray([42 1 2 3 4])
+
+        Using a NumPy boolean mask:
+
+        >>> data = ak.arange(5)
+        >>> arr = ArkoudaArray(data)
+        >>> mask = arr.to_ndarray() % 2 == 0  # even positions
+        >>> arr[mask] = -1
+        >>> arr
+        ArkoudaArray([-1 1 -1 3 -1])
+
+        Using a NumPy integer indexer:
+
+        >>> data = ak.arange(5)
+        >>> arr = ArkoudaArray(data)
+        >>> idx = np.array([1, 3], dtype=np.int64)
+        >>> arr[idx] = 99
+        >>> arr
+        ArkoudaArray([0 99 2 99 4])
+
+        Assigning from another ArkoudaArray:
+
+        >>> data = ak.arange(5)
+        >>> arr = ArkoudaArray(data)
+        >>> other = ArkoudaArray(ak.arange(10, 15))
+        >>> idx = [1, 3, 4]
+        >>> arr[idx] = other[idx]
+        >>> arr
+        ArkoudaArray([0 11 2 13 14])
+        """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
 
-        # Convert numpy mask to pdarray if necessary
-        if isinstance(key, np.ndarray) and key.dtype == bool:
-            key = ak_array(key)
-        elif isinstance(key, np.ndarray) and is_supported_int(key.dtype):
-            key = ak_array(key)
+        # Normalize NumPy / Python indexers into Arkouda pdarrays where needed
+        if isinstance(key, np.ndarray):
+            # NumPy bool mask or integer indexer
+            if key.dtype == bool or key.dtype == np.bool_ or np.issubdtype(key.dtype, np.integer):
+                key = ak_array(key)
+        elif isinstance(key, list):
+            # Python list of bools or ints - convert to NumPy then to pdarray
+            if key and isinstance(key[0], (bool, np.bool_)):
+                key = ak_array(np.array(key, dtype=bool))
+            elif key and isinstance(key[0], (int, np.integer)):
+                key = ak_array(np.array(key, dtype=np.int64))
+
+        # Normalize the value into something the underlying pdarray understands
         if isinstance(value, ArkoudaArray):
             value = value._data
         elif isinstance(value, pdarray):
+            # already an Arkouda pdarray; nothing to do
             pass
-        elif isinstance(value, (int, float, bool)):  # Add scalar check
-            self._data[key] = value  # assign scalar to scalar position
+        elif np.isscalar(value):
+            # Fast path for scalar assignment
+            self._data[key] = value
             return
         else:
+            # Convert generic array-likes (Python lists, NumPy arrays, etc.)
+            # into Arkouda pdarrays.
             value = ak_array(value)
 
         self._data[key] = value
