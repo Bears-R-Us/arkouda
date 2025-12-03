@@ -1225,6 +1225,7 @@ def register_commands(config, source_files):
         "module Commands {",
         "use CommandMap, IOUtils, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
         "use BigInteger;",
+        "use UInt128;",
     ]
 
     stamps += extract_enum_imports(config)
@@ -1369,6 +1370,7 @@ def make_reg_config_module(config):
         "// ./doc-support.chpl is used instead when generating docs for this module\n"
         "module RegistrationConfig {",
         "use BigInteger;",
+        "use UInt128;",
         watermarkConfig(config),
         f"param arrayDimensionsStr = '{dims_str}';\n"
         f"type arrayDimensionsTy = ({dims_ty});\n"
