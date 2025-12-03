@@ -315,19 +315,39 @@ def _arkouda_home() -> Path:
 
     Priority:
       1. $ARKOUDA_HOME if set
-      2. Parent of this file's directory
+      2. Parent directory of this file (repo root)
     """
     if "ARKOUDA_HOME" in os.environ:
         return Path(os.environ["ARKOUDA_HOME"]).resolve()
     return Path(__file__).resolve().parents[1]
 
 
+def _resolve_config_file() -> Path:
+    """
+    Locate ServerModules.cfg.
+
+    Priority:
+      1. $ARKOUDA_CONFIG_FILE — if defined explicitly
+      2. $ARKOUDA_HOME/ServerModules.cfg — if ARKOUDA_HOME set
+      3. <repo_root>/ServerModules.cfg — default location
+    """
+    # 1. User override
+    cfg_env = os.environ.get("ARKOUDA_CONFIG_FILE")
+    if cfg_env:
+        return Path(cfg_env).expanduser().resolve()
+
+    # 2. Based on ARKOUDA_HOME or repo root
+    arkouda_home = _arkouda_home()
+    return arkouda_home / "ServerModules.cfg"
+
+
 @lru_cache(maxsize=1)
 def _enabled_chapel_modules() -> frozenset[str]:
-    """Parse ServerModules.cfg once and return a set of enabled module basenames."""
-    arkouda_home = _arkouda_home()
-    cfg_path = arkouda_home / "ServerModules.cfg"
-
+    """
+    Parse ServerModules.cfg once and return a frozenset of module basenames.
+    Ignores commented lines and blank lines.
+    """
+    cfg_path = _resolve_config_file()
     names: set[str] = set()
 
     if cfg_path.exists():
@@ -337,15 +357,16 @@ def _enabled_chapel_modules() -> frozenset[str]:
                 if not line or line.startswith("#"):
                     continue
 
-                # Strip inline comments: "LinalgMsg  # something"
+                # Strip inline comments
                 if "#" in line:
                     line = line.split("#", 1)[0].strip()
                     if not line:
                         continue
 
-                # Support entries like "parquet/LinalgMsg"
+                # Allow entries like "parquet/ZarrMsg" → compare by basename
                 names.add(Path(line).name)
 
+    # Also honor ARKOUDA_SERVER_USER_MODULES (same semantics as server)
     extra = os.environ.get("ARKOUDA_SERVER_USER_MODULES")
     if extra:
         for entry in extra.split(os.pathsep):
@@ -358,7 +379,7 @@ def _enabled_chapel_modules() -> frozenset[str]:
 
 
 def chapel_module_exists(modname: str) -> bool:
-    """Fast membership check against the cached enabled module set."""
+    """Fast lookup using the cached enabled-module list."""
     return modname in _enabled_chapel_modules()
 
 
