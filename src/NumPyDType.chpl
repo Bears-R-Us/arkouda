@@ -2,6 +2,7 @@
 module NumPyDType
 {
   use BigInteger;
+  use UInt128;
 
   /* In chapel the types int and real default to int(64) and real(64).
     We also need other types like float32, int32, etc */
@@ -10,6 +11,7 @@ module NumPyDType
     UInt16,
     UInt32,
     UInt64,
+    UInt128,
     Int8,
     Int16,
     Int32,
@@ -36,6 +38,7 @@ module NumPyDType
       if etype == uint(16)      then return DType.UInt16;
       if etype == uint(32)      then return DType.UInt32;
       if etype == uint          then return DType.UInt64;
+      if etype == uint128       then return DType.UInt128;
       if etype == int(8)        then return DType.Int8;
       if etype == int(16)       then return DType.Int16;
       if etype == int(32)       then return DType.Int32;
@@ -64,6 +67,7 @@ module NumPyDType
         when DType.UInt16 do return 2;
         when DType.UInt32 do return 4;
         when DType.UInt64 do return 8;
+        when DType.UInt128 do return 16;
         when DType.Int8 do return 1;
         when DType.Int16 do return 2;
         when DType.Int32 do return 4;
@@ -96,6 +100,7 @@ module NumPyDType
         when "uint16" do return DType.UInt16;
         when "uint32" do return DType.UInt32;
         when "uint64" do return DType.UInt64;
+        when "uint128" do return DType.UInt128;
         when "uint" do return DType.UInt64;
         when "int8" do return DType.Int8;
         when "int16" do return DType.Int16;
@@ -127,6 +132,7 @@ module NumPyDType
         when DType.UInt16 do return "uint16";
         when DType.UInt32 do return "uint32";
         when DType.UInt64 do return "uint64";
+        when DType.UInt128 do return "uint128";
         when DType.Int8 do return "int8";
         when DType.Int16 do return "int16";
         when DType.Int32 do return "int32";
@@ -147,6 +153,7 @@ module NumPyDType
       if t == uint(16) then return "uint16";
       if t == uint(32) then return "uint32";
       if t == uint then return "uint64";
+      if t == uint128 then return "uint128";
       if t == int(8) then return "int8";
       if t == int(16) then return "int16";
       if t == int(32) then return "int32";
@@ -295,6 +302,7 @@ module NumPyDType
         when DType.UInt16 do return DTK.Integer;
         when DType.UInt32 do return DTK.Integer;
         when DType.UInt64 do return DTK.Integer;
+        when DType.UInt128 do return DTK.Integer;
         when DType.Int8 do return DTK.Integer;
         when DType.Int16 do return DTK.Integer;
         when DType.Int32 do return DTK.Integer;
