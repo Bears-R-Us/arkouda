@@ -656,3 +656,293 @@ class ArkoudaExtensionArray(ExtensionArray):
 
     def _quantile(self, q, interpolation="linear"):
         raise NotImplementedError("_quantile is not yet implemented for ArkoudaExtensionArray.")
+
+    def _empty(self, *args, **kwargs):
+        raise NotImplementedError("_empty is not yet implemented for ArkoudaExtensionArray.")
+
+    def _accumulate(self, name, *, skipna=True, **kwargs):
+        raise NotImplementedError("_accumulate is not yet implemented for ArkoudaExtensionArray.")
+
+    @classmethod
+    def _from_sequence_of_strings(cls, strings, *, dtype=None, copy=False):
+        raise NotImplementedError(
+            "_from_sequence_of_strings is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    def _values_for_json(self):
+        raise NotImplementedError("_values_for_json is not yet implemented for ArkoudaExtensionArray.")
+
+    def _where(self, mask, other):
+        raise NotImplementedError("_where is not yet implemented for ArkoudaExtensionArray.")
+
+    def interpolate(self, method="linear", *, limit=None, **kwargs):
+        raise NotImplementedError("interpolate is not yet implemented for ArkoudaExtensionArray.")
+
+    def view(self, dtype=None):
+        raise NotImplementedError("view is not yet implemented for ArkoudaExtensionArray.")
+
+    def _pad_or_backfill(self, method, limit=None, mask=None):
+        raise NotImplementedError("_pad_or_backfill is not yet implemented for ArkoudaExtensionArray.")
+
+    # def _values_for_argsort(self):
+    #     raise NotImplementedError(
+    #         "_values_for_argsort is not yet implemented for ArkoudaExtensionArray."
+    #     )
+
+    def fillna(self, value=None, method=None, limit=None):
+        raise NotImplementedError("fillna is not yet implemented for ArkoudaExtensionArray.")
+
+    # ------------------------------------------------------------------
+    # Arithmetic / comparison / logical ops hooks
+    # ------------------------------------------------------------------
+
+    def _arith_method(self, *args, **kwargs):
+        raise NotImplementedError("_arith_method is not yet implemented for ArkoudaExtensionArray.")
+
+    def _cmp_method(self, *args, **kwargs):
+        raise NotImplementedError("_cmp_method is not yet implemented for ArkoudaExtensionArray.")
+
+    def _logical_method(self, *args, **kwargs):
+        raise NotImplementedError("_logical_method is not yet implemented for ArkoudaExtensionArray.")
+
+    # ------------------------------------------------------------------
+    # NDArray-backed construction / wrapping
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _from_backing_data(cls, *args, **kwargs):
+        raise NotImplementedError("_from_backing_data is not yet implemented for ArkoudaExtensionArray.")
+
+    @classmethod
+    def _simple_new(cls, *args, **kwargs):
+        raise NotImplementedError("_simple_new is not yet implemented for ArkoudaExtensionArray.")
+
+    def _box_func(self, *args, **kwargs):
+        raise NotImplementedError("_box_func is not yet implemented for ArkoudaExtensionArray.")
+
+    def _validate_scalar(self, *args, **kwargs):
+        raise NotImplementedError("_validate_scalar is not yet implemented for ArkoudaExtensionArray.")
+
+    def _validate_setitem_value(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_validate_setitem_value is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    def _wrap_ndarray_result(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_wrap_ndarray_result is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    def _wrap_reduction_result(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_wrap_reduction_result is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    # ------------------------------------------------------------------
+    # Reductions (currently delegated to arkouda-side implementations or unsupported)
+    # ------------------------------------------------------------------
+
+    def all(self, *args, **kwargs):
+        raise NotImplementedError("all is not yet implemented for ArkoudaExtensionArray.")
+
+    def any(self, *args, **kwargs):
+        raise NotImplementedError("any is not yet implemented for ArkoudaExtensionArray.")
+
+    def kurt(self, *args, **kwargs):
+        raise NotImplementedError("kurt is not yet implemented for ArkoudaExtensionArray.")
+
+    def max(self, *args, **kwargs):
+        raise NotImplementedError("max is not yet implemented for ArkoudaExtensionArray.")
+
+    def mean(self, *args, **kwargs):
+        raise NotImplementedError("mean is not yet implemented for ArkoudaExtensionArray.")
+
+    def median(self, *args, **kwargs):
+        raise NotImplementedError("median is not yet implemented for ArkoudaExtensionArray.")
+
+    def min(self, *args, **kwargs):
+        raise NotImplementedError("min is not yet implemented for ArkoudaExtensionArray.")
+
+    def prod(self, *args, **kwargs):
+        raise NotImplementedError("prod is not yet implemented for ArkoudaExtensionArray.")
+
+    def sem(self, *args, **kwargs):
+        raise NotImplementedError("sem is not yet implemented for ArkoudaExtensionArray.")
+
+    def skew(self, *args, **kwargs):
+        raise NotImplementedError("skew is not yet implemented for ArkoudaExtensionArray.")
+
+    def std(self, *args, **kwargs):
+        raise NotImplementedError("std is not yet implemented for ArkoudaExtensionArray.")
+
+    def sum(self, *args, **kwargs):
+        raise NotImplementedError("sum is not yet implemented for ArkoudaExtensionArray.")
+
+    def var(self, *args, **kwargs):
+        raise NotImplementedError("var is not yet implemented for ArkoudaExtensionArray.")
+
+    def swapaxes(self, *args, **kwargs):
+        raise NotImplementedError("swapaxes is not yet implemented for ArkoudaExtensionArray.")
+
+    def value_counts(self, *args, **kwargs):
+        raise NotImplementedError("value_counts is not yet implemented for ArkoudaExtensionArray.")
+
+    # ------------------------------------------------------------------
+    # String-like methods (intentionally not supported for this EA)
+    # ------------------------------------------------------------------
+
+    def _str_capitalize(self, *args, **kwargs):
+        raise NotImplementedError("_str_capitalize is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_casefold(self, *args, **kwargs):
+        raise NotImplementedError("_str_casefold is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_contains(self, *args, **kwargs):
+        raise NotImplementedError("_str_contains is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_count(self, *args, **kwargs):
+        raise NotImplementedError("_str_count is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_encode(self, *args, **kwargs):
+        raise NotImplementedError("_str_encode is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_endswith(self, *args, **kwargs):
+        raise NotImplementedError("_str_endswith is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_extract(self, *args, **kwargs):
+        raise NotImplementedError("_str_extract is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_find(self, *args, **kwargs):
+        raise NotImplementedError("_str_find is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_find_(self, *args, **kwargs):
+        raise NotImplementedError("_str_find_ is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_findall(self, *args, **kwargs):
+        raise NotImplementedError("_str_findall is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_fullmatch(self, *args, **kwargs):
+        raise NotImplementedError("_str_fullmatch is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_get(self, *args, **kwargs):
+        raise NotImplementedError("_str_get is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_get_dummies(self, *args, **kwargs):
+        raise NotImplementedError("_str_get_dummies is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_getitem(self, *args, **kwargs):
+        raise NotImplementedError("_str_getitem is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_index(self, *args, **kwargs):
+        raise NotImplementedError("_str_index is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_isalnum(self, *args, **kwargs):
+        raise NotImplementedError("_str_isalnum is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_isalpha(self, *args, **kwargs):
+        raise NotImplementedError("_str_isalpha is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_isdecimal(self, *args, **kwargs):
+        raise NotImplementedError("_str_isdecimal is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_isdigit(self, *args, **kwargs):
+        raise NotImplementedError("_str_isdigit is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_islower(self, *args, **kwargs):
+        raise NotImplementedError("_str_islower is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_isnumeric(self, *args, **kwargs):
+        raise NotImplementedError("_str_isnumeric is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_isspace(self, *args, **kwargs):
+        raise NotImplementedError("_str_isspace is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_istitle(self, *args, **kwargs):
+        raise NotImplementedError("_str_istitle is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_isupper(self, *args, **kwargs):
+        raise NotImplementedError("_str_isupper is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_join(self, *args, **kwargs):
+        raise NotImplementedError("_str_join is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_len(self, *args, **kwargs):
+        raise NotImplementedError("_str_len is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_lower(self, *args, **kwargs):
+        raise NotImplementedError("_str_lower is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_lstrip(self, *args, **kwargs):
+        raise NotImplementedError("_str_lstrip is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_map(self, *args, **kwargs):
+        raise NotImplementedError("_str_map is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_match(self, *args, **kwargs):
+        raise NotImplementedError("_str_match is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_normalize(self, *args, **kwargs):
+        raise NotImplementedError("_str_normalize is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_pad(self, *args, **kwargs):
+        raise NotImplementedError("_str_pad is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_partition(self, *args, **kwargs):
+        raise NotImplementedError("_str_partition is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_removeprefix(self, *args, **kwargs):
+        raise NotImplementedError("_str_removeprefix is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_removesuffix(self, *args, **kwargs):
+        raise NotImplementedError("_str_removesuffix is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_repeat(self, *args, **kwargs):
+        raise NotImplementedError("_str_repeat is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_replace(self, *args, **kwargs):
+        raise NotImplementedError("_str_replace is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_rfind(self, *args, **kwargs):
+        raise NotImplementedError("_str_rfind is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_rindex(self, *args, **kwargs):
+        raise NotImplementedError("_str_rindex is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_rpartition(self, *args, **kwargs):
+        raise NotImplementedError("_str_rpartition is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_rsplit(self, *args, **kwargs):
+        raise NotImplementedError("_str_rsplit is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_rstrip(self, *args, **kwargs):
+        raise NotImplementedError("_str_rstrip is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_slice(self, *args, **kwargs):
+        raise NotImplementedError("_str_slice is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_slice_replace(self, *args, **kwargs):
+        raise NotImplementedError("_str_slice_replace is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_split(self, *args, **kwargs):
+        raise NotImplementedError("_str_split is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_startswith(self, *args, **kwargs):
+        raise NotImplementedError("_str_startswith is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_strip(self, *args, **kwargs):
+        raise NotImplementedError("_str_strip is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_swapcase(self, *args, **kwargs):
+        raise NotImplementedError("_str_swapcase is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_title(self, *args, **kwargs):
+        raise NotImplementedError("_str_title is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_translate(self, *args, **kwargs):
+        raise NotImplementedError("_str_translate is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_upper(self, *args, **kwargs):
+        raise NotImplementedError("_str_upper is not yet implemented for ArkoudaExtensionArray.")
+
+    def _str_wrap(self, *args, **kwargs):
+        raise NotImplementedError("_str_wrap is not yet implemented for ArkoudaExtensionArray.")
