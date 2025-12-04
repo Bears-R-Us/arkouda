@@ -21,6 +21,12 @@ or
 
 .. function:: proc bigIntNBytesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == bigint
 
+.. function:: proc bigIntCreationOneLimbMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == int(64) || array_dtype == uint(64)
+
+.. function:: proc bigIntCreationOneLimbMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == real(64)
+
+.. function:: proc bigIntCreationMultiLimbMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where (array_dtype == int(64) || array_dtype == uint(64)) && array_nd == 1
+
 .. function:: proc bigIntCreationMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == bigint
 
 .. function:: proc bigintToUintArraysMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype == bigint
