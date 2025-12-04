@@ -45,7 +45,7 @@ CMP_OPS: List[Tuple[str, Callable]] = [
 
 # Unary ops
 UNARY_OPS: List[Tuple[str, Callable]] = [
-    # ("pos", op.pos),
+    ("pos", op.pos),
     ("neg", op.neg),
     ("invert", op.invert),  # bitwise not; invalid for float
 ]
@@ -101,7 +101,117 @@ def _numpy_equivalent(a: ak.pdarray):
         return a
 
 
+# --- Parametrized binary op tests (array ⊗ array) ---
+@pytest.mark.xfail(reason="Requires ak.minimum (#5118) and bug fix for rshift (#5115)")
+@pytest.mark.parametrize("dtype", DTYPES)
+@pytest.mark.parametrize("name,fn", BINARY_OPS)
+def test_binary_ops_array_array_alignment(dtype, name, fn):
+    if dtype is ak.bool_ and name in {"add", "sub", "mul", "truediv", "floordiv", "mod", "pow"}:
+        pytest.skip(f"NumPy does not support {name} for boolean dtype")
+    # Skip invalid dtype/op combinations
+    integer_only = name in {"lshift", "rshift", "and_", "or_", "xor"}
+    if integer_only and dtype is ak.float64:
+        pytest.skip(f"{name} not valid for float64")
+
+    if name in {"lshift", "rshift"} and dtype is ak.bool_:
+        pytest.skip(f"{name} not meaningful for bool")
+
+    # Prepare operands with constraints to avoid undefined behavior
+    rhs_nonzero = name in {"truediv", "floordiv", "mod"}
+    rhs_nonneg = name in {"lshift", "rshift", "pow"}
+
+    a = _rand_array(dtype)
+    b = _rand_array(dtype, nonzero=rhs_nonzero, nonneg=rhs_nonneg)
+
+    # Extra guarding for pow to keep magnitudes reasonable
+    if name == "pow":
+        if dtype is ak.float64:
+            b = ak.minimum(b, 6.0)  # floats: reasonable exponent
+
+        elif dtype in (ak.int64, ak.uint64):
+            b = ak.minimum(b, 7)  # ints: small exponent to prevent overflow stalls
+
+        elif dtype is ak.bool_:
+            # Boolean exponents are {0,1}
+            b = b % 2
+
+    ak_res = fn(a, b)
+    np_res = fn(_numpy_equivalent(a), _numpy_equivalent(b))
+
+    # Division on ints yields float in NumPy; Arkouda should match
+    if name == "truediv" or (dtype is ak.float64):
+        assert_almost_equivalent(ak_res, np_res)
+    else:
+        assert_arkouda_array_equivalent(ak_res, np_res)
+
+
+# --- Scalar broadcasting (array ⊗ scalar and scalar ⊗ array) ---
+@pytest.mark.xfail(reason="Requires bug fixes for floordiv, mod, pow (#5113, #5112, #5114)")
+@pytest.mark.parametrize("dtype", DTYPES)
+@pytest.mark.parametrize("name,fn", BINARY_OPS)
+def test_binary_ops_array_scalar_alignment(dtype, name, fn):
+    # Arithmetic on booleans is not supported by NumPy
+    if dtype is ak.bool_ and name in {"add", "sub", "mul", "truediv", "floordiv", "mod", "pow"}:
+        pytest.skip(f"NumPy does not support {name} for boolean dtype")
+
+    integer_only = name in {"lshift", "rshift", "and_", "or_", "xor"}
+    if integer_only and dtype is ak.float64:
+        pytest.skip(f"{name} not valid for float64")
+    if name in {"lshift", "rshift"} and dtype is ak.bool_:
+        pytest.skip(f"{name} not meaningful for bool")
+
+    a = _rand_array(dtype)
+
+    # Choose a scalar compatible with dtype and operator constraints
+    if dtype is ak.bool_:
+        scalar = True
+    elif dtype is ak.float64:
+        scalar = 3.5
+    elif dtype is ak.uint64:
+        scalar = np.uint64(5)
+    else:  # int64
+        scalar = 5
+
+    if name in {"truediv", "floordiv", "mod"}:
+        # Ensure scalar is nonzero when used as RHS
+        scalar_rhs = scalar if (scalar != 0) else (1 if dtype is not ak.float64 else 1.0)
+    else:
+        scalar_rhs = scalar
+
+    # power/shift require nonnegative RHS
+    if name in {"lshift", "rshift", "pow"}:
+        scalar_rhs = abs(scalar_rhs)
+
+    # array OP scalar
+    ak_res = fn(a, scalar_rhs)
+    np_res = fn(_numpy_equivalent(a), scalar_rhs)
+    if name == "truediv" or (dtype is ak.float64):
+        assert_almost_equivalent(ak_res, np_res)
+    else:
+        assert_arkouda_array_equivalent(ak_res, np_res)
+
+    # scalar OP array
+    ak_res2 = fn(scalar_rhs, a)
+    np_res2 = fn(scalar_rhs, _numpy_equivalent(a))
+    if name == "truediv" or (dtype is ak.float64):
+        assert_almost_equivalent(ak_res2, np_res2)
+    else:
+        assert_arkouda_array_equivalent(ak_res2, np_res2)
+
+
+# --- Comparisons (array ⊗ array) ---
+@pytest.mark.parametrize("dtype", DTYPES)
+@pytest.mark.parametrize("name,fn", CMP_OPS)
+def test_comparison_ops_alignment(dtype, name, fn):
+    a = _rand_array(dtype)
+    b = _rand_array(dtype)
+    ak_res = fn(a, b)
+    np_res = fn(_numpy_equivalent(a), _numpy_equivalent(b))
+    assert_arkouda_array_equivalent(ak_res, np_res)
+
+
 # --- Unary operator alignment ---
+@pytest.mark.xfail(reason="Requires pdarray.__pos__ (#5116) and bug fixes in __neg__ (#5117, #5119)")
 @pytest.mark.parametrize("dtype", DTYPES)
 @pytest.mark.parametrize("name,fn", UNARY_OPS)
 def test_unary_ops_alignment(dtype, name, fn):
