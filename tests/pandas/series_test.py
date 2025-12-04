@@ -18,6 +18,7 @@ INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool_, ak.bigint]
 
 
 class TestSeries:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_series_docstrings(self):
         import doctest
 
@@ -83,6 +84,7 @@ class TestSeries:
                 pd_ser = pd.Series(val.to_ndarray(), idx.to_ndarray())
             pd_assert_series_equal(ak_ser.to_pandas(), pd_ser)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype_index", [ak.int64, ak.uint64])
     def test_lookup(self, dtype, dtype_index):
@@ -140,6 +142,7 @@ class TestSeries:
             # we have exactly one False
             assert added.values.sum() == 99
 
+    @pytest.mark.requires_chapel_module("KExtremeMsg")
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
     def test_topn(self, dtype):
         top = ak.Series(ak.arange(100, dtype=dtype)).topn(50)
@@ -262,6 +265,7 @@ class TestSeries:
         assert s.memory_usage(unit="KB", index=True) == 2 * size * int64_size / 1024
         assert s.memory_usage(unit="B", index=True) == 2 * size * int64_size
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_map(self):
         a = ak.Series(ak.array(["1", "1", "4", "4", "4"]))
         b = ak.Series(ak.array([2, 3, 2, 3, 4]))
@@ -422,6 +426,7 @@ class TestSeries:
         pd_assert_frame_equal(akdf.to_pandas(), pddf)
         pd_assert_series_equal(akdf.to_pandas()["test"], pddf["test"], check_names=False)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_getitem_scalars(self):
         ints = [0, 1, 3, 7, 3]
         floats = [0.0, 1.5, 0.5, 1.5, -1.0]
@@ -483,6 +488,7 @@ class TestSeries:
         assert s3_a2.index.tolist() == _s3_a2.index.tolist()
         assert s3_a2.values.tolist() == _s3_a2.values.tolist()
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_getitem_vectors(self):
         ints = [0, 1, 3, 7, 3]
         floats = [0.0, 1.5, 0.5, 1.5, -1.0]

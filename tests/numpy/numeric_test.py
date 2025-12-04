@@ -173,6 +173,7 @@ def _infinity_edge_case_helper(np_func, ak_func):
 
 
 class TestNumeric:
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_numeric_docstrings(self):
         import doctest
@@ -459,6 +460,7 @@ class TestNumeric:
 
     #   cumsum and cumprod tests were identical, and so have been combined.
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     def test_cumsum_and_cumprod_1D(self, num_type):
         na = np.linspace(1, 10, 10).astype(num_type)
@@ -469,6 +471,7 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.cumsum(np.array([range(0, 10)]).astype(num_type))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("axis_", [None, 0, 1])
@@ -479,6 +482,7 @@ class TestNumeric:
         for npfunc, akfunc in ((np.cumsum, ak.cumsum), (np.cumprod, ak.cumprod)):
             ak_assert_almost_equivalent(npfunc(na, axis=axis_), akfunc(pda, axis=axis_))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("axis_", [None, 0, 1, 2])
@@ -702,6 +706,7 @@ class TestNumeric:
             assert isinstance(cast_str, ak.Strings)
             assert isinstance(cast_cat, ak.Categorical)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_precision(self, prob_size):
         # See https://github.com/Bears-R-Us/arkouda/issues/964
@@ -1062,6 +1067,7 @@ class TestNumeric:
     # the resulting matrices are on the order of size*size.
 
     # tril works on ints, floats, or bool
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -1080,7 +1086,8 @@ class TestNumeric:
                 assert_almost_equal(npa, ppa)
 
     # triu works on ints, floats, or bool
-
+    @pytest.mark.requires_chapel_module("StatsMsg")
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.skip_if_rank_not_compiled(2)
@@ -1128,6 +1135,8 @@ class TestNumeric:
                     )
 
     # eye works on ints, floats, or bool
+    @pytest.mark.requires_chapel_module("StatsMsg")
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -1144,6 +1153,8 @@ class TestNumeric:
                 assert_almost_equal(nda, pda)
 
     # matmul works on ints, floats, or bool
+    @pytest.mark.requires_chapel_module("StatsMsg")
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
@@ -1164,6 +1175,8 @@ class TestNumeric:
             npProduct = np.matmul(ndaLeft, ndaRight)
             assert_almost_equal(npProduct, akProduct.to_ndarray())
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.skip_if_rank_not_compiled((2, 3))
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)

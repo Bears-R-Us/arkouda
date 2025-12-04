@@ -10,6 +10,7 @@ from arkouda.util import is_float, is_int, is_numeric, map
 
 
 class TestUtil:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_util_docstrings(self):
         import doctest
@@ -17,6 +18,7 @@ class TestUtil:
         result = doctest.testmod(util, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    @pytest.mark.requires_chapel_module("KExtremeMsg")
     def test_sparse_sum_helper(self):
         cfg = ak.get_config()
         N = (10**4) * cfg["numLocales"]
@@ -97,6 +99,7 @@ class TestUtil:
         for item in [floats, Index(floats), Series(floats)]:
             assert is_float(item)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_map(self):
         a = ak.array(["1", "1", "4", "4", "4"])
         b = ak.array([2, 3, 2, 3, 4])

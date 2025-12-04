@@ -413,6 +413,7 @@ class TestRandom:
         assert_arkouda_array_equal(scal_sample, rng.poisson(lam=scal_lam, size=shape))
         assert_arkouda_array_equal(arr_sample, rng.poisson(lam=arr_lam, size=shape))
 
+    @pytest.mark.requires_chapel_module("ParquetMsg")
     def test_poisson_seed_reproducibility(self):
         # test resolution of issue #3322, same seed gives same result across machines / num locales
         iseed = 11  # retains non pytest.seed because it asserts specific values

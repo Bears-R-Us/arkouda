@@ -34,6 +34,7 @@ class TestStats:
         cls.nmps = [cls.npx, cls.npy, cls.npu, cls.npb, cls.npf]
         cls.pands = [cls.pdx, cls.pdy, cls.pdu, cls.pdb, cls.pdf]
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_mean_var_and_std(self):
         for ark, npy in zip(self.arks, self.nmps):
             assert ark.var() == pytest.approx(npy.var())
@@ -44,6 +45,7 @@ class TestStats:
             assert ark.var(ddof=1) == pytest.approx(pand.var())
             assert ark.std(ddof=1) == pytest.approx(pand.std())
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_cov_and_corr(self):
         # test that cov and corr variations are equivalent
         for fn in "cov", "corr":
@@ -66,6 +68,7 @@ class TestStats:
                 assert getattr(self.f, fn)(ark) == pytest.approx(getattr(self.pdf, fn)(pand))
                 assert getattr(self.u, fn)(ark) == pytest.approx(getattr(self.pdu, fn)(pand))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
     @pytest.mark.parametrize("dtype2", NUMERIC_TYPES)
@@ -77,6 +80,7 @@ class TestStats:
         b = ak.arange(size, dtype=dtype2)
         assert ak.allclose(a, b)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_allclose_edge_cases(self):
         # Tolerance tests
         a = ak.array([1.0, 2.0, 3.0])
@@ -110,6 +114,7 @@ class TestStats:
         b_mixed = ak.array([1.0, np.nan, 3.0])
         assert not ak.allclose(a_mixed, b_mixed, equal_nan=True)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_corr_matrix(self):
         ak_df = ak.DataFrame({"x": self.x, "y": self.y, "u": self.u, "b": self.b, "f": self.f}).corr()
         pd_df = pd.DataFrame(

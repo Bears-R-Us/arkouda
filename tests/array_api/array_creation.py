@@ -52,6 +52,7 @@ class TestArrayCreation:
             assert b.shape == a.shape
             assert b.tolist() == a.tolist()
 
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -71,6 +72,7 @@ class TestArrayCreation:
                 ak_triu = array_triu(pda, k=diag)._array
                 assert_almost_equivalent(ak_triu, np_triu)
 
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -90,6 +92,7 @@ class TestArrayCreation:
                 ak_tril = array_tril(pda, k=diag)._array
                 assert_almost_equivalent(np_tril, ak_tril)
 
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)

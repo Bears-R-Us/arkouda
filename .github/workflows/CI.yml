@@ -423,6 +423,8 @@ jobs:
 
   arkouda_multi-dim:
     runs-on: ubuntu-latest
+    env:
+      ARKOUDA_CONFIG_FILE: .configs/MultiDimTestServerModules.cfg
     strategy:
       matrix:
         chpl-version: ['2.4.0','2.5.0','2.6.0']
@@ -460,13 +462,9 @@ jobs:
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
-    - name: Use MultiDim Configs
-      run: |
-        cp .configs/registration-config-multi-dim.json registration-config.json
-        bash scripts/trim_server_modules.sh
     - name: Build Arkouda
       run: |
-        /usr/bin/time -v make
+        /usr/bin/time -v make ARRAY_ND_MAX=3 
     - name: Install Arkouda
       run: |
         python3 -m pip install .[dev]

@@ -644,6 +644,7 @@ class TestAsserters:
                 convert_left(s_float), convert_right(s_2atol), check_exact=False, atol=atol
             )
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])

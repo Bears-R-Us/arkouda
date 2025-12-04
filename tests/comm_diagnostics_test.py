@@ -39,6 +39,7 @@ diagnostic_stats_functions = [
 ]
 
 
+@pytest.mark.requires_chapel_module("CommDiagnosticsMsg")
 class TestCommDiagnostics:
     @pytest.mark.skip_if_max_rank_greater_than(1)
     def test_comm_diagnostics_docstrings(self):
