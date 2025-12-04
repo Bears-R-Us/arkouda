@@ -33,6 +33,7 @@ module ArgSortMsg
     use Logging;
     use Message;
     use BigInteger;
+    use UInt128;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -82,6 +83,39 @@ module ArgSortMsg
     import Reflection.canResolveMethod;
     record contrivedComparator: keyPartComparator {
       const dc = new defaultComparator();
+      // Special-case UInt128: produce up to 2 key parts (hi, then lo), then stop.
+      inline proc keyPart(elt: UInt128, i: int) {
+        if i == 0 {
+          return (keyPartStatus.returned, elt.hi); // high 64 bits
+        } else if i == 1 {
+          return (keyPartStatus.returned, elt.lo); // low 64 bits
+        } else {
+          return (keyPartStatus.pre, 0:uint(64));  // no more key parts
+        }
+      }
+      // Special-case: (UInt128, int) key for argsort.
+      // We break the key into three 64-bit parts: hi, lo, and index.
+      inline proc keyPart(a: (UInt128, int), i: int) {
+        const val = a[0];
+        const idx = a[1];
+
+        if i == 0 {
+          // First sort pass: high 64 bits
+          return (keyPartStatus.returned, val.hi);
+        } else if i == 1 {
+          // Second pass: low 64 bits
+          return (keyPartStatus.returned, val.lo);
+        } else if i == 2 {
+          // Third pass: index tie-breaker, with sign-bit flip like makePart()
+          var part = idx:uint(64);
+          const one: uint(64) = 1;
+          part = part ^ (one << 63);
+          return (keyPartStatus.returned, part);
+        } else {
+          // No more key parts
+          return (keyPartStatus.pre, 0:uint(64));
+        }
+      }
       proc keyPart(a, i: int) {
         if canResolveMethod(dc, "keyPart", a, 0) {
           return dc.keyPart(a, i);
