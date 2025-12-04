@@ -415,19 +415,22 @@ production environments.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaFloat64Dtype" title="arkouda.pandas.extension.ArkoudaFloat64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaFloat64Dtype</span></code></a></p></td>
 <td><p>Arkouda-backed 64-bit floating-point dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaInt64Dtype" title="arkouda.pandas.extension.ArkoudaInt64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaInt64Dtype</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor" title="arkouda.pandas.extension.ArkoudaIndexAccessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaIndexAccessor</span></code></a></p></td>
+<td><p>Arkouda-backed index accessor for pandas <code class="docutils literal notranslate"><span class="pre">Index</span></code> and <code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaInt64Dtype" title="arkouda.pandas.extension.ArkoudaInt64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaInt64Dtype</span></code></a></p></td>
 <td><p>Extension dtype for Arkouda-backed 64-bit integers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray" title="arkouda.pandas.extension.ArkoudaStringArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringArray</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray" title="arkouda.pandas.extension.ArkoudaStringArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringArray</span></code></a></p></td>
 <td><p>Abstract base class for custom 1-D array types.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringDtype" title="arkouda.pandas.extension.ArkoudaStringDtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringDtype</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringDtype" title="arkouda.pandas.extension.ArkoudaStringDtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringDtype</span></code></a></p></td>
 <td><p>Arkouda-backed string dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint64Dtype" title="arkouda.pandas.extension.ArkoudaUint64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint64Dtype</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint64Dtype" title="arkouda.pandas.extension.ArkoudaUint64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint64Dtype</span></code></a></p></td>
 <td><p>Arkouda-backed unsigned 64-bit integer dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint8Dtype" title="arkouda.pandas.extension.ArkoudaUint8Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint8Dtype</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint8Dtype" title="arkouda.pandas.extension.ArkoudaUint8Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint8Dtype</span></code></a></p></td>
 <td><p>Arkouda-backed unsigned 8-bit integer dtype.</p></td>
 </tr>
 </tbody>
@@ -2140,6 +2143,297 @@ instances of <cite>type</cite>.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaIndexAccessor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.extension.</span></span><span class="sig-name descname"><span class="pre">ArkoudaIndexAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pandas_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.MultiIndex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_index_accessor.html#ArkoudaIndexAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaIndexAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Arkouda-backed index accessor for pandas <code class="docutils literal notranslate"><span class="pre">Index</span></code> and <code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code>.</p>
+<p>This accessor provides methods for converting between:</p>
+<ul class="simple">
+<li><p>NumPy-backed pandas indexes</p></li>
+<li><p>pandas indexes backed by <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a> (zero-copy EA mode)</p></li>
+<li><p>legacy Arkouda <code class="docutils literal notranslate"><span class="pre">ak.Index</span></code> and <code class="docutils literal notranslate"><span class="pre">ak.MultiIndex</span></code> objects</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">.ak</span></code> namespace mirrors the DataFrame accessor, providing a consistent
+interface for distributed index operations. All conversions avoid unnecessary
+NumPy materialization unless explicitly requested via <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.collect" title="arkouda.pandas.extension.ArkoudaIndexAccessor.collect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">collect()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pandas_obj</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>pd.Index</em><em>, </em><em>pd.MultiIndex</em><em>]</em>) – The pandas <code class="docutils literal notranslate"><span class="pre">Index</span></code> or <code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code> instance that this accessor wraps.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">to_ak</span></code> → pandas object, Arkouda-backed (ExtensionArrays).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_ak_legacy</span></code> → legacy Arkouda index objects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">collect</span></code> → NumPy-backed pandas object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_arkouda</span></code> → reports whether the index is Arkouda-backed.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Basic single-level Index conversion:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;vals&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Convert to Arkouda-backed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Materialize back:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">restored</span> <span class="o">=</span> <span class="n">ak_idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">restored</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Convert to legacy Arkouda:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_legacy</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_legacy</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.index.Index&#39;&gt;</span>
+</pre></div>
+</div>
+<p>MultiIndex conversion:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arrays</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">midx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;num&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_midx</span> <span class="o">=</span> <span class="n">midx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_midx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaIndexAccessor.collect">
+<span class="sig-name descname"><span class="pre">collect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.MultiIndex</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_index_accessor.html#ArkoudaIndexAccessor.collect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.collect" title="Link to this definition">¶</a></dt>
+<dd><p>Materialize this Index or MultiIndex back to a plain NumPy-backed
+pandas index.</p>
+<p>This is the opposite of <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak" title="arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_ak()</span></code></a>. If the index is already
+NumPy-backed, this is effectively a shallow copy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An Index whose underlying data are plain NumPy arrays.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[pd.Index, pd.MultiIndex]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – If the index is Arkouda-backed but does not expose the expected
+<code class="docutils literal notranslate"><span class="pre">_data</span></code> attribute, or if the index type is unsupported.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Single-level Index round-trip:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np_idx</span> <span class="o">=</span> <span class="n">ak_idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np_idx</span>
+<span class="go">Index([1, 2, 3], dtype=&#39;int64&#39;, name=&#39;x&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np_idx</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Behavior when already NumPy-backed (no-op except shallow copy):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plain</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plain2</span> <span class="o">=</span> <span class="n">plain</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plain2</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">plain</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Verifying that Arkouda-backed values materialize to NumPy:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_idx</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">ak_idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<span class="go">&lt;class &#39;pandas.core.arrays.numpy_.NumpyExtensionArray&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaIndexAccessor.from_ak_legacy">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ak_legacy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">akidx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.index.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.index.MultiIndex</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.MultiIndex</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_index_accessor.html#ArkoudaIndexAccessor.from_ak_legacy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.from_ak_legacy" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a legacy Arkouda <code class="docutils literal notranslate"><span class="pre">ak.Index</span></code> or <code class="docutils literal notranslate"><span class="pre">ak.MultiIndex</span></code> into a
+pandas Index/MultiIndex backed by Arkouda ExtensionArrays.</p>
+<p>This is the index analogue of <code class="docutils literal notranslate"><span class="pre">df.ak.from_ak_legacy_ea()</span></code>: it performs a
+zero-copy-style wrapping of Arkouda server-side arrays into
+<a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a> objects, producing a pandas Index or
+MultiIndex whose levels remain distributed on the Arkouda server.</p>
+<p>No materialization to NumPy occurs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>akidx</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>ak_Index</em><em>, </em><em>ak_MultiIndex</em><em>]</em>) – The legacy Arkouda Index or MultiIndex to wrap.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pandas index object whose underlying data are
+<a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a> instances referencing the Arkouda
+server-side arrays.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[pd.Index, pd.MultiIndex]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ak.Index</span></code> → <code class="docutils literal notranslate"><span class="pre">pd.Index</span></code> with Arkouda-backed values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ak.MultiIndex</span></code> → <code class="docutils literal notranslate"><span class="pre">pd.MultiIndex</span></code> where each level is backed by
+an <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a>.</p></li>
+<li><p>This function does not validate whether the input is already wrapped;
+callers should ensure the argument is a legacy Arkouda index object.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</pre></div>
+</div>
+<p>Wrap a legacy <code class="docutils literal notranslate"><span class="pre">ak.Index</span></code> into a pandas <code class="docutils literal notranslate"><span class="pre">Index</span></code> without copying:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pd_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">ak_idx</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pd_idx</span>
+<span class="go">Index([0, 1, 2, 3, 4], dtype=&#39;int64&#39;)</span>
+</pre></div>
+</div>
+<p>The resulting index stores its values on the Arkouda server:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">pd_idx</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+</pre></div>
+</div>
+<p>MultiIndex example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_lvl1</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_lvl2</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_mi</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">([</span><span class="n">ak_lvl1</span><span class="p">,</span> <span class="n">ak_lvl2</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;letter&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd_mi</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">ak_mi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pd_mi</span>
+<span class="go">MultiIndex([(&#39;a&#39;, 1),</span>
+<span class="go">            (&#39;a&#39;, 2),</span>
+<span class="go">            (&#39;b&#39;, 1),</span>
+<span class="go">            (&#39;b&#39;, 2)],</span>
+<span class="go">           names=[&#39;letter&#39;, &#39;number&#39;])</span>
+</pre></div>
+</div>
+<p>Each level is backed by an Arkouda ExtensionArray and remains distributed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">level</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">pd_mi</span><span class="o">.</span><span class="n">levels</span><span class="p">]</span>
+<span class="go">[&lt;class &#39;arkouda.pandas.extension._arkouda_string_array.ArkoudaStringArray&#39;&gt;,</span>
+<span class="go">&lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;]</span>
+</pre></div>
+</div>
+<p>No NumPy materialization occurs; the underlying data stay on the Arkouda server.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaIndexAccessor.is_arkouda">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_arkouda</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></em><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.is_arkouda" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether the underlying Index is Arkouda-backed.</p>
+<p>An Index or MultiIndex is considered Arkouda-backed if its underlying
+storage uses <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a>. This applies to both
+single-level and multi-level indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the Index/MultiIndex is backed by Arkouda server-side
+arrays, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>NumPy-backed Index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Arkouda-backed single-level Index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Arkouda-backed MultiIndex:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arrays</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">midx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_midx</span> <span class="o">=</span> <span class="n">midx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_midx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak">
+<span class="sig-name descname"><span class="pre">to_ak</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.MultiIndex</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_index_accessor.html#ArkoudaIndexAccessor.to_ak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak" title="Link to this definition">¶</a></dt>
+<dd><p>Convert this pandas Index or MultiIndex to an Arkouda-backed index.</p>
+<p>Unlike <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak_legacy" title="arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak_legacy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_ak_legacy()</span></code></a>, which returns a legacy Arkouda Index object,
+this method returns a <em>pandas</em> Index or MultiIndex whose data reside
+on the Arkouda server and are wrapped in
+<a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a> ExtensionArrays.</p>
+<p>The conversion is zero-copy with respect to NumPy: no materialization
+to local NumPy arrays occurs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An Index whose underlying data live on the Arkouda server.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[pd.Index, pd.MultiIndex]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Convert a simple Index to Arkouda-backed form:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;values&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_idx</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Round-trip back to NumPy-backed pandas objects:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">restored</span> <span class="o">=</span> <span class="n">ak_idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">restored</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak_legacy">
+<span class="sig-name descname"><span class="pre">to_ak_legacy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.index.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.index.MultiIndex</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_index_accessor.html#ArkoudaIndexAccessor.to_ak_legacy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak_legacy" title="Link to this definition">¶</a></dt>
+<dd><p>Convert this pandas Index or MultiIndex into a legacy Arkouda
+<code class="docutils literal notranslate"><span class="pre">ak.Index</span></code> or <code class="docutils literal notranslate"><span class="pre">ak.MultiIndex</span></code> object.</p>
+<p>This is the index analogue of <code class="docutils literal notranslate"><span class="pre">df.ak.to_ak_legacy()</span></code>, returning the
+<em>actual</em> Arkouda index objects on the server, rather than a pandas
+wrapper backed by <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a>.</p>
+<p>The conversion is zero-copy with respect to NumPy: values are transferred
+directly into Arkouda arrays without materializing to local NumPy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A legacy Arkouda Index/MultiIndex whose data live on the Arkouda server.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[ak_Index, ak_MultiIndex]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Convert a simple pandas Index into a legacy Arkouda Index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;numbers&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_idx</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.index.Index&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_idx</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;numbers&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaInt64Dtype">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.extension.</span></span><span class="sig-name descname"><span class="pre">ArkoudaInt64Dtype</span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dtypes.html#ArkoudaInt64Dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaInt64Dtype" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_ArkoudaBaseDtype</span></code></p>
@@ -3082,6 +3376,14 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaFloat64Dtype.na_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaFloat64Dtype.na_value</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaFloat64Dtype.name"><code class="docutils literal notranslate"><span class="pre">ArkoudaFloat64Dtype.name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaFloat64Dtype.type"><code class="docutils literal notranslate"><span class="pre">ArkoudaFloat64Dtype.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor"><code class="docutils literal notranslate"><span class="pre">ArkoudaIndexAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.collect"><code class="docutils literal notranslate"><span class="pre">ArkoudaIndexAccessor.collect()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.from_ak_legacy"><code class="docutils literal notranslate"><span class="pre">ArkoudaIndexAccessor.from_ak_legacy()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.is_arkouda"><code class="docutils literal notranslate"><span class="pre">ArkoudaIndexAccessor.is_arkouda</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak"><code class="docutils literal notranslate"><span class="pre">ArkoudaIndexAccessor.to_ak()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak_legacy"><code class="docutils literal notranslate"><span class="pre">ArkoudaIndexAccessor.to_ak_legacy()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaInt64Dtype"><code class="docutils literal notranslate"><span class="pre">ArkoudaInt64Dtype</span></code></a><ul>
