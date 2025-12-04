@@ -60,7 +60,7 @@ from __future__ import annotations
 import builtins
 import json
 
-from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Hashable, Iterable, List, Literal, Optional, Tuple, TypeVar, Union
 from typing import cast as type_cast
 
 import numpy as np
@@ -1547,7 +1547,7 @@ class MultiIndex(Index):
 
     objType = "MultiIndex"
     _name: str | None
-    _names: list[str] | list[None]
+    _names: Iterable[Union[Hashable, None]]
     levels: list[Union[pdarray, Strings, Categorical]]
     size: int_scalars
     registered_name: Union[str, None]
@@ -1556,7 +1556,7 @@ class MultiIndex(Index):
         self,
         data: Union[list, tuple, pd.MultiIndex, MultiIndex],
         name: Optional[str] = None,
-        names: Optional[list[str]] = None,
+        names: Optional[Iterable[Union[Hashable, None]]] = None,
     ):
         from arkouda.pandas.categorical import Categorical
 
