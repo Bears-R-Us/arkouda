@@ -13,6 +13,7 @@ def gather_scatter(a):
     return res
 
 
+@pytest.mark.requires_chapel_module("BigIntMsg")
 class TestBigInt:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_negative_bug_reproducer(self, size):

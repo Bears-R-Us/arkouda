@@ -662,6 +662,7 @@ class TestSegArray:
 
         # TODO - empty segments testing
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_segarray_load(self, seg_test_base_tmp):
         segarr = ak.SegArray(ak.array([0, 9, 14]), ak.arange(20))
         with tempfile.TemporaryDirectory(dir=seg_test_base_tmp) as tmp_dirname:
@@ -716,6 +717,7 @@ class TestSegArray:
         elif dtype == ak.str_:
             return ["a", "abc"]
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("dtype", [ak.int64])
     def test_filter(self, dtype):
         # TODO - once #2666 is resolved, this test will need to be updated for the SegArray

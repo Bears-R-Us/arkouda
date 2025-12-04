@@ -10,6 +10,7 @@ warnings.simplefilter("always", UserWarning)
 
 
 # TODO: Parametrize test_where
+@pytest.mark.requires_chapel_module("EfuncMsg")
 class TestWhere:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_where(self, size):

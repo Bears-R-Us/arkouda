@@ -69,6 +69,7 @@ class TestJoin:
         with pytest.raises(ValueError):
             segs, ranges = ak.join.gen_ranges(ak.array([11, 12, 41]), end)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_inner_join(self):
         left = ak.arange(10)
         right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
@@ -127,6 +128,7 @@ class TestJoin:
             l_ind, r_ind = ak.join.inner_join(left, right, where_func, (left, right))
             assert where_func([lf[l_ind] for lf in left], [rt[r_ind] for rt in right]).all()
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_str_inner_join(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
@@ -162,6 +164,7 @@ class TestJoin:
         assert sl.tolist() == il.tolist()
         assert sr.tolist() == ir.tolist()
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_cat_inner_join(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
@@ -179,6 +182,7 @@ class TestJoin:
         )
         assert cat_left[cat_l_where].tolist() == cat_right[cat_r_where].tolist()
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_mixed_inner_join_where(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)

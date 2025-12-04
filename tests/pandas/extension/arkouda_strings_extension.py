@@ -7,6 +7,7 @@ from arkouda.pandas.extension import ArkoudaStringArray
 from arkouda.testing import assert_equivalent
 
 
+@pytest.mark.requires_chapel_module("EncodingMsg")
 class TestArkoudaStringsExtension:
     def test_strings_extension_docstrings(self):
         import doctest
