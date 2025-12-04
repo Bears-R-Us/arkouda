@@ -1,5 +1,6 @@
 module UInt128 {
   use IO;
+  use Sort;
 
   // 128-bit unsigned integer as two 64-bit limbs
   record UInt128 {
