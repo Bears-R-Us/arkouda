@@ -45,7 +45,7 @@ CMP_OPS: List[Tuple[str, Callable]] = [
 
 # Unary ops
 UNARY_OPS: List[Tuple[str, Callable]] = [
-    # ("pos", op.pos),
+    ("pos", op.pos),
     ("neg", op.neg),
     ("invert", op.invert),  # bitwise not; invalid for float
 ]
@@ -110,12 +110,12 @@ def test_unary_ops_alignment(dtype, name, fn):
 
     a = _rand_array(dtype, nonneg=(name == "invert"))  # for invert on uint shifts OK either way
 
-    # Special-case: boolean negation should raise TypeError in both Arkouda and NumPy
-    if name == "neg" and dtype is ak.bool_:
+    # Special-case: boolean negation and positive should raise on both sides
+    if dtype is ak.bool_ and name in ("neg", "pos"):
         with pytest.raises(TypeError):
-            fn(a)  # Arkouda: -a
+            fn(a)  # Arkouda: -a or +a
         with pytest.raises(TypeError):
-            fn(_numpy_equivalent(a))  # NumPy: -array(...)
+            fn(_numpy_equivalent(a))  # NumPy: -array(...) or +array(...)
         return
 
     ak_res = fn(a)
