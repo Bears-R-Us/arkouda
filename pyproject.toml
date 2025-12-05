@@ -62,6 +62,8 @@ dev = [
   "pre-commit",
   "pydoclint[flake8]==0.6.10",
   "numba",
+  "pytest-cov",
+  "coverage[toml]",
 ]
 
 
