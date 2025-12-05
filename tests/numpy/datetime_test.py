@@ -324,6 +324,7 @@ class TestDatetime:
         assert pd_dt.isocalendar().week.tolist() == ak_dt.weekofyear.tolist()
         assert ((pd_dt.isocalendar() == ak_dt.isocalendar().to_pandas()).all()).all()
 
+    @pytest.mark.requires_chapel_module("TimeClassMsg")
     def test_date_time_accessors(self):
         self.date_time_attribute_helper(
             pd.Series(pd.date_range("2021-01-01 00:00:00", periods=100)).dt,
@@ -344,6 +345,7 @@ class TestDatetime:
         for attr_name in "nanoseconds", "microseconds", "seconds", "days":
             assert getattr(pd_td, attr_name).tolist() == getattr(ak_td, attr_name).tolist()
 
+    @pytest.mark.requires_chapel_module("TimeClassMsg")
     def test_time_delta_accessors(self):
         self.time_delta_attribute_helper(
             pd.Series(pd.to_timedelta(np.arange(10**12 + 1000, (10**12 + 1100)), unit="us")).dt,
@@ -358,6 +360,7 @@ class TestDatetime:
             ak.Timedelta(ak.arange(2000, 2100), unit="W"),
         )
 
+    @pytest.mark.requires_chapel_module("TimeClassMsg")
     def test_woy_boundary(self):
         # make sure weeks at year boundaries are correct, modified version of pandas test at
         # https://github.com/pandas-dev/pandas/blob/main/pandas/tests/scalar/timestamp/test_timestamp.py

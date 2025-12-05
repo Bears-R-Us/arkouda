@@ -109,14 +109,21 @@ class TestClient:
         assert "arkoudaVersion" in config
         assert "INFO" == config["logLevel"]
 
-        import json
-
         def get_server_max_array_dims():
+            """
+            Ask the running server for its registration config and use that
+            to determine the maximum array rank it supports.
+
+            This keeps the test in sync with dynamic multi-dim builds where
+            the server may extend the rank list beyond what's in the static
+            registration-config.json file.
+            """
             try:
-                return max(
-                    json.load(open("registration-config.json", "r"))["parameter_classes"]["array"]["nd"]
-                )
-            except (ValueError, FileNotFoundError, TypeError, KeyError):
+                reg = ak.client.get_registration_config()
+                nd_list = reg["parameter_classes"]["array"]["nd"]
+                return max(nd_list)
+            except Exception:
+                # Minimal safe fallback (legacy servers / odd configs)
                 return 1
 
         assert get_server_max_array_dims() == ak.client.get_max_array_rank()
@@ -125,13 +132,44 @@ class TestClient:
         """
         Tests that we can call ak.client.get_registration_config()
         and that the returned result matches the contents of "registration-config.json".
-        """
-        from_server = ak.client.get_registration_config()
 
+        In multi-dim builds, the server may extend the 'array.nd' list beyond what
+        is recorded in the static JSON. We treat the JSON as a baseline and allow
+        the server to advertise additional ranks.
+        """
+        import copy
         import json
 
-        from_file = json.load(open("registration-config.json", "r"))
-        assert from_server == from_file
+        from_server = ak.client.get_registration_config()
+
+        try:
+            with open("registration-config.json", "r") as f:
+                from_file = json.load(f)
+        except FileNotFoundError:
+            # In installed / packaged environments this file may not be present.
+            # This test is specifically about equality with the file, so if the
+            # file isn't available, we skip instead of failing.
+            pytest.skip("registration-config.json not found; cannot compare against file baseline")
+
+        # Work on copies so we can adjust without mutating originals
+        server = copy.deepcopy(from_server)
+        file_cfg = copy.deepcopy(from_file)
+
+        # Pop out the dynamically-extended 'nd' list for array parameters
+        server_array = server["parameter_classes"]["array"]
+        file_array = file_cfg["parameter_classes"]["array"]
+
+        server_nd = server_array.pop("nd", None)
+        file_nd = file_array.pop("nd", None)
+
+        # Everything except the dynamic 'nd' list should match exactly
+        assert server == file_cfg
+
+        # If both provide an 'nd' list, require that the file's nd values
+        # are a subset of the server's values. This allows multi-dim builds
+        # (server nd = [1,2,3]) while keeping the file as a valid baseline.
+        if server_nd is not None and file_nd is not None:
+            assert set(file_nd).issubset(set(server_nd))
 
     def test_get_mem_used(self):
         """

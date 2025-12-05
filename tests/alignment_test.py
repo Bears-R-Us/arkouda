@@ -7,6 +7,7 @@ DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 
 
 class TestAlignment:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_alignment_docstrings(self):
         import doctest
 

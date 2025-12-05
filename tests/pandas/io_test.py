@@ -234,6 +234,7 @@ def make_multi_dtype_dict():
     }
 
 
+@pytest.mark.requires_chapel_module("ParquetMsg")
 class TestParquet:
     COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
@@ -960,6 +961,7 @@ class TestParquet:
                 assert "File bogus does not exist" in str(err)
 
 
+@pytest.mark.requires_chapel_module("HDF5Msg")
 class TestHDF5:
     @pytest.fixture(autouse=True)
     def set_attributes(self):
@@ -2409,7 +2411,7 @@ class TestHDF5:
             assert df["timedelta"].tolist() == rd_df["timedelta"].tolist()
 
 
-@pytest.mark.skip_if_max_rank_greater_than(1)
+@pytest.mark.requires_chapel_module("CSVMsg")
 class TestCSV:
     def test_csv_read_write(self, csv_test_base_tmp):
         # first test that can read csv with no header not written by Arkouda
@@ -2610,8 +2612,8 @@ class TestCSV:
             file_name = f"{tmp_dirname}/multi_line.csv"
             with open(file_name, "w") as f:
                 f.write(",".join(cols) + "\n")
-                f.write(f'1,"This is a description\nthat spans \nmultiple lines.",3.14\n')
-                f.write(f'2,"Another description\nwith line breaks.",5.56\n')
+                f.write('1,"This is a description\nthat spans \nmultiple lines.",3.14\n')
+                f.write('2,"Another description\nwith line breaks.",5.56\n')
 
             data = ak.read_csv(file_name)
             assert list(data.keys()) == expected_cols
@@ -2634,6 +2636,7 @@ class TestImportExport:
         )
         cls.akdf = ak.DataFrame(cls.pddf)
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_import_hdf(self, import_export_base_tmp):
         locales = pytest.nl
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
@@ -2673,6 +2676,7 @@ class TestImportExport:
             with pytest.raises(RuntimeError):
                 ak.import_data(f"{file_name}_*.h5", write_file=f"{file_name}_ak_fixed.h5")
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_export_hdf(self, import_export_base_tmp):
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/export_hdf_test"
@@ -2694,6 +2698,7 @@ class TestImportExport:
                     index=True,
                 )
 
+    @pytest.mark.requires_chapel_module("ParquetMsg")
     def test_import_parquet(self, import_export_base_tmp):
         locales = pytest.nl
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
@@ -2706,6 +2711,7 @@ class TestImportExport:
             assert len(glob.glob(f"{file_name}_ak_table*.parquet")) == locales
             assert self.pddf.equals(akdf.to_pandas())
 
+    @pytest.mark.requires_chapel_module("ParquetMsg")
     def test_export_parquet(self, import_export_base_tmp):
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/export_pq_test"
