@@ -182,6 +182,7 @@ from arkouda.numpy.numeric import (
     log2,
     matmul,
     median,
+    minimum,
     nextafter,
     percentile,
     putmask,

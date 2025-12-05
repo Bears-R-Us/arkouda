@@ -249,6 +249,7 @@ from arkouda.numpy import (
     mean,
     median,
     min,
+    minimum,
     mink,
     mod,
     nan,
