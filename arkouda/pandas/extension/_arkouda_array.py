@@ -1,4 +1,7 @@
-from typing import Any, Iterable
+from __future__ import annotations
+
+from typing import Any, Sequence
+from typing import cast as type_cast
 
 import numpy as np
 
@@ -6,9 +9,9 @@ from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.numpy.pdarraycreation import full as ak_full
-from arkouda.numpy.pdarraycreation import pdarray
 
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import (
@@ -26,13 +29,76 @@ __all__ = ["ArkoudaArray"]
 
 
 class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
-    default_fill_value = -1
+    """
+    Arkouda-backed numeric/bool pandas ExtensionArray.
 
-    def __init__(self, data):
-        if isinstance(data, (np.ndarray, Iterable)):
-            data = ak_array(data)
-        if not isinstance(data, pdarray):
-            raise TypeError("Expected an Arkouda pdarray")
+    Wraps or converts supported inputs into an Arkouda ``pdarray`` to serve as the
+    backing store. Ensures the underlying array is 1-D and lives on the Arkouda server.
+
+    Parameters
+    ----------
+    data : pdarray | ndarray | Sequence[Any] | ArkoudaArray
+        Input to wrap or convert.
+        - If an Arkouda ``pdarray``, it is used directly unless ``dtype`` is given
+          or ``copy=True``, in which case a new array is created via ``ak.array``.
+        - If a NumPy array, it is transferred to Arkouda via ``ak.array``.
+        - If a Python sequence, it is converted to NumPy then to Arkouda.
+        - If another ``ArkoudaArray``, its underlying ``pdarray`` is reused.
+    dtype : Any, optional
+        Desired dtype to cast to (NumPy dtype or Arkouda dtype string). If omitted,
+        dtype is inferred from ``data``.
+    copy : bool
+        If True, attempt to copy the underlying data when converting/wrapping.
+        Default is False.
+
+    Raises
+    ------
+    TypeError
+        If ``data`` cannot be interpreted as an Arkouda array-like object.
+    ValueError
+        If the resulting array is not one-dimensional.
+
+    Attributes
+    ----------
+    default_fill_value : int
+        Sentinel used when filling missing values (default: -1).
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> from arkouda.pandas.extension import ArkoudaArray
+    >>> ArkoudaArray(ak.arange(5))
+    ArkoudaArray([0 1 2 3 4])
+    >>> ArkoudaArray([10, 20, 30])
+    ArkoudaArray([10 20 30])
+    """
+
+    default_fill_value: int = -1
+
+    def __init__(
+        self,
+        data: pdarray | ndarray | Sequence[Any] | ArkoudaArray,
+        dtype: Any = None,
+        copy: bool = False,
+    ):
+        if isinstance(data, ArkoudaArray):
+            data = data._data
+        elif isinstance(data, (list, tuple)):
+            data = type_cast(pdarray, ak_array(np.asarray(data), dtype=dtype))
+        elif isinstance(data, np.ndarray):
+            data = type_cast(pdarray, ak_array(data, dtype=dtype, copy=copy))
+        elif not isinstance(data, pdarray):
+            raise TypeError(
+                f"Expected arkouda.pdarray, ndarray, or ArkoudaArray, got {type(data).__name__}"
+            )
+        elif dtype is not None or copy:
+            data = type_cast(pdarray, ak_array(data, dtype=dtype, copy=copy))
+
+        if getattr(data, "ndim", 1) != 1:
+            raise ValueError(
+                f"ArkoudaArray must be 1-dimensional, got shape {getattr(data, 'shape', None)}"
+            )
+
         self._data = data
 
     @classmethod

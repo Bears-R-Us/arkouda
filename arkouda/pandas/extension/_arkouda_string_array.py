@@ -1,5 +1,11 @@
+from __future__ import annotations
+
+from typing import Any, Sequence
+from typing import cast as type_cast
+
 import numpy as np
 
+from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.pdarraycreation import array as ak_array
@@ -13,20 +19,47 @@ __all__ = ["ArkoudaStringArray"]
 
 
 class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
-    default_fill_value = ""
+    """
+    Arkouda-backed string pandas ExtensionArray.
 
-    def __init__(self, data):
-        if isinstance(data, np.ndarray):
-            from arkouda.numpy.pdarraycreation import array as ak_array
+    Ensures the underlying data is an Arkouda ``Strings`` object. Accepts existing
+    ``Strings`` or converts from NumPy arrays and Python sequences of strings.
 
-            data = ak_array(data)
+    Parameters
+    ----------
+    data : Strings | ndarray | Sequence[Any] | ArkoudaStringArray
+        Input to wrap or convert.
+        - If ``Strings``, used directly.
+        - If NumPy/sequence, converted via ``ak.array``.
+        - If another ``ArkoudaStringArray``, its backing ``Strings`` is reused.
+
+    Raises
+    ------
+    TypeError
+        If ``data`` cannot be converted to Arkouda ``Strings``.
+
+    Attributes
+    ----------
+    default_fill_value : str
+        Sentinel used when filling missing values (default: "").
+    """
+
+    default_fill_value: str = ""
+
+    def __init__(self, data: Strings | ndarray | Sequence[Any] | "ArkoudaStringArray"):
+        from arkouda.numpy.pdarraycreation import array as ak_array
 
         if isinstance(data, ArkoudaStringArray):
             self._data = data._data
-        elif isinstance(data, Strings):
-            self._data = data
-        else:
-            raise TypeError(f"Expected arkouda Strings. Instead received {type(data)}.")
+            return
+
+        if isinstance(data, (np.ndarray, list, tuple)):
+            data = type_cast(Strings, ak_array(data, dtype="str_"))
+
+        if not isinstance(data, Strings):
+            raise TypeError(f"Expected arkouda.Strings, got {type(data).__name__}")
+
+        self._data = data
 
     @property
     def dtype(self):
