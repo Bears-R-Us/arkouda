@@ -22,11 +22,12 @@ CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
 # silence warnings about '@arkouda' annotations being unrecognized
 CHPL_FLAGS += --using-attribute-toolname arkouda
 
-CHPL_DEBUG_FLAGS += --print-passes
+CHPL_DEBUG_FLAGS += --print-passes --print-passes-memory
 
 ifdef ARKOUDA_DEVELOPER
 ARKOUDA_QUICK_COMPILE = true
 ARKOUDA_RUNTIME_CHECKS = true
+ARKOUDA_DEBUG = true
 endif
 
 ifdef ARKOUDA_QUICK_COMPILE
@@ -427,6 +428,17 @@ $(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
 
 CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
+
+
+ifdef ARKOUDA_DEBUG
+# In the future, we can just use --debug which implies -g and --debug-safe-optimizations-only
+CHPL_FLAGS += -g
+ifeq ($(shell expr $(CHPL_MINOR) \>= 7),1)
+CHPL_FLAGS += --debug-safe-optimizations-only
+endif
+endif
+
+
 CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
 # CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
 .PHONY: check-chpl
@@ -561,7 +573,9 @@ ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
+ifeq ($(shell expr $(CHPL_MINOR) \< 6),1)
 	ARKOUDA_KEYPART_FLAG := -suseKeyPartStatus=true
+endif
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \<= 1),1)
