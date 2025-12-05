@@ -603,6 +603,20 @@ module AryUtil
       return (t.size * bitsPerDigit, false);
     }
 
+    inline proc getBitWidth(a: [?aD] UInt128):(int, bool) {
+      const negs = false; // unsigned
+      var hiMax = max reduce [x in a] x.hi;
+      var loMax = max reduce [x in a] x.lo;
+
+      var whi = numBits(uint) - clz(hiMax);
+      if whi == 0 {
+        var wlo = numBits(uint) - clz(loMax);
+        return (wlo:int, false);
+      } else {
+        return ((whi + numBits(uint)):int, false);
+      }
+    }
+
     // Get the digit for the current rshift. In order to correctly sort
     // negatives, we have to invert the signbit if we're looking at the last
     // digit and the array contained negative values.
@@ -664,6 +678,7 @@ module AryUtil
           when DType.UInt64  { (bitWidth, neg) = getBitWidth(toSymEntry(g, uint).a); }
           when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
           when DType.Bool { (bitWidth, neg) = getBitWidth(toSymEntry(g, bool).a); }
+          when DType.UInt128 { (bitWidth, neg) = getBitWidth(toSymEntry(g, UInt128).a); }
           otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),
@@ -708,6 +723,7 @@ module AryUtil
           when DType.UInt64  { mergeArray(uint); }
           when DType.Float64 { mergeArray(real); }
           when DType.Bool { mergeArray(bool); }
+          when DType.UInt128 { mergeArray(UInt128); }
           otherwise {
             throw getErrorWithContext(
                                       msg=dtype2str(g.dtype),
