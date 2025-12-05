@@ -1247,6 +1247,21 @@ class TestNumeric:
                 )
                 assert not (ak.array_equal(pda_a, pda_b))
 
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT)
+    def test_minimum(self, prob_size, num_type):
+        pda1 = ak.random.randint(-10, 10, prob_size, dtype=num_type)
+        pda2 = ak.random.randint(-10, 10, prob_size, dtype=num_type)
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+            pda2[prob_size - 1] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_min = np.minimum(nda1, nda2)
+        ak_min = ak.minimum(pda1, pda2)
+        ak_assert_almost_equivalent(np_min, ak_min)
+        assert_arkouda_array_equivalent(ak_min, ak.minimum(pda2, pda1))
+
     @pytest.mark.parametrize("func", ["floor", "ceil", "trunc"])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_rounding_functions(self, prob_size, func):

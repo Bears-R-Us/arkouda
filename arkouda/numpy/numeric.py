@@ -144,6 +144,7 @@ __all__ = [
     "quantile",
     "percentile",
     "take",
+    "minimum",
 ]
 
 
@@ -3696,3 +3697,48 @@ def take(
     )
 
     return result
+
+
+def minimum(x1: pdarray, x2: pdarray) -> pdarray:
+    """
+    Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,
+    else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first
+    broadcast to a mutual shape, if possible.
+
+    Parameters
+    ----------
+    x1 : pdarray
+        first argument in comparison.
+    x2 : pdarray
+        second argument in comparison.
+
+    Returns
+    -------
+    pdarray
+        The element-wise minimum of x1 and x2.  Where either is a nan, the returned
+        pdarray stores a nan.  Otherwise it stores the minimum of x1 and x2.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1.0,2.0,ak.nan])
+    >>> b = ak.array([0.5,2.5,3.5])
+    >>> ak.minimum(a,b)
+    array([0.5 2.00000000000000000 nan])
+    >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
+    >>> d = ak.array([-0.5,2.5])
+    >>> ak.minimum(c,d)
+    array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])
+    """
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
+
+    tx1 = x1
+    tx2 = x2
+    if x1.shape != x2.shape:
+        try:
+            mutual = broadcast_shapes(x1.shape, x2.shape)
+            tx1 = x1 if mutual == x1.shape else broadcast_to(x1, mutual)
+            tx2 = x2 if mutual == x2.shape else broadcast_to(x2, mutual)
+        except Exception as e:
+            raise ValueError(f"Shapes {x1.shape} and {x2.shape} incompatible for minimum.") from e
+    return where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2)))
