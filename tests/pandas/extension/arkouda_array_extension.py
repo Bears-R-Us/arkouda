@@ -6,7 +6,8 @@ import arkouda as ak
 
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.pandas.extension import ArkoudaCategoricalArray, ArkoudaStringArray
+from arkouda.numpy.pdarraycreation import array as ak_array
+from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.pandas.extension._dtypes import ArkoudaBoolDtype, ArkoudaFloat64Dtype, ArkoudaInt64Dtype
 from arkouda.testing import assert_equivalent
@@ -167,7 +168,7 @@ class TestArkoudaArrayExtension:
         ak_data = ak.arange(10)
         arr = ArkoudaArray(ak_data)
         na = arr.isna()
-        assert ak.all(na == False)  # noqa: E712
+        assert ak.all(na == False)
 
     def test_isna_with_nan(self):
         from arkouda.testing import assert_equal
@@ -256,7 +257,7 @@ class TestArkoudaArrayExtension:
         a1 = ArkoudaArray(ak.array([1, 2]))
         a2 = ArkoudaArray(ak.array([1, 2]))
         result = a1 == a2
-        assert ak.all(result)
+        assert ak.all(result._data)
 
     def test_repr(self):
         ak_data = ak.arange(10)
@@ -425,3 +426,288 @@ class TestArkoudaArrayExtension:
 
         # Values preserved
         np.testing.assert_array_equal(default_copy.to_numpy(), ea.to_numpy())
+
+
+class TestArkoudaArrayEq:
+    def test_eq_arkouda_array_same_length_all_equal(self):
+        left = ArkoudaArray(ak.arange(5))
+        right = ArkoudaArray(ak.arange(5))
+
+        result = left == right
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 5
+        assert result._data.dtype == "bool"
+        assert result._data.all()
+
+    def test_eq_arkouda_array_same_length_some_unequal(self):
+        left = ArkoudaArray(ak.arange(5))
+        right = ArkoudaArray(ak.arange(5) + 1)
+
+        result = left == right
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 5
+        assert result._data.dtype == "bool"
+        assert result._data.sum() == 0
+
+    def test_eq_arkouda_array_length_mismatch_raises(self):
+        left = ArkoudaArray(ak.arange(3))
+        right = ArkoudaArray(ak.arange(4))
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = left == right
+
+    def test_eq_scalar_broadcast_int(self):
+        data = ArkoudaArray(ak.arange(5))  # [0, 1, 2, 3, 4]
+        result = data == 2
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 5
+        assert result._data.dtype == "bool"
+        assert result._data.sum() == 1  # only index 2
+
+    def test_eq_scalar_broadcast_bool(self):
+        data = ArkoudaArray(ak_array([True, False, True], dtype=bool))
+        result = data == True
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 3
+        assert result._data.dtype == "bool"
+        assert result._data.sum() == 2
+
+    def test_eq_with_pdarray_same_length(self):
+        base = ak.arange(4)
+        arr = ArkoudaArray(base)
+
+        other = ak_array([0, 10, 2, 30])
+        result = arr == other
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 4
+        assert result._data.dtype == "bool"
+        # indices 0 and 2 are equal
+        assert result._data.sum() == 2
+
+    def test_eq_with_pdarray_length_mismatch_raises(self):
+        base = ak.arange(3)
+        arr = ArkoudaArray(base)
+
+        other = ak_array([0, 1])  # length 2
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr == other
+
+    def test_eq_with_numpy_array(self):
+        arr = ArkoudaArray(ak.arange(3))
+        other = np.array([0, 99, 2], dtype=np.int64)
+
+        result = arr == other
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 3
+        assert result._data.dtype == "bool"
+        # indices 0 and 2 are equal
+        assert result._data.sum() == 2
+
+    def test_eq_with_numpy_array_length_mismatch_raises(self):
+        arr = ArkoudaArray(ak.arange(3))
+        other = np.array([0, 1], dtype=np.int64)
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr == other
+
+    def test_eq_with_python_sequence(self):
+        arr = ArkoudaArray(ak.arange(4))
+        other = [0, 10, 2, 30]
+
+        result = arr == other
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 4
+        assert result._data.dtype == "bool"
+        assert result._data.sum() == 2  # indices 0 and 2
+
+    def test_eq_with_unsupported_type_returns_all_false(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        result = arr == {"not": "comparable"}
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 5
+        assert result._data.dtype == "bool"
+        # all comparisons should be False
+        assert not result._data.any()
+
+
+class TestArkoudaArrayAllAny:
+    def test_all_true_for_all_true_bool_array(self):
+        arr = ArkoudaArray(ak.array([True, True, True]))
+
+        result = arr.all()
+
+        assert isinstance(result, bool)
+        assert result is True
+
+    def test_all_false_for_array_with_false(self):
+        arr = ArkoudaArray(ak.array([True, False, True]))
+
+        result = arr.all()
+
+        assert isinstance(result, bool)
+        assert result is False
+
+    def test_any_true_for_array_with_true(self):
+        arr = ArkoudaArray(ak.array([False, True, False]))
+
+        result = arr.any()
+
+        assert isinstance(result, bool)
+        assert result is True
+
+    def test_any_false_for_all_false_bool_array(self):
+        arr = ArkoudaArray(ak.array([False, False, False]))
+
+        result = arr.any()
+
+        assert isinstance(result, bool)
+        assert result is False
+
+    def test_all_and_any_on_singleton_true(self):
+        arr = ArkoudaArray(ak.array([True]))
+
+        assert arr.all() is True
+        assert arr.any() is True
+
+    def test_all_and_any_on_singleton_false(self):
+        arr = ArkoudaArray(ak.array([False]))
+
+        assert arr.all() is False
+        assert arr.any() is False
+
+
+class TestArkoudaArrayOr:
+    # -----------------------------
+    # Helpers
+    # -----------------------------
+    def make_bool(self, vals):
+        return ArkoudaArray(ak_array(vals, dtype=bool))
+
+    # -----------------------------
+    # ArkoudaArray | ArkoudaArray
+    # -----------------------------
+    def test_or_two_bool_arrays(self):
+        a = self.make_bool([True, False, True])
+        b = self.make_bool([False, False, True])
+
+        result = a | b
+
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([True, False, True]))
+
+    def test_or_length_mismatch_raises(self):
+        a = self.make_bool([True, False])
+        b = self.make_bool([True, False, True])
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = a | b
+
+    # -----------------------------
+    # ArkoudaArray | pdarray
+    # -----------------------------
+    def test_or_with_pdarray_same_length(self):
+        a = self.make_bool([True, False, False])
+        b = ak_array([False, True, False], dtype=bool)
+
+        result = a | b
+
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([True, True, False]))
+
+    def test_or_with_pdarray_length_mismatch_raises(self):
+        a = self.make_bool([True, False])  # length 2
+        b = ak_array([True, False, True], dtype=bool)  # length 3
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = a | b
+
+    # -----------------------------
+    # ArkoudaArray | scalar bool
+    # -----------------------------
+    def test_or_scalar_true(self):
+        a = self.make_bool([False, False, True])
+
+        result = a | True
+
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([True, True, True]))
+
+    def test_or_scalar_false(self):
+        a = self.make_bool([True, False, True])
+
+        result = a | False
+
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([True, False, True]))
+
+    # -----------------------------
+    # scalar bool | ArkoudaArray  (__ror__)
+    # -----------------------------
+    def test_ror_scalar_true(self):
+        a = self.make_bool([False, True, False])
+
+        result = True | a  # triggers __ror__
+
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([True, True, True]))
+
+    def test_ror_scalar_false(self):
+        a = self.make_bool([False, True, False])
+
+        result = False | a  # triggers __ror__
+
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([False, True, False]))
+
+    # -----------------------------
+    # ArkoudaArray | numpy/list
+    # -----------------------------
+    def test_or_with_numpy_array(self):
+        a = self.make_bool([True, False, True])
+        b = np.array([False, True, False])
+
+        result = a | b
+
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([True, True, True]))
+
+    def test_or_with_python_list(self):
+        a = self.make_bool([True, False, False])
+        b = [False, False, True]
+
+        result = a | b
+
+        np.testing.assert_array_equal(result._data.to_ndarray(), np.array([True, False, True]))
+
+    def test_or_numpy_length_mismatch_raises(self):
+        a = self.make_bool([True, False])
+        b = np.array([True, False, True])
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = a | b
+
+    # -----------------------------
+    # Unsupported types
+    # -----------------------------
+    def test_or_unsupported_rhs_returns_notimplemented(self):
+        a = self.make_bool([True, False])
+
+        class Weird:
+            pass
+
+        # Python should then try Weird.__ror__, which also doesn't exist,
+        # resulting in a TypeError for unsupported operands.
+        with pytest.raises(TypeError):
+            _ = a | Weird()
+
+    def test_or_numeric_array_returns_notimplemented(self):
+        # Since you only support OR on bool dtype
+        a = ArkoudaArray(ak_array([1, 2, 3], dtype=ak.int64))
+        b = self.make_bool([True, False, True])
+
+        assert (a.__or__(b)) is NotImplemented
