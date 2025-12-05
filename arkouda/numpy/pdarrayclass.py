@@ -1132,6 +1132,11 @@ class pdarray:
             )
         return self._binop(-1, "*")
 
+    def __pos__(self):
+        if self.dtype == "bool_":
+            raise TypeError("Unary + not supported for bool")
+        return self
+
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
         if self.dtype == akint64:
