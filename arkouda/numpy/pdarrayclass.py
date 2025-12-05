@@ -167,6 +167,7 @@ __all__ = [
     "clear",
     "any",
     "all",
+    "logical_not",
     "is_sorted",
     "sum",
     "dot",
@@ -451,6 +452,55 @@ def _array_memview(a) -> memoryview:
         return memoryview(a.byteswap())
     else:
         return memoryview(a)
+
+
+@overload
+def logical_not(x: pdarray) -> pdarray: ...
+@overload
+def logical_not(x: numeric_scalars) -> akbool: ...
+
+
+@typechecked
+def logical_not(x: Union[pdarray, numeric_scalars]) -> Union[pdarray, akbool]:
+    """Compute the truth value of NOT *x* element-wise.
+
+    This function returns a boolean ``pdarray`` where each element is
+    the logical negation of the corresponding element in ``x``. For
+    boolean arrays, this is equivalent to applying the unary ``~``
+    operator. For numeric arrays, zero is treated as False and
+    non-zero as True.
+
+    Parameters
+    ----------
+    x : pdarray
+        Input array on which to compute element-wise logical NOT.
+
+    Returns
+    -------
+    pdarray
+        A boolean ``pdarray`` with the same shape as ``x`` containing
+        the result of the NOT operation applied element-wise.
+
+    Notes
+    -----
+    This is a simplified version of :func:`numpy.logical_not`. It
+    currently does not support keyword arguments such as ``out`` or
+    ``where``, and always allocates a new result array.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> x = ak.array([True, False, True])
+    >>> ak.logical_not(x)
+    array([False  True False])
+
+    >>> y = ak.array([0, 1, 2])
+    >>> ak.logical_not(y)
+    array([True False False])
+    """
+    if not isinstance(x, pdarray):
+        return np.logical_not(x)
+    return x == 0
 
 
 # class for the pdarray
@@ -1063,6 +1113,13 @@ class pdarray:
 
     # overload unary- for pdarray implemented as pdarray*(-1)
     def __neg__(self):
+        if self.dtype == "uint64":
+            return (~self + 1) & 0xFFFFFFFFFFFFFFFF
+        if self.dtype == "bool_":
+            raise TypeError(
+                "Unary negation (`-`) is not supported for boolean pdarrays; "
+                "use `~a` or `ak.logical_not(a)` instead."
+            )
         return self._binop(-1, "*")
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
@@ -1768,6 +1825,39 @@ class pdarray:
         Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.all(a))
         """
         return all(self, axis=axis, keepdims=keepdims)
+
+    def logical_not(self) -> pdarray:
+        """
+        Compute the truth value of NOT *self* element-wise.
+
+        This method is equivalent to :func:`arkouda.logical_not(self)`.
+        It returns a boolean ``pdarray`` where each element is the
+        logical negation of the corresponding element in ``self``.
+
+        Returns
+        -------
+        pdarray
+            A boolean ``pdarray`` with the same shape as ``self``
+            containing the result of the NOT operation.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.array([True, False, True])
+        >>> a.logical_not()
+        array([False  True False])
+        >>> ak.logical_not(a)
+        array([False  True False])
+
+        Notes
+        -----
+        Works as a method of a ``pdarray`` (e.g. ``a.logical_not()``)
+        or as a standalone function (e.g. ``ak.logical_not(a)``). For
+        boolean arrays, this is equivalent to applying the unary ``~``
+        operator. For numeric arrays, zero is treated as False and
+        non-zero as True.
+        """
+        return logical_not(self)
 
     def is_registered(self) -> np.bool_:
         """
