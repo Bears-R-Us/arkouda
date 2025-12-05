@@ -226,6 +226,15 @@ module ArgSortMsg
               // Generate the next incremental permutation
               deltaIV = argsortDefault(newa);
           }
+          when DType.UInt128 {
+            var e = toSymEntry(g, UInt128);
+            var newa = makeDistArray(e.a.domain, UInt128);
+            ref olda = e.a;
+            forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(UInt128)) {
+              newai = olda[idx];
+            }
+            deltaIV = argsortDefault(newa); // uses TwoArrayRadixSort/LSD as configured
+          }
           otherwise { throw getErrorWithContext(
                                 msg="Unsupported DataType: %?".format(dtype2str(g.dtype)),
                                 lineNumber=getLineNumber(),
