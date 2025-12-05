@@ -15,6 +15,9 @@ default: $(DEFAULT_TARGET)
 VERBOSE ?= 0
 
 CHPL := chpl
+ARKOUDA_CHPL_HOME=$(shell $(CHPL) --print-chpl-home 2>/dev/null)
+CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
+CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
 
 # We need to make the HDF5 API use the 1.10.x version for compatibility between 1.10 and 1.12
 CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
@@ -22,7 +25,10 @@ CHPL_FLAGS += --ccflags="-DH5_USE_110_API"
 # silence warnings about '@arkouda' annotations being unrecognized
 CHPL_FLAGS += --using-attribute-toolname arkouda
 
-CHPL_DEBUG_FLAGS += --print-passes --print-passes-memory
+CHPL_DEBUG_FLAGS += --print-passes
+ifeq ($(shell expr $(CHPL_MINOR) \>= 7),1)
+CHPL_DEBUG_FLAGS += --print-passes-memory
+endif
 
 ifdef ARKOUDA_DEVELOPER
 ARKOUDA_QUICK_COMPILE = true
@@ -38,6 +44,14 @@ endif
 
 ifdef ARKOUDA_RUNTIME_CHECKS
 CHPL_FLAGS += --checks
+endif
+
+ifdef ARKOUDA_DEBUG
+# In the future, we can just use --debug which implies -g and --debug-safe-optimizations-only
+CHPL_FLAGS += -g
+ifeq ($(shell expr $(CHPL_MINOR) \>= 7),1)
+CHPL_FLAGS += --debug-safe-optimizations-only
+endif
 endif
 
 CHPL_FLAGS += -smemTrack=true -smemThreshold=1048576
@@ -387,8 +401,6 @@ CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow check-iconv c
 endif
 check-deps: $(CHECK_DEPS)
 
-ARKOUDA_CHPL_HOME=$(shell $(CHPL) --print-chpl-home 2>/dev/null)
-
 SANITIZER = $(shell $(ARKOUDA_CHPL_HOME)/util/chplenv/chpl_sanitizers.py --exe 2>/dev/null)
 ifneq ($(SANITIZER),none)
 ARROW_SANITIZE=-fsanitize=$(SANITIZER)
@@ -425,19 +437,6 @@ $(ARROW_READ_O): $(ARROW_READ_CPP) $(ARROW_READ_H)
 
 $(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
 	make compile-arrow-write
-
-CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
-CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
-
-
-ifdef ARKOUDA_DEBUG
-# In the future, we can just use --debug which implies -g and --debug-safe-optimizations-only
-CHPL_FLAGS += -g
-ifeq ($(shell expr $(CHPL_MINOR) \>= 7),1)
-CHPL_FLAGS += --debug-safe-optimizations-only
-endif
-endif
-
 
 CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
 # CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
