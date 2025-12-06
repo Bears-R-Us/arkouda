@@ -541,7 +541,8 @@ ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-24
+	ARKOUDA_COMPAT_MODULES_DIR = $(ARKOUDA_SOURCE_DIR)/compat/ge-24
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_COMPAT_MODULES_DIR)
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \< 6),1)
@@ -636,7 +637,7 @@ doc-server: ${DOC_DIR} $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
 	@# Build the documentation to the Chapel output directory
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_REGISTRY_DIR)/doc-support.chpl $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_SOURCE_DIR)/compat/eq-22/* -o $(DOC_SERVER_OUTPUT_DIR)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_REGISTRY_DIR)/doc-support.chpl $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES_DIR)* -o $(DOC_SERVER_OUTPUT_DIR)
 	@# Create the .nojekyll file needed for github pages in the  Chapel output directory
 	touch $(DOC_SERVER_OUTPUT_DIR)/.nojekyll
 	@echo "Completed building documentation for: Server"
