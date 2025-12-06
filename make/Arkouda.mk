@@ -35,34 +35,13 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 0),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-20
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 1),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-21
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 2),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-22
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 3),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-23
-endif
-
 ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-24
+	ARKOUDA_COMPAT_MODULES_DIR = $(ARKOUDA_SOURCE_DIR)/compat/ge-24
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_COMPAT_MODULES_DIR)
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
 ifeq ($(shell expr $(CHPL_MINOR) \< 6),1)
 	ARKOUDA_KEYPART_FLAG := -suseKeyPartStatus=true
-endif
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \<= 1),1)
-	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 
 SERVER_CONFIG_SCRIPT=$(ARKOUDA_SOURCE_DIR)/parseServerConfig.py
