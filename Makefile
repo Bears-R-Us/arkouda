@@ -427,12 +427,12 @@ $(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
 
 CHPL_MAJOR := $(shell $(CHPL) --version | sed -n "s/chpl version \([0-9]\)\.[0-9]*.*/\1/p")
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version [0-9]\.\([0-9]*\).*/\1/p")
-CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 4 -o $(CHPL_MINOR) -ge 0  && echo yes)
 # CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 2.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
+	$(error Chapel 2.4 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
 # ifeq ($(CHPL_VERSION_WARN),yes)
 # 	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
@@ -540,32 +540,12 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-ifeq ($(shell expr $(CHPL_MINOR) \= 0),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-20
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 1),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-21
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 2),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-22
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \= 3),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-23
-endif
-
 ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-24
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
+ifeq ($(shell expr $(CHPL_MINOR) \< 6),1)
 	ARKOUDA_KEYPART_FLAG := -suseKeyPartStatus=true
-endif
-
-ifeq ($(shell expr $(CHPL_MINOR) \<= 1),1)
-	ARKOUDA_RW_DEFAULT_FLAG := -sOpenReaderLockingDefault=false -sOpenWriterLockingDefault=false
 endif
 
 SERVER_CONFIG_SCRIPT=$(ARKOUDA_SOURCE_DIR)/parseServerConfig.py
