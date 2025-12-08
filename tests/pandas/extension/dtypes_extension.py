@@ -84,16 +84,16 @@ class TestArkoudaDtypesExtension:
             ("ak.string", ArkoudaStringDtype),
             ("ak_string", ArkoudaStringDtype),
             ("akstring", ArkoudaStringDtype),
-            ("arkouda.string", ArkoudaStringDtype),
+            ("arkouda.String", ArkoudaStringDtype),
             # category aliases
             ("ak.category", ArkoudaCategoricalDtype),
-            ("ak_category", ArkoudaCategoricalDtype),
+            ("ak_Category", ArkoudaCategoricalDtype),
             ("akcategory", ArkoudaCategoricalDtype),
             ("arkouda.category", ArkoudaCategoricalDtype),
             # bigint aliases
             ("ak.bigint", ArkoudaBigintDtype),
             ("ak_bigint", ArkoudaBigintDtype),
-            ("akbigint", ArkoudaBigintDtype),
+            ("akBigint", ArkoudaBigintDtype),
             ("arkouda.bigint", ArkoudaBigintDtype),
         ],
     )
@@ -180,12 +180,6 @@ class TestArkoudaDtypesExtension:
     def test_pd_array_with_arkouda_aliases_is_arkouda(
         self, spec, expected_dtype_cls, expected_array_cls, values
     ):
-        from arkouda.pandas.extension import (
-            ArkoudaArray,
-            ArkoudaCategoricalArray,
-            ArkoudaStringArray,
-        )
-
         arr = pd.array(values, dtype=spec)
 
         # storage class should be the appropriate Arkouda EA

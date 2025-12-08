@@ -78,9 +78,10 @@ class _ArkoudaBaseDtype(ExtensionDtype):
     @classmethod
     def construct_from_string(cls, string: str) -> "_ArkoudaBaseDtype":
         """
-        Construct an Arkouda ExtensionDtype from a string specifier.
+        Construct an Arkouda ``ExtensionDtype`` from a string specifier.
 
-        Supported Arkouda-prefixed forms include:
+        This method resolves **Arkouda-prefixed** dtype strings only.
+        Supported forms include:
 
         - ``"ak.int64"``, ``"ak_int64"``, ``"akint64"``
         - ``"ak.uint64"``, ``"ak_uint64"``, ``"akuint64"``
@@ -88,10 +89,36 @@ class _ArkoudaBaseDtype(ExtensionDtype):
         - ``"ak.bool"``, ``"ak_bool"``, ``"akbool"``
         - ``"ak.string"``, ``"ak_string"``, ``"akstring"``
         - ``"ak.category"``, ``"ak_category"``, ``"akcategory"``
-        - and the longer alias ``"arkouda.int64"`` etc.
+        - and the long form ``"arkouda.int64"`` and similar.
 
-        Plain names like ``"int64"`` or ``"float64"`` are *not* treated as
-        Arkouda dtypes and will fall back to pandas/NumPy.
+        Plain dtype names such as ``"int64"``, ``"float64"``, ``"bool"``, or
+        ``"string"`` are **not** Arkouda dtypes. In normal pandas/NumPy
+        dtype resolution, those plain names should be handled upstream and
+        never reach this method. However, if they are passed directly to
+        :meth:`construct_from_string`, they will raise :class:`TypeError`.
+        This is intentional: Arkouda dtype strings must include an ``ak``
+        prefix (for example, ``"ak_int64"``) so they can be distinguished
+        from standard pandas/NumPy dtypes.
+
+        Parameters
+        ----------
+        string : str
+            String dtype specifier to interpret as an Arkouda dtype. Must
+            include an Arkouda ``ak``-style prefix (e.g. ``"ak_int64"``,
+            ``"ak.float64"``, ``"akstring"``); plain dtype names without an
+            Arkouda prefix are not accepted here.
+
+        Returns
+        -------
+        _ArkoudaBaseDtype
+            The corresponding Arkouda ExtensionDtype instance.
+
+        Raises
+        ------
+        TypeError
+            If ``string`` does not represent a valid Arkouda-prefixed dtype
+            (including the case where it is a plain pandas/NumPy dtype like
+            ``"int64"`` or ``"float64"``).
         """
         normalized = string.strip().lower()
 
@@ -109,7 +136,12 @@ class _ArkoudaBaseDtype(ExtensionDtype):
 
         if matched_prefix is None:
             # IMPORTANT: let pandas/NumPy handle bare "int64", "float64", etc.
-            raise TypeError(f"Cannot construct an Arkouda dtype from string {string!r}")
+            raise TypeError(
+                f"Invalid Arkouda dtype string {string!r}. "
+                "Arkouda dtype names must begin with the 'ak' prefix "
+                "(e.g., 'ak_int64', 'ak_float64', 'ak_bool'). "
+                "If you intended a standard NumPy/pandas dtype, use it without the 'ak_' prefix."
+            )
 
         base = normalized[len(matched_prefix) :]
 
