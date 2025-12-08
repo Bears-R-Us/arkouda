@@ -1493,9 +1493,6 @@ Package Contents
       Materialize this Index or MultiIndex back to a plain NumPy-backed
       pandas index.
 
-      This is the opposite of :meth:`to_ak`. If the index is already
-      NumPy-backed, this is effectively a shallow copy.
-
       :returns: An Index whose underlying data are plain NumPy arrays.
       :rtype: Union[pd.Index, pd.MultiIndex]
 
@@ -1578,7 +1575,7 @@ Package Contents
 
       The resulting index stores its values on the Arkouda server:
 
-      >>> type(pd_idx._data)
+      >>> type(pd_idx.array)
       <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
 
       MultiIndex example:

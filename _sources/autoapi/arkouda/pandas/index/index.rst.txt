@@ -643,7 +643,7 @@ Module Contents
 
 
 
-.. py:class:: MultiIndex(data: Union[list, tuple, pandas.MultiIndex, MultiIndex], name: Optional[str] = None, names: Optional[list[str]] = None)
+.. py:class:: MultiIndex(data: Union[list, tuple, pandas.MultiIndex, MultiIndex], name: Optional[str] = None, names: Optional[Iterable[Union[Hashable, None]]] = None)
 
    Bases: :py:obj:`Index`
 

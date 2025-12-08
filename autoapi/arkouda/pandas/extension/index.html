@@ -2205,8 +2205,6 @@ NumPy materialization unless explicitly requested via <a class="reference intern
 <span class="sig-name descname"><span class="pre">collect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.Index</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.MultiIndex</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_index_accessor.html#ArkoudaIndexAccessor.collect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.collect" title="Link to this definition">¶</a></dt>
 <dd><p>Materialize this Index or MultiIndex back to a plain NumPy-backed
 pandas index.</p>
-<p>This is the opposite of <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak" title="arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_ak()</span></code></a>. If the index is already
-NumPy-backed, this is effectively a shallow copy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>An Index whose underlying data are plain NumPy arrays.</p>
@@ -2294,7 +2292,7 @@ callers should ensure the argument is a legacy Arkouda index object.</p></li>
 </pre></div>
 </div>
 <p>The resulting index stores its values on the Arkouda server:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">pd_idx</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">pd_idx</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
 <span class="go">&lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
 </pre></div>
 </div>

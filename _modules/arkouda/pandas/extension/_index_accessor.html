@@ -460,7 +460,7 @@
     <span class="c1"># pandas.MultiIndex in its constructor.</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
         <span class="c1"># Preserve names when constructing the ak.MultiIndex</span>
-        <span class="k">return</span> <span class="n">ak_MultiIndex</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ak_MultiIndex</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
 
     <span class="c1"># Single-level Index: ak.Index already knows how to consume pandas.Index,</span>
     <span class="c1"># including CategoricalIndex.</span>
@@ -630,7 +630,7 @@
 
 <span class="sd">        The resulting index stores its values on the Arkouda server:</span>
 
-<span class="sd">        &gt;&gt;&gt; type(pd_idx._data)</span>
+<span class="sd">        &gt;&gt;&gt; type(pd_idx.array)</span>
 <span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
 
 <span class="sd">        MultiIndex example:</span>
@@ -705,9 +705,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Materialize this Index or MultiIndex back to a plain NumPy-backed</span>
 <span class="sd">        pandas index.</span>
-
-<span class="sd">        This is the opposite of :meth:`to_ak`. If the index is already</span>
-<span class="sd">        NumPy-backed, this is effectively a shallow copy.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -873,7 +870,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;levels&quot;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">levels</span><span class="p">:</span>
-                <span class="n">values</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="n">_data</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">level</span><span class="o">.</span><span class="n">array</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s2">&quot;_data&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">return</span> <span class="kc">True</span>
