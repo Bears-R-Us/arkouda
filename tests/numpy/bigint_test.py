@@ -235,7 +235,7 @@ class TestBigintDtype:
     ):
         # Guard against accidental parameter shadowing: dtype(dtype=...)
         # This is a smoke test: just calling the function should not raise because of a shadow.
-        assert ak.dtype("int64") == np.dtype(np.int64)
+        assert ak.dtype("int64") == np.dtype("int64")
         assert ak.dtype("bigint") is ak.bigint()
 
     def test_import_order_safety_for_dtype_bigint_references(self, monkeypatch):
