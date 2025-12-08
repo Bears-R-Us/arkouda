@@ -748,5 +748,5 @@ module ConcatenateMsg
 
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-    registerFunction("concatenateUniqueWithInnerArrays", concatenateUniqueWithInnerArraysStrMsg2, getModuleName());
+    registerFunction("concatenateUniqueWithInnerArrays", concatenateUniqueWithInnerArraysStrMsg, getModuleName());
 }
