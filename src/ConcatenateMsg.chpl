@@ -654,7 +654,7 @@ module ConcatenateMsg
     }
     registerFunction("concatenateUniquely", concatenateUniqueStrMsg, getModuleName());
 
-    proc concatenateUniqueStrMsg2(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    proc concatenateUniqueWithInnerArraysStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
 
         var repMsg: string;
@@ -688,10 +688,10 @@ module ConcatenateMsg
                 var stringArrays = balancedSegStringRetrieval(segString);
                 coforall loc in Locales do on loc {
                     ref myStrings = stringArrays[here.id].Arr;
-                    var locSet = new set(string);
+                    var locSet = new set(string, parSafe = true);
                     
                     // Reduce to unique strings within this locale
-                    forall str in myStrings with (+ reduce locSet) {
+                    forall str in myStrings {
                         locSet.add(str);
                     }
 
@@ -721,10 +721,10 @@ module ConcatenateMsg
         coforall loc in Locales do on loc {
 
             ref myStrings = distributedStrings[here.id].Arr;
-            var strSet = new set(string);
+            var strSet = new set(string, parSafe = true);
 
             // Perform another reduction by uniqueness on the strings in this set
-            forall str in myStrings with (+ reduce strSet) {
+            forall str in myStrings {
               strSet.add(str);
             }
 
@@ -748,5 +748,5 @@ module ConcatenateMsg
 
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-registerFunction("concatenateUniquely2", concatenateUniqueStrMsg2, getModuleName());
+    registerFunction("concatenateUniqueWithInnerArrays", concatenateUniqueWithInnerArraysStrMsg2, getModuleName());
 }

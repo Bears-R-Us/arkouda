@@ -40,20 +40,19 @@ module Repartition
 
     // Per-locale first and last index (global) of local chunk; -1 means empty.
     // These are global byte indices into strBytes for each locale’s localSubdomain.
-    var firstIdxPerLoc: [0..#numLocales] int = -1;
-    var lastIdxPerLoc: [0..#numLocales] int = -1;
+    var firstIdxPerLoc, lastIdxPerLoc: [LocaleSpace] int = -1;
 
     // Per-locale end of string corresponding to last offset (global) of local chunk; -1 means empty.
     // This will hold, for each locale, the byte index where the *last* string that begins
     // on this locale ends (exclusive). Used as an upper bound when slicing.
-    var lastOffsetEndPerLoc: [0..#numLocales] int = -1;
+    var lastOffsetEndPerLoc: [LocaleSpace] int = -1;
 
     // Last byte index in the global byte buffer
     const endOfBytes = strBytes.domain.last;
 
     // For each locale, the first string-start offset (global) that resides on that locale.
     // -1 means that locale has no offsets.
-    var firstOffsetPerLoc: [0..#numLocales] int = -1;
+    var firstOffsetPerLoc: [LocaleSpace] int = -1;
 
     // First pass: for each locale, record its local ranges in the global bytes and offsets.
     forall loc in 0..#numLocales {
@@ -101,22 +100,18 @@ module Repartition
 
     // For each locale, these track the index of the first/last string (in the
     // global offsets array) that intersects this locale's byte chunk.
-    var firstStringIndices: [0..#numLocales] int = -1;
-    var lastStringIndices: [0..#numLocales] int = -1;
+    var firstStringIndices, lastStringIndices: [LocaleSpace] int = -1;
 
     // Global start byte offset of the first/last string for each locale
-    var firstStringStartOffsets: [0..#numLocales] int = -1;
-    var lastStringStartOffsets: [0..#numLocales] int = -1;
+    var firstStringStartOffsets, lastStringStartOffsets: [LocaleSpace] int = -1;
 
     // Total size (in bytes) of the first/last string for each locale (full string size,
     // not just the portion on that locale).
-    var firstStringSizes: [0..#numLocales] int = -1;
-    var lastStringSizes: [0..#numLocales] int = -1;
+    var firstStringSizes, lastStringSizes [LocaleSpace] int = -1;
 
     // Number of bytes of the first/last string that actually reside on each locale.
     // This may be less than the full string size if the string is split across locales.
-    var firstStringNumBytesEachLocale: [0..#numLocales] int = -1;
-    var lastStringNumBytesEachLocale: [0..#numLocales] int = -1;
+    var firstStringNumBytesEachLocale, lastStringNumBytesEachLocale: [LocaleSpace] int = -1;
 
     // Now, on each locale, we examine the portion of the offsets that live here to
     // figure out which strings intersect each locale's local byte chunk.
@@ -487,15 +482,13 @@ module Repartition
       // Copy each string's raw bytes into the local buffer myBytes at the
       // appropriate offset. We only copy "size - 1" bytes and leave the
       // last byte (null terminator) to be implicitly zero or set elsewhere.
-      forall (i, str) in zip(0..#strArray.size, strArray) {
+      forall (size, str) in zip(strSizes, strArray) {
 
         const strBytes = str.bytes();
-        // Exclude the null terminator from the explicit copy
-        const size = strSizes[i] - 1;
 
         // Copy the string bytes into the slice of myBytes that corresponds
         // to this string's segment.
-        myBytes[strOffsets[i]..#size] = strBytes[0..#size];
+        myBytes[strOffsets[i]..#(size-1)] = strBytes[0..#(size-1)];
 
       }
 

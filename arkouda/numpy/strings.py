@@ -3035,7 +3035,7 @@ class Strings:
         return Strings.from_return_msg(cast(str, rep_msg))
 
     @staticmethod
-    def concatenate_uniquely2(strings: List[Strings]) -> Strings:
+    def concatenate_uniquely_with_inner_arrays(strings: List[Strings]) -> Strings:
         """
         Concatenates a list of Strings into a single Strings object
         containing only unique strings. Order may not be preserved.
@@ -3060,7 +3060,7 @@ class Strings:
 
         # Send the command to the server
         rep_msg = generic_msg(
-            cmd="concatenateUniquely2",
+            cmd="concatenateUniqueWithInnerArrays",
             args={
                 "names": names,
             },
