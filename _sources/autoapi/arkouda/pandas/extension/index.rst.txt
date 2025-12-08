@@ -33,6 +33,7 @@ Classes
    arkouda.pandas.extension.ArkoudaBoolDtype
    arkouda.pandas.extension.ArkoudaCategoricalArray
    arkouda.pandas.extension.ArkoudaCategoricalDtype
+   arkouda.pandas.extension.ArkoudaDataFrameAccessor
    arkouda.pandas.extension.ArkoudaExtensionArray
    arkouda.pandas.extension.ArkoudaFloat64Dtype
    arkouda.pandas.extension.ArkoudaIndexAccessor
@@ -845,6 +846,301 @@ Package Contents
       of ``ExtensionDtype.type`` for scalar ``item``, assuming
       that value is valid (not NA). NA values do not need to be
       instances of `type`.
+
+
+.. py:class:: ArkoudaDataFrameAccessor(pandas_obj)
+
+   Arkouda DataFrame accessor.
+
+   Allows ``df.ak`` access to Arkouda-backed operations.
+
+
+   .. py:method:: collect() -> pandas.DataFrame
+
+      Materialize an Arkouda-backed pandas DataFrame into a NumPy-backed one.
+
+      This operation retrieves each Arkouda-backed column from the server
+      using ``to_ndarray()`` and constructs a standard pandas DataFrame whose
+      columns are plain NumPy ``ndarray`` objects. The returned DataFrame
+      has no dependency on Arkouda.
+
+      :returns: A pandas DataFrame with NumPy-backed columns.
+      :rtype: pd_DataFrame
+
+      .. rubric:: Examples
+
+      Converting an Arkouda-backed DataFrame into a NumPy-backed one:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaDataFrameAccessor
+
+      Create a pandas DataFrame and convert it to Arkouda-backed form:
+
+      >>> df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+      >>> akdf = df.ak.to_ak()
+
+      ``akdf`` is still a pandas DataFrame, but its columns live on Arkouda:
+
+      >>> type(akdf["x"].array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+      Now fully materialize it to local NumPy arrays:
+
+      >>> collected = akdf.ak.collect()
+      >>> collected
+         x  y
+      0  1  a
+      1  2  b
+      2  3  c
+
+      The columns are now NumPy arrays:
+
+      >>> type(collected["x"].values)
+      <class 'numpy.ndarray'>
+
+
+
+   .. py:method:: from_ak_legacy(akdf: arkouda.pandas.dataframe.DataFrame) -> pandas.DataFrame
+      :staticmethod:
+
+
+      Convert a legacy Arkouda ``DataFrame`` into a pandas ``DataFrame``
+      backed by Arkouda ExtensionArrays.
+
+      This is the zero-copy-ish counterpart to :meth:`to_ak_legacy`.
+      Instead of materializing columns into NumPy arrays, this function
+      wraps each underlying Arkouda server-side array in the appropriate
+      ``ArkoudaExtensionArray`` subclass (``ArkoudaArray``,
+      ``ArkoudaStringArray``, or ``ArkoudaCategoricalArray``).
+      The resulting pandas ``DataFrame`` therefore keeps all data on the
+      Arkouda server, enabling scalable operations without transferring
+      data to the Python client.
+
+      :param akdf: A legacy Arkouda ``DataFrame`` (``arkouda.pandas.dataframe.DataFrame``)
+                   whose columns are Arkouda objects (``pdarray``, ``Strings``,
+                   or ``Categorical``).
+      :type akdf: ak_DataFrame
+
+      :returns: A pandas ``DataFrame`` in which each column is an Arkouda-backed
+                ExtensionArray—typically one of:
+
+                * :class:`ArkoudaArray`
+                * :class:`ArkoudaStringArray`
+                * :class:`ArkoudaCategoricalArray`
+
+                No materialization to NumPy occurs.
+                All column data remain server-resident.
+      :rtype: pd_DataFrame
+
+      .. rubric:: Notes
+
+      * This function performs a **zero-copy** conversion for the underlying
+        Arkouda arrays (server-side). Only lightweight Python wrappers are
+        created.
+      * The resulting pandas ``DataFrame`` can interoperate with most pandas
+        APIs that support extension arrays.
+      * Round-tripping through ``to_ak_legacy()`` and
+        ``from_ak_legacy()`` preserves Arkouda semantics.
+
+      .. rubric:: Examples
+
+      Basic conversion
+      ~~~~~~~~~~~~~~~~
+      >>> import arkouda as ak
+      >>> akdf = ak.DataFrame({"a": ak.arange(5), "b": ak.array([10,11,12,13,14])})
+
+      >>> pdf = pd.DataFrame.ak.from_ak_legacy(akdf)
+      >>> pdf
+         a   b
+      0  0  10
+      1  1  11
+      2  2  12
+      3  3  13
+      4  4  14
+
+      Columns stay Arkouda-backed
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      >>> type(pdf["a"].array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+      >>> pdf["a"].array._data
+      array([0 1 2 3 4])
+
+      No NumPy materialization occurs
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      >>> pdf["a"].values    # pandas always materializes .values
+      ArkoudaArray([0 1 2 3 4])
+
+      But the underlying column is still Arkouda:
+      >>> pdf["a"].array._data
+      array([0 1 2 3 4])
+
+      Categorical and Strings columns work as well
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      >>> akdf2 = ak.DataFrame({
+      ...     "s": ak.array(["a","b","a"]),
+      ...     "c": ak.Categorical(ak.array(["e","f","g"]))
+      ... })
+      >>> pdf2 = pd.DataFrame.ak.from_ak_legacy(akdf2)
+
+      >>> type(pdf2["s"].array)
+      <class 'arkouda.pandas.extension._arkouda_string_array.ArkoudaStringArray'>
+
+      >>> type(pdf2["c"].array)
+      <class 'arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategoricalArray'>
+
+
+
+   .. py:method:: merge(right: pandas.DataFrame, on: Optional[Union[str, List[str]]] = None, left_on: Optional[Union[str, List[str]]] = None, right_on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> pandas.DataFrame
+
+      Merge two Arkouda-backed pandas DataFrames using Arkouda's join.
+
+      :param right: Right-hand DataFrame to merge with ``self._obj``. All columns must
+                    be Arkouda-backed ExtensionArrays.
+      :type right: pd.DataFrame
+      :param on: Column name(s) to join on. Must be present in both left and right
+                 DataFrames. If not provided and neither ``left_on`` nor ``right_on``
+                 is set, the intersection of column names in left and right is used.
+                 Default is None.
+      :type on: Optional[Union[str, List[str]]]
+      :param left_on: Column name(s) from the left DataFrame to use as join keys. Must be
+                      used together with ``right_on``. If provided, ``on`` is ignored for
+                      the left side.  Default is None
+      :type left_on: Optional[Union[str, List[str]]]
+      :param right_on: Column name(s) from the right DataFrame to use as join keys. Must be
+                       used together with ``left_on``. If provided, ``on`` is ignored for
+                       the right side. Default is None
+      :type right_on: Optional[Union[str, List[str]]]
+      :param how: Type of merge to be performed. One of ``'left'``, ``'right'``,
+                  ``'inner'``, or ``'outer'``. Default is 'inner'.
+      :type how: str
+      :param left_suffix: Suffix to apply to overlapping column names from the left frame that
+                          are not part of the join keys. Default is '_x'.
+      :type left_suffix: str
+      :param right_suffix: Suffix to apply to overlapping column names from the right frame that
+                           are not part of the join keys.Default is '_y'.
+      :type right_suffix: str
+      :param convert_ints: Whether to allow Arkouda to upcast integer columns as needed
+                           (for example, to accommodate missing values) during the merge.
+                           Default is True.
+      :type convert_ints: bool
+      :param sort: Whether to sort the join keys in the output. Default is True.
+      :type sort: bool
+
+      :returns: A pandas DataFrame whose columns are :class:`ArkoudaArray`
+                ExtensionArrays. All column data remain on the Arkouda server.
+      :rtype: pd.DataFrame
+
+      :raises TypeError: If ``right`` is not a :class:`pandas.DataFrame` or if any column in
+          the left or right DataFrame is not Arkouda-backed.
+
+
+
+   .. py:method:: to_ak() -> pandas.DataFrame
+
+      Convert this pandas DataFrame to an Arkouda-backed pandas DataFrame.
+
+      Each column of the original pandas DataFrame is materialized to the
+      Arkouda server via :func:`ak.array` and wrapped in an
+      :class:`ArkoudaArray` ExtensionArray. The result is still a
+      *pandas* DataFrame, but all column data reside on the Arkouda server
+      and behave according to the Arkouda ExtensionArray API.
+
+      This method does **not** return a legacy :class:`ak_DataFrame`.
+      For that (server-side DataFrame structure), use :meth:`to_ak_legacy`.
+
+      :returns: A pandas DataFrame whose columns are Arkouda-backed
+                :class:`ArkoudaArray` objects.
+      :rtype: pd_DataFrame
+
+      .. rubric:: Examples
+
+      Convert a plain pandas DataFrame to an Arkouda-backed one:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+      >>> akdf = df.ak.to_ak()
+      >>> type(akdf)
+      <class 'pandas.core.frame.DataFrame'>
+
+      The columns are now Arkouda ExtensionArrays:
+
+      >>> isinstance(akdf["x"].array, ArkoudaArray)
+      True
+      >>> akdf["x"].tolist()
+      [np.int64(1), np.int64(2), np.int64(3)]
+
+      Arkouda operations work directly on the columns:
+
+      >>> akdf["x"].array._data + 10
+      array([11 12 13])
+
+      Converting back to a NumPy-backed DataFrame:
+
+      >>> akdf_numpy = akdf.ak.collect()
+      >>> akdf_numpy
+         x  y
+      0  1  a
+      1  2  b
+      2  3  c
+
+
+
+   .. py:method:: to_ak_legacy() -> arkouda.pandas.dataframe.DataFrame
+
+      Convert this pandas DataFrame into the legacy :class:`arkouda.DataFrame`.
+
+      This method performs a *materializing* conversion of a pandas DataFrame
+      into the legacy Arkouda DataFrame structure. Every column is converted
+      to Arkouda server-side data:
+
+      * Python / NumPy numeric and boolean arrays become :class:`pdarray`.
+      * String columns become Arkouda string arrays (``Strings``).
+      * Pandas categoricals become Arkouda ``Categorical`` objects.
+      * The result is a legacy :class:`ak_DataFrame` whose columns all reside
+        on the Arkouda server.
+
+      This differs from :meth:`to_ak`, which creates Arkouda-backed
+      ExtensionArrays but retains a pandas.DataFrame structure.
+
+      :returns: The legacy Arkouda DataFrame with all columns materialized
+                onto the Arkouda server.
+      :rtype: ak_DataFrame
+
+      .. rubric:: Examples
+
+      Convert a plain pandas DataFrame to a legacy Arkouda DataFrame:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> df = pd.DataFrame({
+      ...     "i": [1, 2, 3],
+      ...     "s": ["a", "b", "c"],
+      ...     "c": pd.Series(["low", "low", "high"], dtype="category"),
+      ... })
+      >>> akdf = df.ak.to_ak_legacy()
+      >>> type(akdf)
+      <class 'arkouda.pandas.dataframe.DataFrame'>
+
+      Columns have the appropriate Arkouda types:
+
+      >>> from arkouda.numpy.pdarrayclass import pdarray
+      >>> from arkouda.numpy.strings import Strings
+      >>> from arkouda.pandas.categorical import Categorical
+      >>> isinstance(akdf["i"], pdarray)
+      True
+      >>> isinstance(akdf["s"], Strings)
+      True
+      >>> isinstance(akdf["c"], Categorical)
+      True
+
+      Values round-trip through the conversion:
+
+      >>> akdf["i"].tolist()
+      [1, 2, 3]
+
 
 
 .. py:class:: ArkoudaExtensionArray(data)
