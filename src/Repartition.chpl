@@ -107,7 +107,7 @@ module Repartition
 
     // Total size (in bytes) of the first/last string for each locale (full string size,
     // not just the portion on that locale).
-    var firstStringSizes, lastStringSizes [LocaleSpace] int = -1;
+    var firstStringSizes, lastStringSizes: [LocaleSpace] int = -1;
 
     // Number of bytes of the first/last string that actually reside on each locale.
     // This may be less than the full string size if the string is split across locales.
@@ -482,7 +482,7 @@ module Repartition
       // Copy each string's raw bytes into the local buffer myBytes at the
       // appropriate offset. We only copy "size - 1" bytes and leave the
       // last byte (null terminator) to be implicitly zero or set elsewhere.
-      forall (size, str) in zip(strSizes, strArray) {
+      forall (i, size, str) in zip(0..#strArray.size, strSizes, strArray) {
 
         const strBytes = str.bytes();
 
