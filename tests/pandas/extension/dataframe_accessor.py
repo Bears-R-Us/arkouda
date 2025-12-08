@@ -157,7 +157,7 @@ class TestDataFrameConversion:
         assert all(_is_arkouda_series(df_ak[col]) for col in df_ak.columns)
         assert df_ak["x"].tolist() == [10, 20, 30]
 
-    def test_to_numpy_converts_akdf_to_numpy_backed_df(self):
+    def test_collect_converts_akdf_to_numpy_backed_df(self):
         df = pd_DataFrame({"x": [1, 2, 3]})
         akdf = df.ak.to_ak()
 
