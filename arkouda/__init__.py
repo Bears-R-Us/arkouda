@@ -118,6 +118,7 @@ from arkouda.numpy import (
     attach_all,
     base_repr,
     bigint,
+    bigint_,
     bigint_from_uint_arrays,
     binary_repr,
     bitType,
