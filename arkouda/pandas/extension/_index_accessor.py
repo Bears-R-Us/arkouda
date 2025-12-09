@@ -91,7 +91,7 @@ def _pandas_index_to_ak(index: Union[pd.Index, pd.MultiIndex]) -> Union[ak_Index
     # pandas.MultiIndex in its constructor.
     if isinstance(index, pd.MultiIndex):
         # Preserve names when constructing the ak.MultiIndex
-        return ak_MultiIndex(index, names=[str(n) for n in index.names])
+        return ak_MultiIndex(index, names=index.names)
 
     # Single-level Index: ak.Index already knows how to consume pandas.Index,
     # including CategoricalIndex.
@@ -257,7 +257,7 @@ class ArkoudaIndexAccessor:
 
         The resulting index stores its values on the Arkouda server:
 
-        >>> type(pd_idx._data)
+        >>> type(pd_idx.array)
         <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
 
         MultiIndex example:
@@ -326,9 +326,6 @@ class ArkoudaIndexAccessor:
         """
         Materialize this Index or MultiIndex back to a plain NumPy-backed
         pandas index.
-
-        This is the opposite of :meth:`to_ak`. If the index is already
-        NumPy-backed, this is effectively a shallow copy.
 
         Returns
         -------
@@ -490,7 +487,7 @@ class ArkoudaIndexAccessor:
         """
         if hasattr(self._obj, "levels"):
             for level in self._obj.levels:
-                values = level._data if hasattr(level, "_data") else None
+                values = level.array if hasattr(level, "_data") else None
                 if not isinstance(values, ArkoudaExtensionArray):
                     return False
             return True
