@@ -691,7 +691,7 @@ module ConcatenateMsg
                     var locSet = new set(string, parSafe = true);
                     
                     // Reduce to unique strings within this locale
-                    forall str in myStrings {
+                    forall str in myStrings with (ref locSet) {
                         locSet.add(str);
                     }
 
@@ -724,7 +724,7 @@ module ConcatenateMsg
             var strSet = new set(string, parSafe = true);
 
             // Perform another reduction by uniqueness on the strings in this set
-            forall str in myStrings {
+            forall str in myStrings with (ref strSet) {
               strSet.add(str);
             }
 
