@@ -47,6 +47,7 @@ omit =
     arkouda/pandas/extension/_arkouda_extension_array.py
     arkouda/pandas/extension/_arkouda_string_array.py
     arkouda/pandas/extension/_index_accessor.py
+    arkouda/pandas/extension/_dataframe_accessor.py
     arkouda/pandas/groupbyclass.py
     arkouda/pandas/index.py
     arkouda/pandas/io.py
@@ -116,6 +117,7 @@ omit =
     tests/pandas/extension/arkouda_strings_extension.py
     tests/pandas/extension/dtypes_extension.py
     tests/pandas/extension/index_accessor.py
+    tests/pandas/extension/dataframe_accessor.py
     tests/pandas/groupby_test.py
     tests/pandas/index_test.py
     tests/pandas/io_test.py
