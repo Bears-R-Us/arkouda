@@ -96,61 +96,115 @@ module BinOp
 
     }
 
-  /*
-    Helper function to ensure that floor division cases are handled in accordance with numpy
-  */
+  // vector-vector case of floor division      
 
-  inline proc floorDivisionHelper(numerator: real(64), denom: real(64)): real(64) {
-    if (numerator == 0 && denom == 0) || (isInf(numerator) && (denom != 0 || isInf(denom))){
-      return nan;
+  proc floorDivision (dividend: [?d] ?tn, divisor: [d] ?td, type etype) : [d] etype throws {
+    var quotient = makeDistArray(d, etype);
+    forall idx in d {
+        const numerator = dividend[idx]:etype ;
+        const denom     = divisor[idx]:etype;
+        quotient[idx] = floorDivisionHelper(numerator, denom, etype);
     }
-    else if (numerator > 0 && denom == -inf) || (numerator < 0 && denom == inf){
-      return -1:real;
+    return quotient;
+  }
+                
+  // vector-scalar case of floor division
+         
+  proc floorDivision (dividend: [?d] ?tn, divisor : ?td, type etype) : [d] etype throws {
+    var quotient = makeDistArray(d, etype);
+    const denom = divisor:etype;
+    forall idx in d {
+        const numerator = dividend[idx]:etype ;
+        quotient[idx] = floorDivisionHelper(numerator, denom, etype);
     }
-    else if denom == 0 || isInf(denom) {
-      return numerator / denom;
-    }
-
-    const q  = numerator / denom;
-    const fq = floor(q);
-    if q != fq then return fq;
-
-    // fma does (-q * denom) + numerator and stores that in r
-    // From https://en.cppreference.com/w/c/numeric/math/fma.html
-    // Computes (x * y) + z as if to infinite precision and rounded only once to fit the result type.
-    const r = fma(-q, denom, numerator);
-    if r == 0.0 then return q;
-
-    // This next part may seem a little weird, but if r = -q * denom + numerator
-    // Then numerator / denom = q + r / denom (This should remind you of the division algorithm)
-    // r should be small, it's basically the floating point error when we calculated q.
-    // At this point, q is an integer because we already returned if q != fq.
-    // If r / denom is negative then we need to actually round down. If r / denom is positive, then q
-    // is the correct floor division.
-    // Rather than actually dividing the values, we only need to check if the signs differ or are the
-    // same. If they differ, then r / denom is negative, otherwise it is positive.
-    const qIsBelow = ((r > 0.0) != (denom > 0.0));
-    return if qIsBelow then (q - 1.0) else q;
+    return quotient;
   }
 
-  /*
-    Helper function to ensure that mod cases are handled in accordance with numpy
-  */
-  inline proc modHelper(dividend: ?t, divisor: ?t2): real {
-    extern proc fmod(x: real, y: real): real;
+  // scalar-vector case of floor division
 
-    var res = fmod(dividend, divisor);
-    // to convert fmod (truncated) results into mod (floored) results
-    // when the dividend and divsor have opposite signs,
-    // we add the divsor into the result
-    // except for when res == 0 (divsor even divides dividend)
-    // see https://en.wikipedia.org/wiki/Modulo#math_1 for more information
-    if res != 0 && (((dividend < 0) && (divisor > 0)) || ((dividend > 0) && (divisor < 0))) {
-      // we do + either way because we want to shift up for positive divisors and shift down for negative
-      res += divisor;
+  proc floorDivision (dividend : ?tn, divisor: [?d] ?td, type etype) : [d] etype throws {
+    var quotient = makeDistArray(d, etype);
+    const numerator = dividend:etype;
+    forall idx in d {
+        const denom = divisor[idx]:etype ;
+        quotient[idx] = floorDivisionHelper(numerator, denom, etype);
     }
-    return res;
+    return quotient;
   }
+
+  proc floorDivisionHelper(dividend : ?tn, divisor : ?td, type etype) : etype {
+    var  numerator = dividend : etype;
+    var  denom     = divisor  : etype;
+
+    if isRealType(etype) {
+      if (numerator == 0 && denom == 0) || (isInf(numerator) && (denom != 0 || isInf(denom))){
+        return nan;
+      }
+      else if (numerator > 0 && denom == -inf) || (numerator < 0 && denom == inf){
+        return -1:real;
+      }
+      else if denom == 0 || isInf(denom) {
+        return numerator / denom;
+      }
+
+      const q  = numerator / denom;
+      const fq = floor(q);
+      if q != fq then return fq;
+
+      // fma does (-q * denom) + numerator and stores that in r
+      // From https://en.cppreference.com/w/c/numeric/math/fma.html
+      // Computes (x * y) + z as if to infinite precision and rounded only once to fit the result type.
+
+      const r = fma(-q, denom, numerator);
+      if r == 0.0 then return q;
+
+      // This next part may seem a little weird, but if r = -q * denom + numerator
+      // Then numerator / denom = q + r / denom (This should remind you of the division algorithm)
+      // r should be small, it's basically the floating point error when we calculated q.
+      // At this point, q is an integer because we already returned if q != fq.
+      // If r / denom is negative then we need to actually round down. If r / denom is positive, then q
+      // is the correct floor division.
+      // Rather than actually dividing the values, we only need to check if the signs differ or are the
+      // same. If they differ, then r / denom is negative, otherwise it is positive.
+
+      const qIsBelow = ((r > 0.0) != (denom > 0.0));
+      return if qIsBelow then (q - 1.0) else q;
+
+    } else if isIntType(etype) then
+        if (denom == 0) then
+            return 0: int;
+        else
+            if (numerator > 0 && denom > 0) || (numerator < 0 && denom < 0) || (numerator%denom == 0) then
+                return numerator/denom;
+            else
+                return numerator/denom - 1;
+
+    else // must be uint case.
+        if (denom == 0) then
+            return 0: uint;
+        else
+            return numerator/denom;
+  }
+    /*
+      Helper function to ensure that mod cases are handled in accordance with numpy
+    */
+    proc modHelper(dividend: ?t, divisor: ?t2): real {
+      extern proc fmod(x: real, y: real): real;
+
+      var res = fmod(dividend, divisor);
+
+      // to convert fmod (truncated) results into mod (floored) results
+      // when the dividend and divsor have opposite signs,
+      // we add the divsor into the result
+      // except for when res == 0 (divsor even divides dividend)
+      // see https://en.wikipedia.org/wiki/Modulo#math_1 for more information
+
+      if res != 0 && (((dividend < 0) && (divisor > 0)) || ((dividend > 0) && (divisor < 0))) {
+        // we do + either way because we want to shift up for positive divisors and shift down for negative
+        res += divisor;
+      }
+      return res;
+    }
 
   //
   // TODO: these checks sets are used only to check if a string matches
@@ -297,7 +351,7 @@ module BinOp
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li: etype, ri: etype): etype;
+          ea = floorDivision(la, ra, etype);
         }
         when "**" {
           e = ((l.a: etype) ** (r.a: etype)): etype;
@@ -328,7 +382,7 @@ module BinOp
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then (li/ri): etype else 0: etype;
+          ea = floorDivision(la, ra, etype);
         }
         when "**" {
           if || reduce (r.a<0)
@@ -428,7 +482,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref la = l.a;
-          [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li: etype, val: etype): etype;
+          ea = floorDivision(la, val, etype);
         }
         when "**" {
           e = ((l.a: etype) ** (val: etype)): etype;
@@ -457,7 +511,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref la = l.a;
-          [(ei,li) in zip(ea,la)] ei = if val != 0 then (li/val): etype else 0: etype;
+          ea = floorDivision(la, val, etype);
         }
         when "**" {
           if val < 0
@@ -553,7 +607,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val: etype, ri: etype): etype;
+          ea = floorDivision(val, ra, etype);
         }
         when "**" {
           e = ((val: etype) ** (r.a: etype)): etype;
@@ -582,7 +636,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then (val/ri): etype else 0: etype;
+          ea = floorDivision(val, ra, etype);
         }
         when "**" {
           if || reduce (r.a<0)
@@ -916,7 +970,7 @@ module BinOp
         ref ea = e;
         ref la = l.a;
         ref ra = r.a;
-        [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li: real, ri: real): real;
+        ea = floorDivision(la, ra, real);
         return e;
       }
       otherwise {
