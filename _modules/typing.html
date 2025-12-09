@@ -1181,6 +1181,8 @@
     <span class="n">arg</span> <span class="o">=</span> <span class="n">_type_check</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> requires a single type.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Union</span><span class="p">[</span><span class="n">arg</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span>
 
+<div class="viewcode-block" id="Literal">
+<a class="viewcode-back" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal">[docs]</a>
 <span class="nd">@_TypedCacheSpecialForm</span>
 <span class="nd">@_tp_cache</span><span class="p">(</span><span class="n">typed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">Literal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">parameters</span><span class="p">):</span>
@@ -1213,7 +1215,8 @@
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>  <span class="c1"># unhashable parameters</span>
         <span class="k">pass</span>
 
-    <span class="k">return</span> <span class="n">_LiteralGenericAlias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_LiteralGenericAlias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span></div>
+
 
 
 <span class="nd">@_SpecialForm</span>

@@ -115,6 +115,7 @@ Classes
    arkouda.numpy.VoidDType
    arkouda.numpy.all_scalars
    arkouda.numpy.bigint
+   arkouda.numpy.bigint_
    arkouda.numpy.bitType
    arkouda.numpy.bool
    arkouda.numpy.bool_scalars
@@ -4947,77 +4948,183 @@ Package Contents
 
 .. py:class:: bigint
 
-   Datatype for representing integers of variable size.
+   Dtype sentinel for Arkouda's variable-width (arbitrary-precision) integers.
 
-   May be used for integers that exceed 64 bits.
+   This class represents the dtype object used by Arkouda arrays storing
+   arbitrary-precision integers. It behaves similarly to NumPy’s dtype
+   objects (such as ``np.int64``), but corresponds to an unbounded,
+   variable-width integer type. Instances of :class:`bigint` are singletons
+   created through ``__new__`` so that all dtype references share the same
+   object.
+
+   Construction semantics follow NumPy’s pattern: calling ``ak.bigint()``
+   returns the dtype sentinel, and calling ``ak.bigint(value)`` returns a
+   :class:`bigint_` scalar constructed from ``value``.
+
+   bigint instances compare equal to the ``bigint`` class, to themselves,
+   to strings such as ``"bigint"``, and to other dtype-like objects whose
+   ``name`` attribute equals ``"bigint"``. This allows interoperability
+   across Arkouda’s dtype-resolution system.
+
+   .. rubric:: Notes
+
+   This class represents only the dtype. Scalar values use :class:`bigint_`,
+   which inherits from :class:`int`.
+
+   .. attribute:: name
+
+      Canonical dtype name (``"bigint"``).
+
+      :type: str
+
+   .. attribute:: kind
+
+      Dtype category code (``"ui"``).
+
+      :type: str
+
+   .. attribute:: itemsize
+
+      Nominal bit-width (128). Actual precision is unbounded.
+
+      :type: int
+
+   .. attribute:: ndim
+
+      Number of dimensions for the dtype object (always 0).
+
+      :type: int
+
+   .. attribute:: shape
+
+      Empty tuple, following NumPy's dtype API.
+
+      :type: tuple
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.bigint()
+   dtype(bigint)
+
+   >>> ak.bigint(42)
+   ak.bigint_(42)
+
+   >>> dtype = ak.bigint()
+   >>> dtype.name
+   'bigint'
+
+
+   .. py:property:: is_signed
+      :type: bool
 
 
 
-   .. py:method:: itemsize(*args, **kwargs)
-
-      int([x]) -> integer
-      int(x, base=10) -> integer
-
-      Convert a number or string to an integer, or return 0 if no arguments
-      are given.  If x is a number, return x.__int__().  For floating-point
-      numbers, this truncates towards zero.
-
-      If x is not a number or if base is given, then x must be a string,
-      bytes, or bytearray instance representing an integer literal in the
-      given base.  The literal can be preceded by '+' or '-' and be surrounded
-      by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-      Base 0 means to interpret the base from the string as an integer literal.
-      >>> int('0b100', base=0)
-      4
+   .. py:property:: is_variable_width
+      :type: bool
 
 
 
-   .. py:method:: name(*args, **kwargs)
-
-      str(object='') -> str
-      str(bytes_or_buffer[, encoding[, errors]]) -> str
-
-      Create a new string object from the given object. If encoding or
-      errors is specified, then the object must expose a data buffer
-      that will be decoded using the given encoding and error handler.
-      Otherwise, returns the result of object.__str__() (if defined)
-      or repr(object).
-      encoding defaults to 'utf-8'.
-      errors defaults to 'strict'.
+   .. py:attribute:: itemsize
+      :type:  int
+      :value: 128
 
 
 
-   .. py:method:: ndim(*args, **kwargs)
-
-      int([x]) -> integer
-      int(x, base=10) -> integer
-
-      Convert a number or string to an integer, or return 0 if no arguments
-      are given.  If x is a number, return x.__int__().  For floating-point
-      numbers, this truncates towards zero.
-
-      If x is not a number or if base is given, then x must be a string,
-      bytes, or bytearray instance representing an integer literal in the
-      given base.  The literal can be preceded by '+' or '-' and be surrounded
-      by whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.
-      Base 0 means to interpret the base from the string as an integer literal.
-      >>> int('0b100', base=0)
-      4
+   .. py:attribute:: kind
+      :type:  str
+      :value: 'ui'
 
 
 
-   .. py:method:: shape(*args, **kwargs)
+   .. py:attribute:: name
+      :type:  str
+      :value: 'bigint'
 
-      Built-in immutable sequence.
 
-      If no argument is given, the constructor returns an empty tuple.
-      If iterable is specified the tuple is initialized from iterable's items.
 
-      If the argument is a tuple, the return value is the same object.
+   .. py:attribute:: ndim
+      :type:  int
+      :value: 0
+
+
+
+   .. py:attribute:: shape
+      :type:  tuple
+      :value: ()
 
 
 
    .. py:method:: type(x)
+
+
+.. py:class:: bigint_
+
+   Bases: :py:obj:`int`
+
+
+   Scalar type for Arkouda's variable-width integer dtype.
+
+   ``bigint_`` represents an individual arbitrary-precision integer value within
+   Arkouda arrays that use the :class:`bigint` dtype. It inherits directly from
+   Python's built-in :class:`int`, ensuring full arbitrary-precision semantics
+   while providing dtype metadata compatible with Arkouda.
+
+   This class is typically constructed indirectly via ``ak.bigint(value)``,
+   which invokes the :class:`_BigIntMeta` metaclass. Direct instantiation is
+   also supported.
+
+   Construction
+   ------------
+   ``bigint_(x)`` converts ``x`` to an integer using Python's ``int``:
+
+   * If ``x`` is ``str`` or ``bytes``, it is interpreted using ``int(x, 0)``,
+     allowing hexadecimal (``"0xff"``), binary (``"0b1010"``), and other
+     literal forms.
+   * Otherwise, ``x`` is passed directly to ``int(x)``.
+
+   Properties
+   ----------
+   dtype : bigint
+       Returns the corresponding dtype sentinel, ``ak.bigint()``.
+       This mirrors NumPy scalar behavior (e.g., ``np.int64(1).dtype``).
+
+   .. method:: item()
+
+      Return the underlying Python ``int`` value, matching NumPy scalar
+      semantics.
+
+
+   .. rubric:: Notes
+
+   ``bigint_`` values behave exactly like Python ``int`` objects in arithmetic,
+   hashing, comparison, and formatting. Arkouda arrays wrap and distribute many
+   such scalars but do not impose fixed-width limits.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> x = ak.bigint(123)
+   >>> x
+   ak.bigint_(123)
+
+   >>> x + 10
+   133
+
+   >>> ak.bigint_("0xff")
+   ak.bigint_(255)
+
+   >>> x.dtype
+   dtype(bigint)
+
+   >>> x.item()
+   123
+
+
+   .. py:property:: dtype
+
+
+   .. py:method:: item()
 
 
 .. py:function:: bigint_from_uint_arrays(arrays, max_bits=-1)
@@ -5822,17 +5929,61 @@ Package Contents
 
 
 
-.. py:function:: can_cast(from_, to) -> bool
+.. py:function:: can_cast(from_dt, to_dt, casting: Literal['safe',] | None = 'safe') -> bool
 
-   Returns True if cast between data types can occur according to the casting rule.
+   Determine whether a value of one dtype can be safely cast to another,
+   following NumPy-like rules but including Arkouda-specific handling for
+   ``bigint`` and ``bigint_``.
 
-   :param from_: Data type, NumPy scalar, or array to cast from.
-   :type from_: dtype, dtype specifier, NumPy scalar, or pdarray
-   :param to: Data type to cast to.
-   :type to: dtype or dtype specifier
+   The default ``"safe"`` mode uses the following logic:
 
-   :returns: True if cast can occur according to the casting rule.
-   :rtype: builtins.bool
+   * ``bigint`` → ``bigint``: always allowed.
+   * ``bigint`` → float dtypes: allowed (may lose precision, but magnitude fits).
+   * ``bigint`` → fixed-width signed/unsigned integers: not allowed, due to
+     potential overflow.
+   * int64 / uint64 → ``bigint``: allowed (widening).
+   * float → ``bigint``: not allowed (information loss).
+   * All other cases fall back to ``numpy.can_cast`` semantics.
+
+   :param from_dt: Source dtype or scalar-like object.
+   :type from_dt: Any
+   :param to_dt: Target dtype or scalar-like object.
+   :type to_dt: Any
+   :param casting: Casting rule, matching NumPy’s ``can_cast`` API. Only ``"safe"``
+                   is currently implemented. Other values are accepted for API
+                   compatibility but routed through the same logic.
+   :type casting: str, optional
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda.numpy import can_cast, dtype
+
+   # bigint → bigint
+   >>> can_cast(dtype("bigint"), dtype("bigint"))
+   True
+
+   # bigint → float64
+   >>> can_cast(dtype("bigint"), dtype("float64"))
+   True
+
+   # bigint → int64 (unsafe)
+   >>> can_cast(dtype("bigint"), dtype("int64"))
+   False
+
+   # int64 → bigint (widening)
+   >>> can_cast(dtype("int64"), dtype("bigint"))
+   True
+
+   # float → bigint (lossy)
+   >>> can_cast(dtype("float64"), dtype("bigint"))
+   False
+
+   # Standard NumPy cases
+   >>> can_cast(dtype("int64"), dtype("float64"))
+   True
+   >>> can_cast(dtype("float64"), dtype("int64"))
+   False
 
 
 .. py:function:: cast(pda: arkouda.numpy.pdarrayclass.pdarray, dt: arkouda.numpy._typing.StringDTypeTypes, errors: Literal[ErrorMode, ErrorMode] = ErrorMode.strict) -> arkouda.numpy.strings.Strings
@@ -6732,14 +6883,58 @@ Package Contents
 
 
 
-.. py:function:: dtype(dtype)
+.. py:function:: dtype(x)
 
-   Create a data type object.
+   Normalize a dtype-like input into an Arkouda dtype sentinel or a NumPy dtype.
 
-   :param dtype: Object to be converted to a data type object.
-   :type dtype: object
+   This function accepts many dtype-like forms—including Python scalars,
+   NumPy scalar types, Arkouda ``bigint`` sentinels, and strings—and resolves
+   them to the canonical Arkouda/NumPy dtype object. The resolution rules
+   include special handling of the ``bigint`` family and magnitude-aware routing
+   for Python integers.
 
-   :rtype: type
+   :param x: The dtype-like object to normalize. May be a Python scalar, a NumPy
+             dtype or scalar, the ``bigint`` sentinel or scalar, a dtype-specifying
+             string, or any object accepted by ``numpy.dtype``.
+   :type x: Any
+
+   :raises TypeError: If ``x`` cannot be interpreted as either an Arkouda dtype or a NumPy
+       dtype. This includes cases where ``numpy.dtype(x)`` itself fails.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda.numpy import dtype
+
+   # bigint family
+   >>> dtype("bigint")
+   dtype(bigint)
+   >>> dtype(ak.bigint(10_000_000_000_000_000_000))
+   dtype(bigint)
+
+   # magnitude-based routing for Python ints
+   >>> dtype(10)
+   dtype('int64')
+   >>> dtype(2**63 - 1)
+   dtype('int64')
+   >>> dtype(2**63)
+   dtype('uint64')
+   >>> dtype(2**100)
+   dtype(bigint)
+
+   # floats and bools
+   >>> dtype(1.0)
+   dtype('float64')
+   >>> dtype(True)
+   dtype('bool')
+
+   # string dtypes
+   >>> dtype("str")
+   dtype('<U')
+
+   # fallback to numpy.dtype
+   >>> dtype("int32")
+   dtype('int32')
 
 
 .. py:data:: e
@@ -11256,43 +11451,65 @@ Package Contents
 
    Try to infer what dtype arkouda_server should treat val as.
 
-   :param val: The object to determine the dtype of.
-   :type val: object
 
-   :returns: The dtype name, if it can be resolved, otherwise the type (as str).
-   :rtype: str
+.. py:function:: result_type(*args)
+
+   Determine the result dtype from one or more inputs, following NumPy’s
+   promotion rules but extended to support Arkouda ``bigint`` semantics.
+
+   This function mirrors ``numpy.result_type`` for standard NumPy dtypes,
+   scalars, and arrays, but additionally recognizes Arkouda ``bigint`` and
+   ``bigint_`` values, promoting them according to Arkouda-specific rules.
+
+   In mixed-type expressions, the following logic is applied:
+
+   * Any presence of ``bigint`` or ``bigint_`` promotes the result to:
+       - ``float64`` if any float is also present,
+       - otherwise ``bigint``.
+   * Python integers first pass through Arkouda's magnitude-aware ``dtype()``
+     routing, so extremely large integers may promote to ``bigint``.
+   * Booleans promote to ``bool`` as in NumPy.
+   * Mixed signed/unsigned integers follow NumPy rules, except that a
+     non-negative signed scalar combined with unsigned scalars promotes to
+     the widest unsigned dtype.
+   * All remaining cases defer to ``numpy.result_type``.
+
+   :param \*args: One or more dtype-like objects, scalars, NumPy arrays, Arkouda arrays,
+                  or any value accepted by ``numpy.result_type`` or Arkouda’s
+                  ``dtype()`` conversion.
+   :type \*args: Any
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> ak.resolve_scalar_dtype(1)
-   'int64'
-   >>> ak.resolve_scalar_dtype(2.0)
-   'float64'
+   >>> from arkouda.numpy import result_type, dtype
 
+   # bigint wins unless floats appear
+   >>> result_type(dtype("bigint"), dtype("int64"))
+   dtype(bigint)
 
-.. py:function:: result_type(*args: Union[pdarray, np.dtype, type]) -> Union[np.dtype, type]
+   >>> result_type(dtype("bigint"), dtype("float64"))
+   dtype('float64')
 
-   Determine the promoted result dtype of inputs, including support for Arkouda's bigint.
+   # magnitude-aware routing: this becomes bigint, so result is bigint
+   >>> result_type(2**100, 5)
+   dtype(bigint)
 
-   Determine the result dtype that would be returned by a NumPy-like operation
-   on the provided input arguments, accounting for Arkouda's extended types
-   such as ak.bigint.
+   # standard NumPy integer promotions
+   >>> result_type(dtype("int32"), dtype("int64"))
+   dtype('int64')
 
-   This function mimics numpy.result_type, with support for Arkouda types.
+   # unsigned with non-negative signed scalar → largest unsigned
+   >>> result_type(np.uint32(3), 7)   # 7 is non-negative signed scalar
+   dtype('uint32')
 
-   :param \*args: One or more input objects. These can be NumPy arrays, dtypes, Python
-                  scalar types, or Arkouda pdarrays.
-   :type \*args: Union[pdarray, np.dtype, type]
+   # float promotion
+   >>> result_type(1.0, 5)
+   dtype('float64')
 
-   :returns: The dtype (or equivalent Arkouda type) that results from applying
-             type promotion rules to the inputs.
-   :rtype: Union[np.dtype, type]
-
-   .. rubric:: Notes
-
-   This function is meant to be a drop-in replacement for numpy.result_type
-   but includes logic to support Arkouda's bigint type.
+   # boolean stays boolean
+   >>> result_type(True, False)
+   dtype('bool')
 
 
 .. py:function:: rotl(x, rot) -> pdarray

@@ -375,18 +375,6 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.numpy.dtypes">
 <span id="arkouda-numpy-dtypes"></span><h1>arkouda.numpy.dtypes<a class="headerlink" href="#module-arkouda.numpy.dtypes" title="Link to this heading">¶</a></h1>
-<section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.TYPE_CHECKING" title="arkouda.numpy.dtypes.TYPE_CHECKING"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -464,8 +452,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.IntDType" title="arkouda.numpy.dtypes.IntDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IntDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.List" title="arkouda.numpy.dtypes.List"><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code></a></p></td>
-<td><p>A generic version of list.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code></a></p></td>
+<td><p>Special typing form to define literal types (a.k.a. value types).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.LongDType" title="arkouda.numpy.dtypes.LongDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LongDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
@@ -540,81 +528,84 @@
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint</span></code></a></p></td>
-<td><p>Datatype for representing integers of variable size.</p></td>
+<td><p>Dtype sentinel for Arkouda's variable-width (arbitrary-precision) integers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bitType" title="arkouda.numpy.dtypes.bitType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitType</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bigint_" title="arkouda.numpy.dtypes.bigint_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint_</span></code></a></p></td>
+<td><p>Scalar type for Arkouda's variable-width integer dtype.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bitType" title="arkouda.numpy.dtypes.bitType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitType</span></code></a></p></td>
 <td><p>Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a></p></td>
 <td><p>Boolean type (True or False), stored as a byte.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_" title="arkouda.numpy.dtypes.bool_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_" title="arkouda.numpy.dtypes.bool_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_</span></code></a></p></td>
 <td><p>Boolean type (True or False), stored as a byte.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex128" title="arkouda.numpy.dtypes.complex128"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex128</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex128" title="arkouda.numpy.dtypes.complex128"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex128</span></code></a></p></td>
 <td><p>Complex number type composed of two double-precision floating-point</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex64" title="arkouda.numpy.dtypes.complex64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.complex64" title="arkouda.numpy.dtypes.complex64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">complex64</span></code></a></p></td>
 <td><p>Complex number type composed of two single-precision floating-point</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float16" title="arkouda.numpy.dtypes.float16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float16</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float16" title="arkouda.numpy.dtypes.float16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float16</span></code></a></p></td>
 <td><p>Half-precision floating-point number type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float32" title="arkouda.numpy.dtypes.float32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float32</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float32" title="arkouda.numpy.dtypes.float32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float32</span></code></a></p></td>
 <td><p>Single-precision floating-point number type, compatible with C <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float64</span></code></a></p></td>
 <td><p>Double-precision floating-point number type, compatible with Python</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int16" title="arkouda.numpy.dtypes.int16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int16</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int16" title="arkouda.numpy.dtypes.int16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int16</span></code></a></p></td>
 <td><p>Signed integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">short</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int32" title="arkouda.numpy.dtypes.int32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int32</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int32" title="arkouda.numpy.dtypes.int32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int32</span></code></a></p></td>
 <td><p>Signed integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int64</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int64</span></code></a></p></td>
 <td><p>Default signed integer type, 64bit on 64bit systems and 32bit on 32bit</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int8" title="arkouda.numpy.dtypes.int8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int8</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int8" title="arkouda.numpy.dtypes.int8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int8</span></code></a></p></td>
 <td><p>Signed integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">char</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.intTypes" title="arkouda.numpy.dtypes.intTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intTypes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.intTypes" title="arkouda.numpy.dtypes.intTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intTypes</span></code></a></p></td>
 <td><p>Build an immutable unordered collection of unique elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_and_bool_scalars" title="arkouda.numpy.dtypes.numeric_and_bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_and_bool_scalars</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_and_bool_scalars" title="arkouda.numpy.dtypes.numeric_and_bool_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_and_bool_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_scalars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numeric_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy_scalars</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_" title="arkouda.numpy.dtypes.str_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_" title="arkouda.numpy.dtypes.str_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_</span></code></a></p></td>
 <td><p>A unicode string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_scalars</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.str_scalars" title="arkouda.numpy.dtypes.str_scalars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str_scalars</span></code></a></p></td>
 <td><p>Mixin to prevent iteration, without being compatible with Iterable.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint16" title="arkouda.numpy.dtypes.uint16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint16</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint16" title="arkouda.numpy.dtypes.uint16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint16</span></code></a></p></td>
 <td><p>Unsigned integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">short</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint32" title="arkouda.numpy.dtypes.uint32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint32</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint32" title="arkouda.numpy.dtypes.uint32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint32</span></code></a></p></td>
 <td><p>Unsigned integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">int</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint64</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint64</span></code></a></p></td>
 <td><p>Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint8" title="arkouda.numpy.dtypes.uint8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint8</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.uint8" title="arkouda.numpy.dtypes.uint8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uint8</span></code></a></p></td>
 <td><p>Unsigned integer type, compatible with C <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code>.</p></td>
 </tr>
 </tbody>
@@ -627,13 +618,13 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.can_cast" title="arkouda.numpy.dtypes.can_cast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_cast</span></code></a>(→ bool)</p></td>
-<td><p>Returns True if cast between data types can occur according to the casting rule.</p></td>
+<td><p>Determine whether a value of one dtype can be safely cast to another,</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.cast" title="arkouda.numpy.dtypes.cast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cast</span></code></a>(typ, val)</p></td>
 <td><p>Cast a value to a type.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtype" title="arkouda.numpy.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(dtype)</p></td>
-<td><p>Create a data type object.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtype" title="arkouda.numpy.dtypes.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(x)</p></td>
+<td><p>Normalize a dtype-like input into an Arkouda dtype sentinel or a NumPy dtype.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.dtype_for_chapel" title="arkouda.numpy.dtypes.dtype_for_chapel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype_for_chapel</span></code></a>(type_name)</p></td>
 <td><p>Returns dtype() for the given Chapel type.</p></td>
@@ -662,8 +653,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.resolve_scalar_dtype" title="arkouda.numpy.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.result_type" title="arkouda.numpy.dtypes.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(→ Union[np.dtype, type])</p></td>
-<td><p>Determine the promoted result dtype of inputs, including support for Arkouda's bigint.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.result_type" title="arkouda.numpy.dtypes.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(*args)</p></td>
+<td><p>Determine the result dtype from one or more inputs, following NumPy’s</p></td>
 </tr>
 </tbody>
 </table>
@@ -1192,89 +1183,27 @@ information.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">List</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.List" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_NotIterable</span></code></p>
-<p>A generic version of list.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.append" title="Link to this definition">¶</a></dt>
-<dd><p>Append object to the end of the list.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.Literal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">Literal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">getitem</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/typing.html#Literal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.Literal" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_SpecialForm</span></code></p>
+<p>Special typing form to define literal types (a.k.a. value types).</p>
+<p>This form can be used to indicate to type checkers that the corresponding
+variable or function parameter has a value equivalent to the provided
+literal (or one of several literals):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">validate_simple</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]:</span>  <span class="c1"># always returns True</span>
+    <span class="o">...</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.clear" title="Link to this definition">¶</a></dt>
-<dd><p>Remove all items from list.</p>
-</dd></dl>
+<span class="n">MODE</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_helper</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">MODE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.copy" title="Link to this definition">¶</a></dt>
-<dd><p>Return a shallow copy of the list.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.copy_with">
-<span class="sig-name descname"><span class="pre">copy_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.copy_with" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.count" title="Link to this definition">¶</a></dt>
-<dd><p>Return number of occurrences of value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.extend">
-<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.extend" title="Link to this definition">¶</a></dt>
-<dd><p>Extend list by appending elements from the iterable.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.index">
-<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.index" title="Link to this definition">¶</a></dt>
-<dd><p>Return first index of value.</p>
-<p>Raises ValueError if the value is not present.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.insert">
-<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.insert" title="Link to this definition">¶</a></dt>
-<dd><p>Insert object before index.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.pop" title="Link to this definition">¶</a></dt>
-<dd><p>Remove and return item at index (default last).</p>
-<p>Raises IndexError if list is empty or index is out of range.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.remove">
-<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.remove" title="Link to this definition">¶</a></dt>
-<dd><p>Remove first occurrence of value.</p>
-<p>Raises ValueError if the value is not present.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.reverse">
-<span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.reverse" title="Link to this definition">¶</a></dt>
-<dd><p>Reverse <em>IN PLACE</em>.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.List.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.List.sort" title="Link to this definition">¶</a></dt>
-<dd><p>Sort the list in ascending order and return None.</p>
-<p>The sort is in-place (i.e. the list itself is modified) and stable (i.e. the
-order of two equal elements is maintained).</p>
-<p>If a key function is given, apply it once to each list item and sort them,
-ascending or descending, according to their function values.</p>
-<p>The reverse flag can be set to sort in descending order.</p>
-</dd></dl>
-
+<span class="n">open_helper</span><span class="p">(</span><span class="s1">&#39;/some/path&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>  <span class="c1"># Passes type check</span>
+<span class="n">open_helper</span><span class="p">(</span><span class="s1">&#39;/other/path&#39;</span><span class="p">,</span> <span class="s1">&#39;typo&#39;</span><span class="p">)</span>  <span class="c1"># Error in type checker</span>
+</pre></div>
+</div>
+<p>Literal[…] cannot be subclassed. At runtime, an arbitrary value
+is allowed as type argument to Literal[…], but type checkers may
+impose restrictions.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1633,11 +1562,6 @@ dtype instances and <span class="xref std std-ref">arrays.dtypes</span> for addi
 information.</p>
 </dd></dl>
 
-<dl class="py data">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.TYPE_CHECKING">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">TYPE_CHECKING</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#arkouda.numpy.dtypes.TYPE_CHECKING" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.TimeDelta64DType">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">TimeDelta64DType</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.TimeDelta64DType" title="Link to this definition">¶</a></dt>
@@ -1862,12 +1786,107 @@ If iterable is specified the tuple is initialized from iterable’s items.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">bigint</span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#bigint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.bigint" title="Link to this definition">¶</a></dt>
-<dd><p>Datatype for representing integers of variable size.</p>
-<p>May be used for integers that exceed 64 bits.</p>
-<dl class="py method">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">bigint</span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/_bigint.html#bigint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.bigint" title="Link to this definition">¶</a></dt>
+<dd><p>Dtype sentinel for Arkouda’s variable-width (arbitrary-precision) integers.</p>
+<p>This class represents the dtype object used by Arkouda arrays storing
+arbitrary-precision integers. It behaves similarly to NumPy’s dtype
+objects (such as <code class="docutils literal notranslate"><span class="pre">np.int64</span></code>), but corresponds to an unbounded,
+variable-width integer type. Instances of <a class="reference internal" href="#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><code class="xref py py-class docutils literal notranslate"><span class="pre">bigint</span></code></a> are singletons
+created through <code class="docutils literal notranslate"><span class="pre">__new__</span></code> so that all dtype references share the same
+object.</p>
+<p>Construction semantics follow NumPy’s pattern: calling <code class="docutils literal notranslate"><span class="pre">ak.bigint()</span></code>
+returns the dtype sentinel, and calling <code class="docutils literal notranslate"><span class="pre">ak.bigint(value)</span></code> returns a
+<a class="reference internal" href="#arkouda.numpy.dtypes.bigint_" title="arkouda.numpy.dtypes.bigint_"><code class="xref py py-class docutils literal notranslate"><span class="pre">bigint_</span></code></a> scalar constructed from <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+<p>bigint instances compare equal to the <code class="docutils literal notranslate"><span class="pre">bigint</span></code> class, to themselves,
+to strings such as <code class="docutils literal notranslate"><span class="pre">&quot;bigint&quot;</span></code>, and to other dtype-like objects whose
+<code class="docutils literal notranslate"><span class="pre">name</span></code> attribute equals <code class="docutils literal notranslate"><span class="pre">&quot;bigint&quot;</span></code>. This allows interoperability
+across Arkouda’s dtype-resolution system.</p>
+<p class="rubric">Notes</p>
+<p>This class represents only the dtype. Scalar values use <a class="reference internal" href="#arkouda.numpy.dtypes.bigint_" title="arkouda.numpy.dtypes.bigint_"><code class="xref py py-class docutils literal notranslate"><span class="pre">bigint_</span></code></a>,
+which inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.name" title="Link to this definition">¶</a></dt>
+<dd><p>Canonical dtype name (<code class="docutils literal notranslate"><span class="pre">&quot;bigint&quot;</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.kind" title="Link to this definition">¶</a></dt>
+<dd><p>Dtype category code (<code class="docutils literal notranslate"><span class="pre">&quot;ui&quot;</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.itemsize">
-<span class="sig-name descname"><span class="pre">itemsize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.itemsize" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.itemsize" title="Link to this definition">¶</a></dt>
+<dd><p>Nominal bit-width (128). Actual precision is unbounded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.ndim">
+<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.ndim" title="Link to this definition">¶</a></dt>
+<dd><p>Number of dimensions for the dtype object (always 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.shape" title="Link to this definition">¶</a></dt>
+<dd><p>Empty tuple, following NumPy’s dtype API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">()</span>
+<span class="go">dtype(bigint)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="go">ak.bigint_(42)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;bigint&#39;</span>
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.is_signed">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_signed</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.is_signed" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.is_variable_width">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_variable_width</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.is_variable_width" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">itemsize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
 <dd><p>int([x]) -&gt; integer
 int(x, base=10) -&gt; integer</p>
 <p>Convert a number or string to an integer, or return 0 if no arguments
@@ -1883,8 +1902,8 @@ Base 0 means to interpret the base from the string as an integer literal.
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.name">
-<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.name" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">kind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd><p>str(object=’’) -&gt; str
 str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
 <p>Create a new string object from the given object. If encoding or
@@ -1897,8 +1916,22 @@ errors defaults to ‘strict’.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.ndim">
-<span class="sig-name descname"><span class="pre">ndim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.ndim" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to ‘utf-8’.
+errors defaults to ‘strict’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">ndim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
 <dd><p>int([x]) -&gt; integer
 int(x, base=10) -&gt; integer</p>
 <p>Convert a number or string to an integer, or return 0 if no arguments
@@ -1914,8 +1947,8 @@ Base 0 means to interpret the base from the string as an integer literal.
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.shape" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id8" title="Link to this definition">¶</a></dt>
 <dd><p>Built-in immutable sequence.</p>
 <p>If no argument is given, the constructor returns an empty tuple.
 If iterable is specified the tuple is initialized from iterable’s items.</p>
@@ -1924,9 +1957,84 @@ If iterable is specified the tuple is initialized from iterable’s items.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint.type">
-<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#bigint.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.type" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/_bigint.html#bigint.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.bigint.type" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint_">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">bigint_</span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/_bigint.html#bigint_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.bigint_" title="Link to this definition">¶</a></dt>
+<dd><p>Scalar type for Arkouda’s variable-width integer dtype.</p>
+<p><code class="docutils literal notranslate"><span class="pre">bigint_</span></code> represents an individual arbitrary-precision integer value within
+Arkouda arrays that use the <a class="reference internal" href="#arkouda.numpy.dtypes.bigint" title="arkouda.numpy.dtypes.bigint"><code class="xref py py-class docutils literal notranslate"><span class="pre">bigint</span></code></a> dtype. It inherits directly from
+Python’s built-in <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, ensuring full arbitrary-precision semantics
+while providing dtype metadata compatible with Arkouda.</p>
+<p>This class is typically constructed indirectly via <code class="docutils literal notranslate"><span class="pre">ak.bigint(value)</span></code>,
+which invokes the <code class="xref py py-class docutils literal notranslate"><span class="pre">_BigIntMeta</span></code> metaclass. Direct instantiation is
+also supported.</p>
+<section id="construction">
+<h3>Construction<a class="headerlink" href="#construction" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">bigint_(x)</span></code> converts <code class="docutils literal notranslate"><span class="pre">x</span></code> to an integer using Python’s <code class="docutils literal notranslate"><span class="pre">int</span></code>:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">x</span></code> is <code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">bytes</span></code>, it is interpreted using <code class="docutils literal notranslate"><span class="pre">int(x,</span> <span class="pre">0)</span></code>,
+allowing hexadecimal (<code class="docutils literal notranslate"><span class="pre">&quot;0xff&quot;</span></code>), binary (<code class="docutils literal notranslate"><span class="pre">&quot;0b1010&quot;</span></code>), and other
+literal forms.</p></li>
+<li><p>Otherwise, <code class="docutils literal notranslate"><span class="pre">x</span></code> is passed directly to <code class="docutils literal notranslate"><span class="pre">int(x)</span></code>.</p></li>
+</ul>
+</section>
+<section id="properties">
+<h3>Properties<a class="headerlink" href="#properties" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>dtype<span class="classifier">bigint</span></dt><dd><p>Returns the corresponding dtype sentinel, <code class="docutils literal notranslate"><span class="pre">ak.bigint()</span></code>.
+This mirrors NumPy scalar behavior (e.g., <code class="docutils literal notranslate"><span class="pre">np.int64(1).dtype</span></code>).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint_.item">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/_bigint.html#bigint_.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.bigint_.item" title="Link to this definition">¶</a></dt>
+<dd><p>Return the underlying Python <code class="docutils literal notranslate"><span class="pre">int</span></code> value, matching NumPy scalar
+semantics.</p>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">bigint_</span></code> values behave exactly like Python <code class="docutils literal notranslate"><span class="pre">int</span></code> objects in arithmetic,
+hashing, comparison, and formatting. Arkouda arrays wrap and distribute many
+such scalars but do not impose fixed-width limits.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">ak.bigint_(123)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">+</span> <span class="mi">10</span>
+<span class="go">133</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">bigint_</span><span class="p">(</span><span class="s2">&quot;0xff&quot;</span><span class="p">)</span>
+<span class="go">ak.bigint_(255)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+<span class="go">dtype(bigint)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="go">123</span>
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.bigint_.dtype">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.numpy.dtypes.bigint_.dtype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/_bigint.html#bigint_.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id9" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
 </dd></dl>
 
 <dl class="py class">
@@ -2031,22 +2139,56 @@ is treated specially.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.can_cast">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">can_cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#can_cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.can_cast" title="Link to this definition">¶</a></dt>
-<dd><p>Returns True if cast between data types can occur according to the casting rule.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">can_cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'safe'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'safe'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#can_cast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.can_cast" title="Link to this definition">¶</a></dt>
+<dd><p>Determine whether a value of one dtype can be safely cast to another,
+following NumPy-like rules but including Arkouda-specific handling for
+<code class="docutils literal notranslate"><span class="pre">bigint</span></code> and <code class="docutils literal notranslate"><span class="pre">bigint_</span></code>.</p>
+<p>The default <code class="docutils literal notranslate"><span class="pre">&quot;safe&quot;</span></code> mode uses the following logic:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code> → <code class="docutils literal notranslate"><span class="pre">bigint</span></code>: always allowed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code> → float dtypes: allowed (may lose precision, but magnitude fits).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code> → fixed-width signed/unsigned integers: not allowed, due to
+potential overflow.</p></li>
+<li><p>int64 / uint64 → <code class="docutils literal notranslate"><span class="pre">bigint</span></code>: allowed (widening).</p></li>
+<li><p>float → <code class="docutils literal notranslate"><span class="pre">bigint</span></code>: not allowed (information loss).</p></li>
+<li><p>All other cases fall back to <code class="docutils literal notranslate"><span class="pre">numpy.can_cast</span></code> semantics.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from</strong> (<em>dtype</em><em>, </em><em>dtype specifier</em><em>, </em><em>NumPy scalar</em><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Data type, NumPy scalar, or array to cast from.</p></li>
-<li><p><strong>to</strong> (<em>dtype</em><em> or </em><em>dtype specifier</em>) – Data type to cast to.</p></li>
+<li><p><strong>from_dt</strong> (<em>Any</em>) – Source dtype or scalar-like object.</p></li>
+<li><p><strong>to_dt</strong> (<em>Any</em>) – Target dtype or scalar-like object.</p></li>
+<li><p><strong>casting</strong> (<em>str</em><em>, </em><em>optional</em>) – Casting rule, matching NumPy’s <code class="docutils literal notranslate"><span class="pre">can_cast</span></code> API. Only <code class="docutils literal notranslate"><span class="pre">&quot;safe&quot;</span></code>
+is currently implemented. Other values are accepted for API
+compatibility but routed through the same logic.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if cast can occur according to the casting rule.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>builtins.bool</p>
-</dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">can_cast</span><span class="p">,</span> <span class="n">dtype</span>
+</pre></div>
+</div>
+<p># bigint → bigint
+&gt;&gt;&gt; can_cast(dtype(“bigint”), dtype(“bigint”))
+True</p>
+<p># bigint → float64
+&gt;&gt;&gt; can_cast(dtype(“bigint”), dtype(“float64”))
+True</p>
+<p># bigint → int64 (unsafe)
+&gt;&gt;&gt; can_cast(dtype(“bigint”), dtype(“int64”))
+False</p>
+<p># int64 → bigint (widening)
+&gt;&gt;&gt; can_cast(dtype(“int64”), dtype(“bigint”))
+True</p>
+<p># float → bigint (lossy)
+&gt;&gt;&gt; can_cast(dtype(“float64”), dtype(“bigint”))
+False</p>
+<p># Standard NumPy cases
+&gt;&gt;&gt; can_cast(dtype(“int64”), dtype(“float64”))
+True
+&gt;&gt;&gt; can_cast(dtype(“float64”), dtype(“int64”))
+False</p>
 </dd></dl>
 
 <dl class="py function">
@@ -2103,16 +2245,54 @@ to be as fast as possible).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.dtype" title="Link to this definition">¶</a></dt>
-<dd><p>Create a data type object.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.dtype" title="Link to this definition">¶</a></dt>
+<dd><p>Normalize a dtype-like input into an Arkouda dtype sentinel or a NumPy dtype.</p>
+<p>This function accepts many dtype-like forms—including Python scalars,
+NumPy scalar types, Arkouda <code class="docutils literal notranslate"><span class="pre">bigint</span></code> sentinels, and strings—and resolves
+them to the canonical Arkouda/NumPy dtype object. The resolution rules
+include special handling of the <code class="docutils literal notranslate"><span class="pre">bigint</span></code> family and magnitude-aware routing
+for Python integers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dtype</strong> (<em>object</em>) – Object to be converted to a data type object.</p>
+<dd class="field-odd"><p><strong>x</strong> (<em>Any</em>) – The dtype-like object to normalize. May be a Python scalar, a NumPy
+dtype or scalar, the <code class="docutils literal notranslate"><span class="pre">bigint</span></code> sentinel or scalar, a dtype-specifying
+string, or any object accepted by <code class="docutils literal notranslate"><span class="pre">numpy.dtype</span></code>.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>type</p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">x</span></code> cannot be interpreted as either an Arkouda dtype or a NumPy
+dtype. This includes cases where <code class="docutils literal notranslate"><span class="pre">numpy.dtype(x)</span></code> itself fails.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span>
+</pre></div>
+</div>
+<p># bigint family
+&gt;&gt;&gt; dtype(“bigint”)
+dtype(bigint)
+&gt;&gt;&gt; dtype(ak.bigint(10_000_000_000_000_000_000))
+dtype(bigint)</p>
+<p># magnitude-based routing for Python ints
+&gt;&gt;&gt; dtype(10)
+dtype(‘int64’)
+&gt;&gt;&gt; dtype(2**63 - 1)
+dtype(‘int64’)
+&gt;&gt;&gt; dtype(2**63)
+dtype(‘uint64’)
+&gt;&gt;&gt; dtype(2**100)
+dtype(bigint)</p>
+<p># floats and bools
+&gt;&gt;&gt; dtype(1.0)
+dtype(‘float64’)
+&gt;&gt;&gt; dtype(True)
+dtype(‘bool’)</p>
+<p># string dtypes
+&gt;&gt;&gt; dtype(“str”)
+dtype(‘&lt;U’)</p>
+<p># fallback to numpy.dtype
+&gt;&gt;&gt; dtype(“int32”)
+dtype(‘int32’)</p>
 </dd></dl>
 
 <dl class="py function">
@@ -2814,51 +2994,68 @@ is treated specially.</p>
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.resolve_scalar_dtype">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">resolve_scalar_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#resolve_scalar_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.resolve_scalar_dtype" title="Link to this definition">¶</a></dt>
 <dd><p>Try to infer what dtype arkouda_server should treat val as.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>val</strong> (<em>object</em>) – The object to determine the dtype of.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The dtype name, if it can be resolved, otherwise the type (as str).</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">&#39;int64&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
-<span class="go">&#39;float64&#39;</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.result_type">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">result_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">np.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#result_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.result_type" title="Link to this definition">¶</a></dt>
-<dd><p>Determine the promoted result dtype of inputs, including support for Arkouda’s bigint.</p>
-<p>Determine the result dtype that would be returned by a NumPy-like operation
-on the provided input arguments, accounting for Arkouda’s extended types
-such as ak.bigint.</p>
-<p>This function mimics numpy.result_type, with support for Arkouda types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*args</strong> (<a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.dtype</em><em>, </em><em>type</em><em>]</em>) – One or more input objects. These can be NumPy arrays, dtypes, Python
-scalar types, or Arkouda pdarrays.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The dtype (or equivalent Arkouda type) that results from applying
-type promotion rules to the inputs.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[np.dtype, type]</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">result_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#result_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.result_type" title="Link to this definition">¶</a></dt>
+<dd><p>Determine the result dtype from one or more inputs, following NumPy’s
+promotion rules but extended to support Arkouda <code class="docutils literal notranslate"><span class="pre">bigint</span></code> semantics.</p>
+<p>This function mirrors <code class="docutils literal notranslate"><span class="pre">numpy.result_type</span></code> for standard NumPy dtypes,
+scalars, and arrays, but additionally recognizes Arkouda <code class="docutils literal notranslate"><span class="pre">bigint</span></code> and
+<code class="docutils literal notranslate"><span class="pre">bigint_</span></code> values, promoting them according to Arkouda-specific rules.</p>
+<p>In mixed-type expressions, the following logic is applied:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Any presence of <code class="docutils literal notranslate"><span class="pre">bigint</span></code> or <code class="docutils literal notranslate"><span class="pre">bigint_</span></code> promotes the result to:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">float64</span></code> if any float is also present,</p></li>
+<li><p>otherwise <code class="docutils literal notranslate"><span class="pre">bigint</span></code>.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>This function is meant to be a drop-in replacement for numpy.result_type
-but includes logic to support Arkouda’s bigint type.</p>
+</li>
+<li><p>Python integers first pass through Arkouda’s magnitude-aware <code class="docutils literal notranslate"><span class="pre">dtype()</span></code>
+routing, so extremely large integers may promote to <code class="docutils literal notranslate"><span class="pre">bigint</span></code>.</p></li>
+<li><p>Booleans promote to <code class="docutils literal notranslate"><span class="pre">bool</span></code> as in NumPy.</p></li>
+<li><p>Mixed signed/unsigned integers follow NumPy rules, except that a
+non-negative signed scalar combined with unsigned scalars promotes to
+the widest unsigned dtype.</p></li>
+<li><p>All remaining cases defer to <code class="docutils literal notranslate"><span class="pre">numpy.result_type</span></code>.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>Any</em>) – One or more dtype-like objects, scalars, NumPy arrays, Arkouda arrays,
+or any value accepted by <code class="docutils literal notranslate"><span class="pre">numpy.result_type</span></code> or Arkouda’s
+<code class="docutils literal notranslate"><span class="pre">dtype()</span></code> conversion.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">result_type</span><span class="p">,</span> <span class="n">dtype</span>
+</pre></div>
+</div>
+<p># bigint wins unless floats appear
+&gt;&gt;&gt; result_type(dtype(“bigint”), dtype(“int64”))
+dtype(bigint)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result_type</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;bigint&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">))</span>
+<span class="go">dtype(&#39;float64&#39;)</span>
+</pre></div>
+</div>
+<p># magnitude-aware routing: this becomes bigint, so result is bigint
+&gt;&gt;&gt; result_type(2**100, 5)
+dtype(bigint)</p>
+<p># standard NumPy integer promotions
+&gt;&gt;&gt; result_type(dtype(“int32”), dtype(“int64”))
+dtype(‘int64’)</p>
+<p># unsigned with non-negative signed scalar → largest unsigned
+&gt;&gt;&gt; result_type(np.uint32(3), 7)   # 7 is non-negative signed scalar
+dtype(‘uint32’)</p>
+<p># float promotion
+&gt;&gt;&gt; result_type(1.0, 5)
+dtype(‘float64’)</p>
+<p># boolean stays boolean
+&gt;&gt;&gt; result_type(True, False)
+dtype(‘bool’)</p>
 </dd></dl>
 
 <dl class="py class">
@@ -3664,7 +3861,6 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.numpy.dtypes</a><ul>
-<li><a class="reference internal" href="#attributes">Attributes</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
@@ -3754,21 +3950,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.Int64DType"><code class="docutils literal notranslate"><span class="pre">Int64DType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.Int8DType"><code class="docutils literal notranslate"><span class="pre">Int8DType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.IntDType"><code class="docutils literal notranslate"><span class="pre">IntDType</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List"><code class="docutils literal notranslate"><span class="pre">List</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.append"><code class="docutils literal notranslate"><span class="pre">List.append()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.clear"><code class="docutils literal notranslate"><span class="pre">List.clear()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.copy"><code class="docutils literal notranslate"><span class="pre">List.copy()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.copy_with"><code class="docutils literal notranslate"><span class="pre">List.copy_with()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.count"><code class="docutils literal notranslate"><span class="pre">List.count()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.extend"><code class="docutils literal notranslate"><span class="pre">List.extend()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.index"><code class="docutils literal notranslate"><span class="pre">List.index()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.insert"><code class="docutils literal notranslate"><span class="pre">List.insert()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.pop"><code class="docutils literal notranslate"><span class="pre">List.pop()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.remove"><code class="docutils literal notranslate"><span class="pre">List.remove()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.reverse"><code class="docutils literal notranslate"><span class="pre">List.reverse()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.List.sort"><code class="docutils literal notranslate"><span class="pre">List.sort()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.Literal"><code class="docutils literal notranslate"><span class="pre">Literal</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.LongDType"><code class="docutils literal notranslate"><span class="pre">LongDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.LongDoubleDType"><code class="docutils literal notranslate"><span class="pre">LongDoubleDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.LongLongDType"><code class="docutils literal notranslate"><span class="pre">LongLongDType</span></code></a></li>
@@ -3825,7 +4007,6 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 </li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.ShortDType"><code class="docutils literal notranslate"><span class="pre">ShortDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.StrDType"><code class="docutils literal notranslate"><span class="pre">StrDType</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.TYPE_CHECKING"><code class="docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.TimeDelta64DType"><code class="docutils literal notranslate"><span class="pre">TimeDelta64DType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.UByteDType"><code class="docutils literal notranslate"><span class="pre">UByteDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.UInt16DType"><code class="docutils literal notranslate"><span class="pre">UInt16DType</span></code></a></li>
@@ -3851,11 +4032,25 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint"><code class="docutils literal notranslate"><span class="pre">bigint</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.itemsize"><code class="docutils literal notranslate"><span class="pre">bigint.itemsize()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.name"><code class="docutils literal notranslate"><span class="pre">bigint.name()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.ndim"><code class="docutils literal notranslate"><span class="pre">bigint.ndim()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.shape"><code class="docutils literal notranslate"><span class="pre">bigint.shape()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.name"><code class="docutils literal notranslate"><span class="pre">bigint.name</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.kind"><code class="docutils literal notranslate"><span class="pre">bigint.kind</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.itemsize"><code class="docutils literal notranslate"><span class="pre">bigint.itemsize</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.ndim"><code class="docutils literal notranslate"><span class="pre">bigint.ndim</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.shape"><code class="docutils literal notranslate"><span class="pre">bigint.shape</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.is_signed"><code class="docutils literal notranslate"><span class="pre">bigint.is_signed</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.is_variable_width"><code class="docutils literal notranslate"><span class="pre">bigint.is_variable_width</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">bigint.itemsize()</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">bigint.kind()</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">bigint.name()</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">bigint.ndim()</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">bigint.shape()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint.type"><code class="docutils literal notranslate"><span class="pre">bigint.type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint_"><code class="docutils literal notranslate"><span class="pre">bigint_</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint_.item"><code class="docutils literal notranslate"><span class="pre">bigint_.item()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.bigint_.dtype"><code class="docutils literal notranslate"><span class="pre">bigint_.dtype</span></code></a></li>
+<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">bigint_.item()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.bitType"><code class="docutils literal notranslate"><span class="pre">bitType</span></code></a><ul>
