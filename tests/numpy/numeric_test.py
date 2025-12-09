@@ -1086,8 +1086,7 @@ class TestNumeric:
                 assert_almost_equal(npa, ppa)
 
     # triu works on ints, floats, or bool
-    @pytest.mark.requires_chapel_module("StatsMsg")
-    @pytest.mark.requires_chapel_module("LinalgMsg")
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.skip_if_rank_not_compiled(2)
@@ -1135,8 +1134,7 @@ class TestNumeric:
                     )
 
     # eye works on ints, floats, or bool
-    @pytest.mark.requires_chapel_module("StatsMsg")
-    @pytest.mark.requires_chapel_module("LinalgMsg")
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
@@ -1153,8 +1151,7 @@ class TestNumeric:
                 assert_almost_equal(nda, pda)
 
     # matmul works on ints, floats, or bool
-    @pytest.mark.requires_chapel_module("StatsMsg")
-    @pytest.mark.requires_chapel_module("LinalgMsg")
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
@@ -1175,8 +1172,7 @@ class TestNumeric:
             npProduct = np.matmul(ndaLeft, ndaRight)
             assert_almost_equal(npProduct, akProduct.to_ndarray())
 
-    @pytest.mark.requires_chapel_module("StatsMsg")
-    @pytest.mark.requires_chapel_module("LinalgMsg")
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled((2, 3))
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)

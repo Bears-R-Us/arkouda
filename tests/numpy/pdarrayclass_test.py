@@ -340,8 +340,7 @@ class TestPdarrayClass:
         pda2 = ak.array(nda2)
         assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
-    @pytest.mark.requires_chapel_module("StatsMsg")
-    @pytest.mark.requires_chapel_module("LinalgMsg")
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
