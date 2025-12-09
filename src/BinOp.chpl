@@ -114,13 +114,6 @@ module BinOp
   }
         
 
-  // I'm rewriting the function below, and hopefully this can be used to cover the rest of the
-  // cases, and fix bug 5113.  First  I have to check if I broke anything.
-
-  // Note that "denom == 0" should have been checked already by the calling program, so
-  // from here, we only return 0 in that case.
-
-  // inline proc floorDivisionHelper(numerator: real(64), denom: real(64)): real(64) {
   inline proc floorDivisionHelper(dividend : ?tn, divisor : ?td) : floorDivisionType(tn,td) {
     type fDT = floorDivisionType(tn,td);
     var  numerator = dividend : fDT;
