@@ -22,6 +22,24 @@ class TestArkoudaArrayExtension:
         data = ak.array([10, 20, 30, 40, 50])
         return ArkoudaArray(data)
 
+    def test_copy_shallow_creates_new_wrapper_but_shares_data(self, ea):
+        """
+        deep=False should:
+          * return a new ExtensionArray wrapper,
+          * but share the same underlying Arkouda object in _data.
+        """
+        shallow = ea.copy(deep=False)
+
+        # New wrapper instance, same concrete subclass
+        assert shallow is not ea
+        assert type(shallow) is type(ea)
+
+        # Same underlying Arkouda object (no server-side copy)
+        assert shallow._data is ea._data
+
+        # Values are equal
+        np.testing.assert_array_equal(shallow.to_numpy(), ea.to_numpy())
+
     def test_array_extension_docstrings(self):
         import doctest
 
@@ -340,3 +358,70 @@ class TestArkoudaArrayExtension:
         s = pd.Series(pda.to_ndarray())
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data, s.take(idx1.to_ndarray()).to_numpy())
+
+    @pytest.fixture(params=["numeric", "strings", "categorical"])
+    def ea(self, request):
+        """
+        Parametrized fixture that yields one instance of each Arkouda-backed EA:
+
+        - "numeric"      -> ArkoudaArray
+        - "strings"      -> ArkoudaStringsArray
+        - "categorical"  -> ArkoudaCategoricalArray
+        """
+        kind = request.param
+
+        if kind == "numeric":
+            data = ak.arange(5)
+            arr = ArkoudaArray(data)
+
+        elif kind == "strings":
+            data = ak.array(["a", "b", "c", "a", "b"])
+            arr = ArkoudaStringArray(data)
+
+        elif kind == "categorical":
+            base = ak.array(["a", "b", "c", "a", "b"])
+            cat = ak.Categorical(base)
+            arr = ArkoudaCategoricalArray(cat)
+
+        else:  # pragma: no cover - defensive
+            raise ValueError(f"Unexpected kind: {kind}")
+
+        # Attach kind so tests can use it as an id if needed
+        arr._test_kind = kind
+        return arr
+
+    def test_copy_deep_creates_independent_underlying_data(self, ea):
+        """
+        deep=True should:
+          * return a new ExtensionArray wrapper,
+          * with a different underlying Arkouda object in _data,
+          * but with identical values.
+        """
+        deep = ea.copy(deep=True)
+
+        # New wrapper instance, same concrete subclass
+        assert deep is not ea
+        assert type(deep) is type(ea)
+
+        # Different underlying Arkouda object (server-side copy)
+        assert deep._data is not ea._data
+
+        # Values preserved
+        np.testing.assert_array_equal(deep.to_numpy(), ea.to_numpy())
+
+    def test_copy_default_behaves_like_deep_true(self, ea):
+        """
+        The default copy() call (no explicit deep argument) should behave like
+        deep=True: a deep copy of the backing data.
+        """
+        default_copy = ea.copy()
+
+        # New wrapper instance, same concrete subclass
+        assert default_copy is not ea
+        assert type(default_copy) is type(ea)
+
+        # Different underlying Arkouda object
+        assert default_copy._data is not ea._data
+
+        # Values preserved
+        np.testing.assert_array_equal(default_copy.to_numpy(), ea.to_numpy())
