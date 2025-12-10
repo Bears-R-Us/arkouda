@@ -70,7 +70,6 @@ CHPL_FLAGS += --interleave-memory
 endif
 
 # add-path: Append custom paths for non-system software.
-# Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
 define add-path
 ifneq ("$(wildcard $(1)/lib64)","")
   INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib64

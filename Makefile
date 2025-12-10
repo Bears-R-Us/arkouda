@@ -1,5 +1,4 @@
 # Split top-level Makefile for Arkouda
-# Original content saved as Makefile.original
 
 # Include build configuration, dependencies, flags, macros, etc.
 include make/Prologue.mk
