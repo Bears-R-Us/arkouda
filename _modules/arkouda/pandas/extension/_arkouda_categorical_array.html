@@ -367,8 +367,11 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.extension._arkouda_categorical_array</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -389,15 +392,52 @@
 <div class="viewcode-block" id="ArkoudaCategoricalArray">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">ArkoudaExtensionArray</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arkouda-backed categorical pandas ExtensionArray.</span>
+
+<span class="sd">    Ensures the underlying data is an Arkouda ``Categorical``. Accepts an existing</span>
+<span class="sd">    ``Categorical`` or converts from Python/NumPy sequences of labels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : Categorical | ArkoudaCategoricalArray | ndarray | Sequence[Any]</span>
+<span class="sd">        Input to wrap or convert.</span>
+<span class="sd">        - If ``Categorical``, used directly.</span>
+<span class="sd">        - If another ``ArkoudaCategoricalArray``, its backing object is reused.</span>
+<span class="sd">        - If list/tuple/ndarray, converted via ``ak.Categorical(ak.array(data))``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If ``data`` cannot be converted to Arkouda ``Categorical``.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    default_fill_value : str</span>
+<span class="sd">        Sentinel used when filling missing values (default: &quot;&quot;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">default_fill_value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected arkouda Categorical&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Categorical</span> <span class="o">|</span> <span class="s2">&quot;ArkoudaCategoricalArray&quot;</span> <span class="o">|</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">AkCategorical</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_data</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">AkCategorical</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">AkCategorical</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expected arkouda.Categorical or sequence convertible to one, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
 
-<div class="viewcode-block" id="ArkoudaCategoricalArray._from_sequence">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray._from_sequence">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_sequence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">array</span>
@@ -405,8 +445,7 @@
         <span class="c1"># if &#39;scalars&#39; are raw labels (strings), build ak.Categorical</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="n">scalars</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">scalars</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>

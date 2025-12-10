@@ -367,7 +367,10 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for arkouda.pandas.extension._arkouda_array</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -375,9 +378,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">ak_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span> <span class="k">as</span> <span class="n">ak_full</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_extension_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -397,17 +400,78 @@
 <div class="viewcode-block" id="ArkoudaArray">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaArray</span><span class="p">(</span><span class="n">ArkoudaExtensionArray</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">):</span>
-    <span class="n">default_fill_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arkouda-backed numeric/bool pandas ExtensionArray.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)):</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected an Arkouda pdarray&quot;</span><span class="p">)</span>
+<span class="sd">    Wraps or converts supported inputs into an Arkouda ``pdarray`` to serve as the</span>
+<span class="sd">    backing store. Ensures the underlying array is 1-D and lives on the Arkouda server.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : pdarray | ndarray | Sequence[Any] | ArkoudaArray</span>
+<span class="sd">        Input to wrap or convert.</span>
+<span class="sd">        - If an Arkouda ``pdarray``, it is used directly unless ``dtype`` is given</span>
+<span class="sd">          or ``copy=True``, in which case a new array is created via ``ak.array``.</span>
+<span class="sd">        - If a NumPy array, it is transferred to Arkouda via ``ak.array``.</span>
+<span class="sd">        - If a Python sequence, it is converted to NumPy then to Arkouda.</span>
+<span class="sd">        - If another ``ArkoudaArray``, its underlying ``pdarray`` is reused.</span>
+<span class="sd">    dtype : Any, optional</span>
+<span class="sd">        Desired dtype to cast to (NumPy dtype or Arkouda dtype string). If omitted,</span>
+<span class="sd">        dtype is inferred from ``data``.</span>
+<span class="sd">    copy : bool</span>
+<span class="sd">        If True, attempt to copy the underlying data when converting/wrapping.</span>
+<span class="sd">        Default is False.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If ``data`` cannot be interpreted as an Arkouda array-like object.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the resulting array is not one-dimensional.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    default_fill_value : int</span>
+<span class="sd">        Sentinel used when filling missing values (default: -1).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
+<span class="sd">    &gt;&gt;&gt; ArkoudaArray(ak.arange(5))</span>
+<span class="sd">    ArkoudaArray([0 1 2 3 4])</span>
+<span class="sd">    &gt;&gt;&gt; ArkoudaArray([10, 20, 30])</span>
+<span class="sd">    ArkoudaArray([10 20 30])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_fill_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">pdarray</span> <span class="o">|</span> <span class="n">ndarray</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ArkoudaArray</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ArkoudaArray</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_data</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected arkouda.pdarray, ndarray, or ArkoudaArray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;ArkoudaArray must be 1-dimensional, got shape </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;shape&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">None</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
 
-<div class="viewcode-block" id="ArkoudaArray._from_sequence">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray._from_sequence">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_sequence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># If pandas passes our own EA dtype, ignore it and infer from data</span>
@@ -418,8 +482,7 @@
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span>
 
         <span class="c1"># If scalars is already a numpy array, we can preserve its dtype</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span></div>
-
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="c1"># Convert numpy boolean mask to arkouda pdarray</span>
@@ -528,8 +591,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ArkoudaArray._reduce">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray._reduce">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -544,8 +605,7 @@
         <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;ArkoudaArray&#39; with dtype arkouda does not support reduction &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
-
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;ArkoudaArray&#39; with dtype arkouda does not support reduction &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ArkoudaArray</span><span class="p">):</span>
@@ -556,8 +616,6 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ArkoudaArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="c1">#   TODO:  refine this.</span>
-<div class="viewcode-block" id="ArkoudaArray._values_for_factorize">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray._values_for_factorize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">_values_for_factorize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return (values, na_value) as NumPy for pandas.factorize.</span>
@@ -570,16 +628,12 @@
             <span class="n">na</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">na</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="k">return</span> <span class="n">vals</span><span class="p">,</span> <span class="n">na</span></div>
+        <span class="k">return</span> <span class="n">vals</span><span class="p">,</span> <span class="n">na</span>
 
-
-<div class="viewcode-block" id="ArkoudaArray._from_factorized">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray._from_factorized">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_factorized</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">uniques</span><span class="p">,</span> <span class="n">original</span><span class="p">):</span>
         <span class="c1"># pandas gives us numpy uniques; preserve dtype by deferring to _from_sequence</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">uniques</span><span class="p">)</span></div>
-</div>
 
 </pre></div>
         </article>

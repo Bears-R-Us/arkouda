@@ -66,192 +66,47 @@ Functions
 Package Contents
 ----------------
 
-.. py:class:: ArkoudaArray(data)
+.. py:class:: ArkoudaArray(data: arkouda.numpy.pdarrayclass.pdarray | numpy.ndarray | Sequence[Any] | ArkoudaArray, dtype: Any = None, copy: bool = False)
 
    Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
-   Abstract base class for custom 1-D array types.
-
-   pandas will recognize instances of this class as proper arrays
-   with a custom type and will not attempt to coerce them to objects. They
-   may be stored directly inside a :class:`DataFrame` or :class:`Series`.
-
-   .. attribute:: dtype
-
-
-
-   .. attribute:: nbytes
-
-
-
-   .. attribute:: ndim
-
-
-
-   .. attribute:: shape
-
-
-
-   .. method:: argsort
-
-   .. method:: astype
-
-   .. method:: copy
-
-   .. method:: dropna
-
-   .. method:: duplicated
-
-   .. method:: factorize
-
-   .. method:: fillna
-
-   .. method:: equals
-
-   .. method:: insert
-
-   .. method:: interpolate
-
-   .. method:: isin
-
-   .. method:: isna
-
-   .. method:: ravel
-
-   .. method:: repeat
-
-   .. method:: searchsorted
-
-   .. method:: shift
-
-   .. method:: take
-
-   .. method:: tolist
-
-   .. method:: unique
-
-   .. method:: view
-
-   .. method:: _accumulate
-
-   .. method:: _concat_same_type
-
-   .. method:: _explode
-
-   .. method:: _formatter
-
-   .. method:: _from_factorized
-
-   .. method:: _from_sequence
-
-   .. method:: _from_sequence_of_strings
-
-   .. method:: _hash_pandas_object
-
-   .. method:: _pad_or_backfill
-
-   .. method:: _reduce
-
-   .. method:: _values_for_argsort
-
-   .. method:: _values_for_factorize
-
-
-
-   .. rubric:: Notes
-
-   The interface includes the following abstract methods that must be
-   implemented by subclasses:
-
-   * _from_sequence
-   * _from_factorized
-   * __getitem__
-   * __len__
-   * __eq__
-   * dtype
-   * nbytes
-   * isna
-   * take
-   * copy
-   * _concat_same_type
-   * interpolate
-
-   A default repr displaying the type, (truncated) data, length,
-   and dtype is provided. It can be customized or replaced by
-   by overriding:
-
-   * __repr__ : A default repr for the ExtensionArray.
-   * _formatter : Print scalars inside a Series or DataFrame.
-
-   Some methods require casting the ExtensionArray to an ndarray of Python
-   objects with ``self.astype(object)``, which may be expensive. When
-   performance is a concern, we highly recommend overriding the following
-   methods:
-
-   * fillna
-   * _pad_or_backfill
-   * dropna
-   * unique
-   * factorize / _values_for_factorize
-   * argsort, argmax, argmin / _values_for_argsort
-   * searchsorted
-   * map
-
-   The remaining methods implemented on this class should be performant,
-   as they only compose abstract methods. Still, a more efficient
-   implementation may be available, and these methods can be overridden.
-
-   One can implement methods to handle array accumulations or reductions.
-
-   * _accumulate
-   * _reduce
-
-   One can implement methods to handle parsing from strings that will be used
-   in methods such as ``pandas.io.parsers.read_csv``.
-
-   * _from_sequence_of_strings
-
-   This class does not inherit from 'abc.ABCMeta' for performance reasons.
-   Methods and properties required by the interface raise
-   ``pandas.errors.AbstractMethodError`` and no ``register`` method is
-   provided for registering virtual subclasses.
-
-   ExtensionArrays are limited to 1 dimension.
-
-   They may be backed by none, one, or many NumPy arrays. For example,
-   ``pandas.Categorical`` is an extension array backed by two arrays,
-   one for codes and one for categories. An array of IPv6 address may
-   be backed by a NumPy structured array with two fields, one for the
-   lower 64 bits and one for the upper 64 bits. Or they may be backed
-   by some other storage type, like Python lists. Pandas makes no
-   assumptions on how the data are stored, just that it can be converted
-   to a NumPy array.
-   The ExtensionArray interface does not impose any rules on how this data
-   is stored. However, currently, the backing data cannot be stored in
-   attributes called ``.values`` or ``._values`` to ensure full compatibility
-   with pandas internals. But other names as ``.data``, ``._data``,
-   ``._items``, ... can be freely used.
-
-   If implementing NumPy's ``__array_ufunc__`` interface, pandas expects
-   that
-
-   1. You defer by returning ``NotImplemented`` when any Series are present
-      in `inputs`. Pandas will extract the arrays and call the ufunc again.
-   2. You define a ``_HANDLED_TYPES`` tuple as an attribute on the class.
-      Pandas inspect this to determine whether the ufunc is valid for the
-      types present.
-
-   See :ref:`extending.extension.ufunc` for more.
-
-   By default, ExtensionArrays are not hashable.  Immutable subclasses may
-   override this behavior.
+   Arkouda-backed numeric/bool pandas ExtensionArray.
+
+   Wraps or converts supported inputs into an Arkouda ``pdarray`` to serve as the
+   backing store. Ensures the underlying array is 1-D and lives on the Arkouda server.
+
+   :param data: Input to wrap or convert.
+                - If an Arkouda ``pdarray``, it is used directly unless ``dtype`` is given
+                  or ``copy=True``, in which case a new array is created via ``ak.array``.
+                - If a NumPy array, it is transferred to Arkouda via ``ak.array``.
+                - If a Python sequence, it is converted to NumPy then to Arkouda.
+                - If another ``ArkoudaArray``, its underlying ``pdarray`` is reused.
+   :type data: pdarray | ndarray | Sequence[Any] | ArkoudaArray
+   :param dtype: Desired dtype to cast to (NumPy dtype or Arkouda dtype string). If omitted,
+                 dtype is inferred from ``data``.
+   :type dtype: Any, optional
+   :param copy: If True, attempt to copy the underlying data when converting/wrapping.
+                Default is False.
+   :type copy: bool
+
+   :raises TypeError: If ``data`` cannot be interpreted as an Arkouda array-like object.
+   :raises ValueError: If the resulting array is not one-dimensional.
+
+   .. attribute:: default_fill_value
+
+      Sentinel used when filling missing values (default: -1).
+
+      :type: int
 
    .. rubric:: Examples
 
-   Please see the following:
-
-   https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
+   >>> import arkouda as ak
+   >>> from arkouda.pandas.extension import ArkoudaArray
+   >>> ArkoudaArray(ak.arange(5))
+   ArkoudaArray([0 1 2 3 4])
+   >>> ArkoudaArray([10, 20, 30])
+   ArkoudaArray([10 20 30])
 
 
    .. py:method:: astype(dtype, copy: bool = False)
@@ -298,6 +153,7 @@ Package Contents
 
 
    .. py:attribute:: default_fill_value
+      :type:  int
       :value: -1
 
 
@@ -520,192 +376,29 @@ Package Contents
       instances of `type`.
 
 
-.. py:class:: ArkoudaCategoricalArray(data)
+.. py:class:: ArkoudaCategoricalArray(data: arkouda.categorical.Categorical | ArkoudaCategoricalArray | numpy.ndarray | Sequence[Any])
 
    Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
-   Abstract base class for custom 1-D array types.
+   Arkouda-backed categorical pandas ExtensionArray.
 
-   pandas will recognize instances of this class as proper arrays
-   with a custom type and will not attempt to coerce them to objects. They
-   may be stored directly inside a :class:`DataFrame` or :class:`Series`.
+   Ensures the underlying data is an Arkouda ``Categorical``. Accepts an existing
+   ``Categorical`` or converts from Python/NumPy sequences of labels.
 
-   .. attribute:: dtype
+   :param data: Input to wrap or convert.
+                - If ``Categorical``, used directly.
+                - If another ``ArkoudaCategoricalArray``, its backing object is reused.
+                - If list/tuple/ndarray, converted via ``ak.Categorical(ak.array(data))``.
+   :type data: Categorical | ArkoudaCategoricalArray | ndarray | Sequence[Any]
 
+   :raises TypeError: If ``data`` cannot be converted to Arkouda ``Categorical``.
 
+   .. attribute:: default_fill_value
 
-   .. attribute:: nbytes
+      Sentinel used when filling missing values (default: "").
 
-
-
-   .. attribute:: ndim
-
-
-
-   .. attribute:: shape
-
-
-
-   .. method:: argsort
-
-   .. method:: astype
-
-   .. method:: copy
-
-   .. method:: dropna
-
-   .. method:: duplicated
-
-   .. method:: factorize
-
-   .. method:: fillna
-
-   .. method:: equals
-
-   .. method:: insert
-
-   .. method:: interpolate
-
-   .. method:: isin
-
-   .. method:: isna
-
-   .. method:: ravel
-
-   .. method:: repeat
-
-   .. method:: searchsorted
-
-   .. method:: shift
-
-   .. method:: take
-
-   .. method:: tolist
-
-   .. method:: unique
-
-   .. method:: view
-
-   .. method:: _accumulate
-
-   .. method:: _concat_same_type
-
-   .. method:: _explode
-
-   .. method:: _formatter
-
-   .. method:: _from_factorized
-
-   .. method:: _from_sequence
-
-   .. method:: _from_sequence_of_strings
-
-   .. method:: _hash_pandas_object
-
-   .. method:: _pad_or_backfill
-
-   .. method:: _reduce
-
-   .. method:: _values_for_argsort
-
-   .. method:: _values_for_factorize
-
-
-
-   .. rubric:: Notes
-
-   The interface includes the following abstract methods that must be
-   implemented by subclasses:
-
-   * _from_sequence
-   * _from_factorized
-   * __getitem__
-   * __len__
-   * __eq__
-   * dtype
-   * nbytes
-   * isna
-   * take
-   * copy
-   * _concat_same_type
-   * interpolate
-
-   A default repr displaying the type, (truncated) data, length,
-   and dtype is provided. It can be customized or replaced by
-   by overriding:
-
-   * __repr__ : A default repr for the ExtensionArray.
-   * _formatter : Print scalars inside a Series or DataFrame.
-
-   Some methods require casting the ExtensionArray to an ndarray of Python
-   objects with ``self.astype(object)``, which may be expensive. When
-   performance is a concern, we highly recommend overriding the following
-   methods:
-
-   * fillna
-   * _pad_or_backfill
-   * dropna
-   * unique
-   * factorize / _values_for_factorize
-   * argsort, argmax, argmin / _values_for_argsort
-   * searchsorted
-   * map
-
-   The remaining methods implemented on this class should be performant,
-   as they only compose abstract methods. Still, a more efficient
-   implementation may be available, and these methods can be overridden.
-
-   One can implement methods to handle array accumulations or reductions.
-
-   * _accumulate
-   * _reduce
-
-   One can implement methods to handle parsing from strings that will be used
-   in methods such as ``pandas.io.parsers.read_csv``.
-
-   * _from_sequence_of_strings
-
-   This class does not inherit from 'abc.ABCMeta' for performance reasons.
-   Methods and properties required by the interface raise
-   ``pandas.errors.AbstractMethodError`` and no ``register`` method is
-   provided for registering virtual subclasses.
-
-   ExtensionArrays are limited to 1 dimension.
-
-   They may be backed by none, one, or many NumPy arrays. For example,
-   ``pandas.Categorical`` is an extension array backed by two arrays,
-   one for codes and one for categories. An array of IPv6 address may
-   be backed by a NumPy structured array with two fields, one for the
-   lower 64 bits and one for the upper 64 bits. Or they may be backed
-   by some other storage type, like Python lists. Pandas makes no
-   assumptions on how the data are stored, just that it can be converted
-   to a NumPy array.
-   The ExtensionArray interface does not impose any rules on how this data
-   is stored. However, currently, the backing data cannot be stored in
-   attributes called ``.values`` or ``._values`` to ensure full compatibility
-   with pandas internals. But other names as ``.data``, ``._data``,
-   ``._items``, ... can be freely used.
-
-   If implementing NumPy's ``__array_ufunc__`` interface, pandas expects
-   that
-
-   1. You defer by returning ``NotImplemented`` when any Series are present
-      in `inputs`. Pandas will extract the arrays and call the ufunc again.
-   2. You define a ``_HANDLED_TYPES`` tuple as an attribute on the class.
-      Pandas inspect this to determine whether the ufunc is valid for the
-      types present.
-
-   See :ref:`extending.extension.ufunc` for more.
-
-   By default, ExtensionArrays are not hashable.  Immutable subclasses may
-   override this behavior.
-
-   .. rubric:: Examples
-
-   Please see the following:
-
-   https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
+      :type: str
 
 
    .. py:method:: astype(x, dtype)
@@ -1035,192 +728,29 @@ Package Contents
       instances of `type`.
 
 
-.. py:class:: ArkoudaStringArray(data)
+.. py:class:: ArkoudaStringArray(data: arkouda.numpy.strings.Strings | numpy.ndarray | Sequence[Any] | ArkoudaStringArray)
 
    Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
-   Abstract base class for custom 1-D array types.
+   Arkouda-backed string pandas ExtensionArray.
 
-   pandas will recognize instances of this class as proper arrays
-   with a custom type and will not attempt to coerce them to objects. They
-   may be stored directly inside a :class:`DataFrame` or :class:`Series`.
+   Ensures the underlying data is an Arkouda ``Strings`` object. Accepts existing
+   ``Strings`` or converts from NumPy arrays and Python sequences of strings.
 
-   .. attribute:: dtype
+   :param data: Input to wrap or convert.
+                - If ``Strings``, used directly.
+                - If NumPy/sequence, converted via ``ak.array``.
+                - If another ``ArkoudaStringArray``, its backing ``Strings`` is reused.
+   :type data: Strings | ndarray | Sequence[Any] | ArkoudaStringArray
 
+   :raises TypeError: If ``data`` cannot be converted to Arkouda ``Strings``.
 
+   .. attribute:: default_fill_value
 
-   .. attribute:: nbytes
+      Sentinel used when filling missing values (default: "").
 
-
-
-   .. attribute:: ndim
-
-
-
-   .. attribute:: shape
-
-
-
-   .. method:: argsort
-
-   .. method:: astype
-
-   .. method:: copy
-
-   .. method:: dropna
-
-   .. method:: duplicated
-
-   .. method:: factorize
-
-   .. method:: fillna
-
-   .. method:: equals
-
-   .. method:: insert
-
-   .. method:: interpolate
-
-   .. method:: isin
-
-   .. method:: isna
-
-   .. method:: ravel
-
-   .. method:: repeat
-
-   .. method:: searchsorted
-
-   .. method:: shift
-
-   .. method:: take
-
-   .. method:: tolist
-
-   .. method:: unique
-
-   .. method:: view
-
-   .. method:: _accumulate
-
-   .. method:: _concat_same_type
-
-   .. method:: _explode
-
-   .. method:: _formatter
-
-   .. method:: _from_factorized
-
-   .. method:: _from_sequence
-
-   .. method:: _from_sequence_of_strings
-
-   .. method:: _hash_pandas_object
-
-   .. method:: _pad_or_backfill
-
-   .. method:: _reduce
-
-   .. method:: _values_for_argsort
-
-   .. method:: _values_for_factorize
-
-
-
-   .. rubric:: Notes
-
-   The interface includes the following abstract methods that must be
-   implemented by subclasses:
-
-   * _from_sequence
-   * _from_factorized
-   * __getitem__
-   * __len__
-   * __eq__
-   * dtype
-   * nbytes
-   * isna
-   * take
-   * copy
-   * _concat_same_type
-   * interpolate
-
-   A default repr displaying the type, (truncated) data, length,
-   and dtype is provided. It can be customized or replaced by
-   by overriding:
-
-   * __repr__ : A default repr for the ExtensionArray.
-   * _formatter : Print scalars inside a Series or DataFrame.
-
-   Some methods require casting the ExtensionArray to an ndarray of Python
-   objects with ``self.astype(object)``, which may be expensive. When
-   performance is a concern, we highly recommend overriding the following
-   methods:
-
-   * fillna
-   * _pad_or_backfill
-   * dropna
-   * unique
-   * factorize / _values_for_factorize
-   * argsort, argmax, argmin / _values_for_argsort
-   * searchsorted
-   * map
-
-   The remaining methods implemented on this class should be performant,
-   as they only compose abstract methods. Still, a more efficient
-   implementation may be available, and these methods can be overridden.
-
-   One can implement methods to handle array accumulations or reductions.
-
-   * _accumulate
-   * _reduce
-
-   One can implement methods to handle parsing from strings that will be used
-   in methods such as ``pandas.io.parsers.read_csv``.
-
-   * _from_sequence_of_strings
-
-   This class does not inherit from 'abc.ABCMeta' for performance reasons.
-   Methods and properties required by the interface raise
-   ``pandas.errors.AbstractMethodError`` and no ``register`` method is
-   provided for registering virtual subclasses.
-
-   ExtensionArrays are limited to 1 dimension.
-
-   They may be backed by none, one, or many NumPy arrays. For example,
-   ``pandas.Categorical`` is an extension array backed by two arrays,
-   one for codes and one for categories. An array of IPv6 address may
-   be backed by a NumPy structured array with two fields, one for the
-   lower 64 bits and one for the upper 64 bits. Or they may be backed
-   by some other storage type, like Python lists. Pandas makes no
-   assumptions on how the data are stored, just that it can be converted
-   to a NumPy array.
-   The ExtensionArray interface does not impose any rules on how this data
-   is stored. However, currently, the backing data cannot be stored in
-   attributes called ``.values`` or ``._values`` to ensure full compatibility
-   with pandas internals. But other names as ``.data``, ``._data``,
-   ``._items``, ... can be freely used.
-
-   If implementing NumPy's ``__array_ufunc__`` interface, pandas expects
-   that
-
-   1. You defer by returning ``NotImplemented`` when any Series are present
-      in `inputs`. Pandas will extract the arrays and call the ufunc again.
-   2. You define a ``_HANDLED_TYPES`` tuple as an attribute on the class.
-      Pandas inspect this to determine whether the ufunc is valid for the
-      types present.
-
-   See :ref:`extending.extension.ufunc` for more.
-
-   By default, ExtensionArrays are not hashable.  Immutable subclasses may
-   override this behavior.
-
-   .. rubric:: Examples
-
-   Please see the following:
-
-   https://github.com/pandas-dev/pandas/blob/main/pandas/tests/extension/list/array.py
+      :type: str
 
 
    .. py:method:: astype(dtype, copy: bool = False)
@@ -1267,6 +797,7 @@ Package Contents
 
 
    .. py:attribute:: default_fill_value
+      :type:  str
       :value: ''
 
 
