@@ -6,7 +6,7 @@ PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := $(ARKOUDA_PROJECT_DIR)/src
 ARKOUDA_REGISTRY_DIR=$(ARKOUDA_SOURCE_DIR)/registry
 ARKOUDA_MAIN_MODULE := arkouda_server
-ARKOUDA_MAKEFILES := Makefile Makefile.paths
+ARKOUDA_MAKEFILES := Makefile Makefile.paths $(wildcard make/*.mk)
 
 DEFAULT_TARGET := $(ARKOUDA_MAIN_MODULE)
 .PHONY: default
@@ -33,7 +33,7 @@ endif
 ifdef ARKOUDA_DEVELOPER
 ARKOUDA_QUICK_COMPILE = true
 ARKOUDA_RUNTIME_CHECKS = true
-#ARKOUDA_DEBUG = true
+# ARKOUDA_DEBUG = true
 endif
 
 ifdef ARKOUDA_QUICK_COMPILE
