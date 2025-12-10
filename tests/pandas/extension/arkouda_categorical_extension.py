@@ -1,9 +1,11 @@
+import numpy as np
 import pandas as pd
 import pytest
 
 import arkouda as ak
 
-from arkouda.pandas.extension import ArkoudaCategoricalArray
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.extension import ArkoudaCategoricalArray, ArkoudaCategoricalDtype
 from arkouda.testing import assert_equivalent
 
 
@@ -28,6 +30,41 @@ class TestArkoudaCategoricalExtension:
         # Prefer a `_from_sequence` constructor if your EA supports it.
         # Otherwise, adapt to your categorical EA's builder API (e.g., from_codes).
         return ArkoudaCategoricalArray._from_sequence(values)
+
+    def test_init_from_categorical_reuses_underlying(self):
+        base = Categorical(ak.array(["a", "b", "a"]))
+        arr = ArkoudaCategoricalArray(base)
+        assert arr._data is base
+        assert np.array_equal(arr.to_ndarray(), np.array(["a", "b", "a"], dtype=object))
+
+    @pytest.mark.parametrize(
+        "payload, expected",
+        [
+            (np.array(["x", "y", "x"]), np.array(["x", "y", "x"], dtype=object)),
+            (["apple", "banana", "apple"], np.array(["apple", "banana", "apple"], dtype=object)),
+            (("cat", "dog", "cat"), np.array(["cat", "dog", "cat"], dtype=object)),
+        ],
+    )
+    def test_init_converts_numpy_and_python_sequences(self, payload, expected):
+        arr = ArkoudaCategoricalArray(payload)
+        out = arr.to_ndarray()
+        assert np.array_equal(out, expected)
+
+    def test_init_from_arkouda_categorical_array_reuses_backing_data(self):
+        base = Categorical(ak.array(["r", "g"]))
+        a1 = ArkoudaCategoricalArray(base)
+        a2 = ArkoudaCategoricalArray(a1)
+        assert a2._data is a1._data
+        assert np.array_equal(a2.to_ndarray(), np.array(["r", "g"], dtype=object))
+
+    def test_dtype_property_is_arkouda_categorical_dtype(self):
+        c = Categorical(ak.array(["hi", "bye"]))
+        arr = ArkoudaCategoricalArray(c)
+        assert isinstance(arr.dtype, ArkoudaCategoricalDtype)
+
+    def test_init_rejects_unsupported_type(self):
+        with pytest.raises(TypeError):
+            ArkoudaCategoricalArray({"bad": "type"})
 
     def test_take_categorical_no_allow_fill(self, cat_arr):
         out = cat_arr.take([0, 2, 4], allow_fill=False)

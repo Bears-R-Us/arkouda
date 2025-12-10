@@ -1,13 +1,19 @@
+import numpy as np
 import pandas as pd
 import pytest
 
 import arkouda as ak
 
-from arkouda.pandas.extension import ArkoudaStringArray
+from arkouda.pandas.extension import ArkoudaStringArray, ArkoudaStringDtype
 from arkouda.testing import assert_equivalent
 
 
 class TestArkoudaStringsExtension:
+    @pytest.fixture
+    def str_arr(self):
+        data = ak.array(["a", "b", "c", "d", "e"])
+        return ArkoudaStringArray(data)
+
     def test_strings_extension_docstrings(self):
         import doctest
 
@@ -18,10 +24,42 @@ class TestArkoudaStringsExtension:
         )
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
-    @pytest.fixture
-    def str_arr(self):
-        data = ak.array(["a", "b", "c", "d", "e"])
-        return ArkoudaStringArray(data)
+    def test_init_from_strings_uses_directly(self):
+        s = ak.array(["a", "b", "c"])
+        arr = ArkoudaStringArray(s)
+        # Underlying should be exactly the same object
+        assert arr._data is s
+        assert np.array_equal(arr.to_ndarray(), np.array(["a", "b", "c"], dtype=object))
+
+    @pytest.mark.parametrize(
+        "payload, expected",
+        [
+            (np.array(["x", "y", "z"]), np.array(["x", "y", "z"], dtype=object)),
+            (["cat", "dog"], np.array(["cat", "dog"], dtype=object)),
+            (("red", "green", "blue"), np.array(["red", "green", "blue"], dtype=object)),
+        ],
+    )
+    def test_init_converts_numpy_and_python_sequences(self, payload, expected):
+        arr = ArkoudaStringArray(payload)
+        out = arr.to_ndarray()
+        assert np.array_equal(out, expected)
+
+    def test_init_from_arkouda_string_array_reuses_backing_data(self):
+        s = ak.array(["aa", "bb"])
+        a1 = ArkoudaStringArray(s)
+        a2 = ArkoudaStringArray(a1)
+        # Should reuse the exact same Strings instance
+        assert a2._data is a1._data
+        assert np.array_equal(a2.to_ndarray(), np.array(["aa", "bb"], dtype=object))
+
+    def test_dtype_property_is_arkouda_string_dtype(self):
+        s = ak.array(["one"])
+        arr = ArkoudaStringArray(s)
+        assert isinstance(arr.dtype, ArkoudaStringDtype)
+
+    def test_init_rejects_unsupported_type(self):
+        with pytest.raises(TypeError):
+            ArkoudaStringArray({"not": "valid"})  # dicts are not supported
 
     def test_take_strings_no_allow_fill(self, str_arr):
         out = str_arr.take([0, 2, 4], allow_fill=False)
