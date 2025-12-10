@@ -579,6 +579,7 @@
     <span class="s2">&quot;RegistrationError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_to_pdarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_pdarray&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarrayclass&quot;</span><span class="p">)</span>
 
@@ -3834,6 +3835,8 @@
 <span class="c1">#   only after:</span>
 <span class="c1">#       all values have been checked by python module and...</span>
 <span class="c1">#       server has created pdarray already before this is called</span>
+<div class="viewcode-block" id="create_pdarray">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.create_pdarray">[docs]</a>
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">],</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3883,7 +3886,8 @@
         <span class="sa">f</span><span class="s2">&quot;created Chapel array with name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> dtype: </span><span class="si">{</span><span class="n">mydtype</span><span class="si">}</span><span class="s2"> size: </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> ndim: </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;shape: </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2"> itemsize: </span><span class="si">{</span><span class="n">itemsize</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">pdarray</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dtype</span><span class="p">(</span><span class="n">mydtype</span><span class="p">),</span> <span class="n">size</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">itemsize</span><span class="p">,</span> <span class="n">max_bits</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pdarray</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dtype</span><span class="p">(</span><span class="n">mydtype</span><span class="p">),</span> <span class="n">size</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">itemsize</span><span class="p">,</span> <span class="n">max_bits</span><span class="p">)</span></div>
+
 
 
 <span class="nd">@typechecked</span>

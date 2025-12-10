@@ -32,6 +32,7 @@ Functions
    arkouda.numpy.pdarrayclass.clz
    arkouda.numpy.pdarrayclass.corr
    arkouda.numpy.pdarrayclass.cov
+   arkouda.numpy.pdarrayclass.create_pdarray
    arkouda.numpy.pdarrayclass.ctz
    arkouda.numpy.pdarrayclass.diff
    arkouda.numpy.pdarrayclass.divmod
@@ -257,6 +258,24 @@ Module Contents
 
    The covariance is calculated by
    ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
+
+
+.. py:function:: create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray
+
+   Return a pdarray instance pointing to an array created by the arkouda server.
+   The user should not call this function directly.
+
+   :param repMsg: space-delimited string containing the pdarray name, datatype, size
+                  dimension, shape,and itemsize
+   :type repMsg: str
+
+   :returns: A pdarray with the same attributes and data as the pdarray; on GPU
+   :rtype: pdarray
+
+   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
+       values needed to create the pdarray instance
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
+       the pdarray instance
 
 
 .. py:function:: ctz(pda: pdarray) -> pdarray
