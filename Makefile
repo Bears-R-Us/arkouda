@@ -33,7 +33,7 @@ endif
 ifdef ARKOUDA_DEVELOPER
 ARKOUDA_QUICK_COMPILE = true
 ARKOUDA_RUNTIME_CHECKS = true
-ARKOUDA_DEBUG = true
+# ARKOUDA_DEBUG = true
 endif
 
 ifdef ARKOUDA_QUICK_COMPILE
@@ -46,13 +46,15 @@ ifdef ARKOUDA_RUNTIME_CHECKS
 CHPL_FLAGS += --checks
 endif
 
-ifdef ARKOUDA_DEBUG
-# In the future, we can just use --debug which implies -g and --debug-safe-optimizations-only
-CHPL_FLAGS += -g
-ifeq ($(shell expr $(CHPL_MINOR) \>= 7),1)
-CHPL_FLAGS += --debug-safe-optimizations-only
-endif
-endif
+# FIXME: enabling this as of Chapel 2.7.0 may cause compiler crashes. bug fixes in the Chapel compiler
+# are needed before this can be reenabled by default.
+# ifdef ARKOUDA_DEBUG
+# # In the future, we can just use --debug which implies -g and --debug-safe-optimizations-only
+# CHPL_FLAGS += -g
+# ifeq ($(shell expr $(CHPL_MINOR) \>= 7),1)
+# CHPL_FLAGS += --debug-safe-optimizations-only
+# endif
+# endif
 
 CHPL_FLAGS += -smemTrack=true -smemThreshold=1048576
 
