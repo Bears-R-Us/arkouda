@@ -1,23 +1,18 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Literal, Sequence, Union, cast
 from typing import cast as type_cast
 
 from typeguard import check_type, typechecked
 
 from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import array, zeros
-from arkouda.numpy.strings import Strings
 
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
-else:
-    generic_msg = TypeVar("generic_msg")
-    Categorical = TypeVar("Categorical")
 
 
 numeric_dtypes = {dtype(int64), dtype(uint64), dtype(float64)}
@@ -87,6 +82,9 @@ def argsort(
 
     """
     from arkouda.numpy.dtypes import int64
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.numpy.strings import Strings
     from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pandas.categorical import Categorical
 
@@ -178,6 +176,9 @@ def coargsort(
     """
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 
     check_type("coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
@@ -296,6 +297,8 @@ def sort(
     array([0 1 1 4 5 5 5 7 8 9])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import create_pdarray
+    from arkouda.numpy.pdarraycreation import zeros
     from arkouda.numpy.util import _integer_axis_validation
 
     valid, axis_ = _integer_axis_validation(axis, pda.ndim)
@@ -372,6 +375,8 @@ def searchsorted(
     array([0 1 2 5])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import array
 
     if a.ndim > 1:
         raise ValueError(f"a must be one dimensional, but has {a.ndim} dimensions.")
