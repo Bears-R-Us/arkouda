@@ -210,6 +210,7 @@ __all__ = [
     "RegistrationError",
     "_to_pdarray",
     "diff",
+    "create_pdarray",
 ]
 logger = getArkoudaLogger(name="pdarrayclass")
 
