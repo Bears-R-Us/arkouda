@@ -12,8 +12,11 @@ from arkouda.pandas.extension import (
     ArkoudaStringDtype,
     ArkoudaUint8Dtype,
     ArkoudaUint64Dtype,
+    ArkoudaIndexAccessor,
+    ArkoudaDataFrameAccessor,
 )
 from arkouda.pandas.join import compute_join_size, gen_ranges, join_on_eq_with_dt
 from arkouda.pandas.row import Row
 from arkouda.pandas.series import Series
 from arkouda.pandas.typing import ArkoudaArrayLike
+from arkouda.pandas import extension
