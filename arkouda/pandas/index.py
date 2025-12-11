@@ -72,7 +72,6 @@ from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
-from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.manipulation_functions import flip as ak_flip
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraysetops import argsort, in1d
@@ -87,7 +86,7 @@ __all__ = [
 ]
 
 if TYPE_CHECKING:
-    from arkouda.numpy.pdarraycreation import array, ones
+    from arkouda.numpy.pdarraycreation import ones
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.series import Series
@@ -1187,7 +1186,11 @@ class Index:
         self._check_types(other)
 
         idx = generic_concat([self.values, other.values], ordered=True)
-        return Index(idx)
+
+        other_name = getattr(other, "name", None)
+        name = self.name if self.name == other_name else None
+
+        return Index(idx, name=name)
 
     def lookup(self, key):
         """
@@ -1211,6 +1214,7 @@ class Index:
 
         """
         from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array
 
         if not isinstance(key, pdarray):
             # try to handle single value
@@ -2137,7 +2141,11 @@ class MultiIndex(Index):
         """
         self._check_types(other)
         idx = [generic_concat([ix1, ix2], ordered=True) for ix1, ix2 in zip(self.index, other.index)]
-        return MultiIndex(idx)
+
+        other_names = getattr(other, "names", None)
+        names = self.names if self.names == other_names else None
+
+        return MultiIndex(idx, names=names)
 
     def lookup(self, key):
         """
@@ -2161,6 +2169,7 @@ class MultiIndex(Index):
 
         """
         from arkouda.numpy import cast as akcast
+        from arkouda.numpy.dtypes import int64
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array
 
@@ -2168,7 +2177,7 @@ class MultiIndex(Index):
             raise TypeError("MultiIndex lookup failure")
         # if individual vals convert to pdarrays
         if not isinstance(key[0], pdarray):
-            dt = self.levels[0].dtype if isinstance(self.levels[0], pdarray) else akint64
+            dt = self.levels[0].dtype if isinstance(self.levels[0], pdarray) else int64
             key = [akcast(array([x]), dt) for x in key]
 
         return in1d(self.index, key)
