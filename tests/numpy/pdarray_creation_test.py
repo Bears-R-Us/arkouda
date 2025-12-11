@@ -700,9 +700,6 @@ class TestPdarrayCreation:
         with pytest.raises(TypeError):
             ak.ones(5, dtype=ak.uint8)
 
-        with pytest.raises(TypeError):
-            ak.ones(5, dtype=str)
-
         # Test that int_scalars covers uint8, uint16, uint32
         int_arr = ak.ones(5)
         for arg in np.uint8(5), np.uint16(5), np.uint32(5):

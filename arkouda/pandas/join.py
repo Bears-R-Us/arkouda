@@ -13,29 +13,18 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.alignment import right_align
 from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
 from arkouda.numpy.pdarraysetops import concatenate, in1d
-from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-    from arkouda.numpy import cumsum
+    from arkouda.numpy.strings import Strings
 else:
-    generic_msg = TypeVar("generic_msg")
-    cumsum = TypeVar("cumsum")
-
-
-if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
-
-else:
-    Categorical = TypeVar("Categorical")
+    Strings = TypeVar("Strings")
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
@@ -169,6 +158,7 @@ def gen_ranges(starts, ends, stride=1, return_lengths=False):
 
     """
     from arkouda.numpy import cumsum
+    from arkouda.numpy.pdarraycreation import array, ones, zeros
 
     if starts.size != ends.size:
         raise ValueError("starts and ends must be same length")
@@ -221,10 +211,7 @@ def inner_join(
     right: Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
     wherefunc: Optional[Callable] = None,
     whereargs: Optional[
-        Tuple[
-            Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
-            Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]],
-        ]
+        Tuple[Union[pdarray, Strings, Categorical, Sequence[Union[pdarray, Strings]]], ...]
     ] = None,
 ) -> Tuple[pdarray, pdarray]:
     """
@@ -264,7 +251,8 @@ def inner_join(
     from inspect import signature
 
     from arkouda.numpy import cumsum
-    from arkouda.pandas.categorical import Categorical
+    from arkouda.numpy.alignment import right_align
+    from arkouda.numpy.pdarraycreation import arange, array, zeros
 
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
 

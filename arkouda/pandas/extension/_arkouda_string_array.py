@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence, TypeVar
 from typing import cast as type_cast
 
 import numpy as np
@@ -8,12 +8,14 @@ import numpy as np
 from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
-from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.numpy.strings import Strings
-
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import ArkoudaStringDtype
 
+
+if TYPE_CHECKING:
+    from arkouda.numpy.strings import Strings
+else:
+    Strings = TypeVar("Strings")
 
 __all__ = ["ArkoudaStringArray"]
 
@@ -48,6 +50,7 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
     def __init__(self, data: Strings | ndarray | Sequence[Any] | "ArkoudaStringArray"):
         from arkouda.numpy.pdarraycreation import array as ak_array
+        from arkouda.numpy.strings import Strings
 
         if isinstance(data, ArkoudaStringArray):
             self._data = data._data
@@ -67,6 +70,8 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
         return cls(ak_array(scalars))
 
     def __getitem__(self, key):

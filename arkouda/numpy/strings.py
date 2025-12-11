@@ -11,7 +11,6 @@ from typing import (
     Literal,
     Optional,
     Tuple,
-    TypeVar,
     Union,
     cast,
 )
@@ -39,11 +38,6 @@ from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, parse_
 from arkouda.numpy.pdarrayclass import all as akall
 from arkouda.pandas.match import Match, MatchType
 
-
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-else:
-    generic_msg = TypeVar("generic_msg")
 
 if TYPE_CHECKING:
     from arkouda.numpy.sorting import SortingAlgorithm
