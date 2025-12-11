@@ -673,6 +673,12 @@ class TestNumeric:
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
         assert ak.isnan(ark_s_int64).tolist() == [False, False, False, False]
 
+        ark_s_uint64 = ak.array(np.array([1, 2, 3, 4], dtype="uint64"))
+        assert ak.isnan(ark_s_uint64).tolist() == [False, False, False, False]
+
+        ark_s_bool = ak.array(np.array([0, 1, 2, 3], dtype="bool"))
+        assert ak.isnan(ark_s_bool).tolist() == [False, False, False, False]
+
         ark_s_string = ak.array(["a", "b", "c"])
         with pytest.raises(TypeError):
             ak.isnan(ark_s_string)
