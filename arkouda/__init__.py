@@ -234,6 +234,7 @@ from arkouda.numpy import (
     issubdtype,
     lib,
     linspace,
+    logical_not,
     logspace,
     log,
     log10,
