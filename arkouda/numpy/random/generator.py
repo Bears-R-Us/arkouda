@@ -65,7 +65,7 @@ class Generator:
         _str += "(PCG64)"
         return _str
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         try:
             if self.handle and not self.handle.closed:
                 self.handle.close()
