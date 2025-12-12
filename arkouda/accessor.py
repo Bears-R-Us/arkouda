@@ -52,14 +52,14 @@ Users should not instantiate accessors directly — use `.str` and `.dt` instead
 
 from typing import TYPE_CHECKING, TypeVar
 
-from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime
+from arkouda.pandas.categorical import Categorical
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
+    from arkouda.numpy.strings import Strings
 else:
-    Categorical = TypeVar("Categorical")
+    Strings = TypeVar("Strings")
 
 __all__ = [
     "CachedAccessor",
@@ -284,6 +284,8 @@ class StringAccessor(Properties):
     """
 
     def __init__(self, series):
+        from arkouda.numpy.strings import Strings
+
         data = series.values
         if not (isinstance(data, Categorical) or isinstance(data, Strings)):
             raise AttributeError("Can only use .str accessor with string like values")

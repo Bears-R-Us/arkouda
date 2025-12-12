@@ -78,23 +78,20 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarrayclass import all as akall
-from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
-from arkouda.numpy.strings import Strings
-from arkouda.pandas.groupbyclass import GroupBy, unique
 
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-    from arkouda.numpy import cast as akcast
-    from arkouda.numpy import where
+    from arkouda.numpy.pdarraycreation import array
     from arkouda.numpy.sorting import SortingAlgorithm
+    from arkouda.numpy.strings import Strings
+    from arkouda.pandas.groupbyclass import GroupBy
 else:
-    generic_msg = TypeVar("generic_msg")
-    akcast = TypeVar("akcast")
-    where = TypeVar("where")
+    Strings = TypeVar("Strings")
+    GroupBy = TypeVar("GroupBy")
+
     from enum import Enum
 
     class SortingAlgorithm(Enum):
@@ -158,6 +155,9 @@ class Categorical:
 
     def __init__(self, values, **kwargs) -> None:
         from arkouda.numpy import cast as akcast
+        from arkouda.numpy.pdarraycreation import arange, array
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.groupbyclass import GroupBy, unique
 
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
         if "codes" in kwargs and "categories" in kwargs:
@@ -335,6 +335,8 @@ class Categorical:
         This is currently only used when reading a Categorical from HDF5 files.
 
         """
+        from arkouda.numpy.strings import Strings
+
         # parse return json
         eles = json.loads(rep_msg)
         codes = create_pdarray(eles["codes"])
@@ -367,6 +369,8 @@ class Categorical:
             A list of the original Categoricals remapped to the shared categories.
 
         """
+        from arkouda.pandas.groupbyclass import unique
+
         for arr in arrays:
             if not isinstance(arr, cls):
                 raise TypeError(f"All arguments must be {cls.__name__}")
@@ -435,6 +439,8 @@ class Categorical:
         """
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import where
+        from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
+        from arkouda.pandas.groupbyclass import GroupBy
 
         if NAvalue is None:
             NAvalue = self.NAvalue
@@ -808,6 +814,9 @@ class Categorical:
             A Categorical object generated from the current instance
 
         """
+        from arkouda.numpy.pdarraycreation import arange
+        from arkouda.pandas.groupbyclass import GroupBy
+
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
         newvals = g.broadcast(arange(idx.size), permute=True)
@@ -1010,6 +1019,8 @@ class Categorical:
             A new Categorical containing only the unique category labels in use.
 
         """
+        from arkouda.numpy.pdarraycreation import arange
+
         # __doc__ = unique.__doc__
         return Categorical.from_codes(
             arange(self._categories_used.size), self._categories_used, NAvalue=self.NAvalue
@@ -1152,6 +1163,8 @@ class Categorical:
             A new Categorical with values sorted by category.
 
         """
+        from arkouda.numpy.pdarraycreation import arange, zeros_like
+
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)

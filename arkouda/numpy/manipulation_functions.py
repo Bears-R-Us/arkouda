@@ -1,15 +1,18 @@
 # from __future__ import annotations
 
-from typing import Optional, Sequence, Tuple, Union, cast, overload
+from typing import TYPE_CHECKING, Optional, Sequence, Tuple, TypeVar, Union, cast, overload
 
 from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool_scalars, int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.numpy.strings import Strings
 from arkouda.pandas.categorical import Categorical
 
+
+if TYPE_CHECKING:
+    from arkouda.numpy.strings import Strings
+else:
+    Strings = TypeVar("Strings")
 
 __all__ = ["flip", "repeat", "squeeze", "tile"]
 
@@ -75,6 +78,7 @@ def flip(
     This differs from numpy as it actually reverses the data, rather than presenting a view.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.strings import Strings
 
     axisList = []
     if axis is not None:
@@ -179,6 +183,7 @@ def repeat(
     array([array([1 2]) array([3 4]) array([3 4])])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import array as ak_array
     from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pdarrayclass import any as akany
 
@@ -313,6 +318,7 @@ def squeeze(
     """
     from arkouda.client import generic_msg
     from arkouda.numpy.dtypes import _val_isinstance_of_union
+    from arkouda.numpy.pdarraycreation import array as ak_array
 
     if _val_isinstance_of_union(x, numeric_scalars) or _val_isinstance_of_union(x, bool_scalars):
         ret = ak_array([x])

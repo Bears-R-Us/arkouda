@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, TypeVar, Union
 
 import pandas as pd
 
@@ -8,8 +8,6 @@ from pandas.api.types import CategoricalDtype
 from typeguard import typechecked
 
 from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.numpy.strings import Strings
 from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.dataframe import DataFrame as ak_DataFrame
 
@@ -17,6 +15,11 @@ from . import ArkoudaExtensionArray
 from ._arkouda_array import ArkoudaArray
 from ._dtypes import _ArkoudaBaseDtype
 
+
+if TYPE_CHECKING:
+    from arkouda.numpy.strings import Strings
+else:
+    Strings = TypeVar("Strings")
 
 __all__ = ["ArkoudaDataFrameAccessor"]
 
@@ -44,6 +47,8 @@ def _looks_like_ak_col(obj: object) -> bool:
         column classes (``pdarray``, ``Strings``, ``Categorical``);
         False otherwise.
     """
+    from arkouda.numpy.strings import Strings
+
     return isinstance(obj, (pdarray, Strings, Categorical))
 
 
@@ -362,6 +367,8 @@ class ArkoudaDataFrameAccessor:
         1  2  b
         2  3  c
         """
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
         cols = {}
         for name, col in self._obj.items():
             cols[name] = ArkoudaExtensionArray._from_sequence(ak_array(col.values))
@@ -471,6 +478,8 @@ class ArkoudaDataFrameAccessor:
         >>> akdf["i"].tolist()
         [1, 2, 3]
         """
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
         cols: Dict[str, Union[pdarray, Strings, Categorical]] = {}
 
         for name, s in self._obj.items():

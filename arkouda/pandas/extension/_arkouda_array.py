@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence, TypeVar
 from typing import cast as type_cast
 
 import numpy as np
@@ -9,9 +9,6 @@ from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
-from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.numpy.pdarraycreation import full as ak_full
 
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import (
@@ -24,6 +21,11 @@ from ._dtypes import (
     _ArkoudaBaseDtype,
 )
 
+
+if TYPE_CHECKING:
+    from arkouda.numpy.pdarrayclass import pdarray
+else:
+    pdarray = TypeVar("pdarray")
 
 __all__ = ["ArkoudaArray"]
 
@@ -81,6 +83,9 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         dtype: Any = None,
         copy: bool = False,
     ):
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
         if isinstance(data, ArkoudaArray):
             data = data._data
         elif isinstance(data, (list, tuple)):
@@ -103,6 +108,8 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
         # If pandas passes our own EA dtype, ignore it and infer from data
         if isinstance(dtype, _ArkoudaBaseDtype):
             dtype = dtype.numpy_dtype
@@ -114,6 +121,9 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         return cls(ak_array(scalars, dtype=dtype, copy=copy))
 
     def __getitem__(self, key):
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
         # Convert numpy boolean mask to arkouda pdarray
         if isinstance(key, np.ndarray):
             if key.dtype == bool:
@@ -136,6 +146,8 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     #   TODO:  Simplify to use underlying array setter
     def __setitem__(self, key, value):
         from arkouda.numpy.dtypes import isSupportedInt
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
 
         # Convert numpy mask to pdarray if necessary
         if isinstance(key, np.ndarray) and key.dtype == bool:
@@ -178,6 +190,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
     def isna(self) -> ExtensionArray | ndarray[Any, Any]:
         from arkouda.numpy import isnan
+        from arkouda.numpy.pdarraycreation import full as ak_full
         from arkouda.numpy.util import is_float
 
         if not is_float(self._data):
