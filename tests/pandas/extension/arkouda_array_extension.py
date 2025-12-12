@@ -6,7 +6,7 @@ import arkouda as ak
 
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
+from arkouda.pandas.extension import ArkoudaCategoricalArray, ArkoudaStringArray
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.pandas.extension._dtypes import ArkoudaBoolDtype, ArkoudaFloat64Dtype, ArkoudaInt64Dtype
 from arkouda.testing import assert_equivalent

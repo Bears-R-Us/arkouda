@@ -2610,8 +2610,8 @@ class TestCSV:
             file_name = f"{tmp_dirname}/multi_line.csv"
             with open(file_name, "w") as f:
                 f.write(",".join(cols) + "\n")
-                f.write(f'1,"This is a description\nthat spans \nmultiple lines.",3.14\n')
-                f.write(f'2,"Another description\nwith line breaks.",5.56\n')
+                f.write('1,"This is a description\nthat spans \nmultiple lines.",3.14\n')
+                f.write('2,"Another description\nwith line breaks.",5.56\n')
 
             data = ak.read_csv(file_name)
             assert list(data.keys()) == expected_cols

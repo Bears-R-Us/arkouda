@@ -98,7 +98,7 @@ def find_offenses_with_lines(text: str) -> List[Tuple[int, str, str]]:
 
     Returns
     -------
-    list[tuple[int, str, str]]
+    List[Tuple[int, str, str]]
         A list of ``(line_number, matched_line, context_block)`` tuples for each
         offending line inside an Examples section. ``context_block`` contains the
         offending line plus one line of context above and below.
@@ -155,11 +155,6 @@ def test_no_ak_connect_doctest():
     paths), parses triple-quoted docstrings, and checks their "Examples" sections
     for doctest prompt lines calling ``ak.connect``. If any such lines are found,
     the test fails and reports the file, line number, and a small context block.
-
-    Raises
-    ------
-    AssertionError
-        If one or more offending lines are found inside Examples sections.
     """
     repo_root = Path(__file__).resolve().parents[1]
     offenders: List[Tuple[Path, int, str, str]] = []  # (path, line, matched_line, context)
