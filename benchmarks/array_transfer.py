@@ -38,7 +38,7 @@ def time_ak_array_transfer(N, trials, dtype, seed, max_bits=-1):
         end = time.time()
         to_ndarray_times.append(end - start)
         start = time.time()
-        aka = ak.array(npa, max_bits=max_bits)
+        aka = ak.array(npa, max_bits=max_bits, dtype=dtype)
         end = time.time()
         to_pdarray_times.append(end - start)
         gc.collect()
