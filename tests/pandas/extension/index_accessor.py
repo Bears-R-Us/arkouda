@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 import arkouda as ak
 
@@ -62,6 +63,37 @@ class TestArkoudaIndexAccessor:
         assert not idx2.ak.is_arkouda
         assert idx2.equals(idx)
         assert idx2.name == "nums"
+
+    @pytest.mark.parametrize("arkouda_backed", [False, True])
+    def test_collect_multiindex_preserves_all_rows(self, arkouda_backed):
+        # Ground-truth MultiIndex (plain pandas, with duplicates and ordering)
+        arrays = [[1, 1, 2], ["red", "blue", "red"]]
+        orig_midx = pd.MultiIndex.from_arrays(arrays, names=["num", "color"])
+
+        # Optionally convert to Arkouda-backed representation
+        if arkouda_backed:
+            midx = orig_midx.ak.to_ak()
+            assert midx.ak.is_arkouda
+        else:
+            midx = orig_midx
+            assert not midx.ak.is_arkouda
+
+        # Operation under test
+        collected = midx.ak.collect()
+
+        # Always get a plain pandas MultiIndex back
+        assert isinstance(collected, pd.MultiIndex)
+
+        # Length and names must match the original
+        assert len(collected) == len(orig_midx)
+        assert list(collected.names) == list(orig_midx.names)
+
+        # Logical row tuples must be preserved exactly
+        assert list(collected.to_list()) == list(orig_midx.to_list())
+
+        # For the plain-pandas case, pandas' own `.equals` should also hold
+        if not arkouda_backed:
+            assert collected.equals(orig_midx)
 
     def test_to_ak_legacy_simple_index_and_helper_roundtrip(self):
         idx = pd.Index([4, 5, 6], name="foo")
