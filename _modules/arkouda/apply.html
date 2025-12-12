@@ -257,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
@@ -433,7 +434,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_single_value</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -508,6 +508,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
 
     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">apply</span><span class="p">,</span> <span class="s2">&quot;is_apply_supported&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="s2">&quot;isPythonModuleSupported&quot;</span><span class="p">)</span>

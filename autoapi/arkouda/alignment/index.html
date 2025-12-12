@@ -258,6 +258,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
@@ -375,50 +376,6 @@
         <article role="main" id="furo-main-content">
           <section id="module-arkouda.alignment">
 <span id="arkouda-alignment"></span><h1>arkouda.alignment<a class="headerlink" href="#module-arkouda.alignment" title="Link to this heading">¶</a></h1>
-<p>Alignment and lookup utilities for Arkouda arrays.</p>
-<p>This module provides functions to align multiple arrays to a common
-0-up index, perform lookups and mappings across sparse identifiers,
-and search within defined intervals. It supports single and multi-dimensional
-key matching, including hierarchical keys, and interval-based function evaluation.</p>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>align: Align multiple arrays to a common index.</p></li>
-<li><p>left_align: Align two arrays to the index defined by the left array.</p></li>
-<li><p>right_align: Align two arrays to the index defined by the right array.</p></li>
-<li><p>zero_up: Map sparse identifiers to 0-up indices.</p></li>
-<li><p>lookup: Evaluate a function defined by keys and values on input arguments.</p></li>
-<li><p>interval_lookup: Evaluate a function defined over intervals.</p></li>
-<li><p>search_intervals: Return index of best interval for each query value.</p></li>
-<li><p>in1d_intervals: Check membership of values in half-open intervals.</p></li>
-<li><p>find: Locate indices of query values in a search space.</p></li>
-<li><p>is_cosorted: Determine if a list of arrays are cosorted.</p></li>
-<li><p>unsqueeze: Wrap a pdarray in a list if not already a sequence.</p></li>
-</ul>
-</section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>NonUniqueError: Raised when duplicate values are found in keys.</p></li>
-</ul>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">keep</span><span class="p">,</span> <span class="p">(</span><span class="n">a_aligned</span><span class="p">,</span> <span class="n">b_aligned</span><span class="p">)</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">right_align</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">keep</span><span class="p">],</span> <span class="n">a_aligned</span><span class="p">,</span> <span class="n">b_aligned</span>
-<span class="go">(array([10 20 40]), array([0 1 2]), array([1 0 2 3]))</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ends</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">interval_lookup</span><span class="p">((</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">),</span> <span class="n">values</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-<span class="go">array([100 200 200])</span>
-</pre></div>
-</div>
-</section>
 <section id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
@@ -431,8 +388,8 @@ key matching, including hierarchical keys, and interval-based function evaluatio
 </table>
 </div>
 </section>
-<section id="id1">
-<h2>Functions<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -473,28 +430,28 @@ key matching, including hierarchical keys, and interval-based function evaluatio
 </table>
 </div>
 </section>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading">¶</a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="arkouda.alignment.NonUniqueError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">NonUniqueError</span></span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#NonUniqueError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.NonUniqueError" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">NonUniqueError</span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#NonUniqueError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.NonUniqueError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></p>
-<p>Exception raised when duplicate values are found in a set of keys that are expected to be unique.</p>
-<p>This is typically raised in lookup and alignment operations that assume
+<p>Exception raised when duplicate values are found in a set of keys that are expected to be unique.
+This is typically raised in lookup and alignment operations that assume
 a one-to-one mapping between keys and values.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonUniqueError</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonUniqueError</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">raise</span> <span class="n">NonUniqueError</span><span class="p">(</span><span class="s2">&quot;Duplicate values found in key array.&quot;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="w">    </span><span class="o">...</span>
-<span class="gr">arkouda.alignment.NonUniqueError</span>: <span class="n">Duplicate values found in key array.</span>
+<span class="gr">arkouda.numpy.alignment.NonUniqueError</span>: <span class="n">Duplicate values found in key array.</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.align">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.align" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.align" title="Link to this definition">¶</a></dt>
 <dd><p>Map multiple arrays of sparse identifiers to a common 0-up index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -511,7 +468,7 @@ a one-to-one mapping between keys and values.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.find">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_occurrences</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.find" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_occurrences</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.find" title="Link to this definition">¶</a></dt>
 <dd><p>Return indices of query items in a search list of items.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -553,19 +510,19 @@ which don’t appear in the search space</p>
 </pre></div>
 </div>
 <p>Find with defaults (all_occurrences and remove_missing both False)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">)</span>
 <span class="go">array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])</span>
 </pre></div>
 </div>
 <p>Set remove_missing to True, only difference from default
 is missing values are excluded</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">array([0 1 2 5 8 5 11 5 0])</span>
 </pre></div>
 </div>
 <p>Set both remove_missing and all_occurrences to True, missing values
 will be empty segments</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">arr1</span><span class="p">,</span> <span class="n">arr2</span><span class="p">,</span> <span class="n">remove_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_occurrences</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="go">[[],</span>
 <span class="go"> [],</span>
 <span class="go"> [],</span>
@@ -592,7 +549,7 @@ will be empty segments</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.in1d_intervals">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">in1d_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#in1d_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.in1d_intervals" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">in1d_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#in1d_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.in1d_intervals" title="Link to this definition">¶</a></dt>
 <dd><p>Test each value for membership in <em>any</em> of a set of half-open (pythonic) intervals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -635,7 +592,7 @@ interval contains any of the values in &lt;vals&gt;.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.interval_lookup">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">interval_lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiebreak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#interval_lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.interval_lookup" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">interval_lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiebreak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#interval_lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.interval_lookup" title="Link to this definition">¶</a></dt>
 <dd><p>Apply a function defined over intervals to an array of arguments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -663,7 +620,7 @@ in any interval.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.is_cosorted">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">is_cosorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#is_cosorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.is_cosorted" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">is_cosorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#is_cosorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.is_cosorted" title="Link to this definition">¶</a></dt>
 <dd><p>Return True iff the arrays are cosorted.</p>
 <p>Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
 then the rows are sorted.</p>
@@ -688,7 +645,7 @@ then the rows are sorted.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.left_align">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">left_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#left_align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.left_align" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">left_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#left_align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.left_align" title="Link to this definition">¶</a></dt>
 <dd><p>Map two arrays of sparse identifiers to the 0-up index.</p>
 <p>Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
 discarding values from right that do not appear in left.</p>
@@ -696,7 +653,7 @@ discarding values from right that do not appear in left.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.lookup">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.lookup" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.lookup" title="Link to this definition">¶</a></dt>
 <dd><p>Apply the function defined by the mapping keys –&gt; values to arguments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -730,21 +687,21 @@ the return as indices into the desired object.</p>
 &gt;&gt;&gt; values = ak.array([21, 22, 23, 24, 25])
 &gt;&gt;&gt; args1 = ak.array([‘twenty’, ‘thirty’, ‘twenty’])
 &gt;&gt;&gt; args2 = ak.array([‘four’, ‘two’, ‘two’])
-&gt;&gt;&gt; ak.lookup([keys1, keys2], values, [args1, args2])
+&gt;&gt;&gt; ak.numpy.alignment.lookup([keys1, keys2], values, [args1, args2])
 array([24 -1 22])</p>
 <p>Other direction requires an intermediate index
 &gt;&gt;&gt; revkeys = values
 &gt;&gt;&gt; revindices = ak.arange(values.size)
 &gt;&gt;&gt; revargs = ak.array([24, 21, 22])
-&gt;&gt;&gt; indx = ak.lookup(revkeys, revindices, revargs)
-&gt;&gt;&gt; keys1[indx], keys2[indx]
+&gt;&gt;&gt; idx = ak.numpy.alignment.lookup(revkeys, revindices, revargs)
+&gt;&gt;&gt; keys1[idx], keys2[idx]
 (array([‘twenty’, ‘twenty’, ‘twenty’]),
 array([‘four’, ‘one’, ‘two’]))</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.right_align">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">right_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#right_align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.right_align" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">right_align</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#right_align"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.right_align" title="Link to this definition">¶</a></dt>
 <dd><p>Map two arrays of sparse values to the 0-up index.</p>
 <p>Map two arrays of sparse values to the 0-up index set implied by the right array,
 discarding values from left that do not appear in right.</p>
@@ -772,7 +729,7 @@ discarding values from left that do not appear in right.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.search_intervals">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">search_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiebreak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#search_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.search_intervals" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">search_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tiebreak</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#search_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.search_intervals" title="Link to this definition">¶</a></dt>
 <dd><p>Return the index of the best interval containing each query value.</p>
 <p>Given an array of query vals and non-overlapping, closed intervals, return
 the index of the best (see tiebreak) interval containing each query value,
@@ -813,9 +770,9 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
 <span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ends</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vals</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">),</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">),</span> <span class="n">hierarchical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="go">array([0 -1 0 0 1 -1 1 -1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">))</span>
 <span class="go">array([0 0 0 0 1 1 1 -1])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_starts</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bi_ends</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint_from_uint_arrays</span><span class="p">([</span><span class="n">ak</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ends</span><span class="p">])</span>
@@ -825,7 +782,7 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
 <span class="go">array([92233720368547758090 166020696663385964564]),</span>
 <span class="go">array([0 20 36893488147419103233 92233720368547758085 92233720368547758095</span>
 <span class="go">110680464442257309696 110680464442257309708 166020696663385964574]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">bi_vals</span><span class="p">,</span> <span class="p">(</span><span class="n">bi_starts</span><span class="p">,</span> <span class="n">bi_ends</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">numpy</span><span class="o">.</span><span class="n">alignment</span><span class="o">.</span><span class="n">search_intervals</span><span class="p">(</span><span class="n">bi_vals</span><span class="p">,</span> <span class="p">(</span><span class="n">bi_starts</span><span class="p">,</span> <span class="n">bi_ends</span><span class="p">))</span>
 <span class="go">array([0 0 0 0 1 1 1 -1])</span>
 </pre></div>
 </div>
@@ -833,9 +790,9 @@ When False, sequences of pdarrays will be specifying multi-dimensional intervals
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.unsqueeze">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">unsqueeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#unsqueeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.unsqueeze" title="Link to this definition">¶</a></dt>
-<dd><p>Ensure that the input is returned as a list.</p>
-<p>If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">unsqueeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#unsqueeze"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.unsqueeze" title="Link to this definition">¶</a></dt>
+<dd><p>Ensure that the input is returned as a list.
+If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
 Otherwise, return the input unchanged.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -859,7 +816,7 @@ Otherwise, return the input unchanged.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.alignment.zero_up">
-<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">zero_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/alignment.html#zero_up"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.zero_up" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.alignment.</span></span><span class="sig-name descname"><span class="pre">zero_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/numpy/alignment.html#zero_up"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.alignment.zero_up" title="Link to this definition">¶</a></dt>
 <dd><p>Map an array of sparse values to 0-up indices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -933,11 +890,9 @@ Otherwise, return the input unchanged.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">arkouda.alignment</a><ul>
-<li><a class="reference internal" href="#functions">Functions</a></li>
-<li><a class="reference internal" href="#classes">Classes</a></li>
 <li><a class="reference internal" href="#exceptions">Exceptions</a></li>
-<li><a class="reference internal" href="#id1">Functions</a></li>
-<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#package-contents">Package Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.alignment.NonUniqueError"><code class="docutils literal notranslate"><span class="pre">NonUniqueError</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.align"><code class="docutils literal notranslate"><span class="pre">align()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.alignment.find"><code class="docutils literal notranslate"><span class="pre">find()</span></code></a></li>

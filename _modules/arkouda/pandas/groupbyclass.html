@@ -257,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
@@ -438,23 +439,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span> <span class="k">as</span> <span class="n">akfloat64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RegistrationError</span><span class="p">,</span>
-    <span class="n">create_pdarray</span><span class="p">,</span>
-    <span class="n">is_sorted</span><span class="p">,</span>
-    <span class="n">pdarray</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">full</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">,</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_rng</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">sort</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">generic_msg</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;generic_msg&quot;</span><span class="p">)</span>
+    <span class="n">Categorical</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
+    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Strings&quot;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;unique&quot;</span><span class="p">,</span> <span class="s2">&quot;GroupBy&quot;</span><span class="p">,</span> <span class="s2">&quot;broadcast&quot;</span><span class="p">,</span> <span class="s2">&quot;GROUPBY_REDUCTION_TYPES&quot;</span><span class="p">,</span> <span class="s2">&quot;groupable&quot;</span><span class="p">]</span>
 
@@ -825,6 +820,7 @@
 <span class="sd">            If an unsupported or unknown data type is encountered during reconstruction.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
@@ -1799,6 +1795,8 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_nested_grouping_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">groupable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">groupable</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+
         <span class="n">unique_key_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ngroups</span><span class="p">),</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="s2">&quot;_get_grouping_keys&quot;</span><span class="p">):</span>
             <span class="c1"># All single-array groupable types must have a _get_grouping_keys method</span>
@@ -2313,6 +2311,8 @@
 <span class="sd">                The most common value of each group</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+
         <span class="n">togroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nested_grouping_helper</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
         <span class="c1"># Get value counts for each key group</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">togroup</span><span class="p">)</span>
@@ -2404,6 +2404,7 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="nb">round</span> <span class="k">as</span> <span class="n">akround</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span>
 
         <span class="k">if</span> <span class="n">frac</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please enter a value for `frac` OR `n`, not both&quot;</span><span class="p">)</span>
@@ -2531,7 +2532,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">])</span>
@@ -2633,7 +2636,11 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;values must be a pdarray or Strings&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must have one value per segment&quot;</span><span class="p">)</span>
         <span class="n">is_str</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span>
@@ -2757,6 +2764,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_registered</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">RegistrationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This object is already registered as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2957,6 +2965,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
     <span class="k">if</span> <span class="n">segments</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;segments and values arrays must be same size&quot;</span><span class="p">)</span>

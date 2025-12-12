@@ -10,6 +10,7 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/arkouda/numpy/alignment/index
    /autoapi/arkouda/numpy/char/index
    /autoapi/arkouda/numpy/ctypeslib/index
    /autoapi/arkouda/numpy/dtypes/index
@@ -56,6 +57,7 @@ Exceptions
 
 .. autoapisummary::
 
+   arkouda.numpy.NonUniqueError
    arkouda.numpy.RegistrationError
 
 
@@ -180,6 +182,7 @@ Functions
 .. autoapisummary::
 
    arkouda.numpy.abs
+   arkouda.numpy.align
    arkouda.numpy.allclose
    arkouda.numpy.append
    arkouda.numpy.arange
@@ -233,6 +236,7 @@ Functions
    arkouda.numpy.expm1
    arkouda.numpy.eye
    arkouda.numpy.fabs
+   arkouda.numpy.find
    arkouda.numpy.flip
    arkouda.numpy.floor
    arkouda.numpy.fmod
@@ -251,13 +255,16 @@ Functions
    arkouda.numpy.histogramdd
    arkouda.numpy.hstack
    arkouda.numpy.in1d
+   arkouda.numpy.in1d_intervals
    arkouda.numpy.indexof1d
    arkouda.numpy.intersect1d
+   arkouda.numpy.interval_lookup
    arkouda.numpy.isSupportedBool
    arkouda.numpy.isSupportedDType
    arkouda.numpy.isSupportedFloat
    arkouda.numpy.isSupportedInt
    arkouda.numpy.isSupportedNumber
+   arkouda.numpy.is_cosorted
    arkouda.numpy.is_registered
    arkouda.numpy.isfinite
    arkouda.numpy.isinf
@@ -265,12 +272,14 @@ Functions
    arkouda.numpy.isnumeric
    arkouda.numpy.isscalar
    arkouda.numpy.issubdtype
+   arkouda.numpy.left_align
    arkouda.numpy.linspace
    arkouda.numpy.log
    arkouda.numpy.log10
    arkouda.numpy.log1p
    arkouda.numpy.log2
    arkouda.numpy.logspace
+   arkouda.numpy.lookup
    arkouda.numpy.matmul
    arkouda.numpy.maxk
    arkouda.numpy.may_share_memory
@@ -295,10 +304,12 @@ Functions
    arkouda.numpy.repeat
    arkouda.numpy.resolve_scalar_dtype
    arkouda.numpy.result_type
+   arkouda.numpy.right_align
    arkouda.numpy.rotl
    arkouda.numpy.rotr
    arkouda.numpy.round
    arkouda.numpy.scalar_array
+   arkouda.numpy.search_intervals
    arkouda.numpy.searchsorted
    arkouda.numpy.setdiff1d
    arkouda.numpy.seterr
@@ -328,10 +339,12 @@ Functions
    arkouda.numpy.union1d
    arkouda.numpy.unregister
    arkouda.numpy.unregister_all
+   arkouda.numpy.unsqueeze
    arkouda.numpy.value_counts
    arkouda.numpy.vecdot
    arkouda.numpy.vstack
    arkouda.numpy.where
+   arkouda.numpy.zero_up
    arkouda.numpy.zeros
    arkouda.numpy.zeros_like
 
@@ -1162,6 +1175,24 @@ Package Contents
 
       Return an object providing a view on the dict's values.
 
+
+
+.. py:exception:: NonUniqueError
+
+   Bases: :py:obj:`ValueError`
+
+
+   Exception raised when duplicate values are found in a set of keys that are expected to be unique.
+   This is typically raised in lookup and alignment operations that assume
+   a one-to-one mapping between keys and values.
+
+   .. rubric:: Examples
+
+   >>> from arkouda.numpy.alignment import NonUniqueError
+   >>> raise NonUniqueError("Duplicate values found in key array.")
+   Traceback (most recent call last):
+       ...
+   arkouda.numpy.alignment.NonUniqueError: Duplicate values found in key array.
 
 
 .. py:class:: NumericDTypes
@@ -4296,6 +4327,17 @@ Package Contents
    2.00000000... 1.00000000...])
 
 
+.. py:function:: align(*args)
+
+   Map multiple arrays of sparse identifiers to a common 0-up index.
+
+   :param \*args: Arrays to map to dense index
+   :type \*args: pdarrays or sequences of pdarrays
+
+   :returns: **aligned** -- Arrays with values replaced by 0-up indices
+   :rtype: list of pdarrays
+
+
 .. py:class:: all_scalars
 
    Bases: :py:obj:`_NotIterable`
@@ -7085,6 +7127,82 @@ Package Contents
    2.00000000... 1.00000000...])
 
 
+.. py:function:: find(query, space, all_occurrences=False, remove_missing=False)
+
+   Return indices of query items in a search list of items.
+
+   :param query: The items to search for. If multiple arrays, each "row" is an item.
+   :type query: (sequence of) array-like
+   :param space: The set of items in which to search. Must have same shape/dtype as query.
+   :type space: (sequence of) array-like
+   :param all_occurrences: When duplicate terms are present in search space, if all_occurrences is True,
+                           return all occurrences found as a SegArray, otherwise return only the first
+                           occurrences as a pdarray. Defaults to only finding the first occurrence.
+                           Finding all occurrences is not yet supported on sequences of arrays
+   :type all_occurrences: bool
+   :param remove_missing: If all_occurrences is True, remove_missing is automatically enabled.
+                          If False, return -1 for any items in query not found in space. If True,
+                          remove these and only return indices of items that are found.
+   :type remove_missing: bool
+
+   :returns: **indices** -- For each item in query, its index in space. If all_occurrences is False,
+             the return will be a pdarray of the first index where each value in the
+             query appears in the space. If all_occurrences is True, the return will be
+             a SegArray containing every index where each value in the query appears in
+             the space. If all_occurrences is True, remove_missing is automatically enabled.
+             If remove_missing is True, exclude missing values, otherwise return -1.
+   :rtype: pdarray or SegArray
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> select_from = ak.arange(10)
+   >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
+   >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
+
+   Remove some values to ensure we have some values
+   which don't appear in the search space
+
+   >>> arr2 = arr2[arr2 != 9]
+   >>> arr2 = arr2[arr2 != 3]
+
+   Find with defaults (all_occurrences and remove_missing both False)
+
+   >>> ak.numpy.alignment.find(arr1, arr2)
+   array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])
+
+   Set remove_missing to True, only difference from default
+   is missing values are excluded
+
+   >>> ak.numpy.alignment.find(arr1, arr2, remove_missing=True)
+   array([0 1 2 5 8 5 11 5 0])
+
+   Set both remove_missing and all_occurrences to True, missing values
+   will be empty segments
+
+   >>> ak.numpy.alignment.find(arr1, arr2, remove_missing=True, all_occurrences=True).tolist()
+   [[],
+    [],
+    [],
+    [0, 4],
+    [1, 3, 10],
+    [],
+    [],
+    [],
+    [2, 6, 12, 13],
+    [],
+    [5, 7],
+    [],
+    [8, 9, 14],
+    [],
+    [5, 7],
+    [],
+    [],
+    [11, 15],
+    [5, 7],
+    [0, 4]]
+
+
 .. py:class:: finfo
 
    finfo(dtype)
@@ -8312,6 +8430,41 @@ Package Contents
    ak.in1d is not supported for bool or float64 pdarrays
 
 
+.. py:function:: in1d_intervals(vals, intervals, symmetric=False)
+
+   Test each value for membership in *any* of a set of half-open (pythonic) intervals.
+
+   :param vals: Values to test for membership in intervals
+   :type vals: pdarray(int, float)
+   :param intervals: Non-overlapping, half-open intervals, as a tuple of
+                     (lower_bounds_inclusive, upper_bounds_exclusive)
+   :type intervals: 2-tuple of pdarrays
+   :param symmetric: If True, also return boolean pdarray indicating which intervals
+                     contained one or more query values.
+   :type symmetric: bool
+
+   :returns: * *pdarray(bool)* -- Array of same length as <vals>, True if corresponding value is
+               included in any of the ranges defined by (low[i], high[i]) inclusive.
+             * *pdarray(bool) (if symmetric=True)* -- Array of same length as number of intervals, True if corresponding
+               interval contains any of the values in <vals>.
+
+   .. rubric:: Notes
+
+   First return array is equivalent to the following:
+       ((vals >= intervals[0][0]) & (vals < intervals[1][0])) |
+       ((vals >= intervals[0][1]) & (vals < intervals[1][1])) |
+       ...
+       ((vals >= intervals[0][-1]) & (vals < intervals[1][-1]))
+   But much faster when testing many ranges.
+
+   Second (optional) return array is equivalent to:
+       ((intervals[0] <= vals[0]) & (intervals[1] > vals[0])) |
+       ((intervals[0] <= vals[1]) & (intervals[1] > vals[1])) |
+       ...
+       ((intervals[0] <= vals[-1]) & (intervals[1] > vals[-1]))
+   But much faster when vals is non-trivial size.
+
+
 .. py:function:: indexof1d(query: arkouda.pandas.groupbyclass.groupable, space: arkouda.pandas.groupbyclass.groupable) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return indices of query items in a search list of items. Items not found will be excluded.
@@ -8621,6 +8774,30 @@ Package Contents
    [array([1 3]), array([1 3]), array([1 3])]
 
 
+.. py:function:: interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierarchical=False)
+
+   Apply a function defined over intervals to an array of arguments.
+
+   :param keys: Tuple of closed intervals expressed as (lower_bounds_inclusive, upper_bounds_inclusive).
+                Must have same dtype(s) as vals.
+   :type keys: 2-tuple of (sequences of) pdarrays
+   :param values: Function value to return for each entry in keys.
+   :type values: pdarray
+   :param arguments: Values to search for in intervals. If multiple arrays, each "row" is an item.
+   :type arguments: (sequences of) pdarray
+   :param fillvalue: Default value to return when argument is not in any interval.
+   :type fillvalue: scalar
+   :param tiebreak: When an argument is present in more than one key interval, the interval with the
+                    lowest tiebreak value will be chosen. If no tiebreak is given, the
+                    first valid key interval will be chosen.
+   :type tiebreak: (optional) pdarray, numeric
+
+   :returns: Value of function corresponding to the keys interval
+             containing each argument, or fillvalue if argument not
+             in any interval.
+   :rtype: pdarray
+
+
 .. py:class:: intp
 
    Bases: :py:obj:`numpy.signedinteger`
@@ -8744,6 +8921,23 @@ Package Contents
    True
    >>> ak.isSupportedNumber("string")
    False
+
+
+.. py:function:: is_cosorted(arrays)
+
+   Return True iff the arrays are cosorted.
+
+   Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
+   then the rows are sorted.
+
+   :param arrays: Arrays to check for cosortedness
+   :type arrays: list-like of pdarrays
+
+   :returns: True iff arrays are cosorted.
+   :rtype: bool
+
+   :raises ValueError: Raised if arrays are not the same length
+   :raises TypeError: Raised if arrays is not a list-like of pdarrays
 
 
 .. py:function:: is_registered(name: str, as_component: bool = False) -> bool
@@ -9014,6 +9208,14 @@ Package Contents
    True
    >>> np.issubdtype('i4', np.signedinteger)
    True
+
+
+.. py:function:: left_align(left, right)
+
+   Map two arrays of sparse identifiers to the 0-up index.
+
+   Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
+   discarding values from right that do not appear in left.
 
 
 .. py:function:: linspace(start: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], stop: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], num: arkouda.numpy.dtypes.int_scalars = 50, endpoint: Union[None, bool] = True, dtype: Optional[type] = float64, axis: arkouda.numpy.dtypes.int_scalars = 0) -> arkouda.numpy.pdarrayclass.pdarray
@@ -9292,6 +9494,53 @@ Package Contents
 
 
    .. py:method:: bit_count(/)
+
+
+.. py:function:: lookup(keys, values, arguments, fillvalue=-1)
+
+   Apply the function defined by the mapping keys --> values to arguments.
+
+   :param keys: The domain of the function. Entries must be unique (if a sequence of
+                arrays is given, each row is treated as a tuple-valued entry).
+   :type keys: (sequence of) array-like
+   :param values: The range of the function. Must be same length as keys.
+   :type values: pdarray
+   :param arguments: The arguments on which to evaluate the function. Must have same dtype
+                     (or tuple of dtypes, for a sequence) as keys.
+   :type arguments: (sequence of) array-like
+   :param fillvalue: The default value to return for arguments not in keys.
+   :type fillvalue: scalar
+
+   :returns: **evaluated** -- The result of evaluating the function over arguments.
+   :rtype: pdarray
+
+   .. rubric:: Notes
+
+   While the values cannot be Strings (or other complex objects), the same
+   result can be achieved by passing an arange as the values, then using
+   the return as indices into the desired object.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+
+   Lookup numbers by two-word name
+   >>> keys1 = ak.array(['twenty' for _ in range(5)])
+   >>> keys2 = ak.array(['one', 'two', 'three', 'four', 'five'])
+   >>> values = ak.array([21, 22, 23, 24, 25])
+   >>> args1 = ak.array(['twenty', 'thirty', 'twenty'])
+   >>> args2 = ak.array(['four', 'two', 'two'])
+   >>> ak.numpy.alignment.lookup([keys1, keys2], values, [args1, args2])
+   array([24 -1 22])
+
+   Other direction requires an intermediate index
+   >>> revkeys = values
+   >>> revindices = ak.arange(values.size)
+   >>> revargs = ak.array([24, 21, 22])
+   >>> idx = ak.numpy.alignment.lookup(revkeys, revindices, revargs)
+   >>> keys1[idx], keys2[idx]
+   (array(['twenty', 'twenty', 'twenty']),
+   array(['four', 'one', 'two']))
 
 
 .. py:function:: matmul(pda_L: arkouda.numpy.pdarrayclass.pdarray, pda_R: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -11512,6 +11761,27 @@ Package Contents
    dtype('bool')
 
 
+.. py:function:: right_align(left, right)
+
+   Map two arrays of sparse values to the 0-up index.
+
+   Map two arrays of sparse values to the 0-up index set implied by the right array,
+   discarding values from left that do not appear in right.
+
+   :param left: Left-hand identifiers
+   :type left: pdarray or a sequence of pdarrays
+   :param right: Right-hand identifiers that define the index
+   :type right: pdarray or a sequence of pdarrays
+
+   :returns:
+
+             keep : pdarray, bool
+                 Logical index of left-hand values that survived
+             aligned : (pdarray, pdarray)
+                 Left and right arrays with values replaced by 0-up indices
+   :rtype: pdarray, (pdarray, pdarray)
+
+
 .. py:function:: rotl(x, rot) -> pdarray
 
    Rotate bits of <x> to the left by <rot>.
@@ -11691,6 +11961,61 @@ Package Contents
 
       Return an object providing a view on the dict's values.
 
+
+
+.. py:function:: search_intervals(vals, intervals, tiebreak=None, hierarchical=True)
+
+   Return the index of the best interval containing each query value.
+
+   Given an array of query vals and non-overlapping, closed intervals, return
+   the index of the best (see tiebreak) interval containing each query value,
+   or -1 if not present in any interval.
+
+   :param vals: Values to search for in intervals. If multiple arrays, each "row" is an item.
+   :type vals: (sequence of) pdarray(int, uint, float)
+   :param intervals: Non-overlapping, half-open intervals, as a tuple of
+                     (lower_bounds_inclusive, upper_bounds_exclusive)
+                     Must have same dtype(s) as vals.
+   :type intervals: 2-tuple of (sequences of) pdarrays
+   :param tiebreak: When a value is present in more than one interval, the interval with the
+                    lowest tiebreak value will be chosen. If no tiebreak is given, the
+                    first containing interval will be chosen.
+   :type tiebreak: (optional) pdarray, numeric
+   :param hierarchical: When True, sequences of pdarrays will be treated as components specifying
+                        a single dimension (i.e. hierarchical)
+                        When False, sequences of pdarrays will be specifying multi-dimensional intervals
+   :type hierarchical: boolean
+
+   :returns: **idx** -- Index of interval containing each query value, or -1 if not found
+   :rtype: pdarray(int64)
+
+   .. rubric:: Notes
+
+   The return idx satisfies the following condition:
+       present = idx > -1
+       ((intervals[0][idx[present]] <= vals[present]) &
+        (intervals[1][idx[present]] >= vals[present])).all()
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
+   >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
+   >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
+   >>> ak.numpy.alignment.search_intervals(vals, (starts, ends), hierarchical=False)
+   array([0 -1 0 0 1 -1 1 -1])
+   >>> ak.numpy.alignment.search_intervals(vals, (starts, ends))
+   array([0 0 0 0 1 1 1 -1])
+   >>> bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])
+   >>> bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
+   >>> bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
+   >>> bi_starts, bi_ends, bi_vals
+   (array([0 92233720368547758091]),
+   array([92233720368547758090 166020696663385964564]),
+   array([0 20 36893488147419103233 92233720368547758085 92233720368547758095
+   110680464442257309696 110680464442257309708 166020696663385964574]))
+   >>> ak.numpy.alignment.search_intervals(bi_vals, (bi_starts, bi_ends))
+   array([0 0 0 0 1 1 1 -1])
 
 
 .. py:function:: searchsorted(a: arkouda.numpy.pdarrayclass.pdarray, v: Union[arkouda.numpy.dtypes.int_scalars, arkouda.numpy.dtypes.float64, arkouda.numpy.dtypes.bigint, arkouda.numpy.pdarrayclass.pdarray], side: Literal['left', 'right'] = 'left', x2_sorted: bool = False) -> Union[int, arkouda.numpy.pdarrayclass.pdarray]
@@ -12207,7 +12532,7 @@ Package Contents
 
    >>> import arkouda as ak
    >>> ak.standard_normal(3,1)
-   array([-0.68586185091150265 1.1723810583573377 0.567584107142031])
+   array([-0.68586185091150265 1.1723810583573377 0.5675841071420...])
 
 
 .. py:class:: str_
@@ -13447,6 +13772,26 @@ Package Contents
    Abstract base class of all unsigned integer scalar types.
 
 
+.. py:function:: unsqueeze(p)
+
+   Ensure that the input is returned as a list.
+   If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
+   Otherwise, return the input unchanged.
+
+   :param p: The input object to be wrapped or returned as-is.
+   :type p: pdarray, Strings, Categorical, or Sequence
+
+   :returns: A list containing the input, or the input itself if it is already a sequence.
+   :rtype: Sequence
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1, 2, 3])
+   >>> unsqueeze(a)
+   [array([1 2 3])]
+
+
 .. py:class:: ushort
 
    Bases: :py:obj:`numpy.unsignedinteger`
@@ -13701,6 +14046,17 @@ Package Contents
    A and B must have the same dtype and only one conditional clause
    is supported e.g., n < 5, n > 1, which is supported in numpy
    is not currently supported in Arkouda
+
+
+.. py:function:: zero_up(vals)
+
+   Map an array of sparse values to 0-up indices.
+
+   :param vals: Array to map to dense index
+   :type vals: pdarray
+
+   :returns: **aligned** -- Array with values replaced by 0-up indices
+   :rtype: pdarray
 
 
 .. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray

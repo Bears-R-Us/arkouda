@@ -257,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
@@ -380,7 +381,6 @@
     <span class="n">Literal</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">cast</span><span class="p">,</span>
 <span class="p">)</span>
@@ -408,11 +408,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">akall</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.match</span><span class="w"> </span><span class="kn">import</span> <span class="n">Match</span><span class="p">,</span> <span class="n">MatchType</span>
 
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">generic_msg</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;generic_msg&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">SortingAlgorithm</span>

@@ -752,7 +752,7 @@ Module Contents
 
 
    .. py:attribute:: levels
-      :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical]]
+      :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]]
 
 
    .. py:method:: lookup(key)

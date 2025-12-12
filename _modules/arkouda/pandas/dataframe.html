@@ -257,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
@@ -448,11 +449,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegistrationError</span><span class="p">,</span> <span class="n">pdarray</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">zeros</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">in1d</span><span class="p">,</span> <span class="n">intersect1d</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">coargsort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">sort</span> <span class="k">as</span> <span class="n">aksort</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.timeclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GROUPBY_REDUCTION_TYPES</span><span class="p">,</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">unique</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.join</span><span class="w"> </span><span class="kn">import</span> <span class="n">inner_join</span>
@@ -462,17 +461,15 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">where</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">Series</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Series&quot;</span><span class="p">)</span>
-    <span class="n">SegArray</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;SegArray&quot;</span><span class="p">)</span>
-    <span class="n">akcast</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;akcast&quot;</span><span class="p">)</span>
-    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;cumsum&quot;</span><span class="p">)</span>
-    <span class="n">where</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;where&quot;</span><span class="p">)</span>
     <span class="n">Categorical</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Categorical&quot;</span><span class="p">)</span>
-
+    <span class="n">Series</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Series&quot;</span><span class="p">)</span>
+    <span class="n">Strings</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;Strings&quot;</span><span class="p">)</span>
+    <span class="n">SegArray</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;SegArray&quot;</span><span class="p">)</span>
 
 <span class="c1"># This is necessary for displaying DataFrames with BitVector columns,</span>
 <span class="c1"># because pandas _html_repr automatically truncates the number of displayed bits</span>
@@ -1204,7 +1201,9 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_COLUMN_CLASSES</span> <span class="o">=</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">)</span>
@@ -1403,6 +1402,7 @@
 <span class="sd">            The requested column(s).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
         <span class="c1"># convert series to underlying values</span>
@@ -1476,6 +1476,7 @@
 <span class="sd">            The new values for the column.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
@@ -1575,6 +1576,7 @@
         <span class="k">return</span> <span class="s2">&quot;DataFrame([&quot;</span> <span class="o">+</span> <span class="n">keystr</span> <span class="o">+</span> <span class="s2">&quot;], </span><span class="si">{:,}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">)</span> <span class="o">+</span> <span class="n">rows</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_head_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
@@ -1605,7 +1607,10 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_head_tail_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
@@ -1734,6 +1739,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
@@ -2069,6 +2075,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2198,6 +2205,9 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Index</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">)):</span>
@@ -2265,6 +2275,8 @@
 <span class="sd">        2  2  5 (3 rows x 2 columns)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+
         <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">inplace</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">size</span><span class="p">:</span>
@@ -2986,6 +2998,7 @@
 <span class="sd">        np.int64(125000)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_bytes</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
@@ -3081,6 +3094,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="c1"># Estimate how much memory would be required for this DataFrame</span>
@@ -3768,6 +3782,8 @@
 <span class="sd">        0   1.1     6 (3 rows x 2 columns)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ascending</span><span class="p">:</span>
@@ -3815,6 +3831,8 @@
 <span class="sd">        &gt;&gt;&gt;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
         <span class="n">arrays</span> <span class="o">=</span> <span class="p">[]</span>
@@ -4259,6 +4277,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
@@ -4379,8 +4398,9 @@
 <span class="sd">        dtype: int64</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">full</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
@@ -4465,9 +4485,12 @@
 <span class="sd">        col2  -1.0   1.0 (2 rows x 2 columns)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">numeric_help</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">d</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">d</span><span class="o">.</span><span class="n">codes</span>
@@ -5308,7 +5331,9 @@
 <span class="sd">        DataFrame</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
@@ -5645,6 +5670,8 @@
 <span class="sd">    array([1 2 0 4 3])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
+
     <span class="c1"># Test if the array is actually a permutation</span>
     <span class="n">rng</span> <span class="o">=</span> <span class="n">perm</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">perm</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">unique</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">perm</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">perm</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">rng</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
@@ -6004,6 +6031,8 @@
         <span class="p">]</span>
     <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
     <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -6141,6 +6170,7 @@
 <span class="sd">    6     8     NaN     8.0 (7 rows x 3 columns)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
     <span class="n">col_intersect</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">right</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>

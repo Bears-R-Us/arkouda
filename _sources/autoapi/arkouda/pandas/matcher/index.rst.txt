@@ -40,14 +40,6 @@ arkouda.pandas.matcher
 
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   arkouda.pandas.matcher.generic_msg
-
-
 Classes
 -------
 
@@ -176,6 +168,4 @@ Module Contents
       If return_num_subs is True, return the number of substitutions that occurred.
 
 
-
-.. py:data:: generic_msg
 

@@ -258,6 +258,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
@@ -462,8 +463,7 @@
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">chisquare</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">chisquare</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">]),</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">]))</span>
-<span class="go">Power_divergenceResult(statistic=np.float64(8.333333333333334),</span>
-<span class="go">    pvalue=np.float64(0.03960235520756414))</span>
+<span class="go">Power_divergenceResult(statistic=np.float64(8.333333333333334), pvalue=np.float64(0.03960235520...))</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
@@ -509,11 +509,9 @@ Allowed values: “pearson”, “log-likelihood”, “freeman-tukey”, “mod
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">power_divergence</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">)</span>
-<span class="go">Power_divergenceResult(statistic=np.float64(8.333333333333334),</span>
-<span class="go">    pvalue=np.float64(0.03960235520756414))</span>
+<span class="go">Power_divergenceResult(statistic=np.float64(8.333333333333334), pvalue=np.float64(0.03960235520...))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">power_divergence</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lambda_</span><span class="o">=</span><span class="s2">&quot;log-likelihood&quot;</span><span class="p">)</span>
-<span class="go">Power_divergenceResult(statistic=np.float64(8.109302162163285),</span>
-<span class="go">    pvalue=np.float64(0.04380595350226197))</span>
+<span class="go">Power_divergenceResult(statistic=np.float64(8.109302162163285), pvalue=np.float64(0.04380595350...))</span>
 </pre></div>
 </div>
 <div class="admonition seealso">

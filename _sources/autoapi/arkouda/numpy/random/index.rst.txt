@@ -1127,7 +1127,7 @@ Package Contents
 
    >>> import arkouda as ak
    >>> ak.standard_normal(3,1)
-   array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
+   array([-0.68586185091150265, 1.1723810583573375, 0.5675841071420...])
 
 
 .. py:function:: uniform(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]], low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray

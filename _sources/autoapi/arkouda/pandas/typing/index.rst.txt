@@ -10,7 +10,7 @@ Attributes
 .. autoapisummary::
 
    arkouda.pandas.typing.ArkoudaArrayLike
-   arkouda.pandas.typing.Categorical
+   arkouda.pandas.typing.Strings
 
 
 Module Contents
@@ -18,5 +18,5 @@ Module Contents
 
 .. py:data:: ArkoudaArrayLike
 
-.. py:data:: Categorical
+.. py:data:: Strings
 

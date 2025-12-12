@@ -257,6 +257,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
@@ -457,11 +458,9 @@
 <span class="sd">    &gt;&gt;&gt; x = ak.array([10, 20, 30, 10])</span>
 <span class="sd">    &gt;&gt;&gt; y = ak.array([10, 30, 20, 10])</span>
 <span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_=&quot;pearson&quot;)</span>
-<span class="sd">    Power_divergenceResult(statistic=np.float64(8.333333333333334),</span>
-<span class="sd">        pvalue=np.float64(0.03960235520756414))</span>
+<span class="sd">    Power_divergenceResult(statistic=np.float64(8.333333333333334), pvalue=np.float64(0.03960235520...))</span>
 <span class="sd">    &gt;&gt;&gt; power_divergence(x, y, lambda_=&quot;log-likelihood&quot;)</span>
-<span class="sd">    Power_divergenceResult(statistic=np.float64(8.109302162163285),</span>
-<span class="sd">        pvalue=np.float64(0.04380595350226197))</span>
+<span class="sd">    Power_divergenceResult(statistic=np.float64(8.109302162163285), pvalue=np.float64(0.04380595350...))</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -573,8 +572,7 @@
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; from arkouda.scipy import chisquare</span>
 <span class="sd">    &gt;&gt;&gt; chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))</span>
-<span class="sd">    Power_divergenceResult(statistic=np.float64(8.333333333333334),</span>
-<span class="sd">        pvalue=np.float64(0.03960235520756414))</span>
+<span class="sd">    Power_divergenceResult(statistic=np.float64(8.333333333333334), pvalue=np.float64(0.03960235520...))</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

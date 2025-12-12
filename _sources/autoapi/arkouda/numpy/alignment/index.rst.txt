@@ -1,7 +1,51 @@
-arkouda.alignment
-=================
+arkouda.numpy.alignment
+=======================
 
-.. py:module:: arkouda.alignment
+.. py:module:: arkouda.numpy.alignment
+
+.. autoapi-nested-parse::
+
+   Alignment and lookup utilities for Arkouda arrays.
+
+   This module provides functions to align multiple arrays to a common
+   0-up index, perform lookups and mappings across sparse identifiers,
+   and search within defined intervals. It supports single and multi-dimensional
+   key matching, including hierarchical keys, and interval-based function evaluation.
+
+   Functions
+   ---------
+   - align: Align multiple arrays to a common index.
+   - left_align: Align two arrays to the index defined by the left array.
+   - right_align: Align two arrays to the index defined by the right array.
+   - zero_up: Map sparse identifiers to 0-up indices.
+   - lookup: Evaluate a function defined by keys and values on input arguments.
+   - interval_lookup: Evaluate a function defined over intervals.
+   - search_intervals: Return index of best interval for each query value.
+   - in1d_intervals: Check membership of values in half-open intervals.
+   - find: Locate indices of query values in a search space.
+   - is_cosorted: Determine if a list of arrays are cosorted.
+   - unsqueeze: Wrap a pdarray in a list if not already a sequence.
+
+   Classes
+   -------
+   - NonUniqueError: Raised when duplicate values are found in keys.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([10, 20, 30, 40])
+   >>> b = ak.array([20, 10, 40, 50])
+   >>> keep, (a_aligned, b_aligned) = ak.numpy.alignment.right_align(a, b)
+   >>> a[keep], a_aligned, b_aligned
+   (array([10 20 40]), array([0 1 2]), array([1 0 2 3]))
+
+   >>> starts = ak.array([0, 5])
+   >>> ends = ak.array([3, 10])
+   >>> values = ak.array([100, 200])
+   >>> x = ak.array([1, 6, 8])
+   >>> ak.numpy.alignment.interval_lookup((starts, ends), values, x)
+   array([100 200 200])
+
 
 
 Exceptions
@@ -9,7 +53,7 @@ Exceptions
 
 .. autoapisummary::
 
-   arkouda.alignment.NonUniqueError
+   arkouda.numpy.alignment.NonUniqueError
 
 
 Functions
@@ -17,21 +61,21 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.alignment.align
-   arkouda.alignment.find
-   arkouda.alignment.in1d_intervals
-   arkouda.alignment.interval_lookup
-   arkouda.alignment.is_cosorted
-   arkouda.alignment.left_align
-   arkouda.alignment.lookup
-   arkouda.alignment.right_align
-   arkouda.alignment.search_intervals
-   arkouda.alignment.unsqueeze
-   arkouda.alignment.zero_up
+   arkouda.numpy.alignment.align
+   arkouda.numpy.alignment.find
+   arkouda.numpy.alignment.in1d_intervals
+   arkouda.numpy.alignment.interval_lookup
+   arkouda.numpy.alignment.is_cosorted
+   arkouda.numpy.alignment.left_align
+   arkouda.numpy.alignment.lookup
+   arkouda.numpy.alignment.right_align
+   arkouda.numpy.alignment.search_intervals
+   arkouda.numpy.alignment.unsqueeze
+   arkouda.numpy.alignment.zero_up
 
 
-Package Contents
-----------------
+Module Contents
+---------------
 
 .. py:exception:: NonUniqueError
 
