@@ -169,7 +169,7 @@ module BigIntMsg {
                                     st: borrowed SymTab,
                                     type array_dtype,
                                     param array_nd: int): MsgTuple throws
-    where ((array_dtype == int(64) || array_dtype == uint(64)) && array_nd == 1)
+    where (array_dtype == uint(64) && array_nd == 1)
     {
         var repMsg: string;
 
@@ -195,6 +195,8 @@ module BigIntMsg {
             mask -= 1;
         }
 
+        const dom = bigIntArray.domain;
+
         if signed {
             var i = num_arrays - 1;
             const name  = arrayNames[i];
@@ -202,16 +204,10 @@ module BigIntMsg {
             ref   limbA = entry.a;
 
             // Per-element fold; keep everything local
-            if doMask {
-                forall (u, b, s) in zip(limbA, bigIntArray, signs) {
-                    s = (u >> 63): bool;
-                    b += (u & ((1 << 63) - 1));
-                }
-            } else {
-                forall (u, b, s) in zip(limbA, bigIntArray, signs) {
-                    s = (u >> 63): bool;
-                    b += (u & ((1 << 63) - 1));
-                }
+            forall idx in dom {
+                const u = limbA[idx];
+                signs[idx] = (u >> 63): bool;
+                bigIntArray[idx] += (u & ((1 << 63) - 1));
             }
         }
 
@@ -225,17 +221,23 @@ module BigIntMsg {
 
                 // Per-element fold; keep everything local
                 if doMask {
-                    forall (u, b) in zip(limbA, bigIntArray) with (var tmp: bigint, const localMask = mask) {
+                    forall idx in dom with (var tmp: bigint, const ref localMask = mask) {
+                        const u = limbA[idx];              // magnitude limb
+                        ref b = bigIntArray[idx];
+
                         b <<= 64;
-                        tmp = (u: uint(64)): bigint;  // treat limb as magnitude
-                        b  += tmp;
-                        b  &= localMask;
+                        tmp = (u:uint(64)): bigint;
+                        b += tmp;
+                        b &= localMask;
                     }
                 } else {
-                    forall (u, b) in zip(limbA, bigIntArray) with (var tmp: bigint) {
+                    forall idx in dom with (var tmp: bigint) {
+                        const u = limbA[idx];
+                        ref b = bigIntArray[idx];
+
                         b <<= 64;
-                        tmp = (u: uint(64)): bigint;
-                        b  += tmp;
+                        tmp = (u:uint(64)): bigint;
+                        b += tmp;
                     }
                 }
             }
@@ -246,16 +248,21 @@ module BigIntMsg {
         // --------------------------------------------------------------------------
 
         if signed {
-
             const negAmount = (1: bigint) << (64 * num_arrays - 1);
 
-            forall (b, s) in zip(bigIntArray, signs) {
-                if s {
-                    if doMask {
-                        b = b - negAmount;
-                        b &= mask;
-                    } else {
-                        b = b - negAmount;
+            if doMask {
+                forall idx in dom with (const ref localMask = mask) {
+                    if signs[idx] {
+                        ref b = bigIntArray[idx];
+                        b -= negAmount;
+                        b &= localMask;
+                    }
+                }
+            } else {
+                forall idx in dom {
+                    if signs[idx] {
+                        ref b = bigIntArray[idx];
+                        b -= negAmount;
                     }
                 }
             }
