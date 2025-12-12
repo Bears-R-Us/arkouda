@@ -6,7 +6,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union, cast, overload
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast, overload
 
 import numpy as np
 
@@ -37,12 +37,6 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
-
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg, get_array_ranks
-else:
-    generic_msg = TypeVar("generic_msg")
-    get_array_ranks = TypeVar("get_array_ranks")
 
 module = modules[__name__]
 
@@ -167,11 +161,6 @@ if TYPE_CHECKING:
     # aliases
     var = stats_reduce
     std = stats_reduce
-
-    from arkouda.client import generic_msg, get_array_ranks
-else:
-    generic_msg = TypeVar("generic_msg")
-    get_array_ranks = TypeVar("get_array_ranks")
 
 __all__ = [
     "pdarray",

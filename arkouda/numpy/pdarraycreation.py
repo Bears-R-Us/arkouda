@@ -41,15 +41,13 @@ from arkouda.numpy.dtypes import (
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.strings import Strings
 
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg, get_array_ranks
+    from arkouda.numpy.pdarrayclass import pdarray
 else:
-    generic_msg = TypeVar("generic_msg")
-    get_array_ranks = TypeVar("get_array_ranks")
+    pdarray = TypeVar("pdarray")
 
 __all__ = [
     "array",
@@ -172,6 +170,7 @@ def from_series(series: pd.Series, dtype: Optional[Union[type, str]] = None) -> 
 
 def _deepcopy(a: pdarray) -> pdarray:
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import create_pdarray
 
     rep_msg = generic_msg(
         cmd=f"deepcopy<{a.dtype.name},{a.ndim}>",
@@ -320,6 +319,7 @@ def array(
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy.numeric import cast as akcast
+    from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
     if isinstance(a, str):
         raise TypeError(
@@ -497,6 +497,7 @@ def array(
 
 def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
     a = np.asarray(np_a)
     out_shape = a.shape
@@ -672,6 +673,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     True
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
     if not arrays:
         return create_pdarray(
@@ -768,6 +770,7 @@ def zeros(
 
     """
     from arkouda.client import generic_msg, get_array_ranks
+    from arkouda.numpy.pdarrayclass import create_pdarray
 
     dtype = akdtype(dtype)  # normalize dtype
     dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
@@ -909,6 +912,7 @@ def full(
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy.dtypes import dtype as ak_dtype
+    from arkouda.numpy.pdarrayclass import create_pdarray
 
     if isinstance(fill_value, str):
         return _full_string(size, fill_value)
@@ -979,6 +983,7 @@ def scalar_array(
         Raised if value cannot be cast as dtype
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import create_pdarray
 
     if dtype is not None:
         _dtype = akdtype(dtype)
@@ -1257,6 +1262,7 @@ def arange(
     """
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
+    from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
     start: int_scalars
     stop: int_scalars
@@ -1488,6 +1494,7 @@ def linspace(
     from arkouda import newaxis
     from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
+    from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.util import (
         _integer_axis_validation,
         broadcast_shapes,
@@ -1733,7 +1740,7 @@ def standard_normal(size: int_scalars, seed: Union[None, int_scalars] = None) ->
     --------
     >>> import arkouda as ak
     >>> ak.standard_normal(3,1)
-    array([-0.68586185091150265 1.1723810583573377 0.567584107142031])
+    array([-0.68586185091150265 1.1723810583573377 0.5675841071420...])
     """
     from arkouda.numpy.random import standard_normal
 

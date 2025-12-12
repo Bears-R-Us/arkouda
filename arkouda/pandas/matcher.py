@@ -42,19 +42,13 @@ See Also
 import json
 import re
 
-from typing import TYPE_CHECKING, TypeVar, cast
+from typing import cast
 
 from arkouda.infoclass import list_symbol_table
 from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pandas.match import Match, MatchType
-
-
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-else:
-    generic_msg = TypeVar("generic_msg")
 
 
 class Matcher:

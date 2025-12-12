@@ -256,7 +256,7 @@ def standard_normal(
     --------
     >>> import arkouda as ak
     >>> ak.standard_normal(3,1)
-    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
+    array([-0.68586185091150265, 1.1723810583573375, 0.5675841071420...])
     """
     from arkouda.client import generic_msg
 

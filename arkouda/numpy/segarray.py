@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from typing import TYPE_CHECKING, Literal, Optional, Sequence, Tuple, TypeVar
+from typing import Literal, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -32,13 +32,6 @@ __all__ = [
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
-
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-    from arkouda.numpy import cumsum
-else:
-    generic_msg = TypeVar("generic_msg")
-    cumsum = TypeVar("cumsum")
 
 
 def _aggregator(func):

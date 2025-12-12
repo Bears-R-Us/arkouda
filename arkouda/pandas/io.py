@@ -68,13 +68,11 @@ import json
 import os
 
 from typing import (
-    TYPE_CHECKING,
     Dict,
     List,
     Literal,
     Mapping,
     Optional,
-    TypeVar,
     Union,
     cast,
 )
@@ -96,11 +94,6 @@ from arkouda.pandas.dataframe import DataFrame
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.index import Index, MultiIndex
 
-
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-else:
-    generic_msg = TypeVar("generic_msg")
 
 __all__ = [
     "get_filetype",

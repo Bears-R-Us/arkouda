@@ -187,18 +187,24 @@ class TestJoin:
         cat_left = ak.Categorical(str_left)
         cat_right = ak.Categorical(str_right)
 
+        # int_left vs int_right using Categorical codes for whereargs
         left, right = ak.join.inner_join(
-            int_left, int_right, wherefunc=join_where, whereargs=(cat_left, str_right)
+            int_left, int_right, wherefunc=join_where, whereargs=(cat_left.codes, str_right)
         )
         assert cat_left[left].tolist() == cat_right[right].tolist()
 
+        # str_left vs str_right using Categorical codes for whereargs
         left, right = ak.join.inner_join(
-            str_left, str_right, wherefunc=join_where, whereargs=(cat_left, int_right)
+            str_left, str_right, wherefunc=join_where, whereargs=(cat_left.codes, int_right)
         )
         assert cat_left[left].tolist() == cat_right[right].tolist()
 
+        # cat_left vs cat_right using Categorical codes for whereargs
         left, right = ak.join.inner_join(
-            cat_left, cat_right, wherefunc=join_where, whereargs=(str_left, int_right)
+            cat_left,
+            cat_right,
+            wherefunc=join_where,
+            whereargs=(ak.Categorical(str_left).codes, int_right),
         )
         assert cat_left[left].tolist() == cat_right[right].tolist()
 
@@ -209,10 +215,10 @@ class TestJoin:
         ans = [-1, 30, 10, 40, 20, 30, 10, 0]
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
-        res = ak.lookup(keys, values, args, fillvalue=-1)
+        res = ak.numpy.alignment.lookup(keys, values, args, fillvalue=-1)
         assert res.tolist() == ans
         # Compound lookup with (str, int) keys
-        res2 = ak.lookup(
+        res2 = ak.numpy.alignment.lookup(
             (ak.cast(keys, ak.str_), keys),
             values,
             (ak.cast(args, ak.str_), args),
@@ -220,13 +226,13 @@ class TestJoin:
         )
         assert res2.tolist() == ans
         # Keys not in uniqued order
-        res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
+        res3 = ak.numpy.alignment.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
         assert res3.tolist() == ans
         # Non-unique keys should raise error
         with pytest.warns(UserWarning):
             keys = ak.arange(10) % 5
             values = 10 * keys
-            ak.lookup(keys, values, args)
+            ak.numpy.alignment.lookup(keys, values, args)
 
     def test_error_handling(self):
         """Tests error TypeError and ValueError handling."""

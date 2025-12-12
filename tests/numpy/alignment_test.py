@@ -10,7 +10,7 @@ class TestAlignment:
     def test_alignment_docstrings(self):
         import doctest
 
-        from arkouda import alignment
+        from arkouda.numpy import alignment
 
         result = doctest.testmod(alignment, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
@@ -39,7 +39,7 @@ class TestAlignment:
         v = [22, 51, 44, 1, 38, 19, 40, 60, 100]
 
         lower_bound, upper_bound, vals = self.get_interval_info(lb, ub, v, dtype)
-        interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
+        interval_idxs = ak.numpy.search_intervals(vals, (lower_bound, upper_bound))
         assert expected_result == interval_idxs.tolist()
 
     @pytest.mark.parametrize("dtype", DATA_TYPES)
@@ -49,18 +49,18 @@ class TestAlignment:
         ends = (ak.array([4, 14, 24], dtype), ak.array([4, 14, 24], dtype))
         vals = (ak.array([3, 13, 23], dtype), ak.array([23, 13, 3], dtype))
         ans = [-1, 1, -1]
-        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
-        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
+        assert ans == ak.numpy.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
+        assert ans == ak.numpy.alignment.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
 
         vals = (ak.array([23, 13, 3], dtype), ak.array([23, 13, 3], dtype))
         ans = [2, 1, 0]
-        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
-        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
+        assert ans == ak.numpy.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
+        assert ans == ak.numpy.alignment.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
 
         vals = (ak.array([23, 13, 33], dtype), ak.array([23, 13, 3], dtype))
         ans = [2, 1, -1]
-        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
-        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
+        assert ans == ak.numpy.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
+        assert ans == ak.numpy.alignment.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
 
         # test hierarchical flag
         starts = (ak.array([0, 5], dtype), ak.array([0, 11], dtype))
@@ -70,10 +70,10 @@ class TestAlignment:
             ak.array([0, 20, 1, 5, 15, 0, 12, 30], dtype),
         )
 
-        search_intervals = ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
+        search_intervals = ak.numpy.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
         assert search_intervals == [0, -1, 0, 0, 1, -1, 1, -1]
 
-        search_intervals_hierarchical = ak.search_intervals(vals, (starts, ends)).tolist()
+        search_intervals_hierarchical = ak.numpy.search_intervals(vals, (starts, ends)).tolist()
         assert search_intervals_hierarchical == [0, 0, 0, 0, 1, 1, 1, -1]
 
         # bigint is equivalent to hierarchical=True case
@@ -81,7 +81,8 @@ class TestAlignment:
         bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
         bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
         assert (
-            ak.search_intervals(bi_vals, (bi_starts, bi_ends)).tolist() == search_intervals_hierarchical
+            ak.numpy.search_intervals(bi_vals, (bi_starts, bi_ends)).tolist()
+            == search_intervals_hierarchical
         )
 
     @pytest.mark.parametrize("dtype", DATA_TYPES)
@@ -92,7 +93,7 @@ class TestAlignment:
         v = [22, 51, 22, 19, 38, 19, 40, 60, 100]
 
         lower_bound, upper_bound, vals = self.get_interval_info(lb, ub, v, dtype)
-        interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
+        interval_idxs = ak.numpy.search_intervals(vals, (lower_bound, upper_bound))
         assert expected_result == interval_idxs.tolist()
 
     def test_error_handling(self):
@@ -105,24 +106,24 @@ class TestAlignment:
         vals = ak.array(v, dtype=ak.int64)
 
         with pytest.raises(TypeError):
-            ak.search_intervals(vals, (lower_bound, upper_bound))
+            ak.numpy.search_intervals(vals, (lower_bound, upper_bound))
 
         lower_bound = ak.array(lb, dtype=ak.int64)
         upper_bound = ak.array(ub, dtype=ak.int64)
         vals = ak.array(v, dtype=ak.int64)
 
         with pytest.raises(ValueError):
-            ak.search_intervals(vals, (lower_bound, upper_bound, upper_bound))
+            ak.numpy.search_intervals(vals, (lower_bound, upper_bound, upper_bound))
 
         t = ak.array(["a", "b", "c", "d", "e", "f"])
         with pytest.raises(TypeError):
-            ak.search_intervals(t, (lower_bound, upper_bound))
+            ak.numpy.search_intervals(t, (lower_bound, upper_bound))
 
         with pytest.raises(ValueError):
-            ak.search_intervals(vals, (ak.array([0, 10, 20]), upper_bound))
+            ak.numpy.search_intervals(vals, (ak.array([0, 10, 20]), upper_bound))
 
         with pytest.raises(ValueError):
-            ak.search_intervals(vals, (upper_bound, lower_bound))
+            ak.numpy.search_intervals(vals, (upper_bound, lower_bound))
 
     def test_representative_cases(self):
         # Create 4 rectangles (2-d intervals) which demonstrate three classes of
@@ -165,9 +166,9 @@ class TestAlignment:
         tiebreak_smallest = (y1 - y0) * (x1 - x0)
         first_answer = [-1, -1, 0, 0, -1, 0, 2, 0, -1, 0, 0, 3, -1]
         smallest_answer = [-1, -1, 0, 2, -1, 2, 2, 1, -1, 0, 0, 3, -1]
-        first_result = ak.search_intervals(values, intervals, hierarchical=False)
+        first_result = ak.numpy.search_intervals(values, intervals, hierarchical=False)
         assert first_result.tolist() == first_answer
-        smallest_result = ak.search_intervals(
+        smallest_result = ak.numpy.search_intervals(
             values, intervals, tiebreak=tiebreak_smallest, hierarchical=False
         )
         assert smallest_result.tolist() == smallest_answer

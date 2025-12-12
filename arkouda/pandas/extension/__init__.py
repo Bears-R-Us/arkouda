@@ -17,7 +17,6 @@ high-performance backend.
    change without notice between releases. Use with caution in
    production environments.
 """
-
 from ._arkouda_array import ArkoudaArray
 from ._arkouda_categorical_array import ArkoudaCategoricalArray
 from ._arkouda_extension_array import ArkoudaExtensionArray

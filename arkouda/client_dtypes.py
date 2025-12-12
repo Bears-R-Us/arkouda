@@ -60,17 +60,16 @@ from typeguard import typechecked
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
-from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 
 
 if TYPE_CHECKING:
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
+    from arkouda.numpy.pdarraycreation import arange, zeros
+    from arkouda.numpy.strings import Strings
 else:
-    akcast = TypeVar("akcast")
-    akwhere = TypeVar("akwhere")
+    Strings = TypeVar("Strings")
 
 __all__ = [
     "BitVector",
@@ -387,6 +386,8 @@ class BitVector(pdarray):
         """
         import json
 
+        from arkouda.numpy.pdarrayclass import create_pdarray
+
         data = json.loads(rep_msg)
 
         return cls(
@@ -439,6 +440,8 @@ class Fields(BitVector):
     """
 
     def __init__(self, values, names, MSB_left=True, pad="-", separator="", show_int=True):
+        from arkouda.numpy.strings import Strings
+
         # Argument validation
         # Normalize names, which can be string or sequence
         self.names = tuple(names)
@@ -619,6 +622,9 @@ def ip_address(values):
     for importing Python lists of IP addresses into Arkouda.
 
     """
+    from arkouda.numpy.pdarraycreation import array
+    from arkouda.numpy.strings import Strings
+
     if isinstance(values, IPv4):
         return values
 
