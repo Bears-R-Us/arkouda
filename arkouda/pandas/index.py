@@ -72,7 +72,6 @@ from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
-from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.manipulation_functions import flip as ak_flip
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarraycreation import array, ones
@@ -1192,12 +1191,13 @@ class Index:
         Returns
         -------
         pdarray
-            A boolean array indicating which elements of `key` are present in the Index.
+            A boolean array of length ``len(self)``, indicating which entries of
+            the Index are present in `key`.
 
         Raises
         ------
         TypeError
-            If `key` is not a scalar or a pdarray.
+            If `key` cannot be converted to an arkouda array.
 
         """
         if not isinstance(key, pdarray):
@@ -2133,8 +2133,15 @@ class MultiIndex(Index):
         Parameters
         ----------
         key : list or tuple
-            A sequence of values, one for each level of the MultiIndex. Values may be scalars
-            or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.
+            A sequence of values, one for each level of the MultiIndex.
+
+            - If the elements are scalars (e.g., ``(1, "red")``), they are
+              treated as a single row key: the result is a boolean mask over
+              rows where all levels match the corresponding scalar.
+            - If the elements are arkouda arrays (e.g., list of pdarrays /
+              Strings), they must align one-to-one with the levels, and the
+              lookup is delegated to ``in1d(self.index, key)`` for multi-column
+              membership.
 
         Returns
         -------
@@ -2144,19 +2151,29 @@ class MultiIndex(Index):
         Raises
         ------
         TypeError
-            If `key` is not a list or tuple, or if its elements cannot be converted to pdarrays.
+            If `key` is not a list or tuple.
+        ValueError
+            If the length of `key` does not match the number of levels.
 
         """
-        from arkouda.numpy import cast as akcast
+        if not isinstance(key, (list, tuple)):
+            raise TypeError("MultiIndex.lookup expects a list or tuple of keys, one per level")
 
-        if not isinstance(key, list) and not isinstance(key, tuple):
-            raise TypeError("MultiIndex lookup failure")
-        # if individual vals convert to pdarrays
-        if not isinstance(key[0], pdarray):
-            dt = self.levels[0].dtype if isinstance(self.levels[0], pdarray) else akint64
-            key = [akcast(array([x]), dt) for x in key]
+        if len(key) != self.nlevels:
+            raise ValueError(
+                f"MultiIndex.lookup key length {len(key)} must match number of levels {self.nlevels}"
+            )
 
-        return in1d(self.index, key)
+        # Case 1: user passed per-level arkouda arrays.
+        # We assume they are already the correct types and lengths.
+        if isinstance(key[0], (pdarray, Strings)):
+            return in1d(self.index, key)
+
+        # Case 2: user passed scalars (e.g., (1, "red")).
+        # Convert each scalar to a length-1 arkouda array, preserving per-level dtypes.
+        scalar_key_arrays = [array([v]) for v in key]
+
+        return in1d(self.index, scalar_key_arrays)
 
     def to_hdf(
         self,
