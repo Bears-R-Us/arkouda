@@ -685,7 +685,7 @@ def isnan(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     RuntimeError
-        if the underlying pdarray is not float-based
+        if the underlying pdarray is not one of float, int, uint or bool
 
     Examples
     --------
@@ -694,14 +694,14 @@ def isnan(pda: pdarray) -> pdarray:
     array([False False True])
     """
     from arkouda.client import generic_msg
-    from arkouda.numpy.util import is_float, is_numeric
+    from arkouda.numpy.util import is_float
 
-    if is_numeric(pda) and not is_float(pda):
+    _datatype_check(pda.dtype, NUMERIC_TYPES, "isnan")
+
+    if not is_float(pda):
         from arkouda.numpy.pdarraycreation import full
 
-        return full(pda.size, False, dtype=bool)
-    elif not is_numeric(pda):
-        raise TypeError("isnan only supports pdarray of numeric type.")
+        return full(pda.shape, False, dtype=bool)
 
     repMsg = generic_msg(
         cmd=f"isnan<{pda.ndim}>",

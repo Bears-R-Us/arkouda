@@ -1033,7 +1033,7 @@ def zeros_like(pda: pdarray) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-        Array to use for size and dtype
+        Array to use for shape and dtype
 
     Returns
     -------
@@ -1074,7 +1074,7 @@ def ones_like(pda: pdarray) -> pdarray:
     Parameters
     ----------
     pda : pdarray
-        Array to use for size and dtype
+        Array to use for shape and dtype
 
     Returns
     -------
@@ -1120,14 +1120,14 @@ def full_like(pda: pdarray, fill_value: numeric_scalars) -> Union[pdarray, Strin
     Parameters
     ----------
     pda: pdarray
-        Array to use for size and dtype
+        Array to use for shape and dtype
     fill_value: int_scalars
         Value with which the array will be filled
 
     Returns
     -------
     pdarray
-        Equivalent to ak.full(pda.size, fill_value, pda.dtype)
+        Equivalent to ak.full(pda.shape, fill_value, pda.dtype)
 
     Raises
     ------
