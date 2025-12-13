@@ -388,17 +388,37 @@ def pytest_runtest_setup(item):
     if marker is None:
         return
 
-    # Support both @pytest.mark.requires_chapel_module("LinalgMsg")
-    # and @pytest.mark.requires_chapel_module(name="LinalgMsg")
-    modname = marker.kwargs.get("name")
-    if modname is None and marker.args:
-        modname = marker.args[0]
+    # Allow:
+    #   @pytest.mark.requires_chapel_module("A")
+    #   @pytest.mark.requires_chapel_module(name="A")
+    #   @pytest.mark.requires_chapel_module(["A", "B"])
+    #   @pytest.mark.requires_chapel_module(name=["A", "B"])
+    raw = marker.kwargs.get("name")
+    if raw is None and marker.args:
+        raw = marker.args[0]
 
-    if not modname:
+    if raw is None:
         pytest.fail(
-            "requires_chapel_module marker needs a module name, "
-            "e.g. @pytest.mark.requires_chapel_module('LinalgMsg')"
+            "requires_chapel_module marker needs a module name or list of names, "
+            "e.g. @pytest.mark.requires_chapel_module('LinalgMsg') or "
+            "@pytest.mark.requires_chapel_module(['FFTMsg', 'LinalgMsg'])"
         )
 
-    if not chapel_module_exists(modname):
-        pytest.skip(f"Skipping: Chapel module `{modname}` not enabled in ServerModules.cfg")
+    # Normalize to list of module names
+    if isinstance(raw, str):
+        modnames = [raw]
+    elif isinstance(raw, Iterable):
+        try:
+            modnames = list(raw)
+        except TypeError:
+            pytest.fail("requires_chapel_module expects a string or iterable of strings")
+    else:
+        pytest.fail("requires_chapel_module expects a string or iterable of strings")
+
+    # Require that *all* requested modules are enabled
+    missing = [m for m in modnames if not chapel_module_exists(m)]
+    if missing:
+        pytest.skip(
+            "Skipping: required Chapel module(s) not enabled in ServerModules.cfg: " + ", ".join(missing)
+        )
+    # If we get here, all modules are present → test runs

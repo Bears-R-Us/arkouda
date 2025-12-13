@@ -702,6 +702,7 @@ class TestIndex:
         assert i4.argsort(ascending=True).tolist() == [0, 1, 2]
         assert i4.argsort(ascending=False).tolist() == [2, 1, 0]
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_map(self):
         idx = ak.Index(ak.array([2, 3, 2, 3, 4]))
 
@@ -720,6 +721,7 @@ class TestIndex:
         i2 = ak.Index(["a", "b", "c"], allow_list=True)
         assert i.concat(i2).tolist() == ["1", "2", "3", "a", "b", "c"]
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_lookup(self, size):
         idx = ak.Index.factory(ak.arange(size))
@@ -756,6 +758,7 @@ class TestIndex:
 
         assert result.tolist() == [i in truth for i in range(size)]
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_save(self, df_test_base_tmp):
         locale_count = ak.get_config()["numLocales"]
         with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:

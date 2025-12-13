@@ -80,6 +80,7 @@ def _limbs_needed(val: int, limb_bits: int) -> int:
 
 
 class TestPdarrayClass:
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg", "KExtremeMsg"])
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_pdarrayclass_docstrings(self):
         import doctest
@@ -268,6 +269,7 @@ class TestPdarrayClass:
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -278,6 +280,7 @@ class TestPdarrayClass:
         pda = arry_gen(size, dtype=dtype)
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -289,12 +292,14 @@ class TestPdarrayClass:
         pda = arry_gen((size, size, size), dtype=dtype)
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("axis", [0, (0,), None])
     def test_reductions_match_numpy_1D_TF(self, op, axis):
         pda = ak.array([True, True, False, True, True, True, True, True])
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
@@ -320,6 +325,7 @@ class TestPdarrayClass:
         assert_arkouda_array_equivalent(ak.dot(pda1, factor), np.dot(nda1, factor))
         assert_arkouda_array_equivalent(ak.dot(factor, pda2), np.dot(factor, nda2))
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
@@ -334,6 +340,7 @@ class TestPdarrayClass:
         pda2 = ak.array(nda2)
         assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
@@ -367,6 +374,7 @@ class TestPdarrayClass:
             pda2 = ak.array(nda2)
             assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
+    @pytest.mark.requires_chapel_module("UtilMsg")
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_diff_1d(self, dtype, size):
@@ -384,6 +392,7 @@ class TestPdarrayClass:
         anp_d = np.diff(anp, n=5)
         assert_arkouda_array_equivalent(a_d, anp_d)
 
+    @pytest.mark.requires_chapel_module("UtilMsg")
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("axis", [None, 0, 1, 2])
@@ -403,6 +412,7 @@ class TestPdarrayClass:
             anp_d = np.diff(anp, n=n)
         assert_arkouda_array_equivalent(a_d, anp_d)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
     def test_mean_1D(self, size, dtype):
@@ -411,6 +421,7 @@ class TestPdarrayClass:
         ak_assert_almost_equivalent(np.mean(nda), pda.mean())
         ak.assert_almost_equivalent(np.mean(nda), ak.mean(pda))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -423,6 +434,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.mean(nda, axis=axis), pda.mean(axis=axis))
             ak.assert_almost_equivalent(np.mean(nda, axis=axis), ak.mean(pda, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -438,6 +450,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.mean(nda, axis=axis), pda.mean(axis=axis))
             ak.assert_almost_equivalent(np.mean(nda, axis=axis), ak.mean(pda, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
     def test_var_1D(self, size, dtype):
@@ -448,6 +461,7 @@ class TestPdarrayClass:
         ak_assert_almost_equivalent(np.var(nda, ddof=1), pda.var(ddof=1))
         ak.assert_almost_equivalent(np.var(nda, ddof=1), ak.var(pda, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -462,6 +476,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), pda.var(axis=axis, ddof=1))
             ak.assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), ak.var(pda, axis=axis, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -479,6 +494,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.var(nda, ddof=1, axis=axis), pda.var(ddof=1, axis=axis))
             ak.assert_almost_equivalent(np.var(nda, ddof=1, axis=axis), ak.var(pda, ddof=1, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
     def test_std_1D(self, size, dtype):
@@ -489,6 +505,7 @@ class TestPdarrayClass:
         ak_assert_almost_equivalent(np.std(nda, ddof=1), pda.std(ddof=1))
         ak.assert_almost_equivalent(np.std(nda, ddof=1), ak.std(pda, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -503,6 +520,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), pda.std(axis=axis, ddof=1))
             ak.assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), ak.std(pda, axis=axis, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)

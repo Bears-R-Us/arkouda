@@ -13,6 +13,7 @@ NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
 
 
 class TestSetOps:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_pdarraysetops_docstrings(self):
         import doctest
 
@@ -86,6 +87,7 @@ class TestSetOps:
 
         return a, b, c, d
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
     @pytest.mark.parametrize("op", OPS)
@@ -718,6 +720,7 @@ class TestSetOps:
         with pytest.raises(TypeError):
             ak.pdarraysetops.multiarray_setop_validation(x, y)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_index_of(self):
         # index of nan (reproducer from #3009)
         s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))

@@ -18,6 +18,7 @@ class TestLinalg:
         result = doctest.testmod(linalg, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    @pytest.mark.requires_chapel_module("LinalgMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("data_type1", [ak.int64, ak.float64, ak.bool_])
     @pytest.mark.parametrize("data_type2", [ak.int64, ak.float64, ak.bool_])

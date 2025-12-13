@@ -7,6 +7,7 @@ DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 
 
 class TestAlignment:
+    @pytest.mark.requires_chapel_module(["StatsMsg", "In1dMsg"])
     def test_alignment_docstrings(self):
         import doctest
 
@@ -31,6 +32,7 @@ class TestAlignment:
             v += 0.5
         return lb, ub, v
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("dtype", DATA_TYPES)
     def test_search_interval(self, dtype):
         expected_result = [2, 5, 4, 0, 3, 1, 4, -1, -1]
@@ -42,6 +44,7 @@ class TestAlignment:
         interval_idxs = ak.numpy.search_intervals(vals, (lower_bound, upper_bound))
         assert expected_result == interval_idxs.tolist()
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("dtype", DATA_TYPES)
     def test_multi_array_search_interval(self, dtype):
         # Added for Issue #1548
@@ -85,6 +88,7 @@ class TestAlignment:
             == search_intervals_hierarchical
         )
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("dtype", DATA_TYPES)
     def test_search_interval_nonunique(self, dtype):
         expected_result = [2, 5, 2, 1, 3, 1, 4, -1, -1]
@@ -125,6 +129,7 @@ class TestAlignment:
         with pytest.raises(ValueError):
             ak.numpy.search_intervals(vals, (upper_bound, lower_bound))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_representative_cases(self):
         # Create 4 rectangles (2-d intervals) which demonstrate three classes of
         # relationships between multi-dimensional intervals (hyperslabs):

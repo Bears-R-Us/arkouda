@@ -7,6 +7,7 @@ import arkouda as ak
 import arkouda.array_api as xp
 
 
+@pytest.mark.requires_chapel_module("StatsMsg")
 class TestStatsFunction:
     @pytest.mark.skip_if_rank_not_compiled([2])
     def test_statistical_functions_docstrings(self):

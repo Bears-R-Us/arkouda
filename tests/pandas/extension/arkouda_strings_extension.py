@@ -8,6 +8,7 @@ from arkouda.pandas.extension import ArkoudaStringArray, ArkoudaStringDtype
 from arkouda.testing import assert_equivalent
 
 
+@pytest.mark.requires_chapel_module("EncodingMsg")
 class TestArkoudaStringsExtension:
     @pytest.fixture
     def str_arr(self):

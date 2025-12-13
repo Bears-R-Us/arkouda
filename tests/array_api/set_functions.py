@@ -23,6 +23,7 @@ def rand_arr(shape):
     return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=seed))
 
 
+@pytest.mark.requires_chapel_module("SetMsg")
 class TestSetFunction:
     def test_set_functions_docstrings(self):
         import doctest

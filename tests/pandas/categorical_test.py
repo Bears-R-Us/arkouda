@@ -342,6 +342,7 @@ class TestCategorical:
         b = ak.Categorical(ak.array(["b"]))
         assert ak.concatenate((a, b), ordered=False).tolist() == ak.array(["a", "b"]).tolist()
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_save_and_load_categorical(self, df_test_base_tmp):
         """Test to save categorical to hdf5 and read it back successfully."""
         num_elems = 51  # create_basic_categorical starts counting at 1, so the size is really off by one
@@ -384,6 +385,7 @@ class TestCategorical:
             assert cat_from_hdf.permutation is not None
             assert cat_from_hdf.size == num_elems
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_save_and_load_categorical_multi(self, df_test_base_tmp):
         """
         Test to build a pseudo dataframe with multiple
@@ -407,6 +409,7 @@ class TestCategorical:
             assert x["pda1"].tolist() == pda1.tolist()
             assert x["strings1"].tolist() == strings1.tolist()
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_hdf_update(self, df_test_base_tmp):
         num_elems = 51  # create_basic_categorical starts counting at 1, so the size is really off by one
         cat = self.create_basic_categorical(size=num_elems)
