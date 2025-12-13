@@ -10422,12 +10422,12 @@ pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Array to use for shape and dtype</p></li>
 <li><p><strong>fill_value</strong> (<a class="reference internal" href="#arkouda.numpy.int_scalars" title="arkouda.numpy.int_scalars"><em>int_scalars</em></a>) – Value with which the array will be filled</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Equivalent to ak.full(pda.size, fill_value, pda.dtype)</p>
+<dd class="field-even"><p>Equivalent to ak.full(pda.shape, fill_value, pda.dtype)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
@@ -11800,7 +11800,7 @@ input array elements are NaN</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p></li>
-<li><p><strong>RuntimeError</strong> – if the underlying pdarray is not float-based</p></li>
+<li><p><strong>RuntimeError</strong> – if the underlying pdarray is not one of float, int, uint or bool</p></li>
 </ul>
 </dd>
 </dl>
@@ -12788,7 +12788,7 @@ of max_bits</p></li>
 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Array to use for shape and dtype</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Equivalent to ak.ones(pda.size, pda.dtype)</p>
@@ -17864,7 +17864,7 @@ Raised if max_bits is not NONE and ndim does not equal 1</p></li>
 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Array to use for size and dtype</p>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Array to use for shape and dtype</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Equivalent to ak.zeros(pda.size, pda.dtype)</p>

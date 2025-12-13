@@ -7913,12 +7913,12 @@ Package Contents
    Create a pdarray filled with fill_value of the same size and dtype as an existing
    pdarray.
 
-   :param pda: Array to use for size and dtype
+   :param pda: Array to use for shape and dtype
    :type pda: pdarray
    :param fill_value: Value with which the array will be filled
    :type fill_value: int_scalars
 
-   :returns: Equivalent to ak.full(pda.size, fill_value, pda.dtype)
+   :returns: Equivalent to ak.full(pda.shape, fill_value, pda.dtype)
    :rtype: pdarray
 
    :raises TypeError: Raised if the pda parameter is not a pdarray.
@@ -9030,7 +9030,7 @@ Package Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
-   :raises RuntimeError: if the underlying pdarray is not float-based
+   :raises RuntimeError: if the underlying pdarray is not one of float, int, uint or bool
 
    .. rubric:: Examples
 
@@ -9858,7 +9858,7 @@ Package Contents
    Create a one-filled pdarray of the same size and dtype as an existing
    pdarray.
 
-   :param pda: Array to use for size and dtype
+   :param pda: Array to use for shape and dtype
    :type pda: pdarray
 
    :returns: Equivalent to ak.ones(pda.size, pda.dtype)
@@ -14101,7 +14101,7 @@ Package Contents
    Create a zero-filled pdarray of the same size and dtype as an existing
    pdarray.
 
-   :param pda: Array to use for size and dtype
+   :param pda: Array to use for shape and dtype
    :type pda: pdarray
 
    :returns: Equivalent to ak.zeros(pda.size, pda.dtype)

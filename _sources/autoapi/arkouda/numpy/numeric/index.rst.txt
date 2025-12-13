@@ -1103,7 +1103,7 @@ Module Contents
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
-   :raises RuntimeError: if the underlying pdarray is not float-based
+   :raises RuntimeError: if the underlying pdarray is not one of float, int, uint or bool
 
    .. rubric:: Examples
 
