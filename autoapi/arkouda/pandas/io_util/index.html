@@ -402,9 +402,10 @@ from/to delimited text files, and appending lines to files.</p>
 <li><p>This module is intended for internal use within Arkouda’s pandas compatibility layer.</p></li>
 </ul>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io_util</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_directory</span><span class="p">,</span> <span class="n">write_line_to_file</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.io_util</span><span class="w"> </span><span class="kn">import</span> <span class="n">delete_directory</span><span class="p">,</span> <span class="n">get_directory</span><span class="p">,</span> <span class="n">write_line_to_file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">get_directory</span><span class="p">(</span><span class="s2">&quot;tmp/output&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">write_line_to_file</span><span class="p">(</span><span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;log.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;Computation completed&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">delete_directory</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

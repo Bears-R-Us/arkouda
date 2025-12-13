@@ -402,9 +402,10 @@
 
 <span class="sd">Examples</span>
 <span class="sd">--------</span>
-<span class="sd">&gt;&gt;&gt; from arkouda.io_util import get_directory, write_line_to_file</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.io_util import delete_directory, get_directory, write_line_to_file</span>
 <span class="sd">&gt;&gt;&gt; path = get_directory(&quot;tmp/output&quot;)</span>
 <span class="sd">&gt;&gt;&gt; write_line_to_file(path / &quot;log.txt&quot;, &quot;Computation completed&quot;)</span>
+<span class="sd">&gt;&gt;&gt; delete_directory(path)</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
