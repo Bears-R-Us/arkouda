@@ -73,11 +73,14 @@ endif
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
 define add-path
 ifneq ("$(wildcard $(1)/lib64)","")
-  INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib64
+  # Only headers go into INCLUDE_FLAGS (used at compile time)
+  INCLUDE_FLAGS += -I$(1)/include
+  # Library path & rpath go into CHPL_FLAGS (used at link time)
   CHPL_FLAGS    += -I$(1)/include -L$(1)/lib64 --ldflags="-Wl,-rpath,$(1)/lib64"
+else
+  INCLUDE_FLAGS += -I$(1)/include
+  CHPL_FLAGS    += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
 endif
-INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib
-CHPL_FLAGS    += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
 endef
 # Usage: $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                               ^ no space after comma
