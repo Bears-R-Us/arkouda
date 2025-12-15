@@ -144,7 +144,11 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         Raises
         ------
         TypeError
-            If ``key`` is not a supported indexer type.
+            If ``key`` is not a supported indexer type, or if a NumPy array or
+            list-like indexer has an unsupported dtype.
+        NotImplementedError
+            If a list-like indexer contains mixed element dtypes (e.g. a mixture
+            of booleans and integers), which is not supported.
 
         Examples
         --------
@@ -197,6 +201,14 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
                 return self.__class__(empty)
 
             first = key[0]
+            first_dtype = ak_dtype(first)
+            for item in key:
+                item_dtype = ak_dtype(item)
+                if first_dtype != item_dtype:
+                    raise NotImplementedError(
+                        f"Mixed dtypes are not supported: {item_dtype} vs {first_dtype}"
+                    )
+
             if isinstance(first, (bool, np.bool_)):
                 key = ak_array(np.array(key, dtype=bool))
             elif isinstance(first, (int, np.integer)):
@@ -291,6 +303,10 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             elif key and isinstance(key[0], (int, np.integer)):
                 key = ak_array(np.array(key, dtype=np.int64))
 
+        if isinstance(key, Sequence) and not isinstance(key, (str, bytes)):
+            #   Cannot set empty index, nothing to do
+            return
+
         # Normalize the value into something the underlying pdarray understands
         if isinstance(value, ArkoudaArray):
             value = value._data
@@ -299,6 +315,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             pass
         elif np.isscalar(value):
             # Fast path for scalar assignment
+
             self._data[key] = value
             return
         else:

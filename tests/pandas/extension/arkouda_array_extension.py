@@ -1002,3 +1002,24 @@ class TestArkoudaArrayGetitem:
         result = arr[idx]
         assert isinstance(result, ArkoudaArray)
         np.testing.assert_array_equal(result.to_ndarray(), np.array([1, 3]))
+
+    def test_mixed_index_dtype_not_supported(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        # Mixed list: bool + int → mixed dtypes
+        idx = [True, 1, 2, 0, 3]
+
+        with pytest.raises(NotImplementedError):
+            _ = arr[idx]
+
+    def test_setitem_empty_list_noop(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        before = arr.to_numpy().copy()
+
+        # setitem with empty list should do nothing
+        arr[[]] = 99
+
+        after = arr.to_numpy()
+
+        assert (after == before).all()
