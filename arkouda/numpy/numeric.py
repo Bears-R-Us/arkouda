@@ -141,6 +141,8 @@ __all__ = [
     "quantile",
     "percentile",
     "take",
+    "minimum",
+    "maximum",
 ]
 
 
@@ -3693,3 +3695,179 @@ def take(
     )
 
     return result
+
+
+@typechecked
+def minimum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scalars]) -> pdarray:
+    """
+    Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,
+    else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first
+    broadcast to a mutual shape, if possible.
+
+    Parameters
+    ----------
+    x1 : pdarray, numeric_scalars
+        first argument in comparison.
+    x2 : pdarray, numeric_scalars
+        second argument in comparison.
+
+    Returns
+    -------
+    pdarray, numeric_scalar
+        The element-wise minimum of x1 and x2.  If both are scalars, it invokes
+        numpy minimum, otherwise where either is a nan, the returned pdarray
+        Where neither is a nan, it stores the minimum of x1 and x2.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1.0,2.0,ak.nan])
+    >>> b = ak.array([0.5,2.5,3.5])
+    >>> ak.minimum(a,b)
+    array([0.5 2.00000000000000000 nan])
+    >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
+    >>> d = ak.array([-0.5,2.5])
+    >>> ak.minimum(c,d)
+    array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])
+    """
+    from arkouda.numpy.imports import nan
+    from arkouda.numpy.pdarraycreation import full
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
+
+    tx1 = x1
+    tx2 = x2
+
+    #  if both are scalars, just use numpy
+
+    if np.isscalar(tx1) and np.isscalar(tx2):
+        return np.minimum(tx1, tx2)
+
+    # if tx1 was a scalar, then tx2 isn't (they can't both be, at this point).
+    # if tx1 is nan, then return all nans, otherwise:
+    #       where tx2 isn't nan, return the min of (tx1,tx2),
+    #       and where it is, return tx2
+
+    if np.isscalar(tx1) and isinstance(tx2, pdarray):
+        return (
+            full(nan, tx2.size) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))
+        )
+
+    # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
+    # if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,
+    # and if it isn't, return the min of (tx1,tx2).
+
+    # Note about the line marked "nan special case":
+    # Numpy specifies that if both x1 and x2 are nan, then the output is x1.
+    # This is because in numpy, there are different types of nans.
+
+    elif np.isscalar(tx2) and isinstance(tx1, pdarray):
+        if np.isnan(tx2):
+            return where(isnan(tx1), tx1, tx2)  # nan special case
+        else:
+            return where(isnan(tx1), tx1, where(tx1 < tx2, tx1, tx2))
+
+    # if both are pdarrays, broadcasting may be required
+    #    return tx1 where tx1 is a nan, otherwise
+    #    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).
+
+    elif isinstance(tx1, pdarray) and isinstance(tx2, pdarray):
+        if tx1.shape != tx2.shape:
+            try:
+                mutual = broadcast_shapes(tx1.shape, tx2.shape)
+                tx1 = tx1 if mutual == tx1.shape else broadcast_to(tx1, mutual)
+                tx2 = tx2 if mutual == tx2.shape else broadcast_to(tx2, mutual)
+            except Exception as e:
+                raise ValueError(f"Shapes {tx1.shape} and {tx2.shape} incompatible for minimum.") from e
+
+        return where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2)))
+
+    else:
+        raise ValueError("Arguments to minimum must be pdarrays or scalars.")
+
+
+@typechecked
+def maximum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scalars]) -> pdarray:
+    """
+    Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,
+    else the greater of x1, x2.  If x1 and x2 are not the same shape, they are first
+    broadcast to a mutual shape, if possible.
+
+    Parameters
+    ----------
+    x1 : pdarray, numeric_scalars
+        first argument in comparison.
+    x2 : pdarray, numeric_scalars
+        second argument in comparison.
+
+    Returns
+    -------
+    pdarray, numeric_scalar
+        The element-wise maximum of x1 and x2.  If both are scalars, it invokes
+        numpy maximum, otherwise where either is a nan, the returned pdarray
+        Where neither is a nan, it stores the maximum of x1 and x2.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1.0,2.0,ak.nan])
+    >>> b = ak.array([0.5,2.5,3.5])
+    >>> ak.maximum(a,b)
+    array([1.00000000000000000 2.5 nan])
+    >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
+    >>> d = ak.array([-0.5,2.5])
+    >>> ak.maximum(c,d)
+    array([array([0 2.5]) array([2 3])])
+    """
+    from arkouda.numpy.imports import nan
+    from arkouda.numpy.pdarraycreation import full
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
+
+    tx1 = x1
+    tx2 = x2
+
+    #  if both are scalars, just use numpy
+
+    if np.isscalar(tx1) and np.isscalar(tx2):
+        return np.maximum(tx1, tx2)
+
+    # if tx1 was a scalar, then tx2 isn't (they can't both be, at this point).
+    # if tx1 is nan, then return all nans, otherwise:
+    #       where tx2 isn't nan, return the min of (tx1,tx2),
+    #       and where it is, return tx2
+
+    if np.isscalar(tx1) and isinstance(tx2, pdarray):
+        return (
+            full(nan, tx2.size) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))
+        )
+
+    # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
+    # if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,
+    # and if it isn't, return the min of (tx1,tx2).
+
+    # Note about the line marked "nan special case":
+    # Numpy specifies that if both x1 and x2 are nan, then the output is x1.
+    # This is because in numpy, there are different types of nans.
+
+    elif np.isscalar(tx2) and isinstance(tx1, pdarray):
+        if np.isnan(tx2):
+            return where(isnan(tx1), tx1, tx2)  # nan special case
+        else:
+            return where(isnan(tx1), tx1, where(tx1 > tx2, tx1, tx2))
+
+    # if both are pdarrays, broadcasting may be required
+    #    return tx1 where tx1 is a nan, otherwise
+    #    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).
+
+    elif isinstance(tx1, pdarray) and isinstance(tx2, pdarray):
+        if tx1.shape != tx2.shape:
+            try:
+                mutual = broadcast_shapes(tx1.shape, tx2.shape)
+                tx1 = tx1 if mutual == tx1.shape else broadcast_to(tx1, mutual)
+                tx2 = tx2 if mutual == tx2.shape else broadcast_to(tx2, mutual)
+            except Exception as e:
+                raise ValueError(f"Shapes {tx1.shape} and {tx2.shape} incompatible for maximum.") from e
+
+        return where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2)))
+
+    else:
+        raise ValueError("Arguments to minimum must be pdarrays or scalars.")
