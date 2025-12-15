@@ -7,8 +7,8 @@ from arkouda.numpy.strings import Strings
 from arkouda.pandas.extension import ArkoudaExtensionArray
 from arkouda.pandas.extension._series_accessor import (
     ArkoudaSeriesAccessor,
-    _ak_legacy_to_pandas_series,
-    _pandas_series_to_ak_legacy,
+    _ak_array_to_pandas_series,
+    _pandas_series_to_ak_array,
 )
 
 
@@ -67,19 +67,17 @@ class TestArkoudaSeriesAccessor:
         assert s2.equals(s)
         assert s2.name == "vals"
 
-    from arkouda.strings import Strings
-
     def test_pandas_series_to_ak_legacy_and_back(self):
         s = pd.Series(["a", "b", "c"], name="letters")
 
         # pandas.Series -> legacy Arkouda array
-        ak_arr = _pandas_series_to_ak_legacy(s)
+        ak_arr = _pandas_series_to_ak_array(s)
         # For non-Arkouda-backed string input, we should get an Arkouda Strings
         assert isinstance(ak_arr, Strings)
         assert ak_arr.tolist() == ["a", "b", "c"]
 
         # legacy Arkouda array -> Arkouda-backed pandas.Series (EA-backed)
-        s_back = _ak_legacy_to_pandas_series(ak_arr, name="letters")
+        s_back = _ak_array_to_pandas_series(ak_arr, name="letters")
         assert isinstance(s_back, pd.Series)
         assert isinstance(s_back.array, ArkoudaExtensionArray)
         assert s_back.name == "letters"
@@ -96,7 +94,7 @@ class TestArkoudaSeriesAccessor:
         assert ak_s.tolist() == [4, 5, 6]
 
         # pandas.Series -> legacy Arkouda array (underlying column)
-        ak_arr = _pandas_series_to_ak_legacy(s)
+        ak_arr = _pandas_series_to_ak_array(s)
 
         # ArkoudaSeriesAccessor.from_ak_legacy should just wrap the legacy array via EA
         s_ea = ArkoudaSeriesAccessor.from_ak_legacy(ak_arr, name="foo")

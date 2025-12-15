@@ -39,7 +39,7 @@ import pandas as pd
 from pandas.api.extensions import register_series_accessor
 
 from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.pandas.extension import ArkoudaExtensionArray
+from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
 
 
 if TYPE_CHECKING:
@@ -58,9 +58,9 @@ def _ak_arr_to_pandas_ea(akarr: Any) -> ArkoudaExtensionArray:
     return ArkoudaExtensionArray._from_sequence(akarr)
 
 
-def _pandas_series_to_ak_legacy(s: pd.Series) -> Any:
+def _pandas_series_to_ak_array(s: pd.Series) -> Any:
     """
-    Convert a pandas Series (NumPy or EA-backed) into a legacy Arkouda array.
+    Convert a pandas Series (NumPy or EA-backed) into an Arkouda array.
 
     If already Arkouda-backed, peel off the '_data' member.
     """
@@ -72,12 +72,11 @@ def _pandas_series_to_ak_legacy(s: pd.Series) -> Any:
             raise TypeError("Arkouda-backed Series array does not expose '_data'")
         return akcol
 
-    values = s.to_numpy()
-    return ak_array(values)
+    return ak_array(s)
 
 
-def _ak_legacy_to_pandas_series(akarr: Any, name: str | None = None) -> pd.Series:
-    """Wrap a legacy Arkouda array into a pandas Series backed by ArkoudaExtensionArray."""
+def _ak_array_to_pandas_series(akarr: Any, name: str | None = None) -> pd.Series:
+    """Wrap an Arkouda array into a pandas Series backed by ArkoudaExtensionArray."""
     ea = _ak_arr_to_pandas_ea(akarr)
     return pd.Series(ea, name=name)
 
@@ -200,9 +199,21 @@ class ArkoudaSeriesAccessor:
         >>> s_ak2.tolist() == s_ak.tolist()
         True
         """
-        akarr = _pandas_series_to_ak_legacy(self._obj)
+        if self.is_arkouda:
+            return self._obj
+
+        from typing import Union
+
+        from pandas import Index as pd_Index
+
+        idx: Union[None, pd_Index] = self._obj.index
+        if isinstance(idx, pd_Index):
+            idx = ArkoudaIndexAccessor(self._obj.index).to_ak()
+
+        akarr = _pandas_series_to_ak_array(self._obj)
         ea = _ak_arr_to_pandas_ea(akarr)
-        return pd.Series(ea, index=self._obj.index, name=self._obj.name)
+
+        return pd.Series(ea, index=idx, name=self._obj.name)
 
     def collect(self) -> pd.Series:
         """
@@ -212,11 +223,6 @@ class ArkoudaSeriesAccessor:
         -------
         pd.Series
             A NumPy-backed Series.
-
-        Raises
-        ------
-        TypeError
-            If Arkouda-backed data are missing the expected ``_data`` attribute.
 
         Examples
         --------
@@ -228,16 +234,10 @@ class ArkoudaSeriesAccessor:
         s = self._obj
         arr = s.array
 
-        # Arkouda-backed → peel underlying ak array → to_numpy
-        if isinstance(arr, ArkoudaExtensionArray):
-            akcol = getattr(arr, "_data", None)
-            if akcol is None:
-                raise TypeError("Arkouda-backed Series array does not expose '_data'")
-            values = akcol.to_ndarray()
-        else:
-            values = s.to_numpy()
+        values = arr.to_numpy()
+        idx = ArkoudaIndexAccessor(s.index).collect()
 
-        return pd.Series(values, index=s.index, name=s.name)
+        return pd.Series(values, index=idx, name=s.name)
 
     # ------------------------------------------------------------------
     # Legacy Arkouda conversions
@@ -262,7 +262,9 @@ class ArkoudaSeriesAccessor:
         """
         from arkouda.pandas import Series
 
-        return Series(_pandas_series_to_ak_legacy(self._obj))
+        idx = ArkoudaIndexAccessor(self._obj.index).to_ak_legacy()
+
+        return Series(_pandas_series_to_ak_array(self._obj), index=idx)
 
     @staticmethod
     def from_ak_legacy(akarr: Any, name: str | None = None) -> pd.Series:
@@ -329,7 +331,7 @@ class ArkoudaSeriesAccessor:
         No NumPy copies are made—the Series is a zero-copy wrapper over
         Arkouda server-side arrays.
         """
-        return _ak_legacy_to_pandas_series(akarr, name=name)
+        return _ak_array_to_pandas_series(akarr, name=name)
 
     # ------------------------------------------------------------------
     # Introspection
@@ -358,4 +360,5 @@ class ArkoudaSeriesAccessor:
         True
         """
         arr = getattr(self._obj, "array", None)
-        return isinstance(arr, ArkoudaExtensionArray)
+        idx_arr = self._obj.index.values
+        return isinstance(arr, ArkoudaExtensionArray) and isinstance(idx_arr, ArkoudaExtensionArray)
