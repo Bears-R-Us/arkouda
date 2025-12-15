@@ -32,18 +32,17 @@ All operations avoid materializing to NumPy unless explicitly requested.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any, Union
 
 import pandas as pd
 
+from pandas import Index as pd_Index
 from pandas.api.extensions import register_series_accessor
 
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+from arkouda.pandas.series import Series as ak_Series
 
-
-if TYPE_CHECKING:
-    from arkouda.pandas import Series
 
 # ---------------------------------------------------------------------------
 # Helpers: wrapping and unwrapping
@@ -202,10 +201,6 @@ class ArkoudaSeriesAccessor:
         if self.is_arkouda:
             return self._obj
 
-        from typing import Union
-
-        from pandas import Index as pd_Index
-
         idx: Union[None, pd_Index] = self._obj.index
         if isinstance(idx, pd_Index):
             idx = ArkoudaIndexAccessor(self._obj.index).to_ak()
@@ -243,13 +238,13 @@ class ArkoudaSeriesAccessor:
     # Legacy Arkouda conversions
     # ------------------------------------------------------------------
 
-    def to_ak_legacy(self) -> "Series":
+    def to_ak_legacy(self) -> ak_Series:
         """
         Convert this Series into a legacy Arkouda Series.
 
         Returns
         -------
-        Series
+        ak_Series
             The legacy Arkouda Series..
 
         Examples
@@ -260,11 +255,9 @@ class ArkoudaSeriesAccessor:
         >>> type(ak_arr)
         <class 'arkouda.pandas.series.Series'>
         """
-        from arkouda.pandas import Series
-
         idx = ArkoudaIndexAccessor(self._obj.index).to_ak_legacy()
 
-        return Series(_pandas_series_to_ak_array(self._obj), index=idx)
+        return ak_Series(_pandas_series_to_ak_array(self._obj), index=idx, name=self._obj.name)
 
     @staticmethod
     def from_ak_legacy(akarr: Any, name: str | None = None) -> pd.Series:
