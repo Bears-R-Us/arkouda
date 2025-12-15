@@ -12,6 +12,7 @@
 #include <iostream>
 #include <arrow/api.h>
 #include <arrow/io/api.h>
+#include <arrow/util/config.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
 #include <parquet/column_reader.h>
