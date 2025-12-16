@@ -3816,7 +3816,7 @@ def maximum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scal
     >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
     >>> d = ak.array([-0.5,2.5])
     >>> ak.maximum(c,d)
-    array([array([0 2.5]) array([2 3])])
+    array([array([0.00000000000000000 2.5]) array([2.00000000000000000 3.00000000000000000])])
     """
     from arkouda.numpy.imports import nan
     from arkouda.numpy.pdarraycreation import full
