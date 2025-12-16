@@ -39,7 +39,6 @@ import pandas as pd
 from pandas import Index as pd_Index
 from pandas.api.extensions import register_series_accessor
 
-from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
 from arkouda.pandas.series import Series as ak_Series
 
@@ -63,6 +62,8 @@ def _pandas_series_to_ak_array(s: pd.Series) -> Any:
 
     If already Arkouda-backed, peel off the '_data' member.
     """
+    from arkouda.numpy.pdarraycreation import array as ak_array
+
     arr = s.array
 
     if isinstance(arr, ArkoudaExtensionArray):
