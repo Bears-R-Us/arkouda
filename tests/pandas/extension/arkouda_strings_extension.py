@@ -218,10 +218,19 @@ class TestArkoudaStringArrayEq:
 
         result = arr == {"not": "comparable"}
 
-        assert isinstance(result, ArkoudaArray)
-        assert result._data.size == 3
-        assert result._data.dtype == "bool"
+        assert result is False
 
-        vals = result._data.to_ndarray()
-        np.testing.assert_array_equal(vals, np.array([False, False, False]))
-        assert not result._data.any()
+    def test_eq_with_python_sequence_len1_broadcasts_strings(self):
+        arr = ArkoudaStringArray(ak.array(["a", "b", "c", "d"]))
+        result = arr == ["c"]
+        assert result._data.sum() == 1  # only index 2
+
+    def test_eq_with_numpy_array_len1_broadcasts_strings(self):
+        arr = ArkoudaStringArray(ak.array(["a", "b", "c", "d"]))
+        result = arr == np.array(["c"], dtype=object)
+        assert result._data.sum() == 1
+
+    def test_eq_with_python_sequence_length_mismatch_raises_strings(self):
+        arr = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr == ["a", "b"]  # len 2, not 1 and not len(arr)

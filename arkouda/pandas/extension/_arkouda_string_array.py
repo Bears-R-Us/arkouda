@@ -104,7 +104,6 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
         """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
-        from arkouda.numpy.pdarraycreation import full as ak_full
 
         # Case 1: ArkoudaStringArray
         if isinstance(other, ArkoudaStringArray):
@@ -125,12 +124,14 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
         # Case 4: numpy array or Python sequence
         if isinstance(other, (list, tuple, np.ndarray)):
             other_ak = ak_array(other)
+            if other_ak.size == 1:
+                return ArkoudaArray(self._data == other_ak[0])
             if other_ak.size != len(self):
                 raise ValueError("Lengths must match for elementwise comparison")
             return ArkoudaArray(self._data == other_ak)
 
-        # Case 5: unsupported type → all False
-        return ArkoudaArray(ak_full(len(self), False, dtype=bool))
+        # Case 5: unsupported type
+        return NotImplemented
 
     def __repr__(self):
         return f"ArkoudaStringArray({self._data})"

@@ -247,7 +247,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
-        from arkouda.numpy.pdarraycreation import full as ak_full
 
         # Case 1: comparing with another ArkoudaArray
         if isinstance(other, ArkoudaArray):
@@ -257,7 +256,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         # Case 2: comparing with an arkouda pdarray
         if isinstance(other, pdarray):
-            if other.size != 1 and other.size != len(self):
+            if other.size != 1 and len(other) != len(self):
                 raise ValueError("Lengths must match for elementwise comparison")
             return ArkoudaArray(self._data == other)
 
@@ -268,11 +267,11 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # Case 4: Python iterable / numpy array comparison
         if isinstance(other, (list, tuple, np.ndarray)):
             other_ak = ak_array(other)
-            if other_ak.size != len(self):
+            if other_ak.size not in (1, len(self)):
                 raise ValueError("Lengths must match for elementwise comparison")
             return ArkoudaArray(self._data == other_ak)
 
-        return ArkoudaArray(ak_full(len(self), False, dtype=bool))
+        return NotImplemented
 
     def __or__(self, other):
         """
@@ -312,7 +311,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # ArkoudaArray | numpy array / Python sequence
         if isinstance(other, (list, tuple, np.ndarray)):
             other_ak = ak_array(other, dtype=bool)
-            if other_ak.size != len(self):
+            if other_ak.size not in (1, len(self)):
                 raise ValueError("Lengths must match for elementwise boolean operations")
             return ArkoudaArray(self._data | other_ak)
 
@@ -353,7 +352,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # pandas gives us numpy uniques; preserve dtype by deferring to _from_sequence
         return cls._from_sequence(uniques)
 
-    def all(self):
+    def all(self, axis=0, skipna=True, **kwargs):
         """
         Return whether all elements are True.
 
@@ -362,7 +361,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         """
         return bool(self._data.all())
 
-    def any(self):
+    def any(self, axis=0, skipna=True, **kwargs):
         """
         Return whether any element is True.
 

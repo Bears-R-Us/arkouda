@@ -7,7 +7,7 @@ import arkouda as ak
 from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
+from arkouda.pandas.extension import ArkoudaCategoricalArray, ArkoudaStringArray
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.pandas.extension._dtypes import ArkoudaBoolDtype, ArkoudaFloat64Dtype, ArkoudaInt64Dtype
 from arkouda.testing import assert_equivalent
@@ -532,12 +532,22 @@ class TestArkoudaArrayEq:
         arr = ArkoudaArray(ak.arange(5))
 
         result = arr == {"not": "comparable"}
+        assert result is False
 
-        assert isinstance(result, ArkoudaArray)
-        assert result._data.size == 5
-        assert result._data.dtype == "bool"
-        # all comparisons should be False
-        assert not result._data.any()
+    def test_eq_with_python_sequence_len1_broadcasts(self):
+        arr = ArkoudaArray(ak.arange(4))  # [0,1,2,3]
+        result = arr == [2]
+        assert result._data.sum() == 1  # only index 2
+
+    def test_eq_with_numpy_array_len1_broadcasts(self):
+        arr = ArkoudaArray(ak.arange(4))
+        result = arr == np.array([2], dtype=np.int64)
+        assert result._data.sum() == 1
+
+    def test_eq_with_python_sequence_length_mismatch_raises(self):
+        arr = ArkoudaArray(ak.arange(3))
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr == [0, 1]  # len 2, not 1 and not len(arr)
 
 
 class TestArkoudaArrayAllAny:
@@ -711,3 +721,18 @@ class TestArkoudaArrayOr:
         b = self.make_bool([True, False, True])
 
         assert (a.__or__(b)) is NotImplemented
+
+    def test_or_with_python_sequence_len1_broadcasts(self):
+        arr = ArkoudaArray(ak.array([True, False, True]))
+        result = arr | [True]
+        assert result._data.sum() == 3  # all True
+
+    def test_or_with_numpy_array_len1_broadcasts(self):
+        arr = ArkoudaArray(ak.array([True, False, True]))
+        result = arr | np.array([False], dtype=bool)
+        assert result._data.sum() == 2  # unchanged: True, False, True
+
+    def test_or_with_python_sequence_length_mismatch_raises(self):
+        arr = ArkoudaArray(ak.array([True, False, True]))
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr | [True, False]  # len 2, not 1 and not len(arr)
