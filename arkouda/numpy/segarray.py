@@ -838,8 +838,8 @@ class SegArray:
         self,
         prefix_path,
         dataset="segarray",
-        mode="truncate",
-        file_type="distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """
         Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
