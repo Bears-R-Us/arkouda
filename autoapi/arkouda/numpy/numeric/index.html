@@ -498,8 +498,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.numeric.matmul" title="arkouda.numpy.numeric.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the product of two matrices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.numeric.median" title="arkouda.numpy.numeric.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(→ numpy.float64)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.numeric.maximum" title="arkouda.numpy.numeric.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.numeric.median" title="arkouda.numpy.numeric.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Compute the median of a given array.  1d case only, for now.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.numeric.minimum" title="arkouda.numpy.numeric.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<td><p>Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.numeric.nextafter" title="arkouda.numpy.numeric.nextafter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nextafter</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return the next floating-point value after <cite>x1</cite> towards <cite>x2</cite>, element-wise.</p></td>
@@ -2016,6 +2022,42 @@ shape that both leftshape and rightshape can be broadcast to.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.numeric.maximum">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">maximum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#maximum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.maximum" title="Link to this definition">¶</a></dt>
+<dd><p>Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,
+else the greater of x1, x2.  If x1 and x2 are not the same shape, they are first
+broadcast to a mutual shape, if possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – first argument in comparison.</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – second argument in comparison.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The element-wise maximum of x1 and x2.  If both are scalars, it invokes
+numpy maximum, otherwise where either is a nan, the returned pdarray
+Where neither is a nan, it stores the maximum of x1 and x2.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, numeric_scalar</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="n">ak</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">,</span><span class="mf">3.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([1.00000000000000000 2.5 nan])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+<span class="go">array([array([0.00000000000000000 2.5]) array([2.00000000000000000 3.00000000000000000])])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.numeric.median">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.numpy.float64" title="arkouda.numpy.float64"><span class="pre">numpy.float64</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#median"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.median" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the median of a given array.  1d case only, for now.</p>
@@ -2044,6 +2086,42 @@ mean of the two middle elements.</div>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pda</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
 <span class="go">np.float64(2.5)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.numeric.minimum">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.numeric.</span></span><span class="sig-name descname"><span class="pre">minimum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">arkouda.numpy.dtypes.numeric_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/numeric.html#minimum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.numeric.minimum" title="Link to this definition">¶</a></dt>
+<dd><p>Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,
+else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first
+broadcast to a mutual shape, if possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – first argument in comparison.</p></li>
+<li><p><strong>x2</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – second argument in comparison.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The element-wise minimum of x1 and x2.  If both are scalars, it invokes
+numpy minimum, otherwise where either is a nan, the returned pdarray
+Where neither is a nan, it stores the minimum of x1 and x2.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, numeric_scalar</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="n">ak</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">,</span><span class="mf">3.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([0.5 2.00000000000000000 nan])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+<span class="go">array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2980,7 +3058,9 @@ is not currently supported in Arkouda</p>
 <li><a class="reference internal" href="#arkouda.numpy.numeric.log1p"><code class="docutils literal notranslate"><span class="pre">log1p()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.numeric.log2"><code class="docutils literal notranslate"><span class="pre">log2()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.numeric.matmul"><code class="docutils literal notranslate"><span class="pre">matmul()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.numeric.maximum"><code class="docutils literal notranslate"><span class="pre">maximum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.numeric.median"><code class="docutils literal notranslate"><span class="pre">median()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.numeric.minimum"><code class="docutils literal notranslate"><span class="pre">minimum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.numeric.nextafter"><code class="docutils literal notranslate"><span class="pre">nextafter()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.numeric.percentile"><code class="docutils literal notranslate"><span class="pre">percentile()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.numeric.putmask"><code class="docutils literal notranslate"><span class="pre">putmask()</span></code></a></li>

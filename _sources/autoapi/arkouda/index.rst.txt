@@ -356,9 +356,11 @@ Functions
    arkouda.logspace
    arkouda.lookup
    arkouda.matmul
+   arkouda.maximum
    arkouda.maxk
    arkouda.may_share_memory
    arkouda.median
+   arkouda.minimum
    arkouda.mink
    arkouda.mod
    arkouda.nextafter
@@ -12533,6 +12535,35 @@ Package Contents
    :raises ValueError: Raised if shapes are incompatible with matrix multiplication.
 
 
+.. py:function:: maximum(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,
+   else the greater of x1, x2.  If x1 and x2 are not the same shape, they are first
+   broadcast to a mutual shape, if possible.
+
+   :param x1: first argument in comparison.
+   :type x1: pdarray, numeric_scalars
+   :param x2: second argument in comparison.
+   :type x2: pdarray, numeric_scalars
+
+   :returns: The element-wise maximum of x1 and x2.  If both are scalars, it invokes
+             numpy maximum, otherwise where either is a nan, the returned pdarray
+             Where neither is a nan, it stores the maximum of x1 and x2.
+   :rtype: pdarray, numeric_scalar
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1.0,2.0,ak.nan])
+   >>> b = ak.array([0.5,2.5,3.5])
+   >>> ak.maximum(a,b)
+   array([1.00000000000000000 2.5 nan])
+   >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
+   >>> d = ak.array([-0.5,2.5])
+   >>> ak.maximum(c,d)
+   array([array([0.00000000000000000 2.5]) array([2.00000000000000000 3.00000000000000000])])
+
+
 .. py:function:: maxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
    Find the `k` maximum values of an array.
@@ -12600,6 +12631,35 @@ Package Contents
    >>> pda = ak.array([0,1,3,3,1,2,3,4,2,3])
    >>> ak.median(pda)
    np.float64(2.5)
+
+
+.. py:function:: minimum(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> arkouda.numpy.pdarrayclass.pdarray
+
+   Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,
+   else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first
+   broadcast to a mutual shape, if possible.
+
+   :param x1: first argument in comparison.
+   :type x1: pdarray, numeric_scalars
+   :param x2: second argument in comparison.
+   :type x2: pdarray, numeric_scalars
+
+   :returns: The element-wise minimum of x1 and x2.  If both are scalars, it invokes
+             numpy minimum, otherwise where either is a nan, the returned pdarray
+             Where neither is a nan, it stores the minimum of x1 and x2.
+   :rtype: pdarray, numeric_scalar
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> a = ak.array([1.0,2.0,ak.nan])
+   >>> b = ak.array([0.5,2.5,3.5])
+   >>> ak.minimum(a,b)
+   array([0.5 2.00000000000000000 nan])
+   >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
+   >>> d = ak.array([-0.5,2.5])
+   >>> ak.minimum(c,d)
+   array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])
 
 
 .. py:function:: mink(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray

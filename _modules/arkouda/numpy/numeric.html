@@ -511,6 +511,8 @@
     <span class="s2">&quot;quantile&quot;</span><span class="p">,</span>
     <span class="s2">&quot;percentile&quot;</span><span class="p">,</span>
     <span class="s2">&quot;take&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -4233,6 +4235,188 @@
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="minimum">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.minimum">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">minimum</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,</span>
+<span class="sd">    else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first</span>
+<span class="sd">    broadcast to a mutual shape, if possible.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : pdarray, numeric_scalars</span>
+<span class="sd">        first argument in comparison.</span>
+<span class="sd">    x2 : pdarray, numeric_scalars</span>
+<span class="sd">        second argument in comparison.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, numeric_scalar</span>
+<span class="sd">        The element-wise minimum of x1 and x2.  If both are scalars, it invokes</span>
+<span class="sd">        numpy minimum, otherwise where either is a nan, the returned pdarray</span>
+<span class="sd">        Where neither is a nan, it stores the minimum of x1 and x2.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([1.0,2.0,ak.nan])</span>
+<span class="sd">    &gt;&gt;&gt; b = ak.array([0.5,2.5,3.5])</span>
+<span class="sd">    &gt;&gt;&gt; ak.minimum(a,b)</span>
+<span class="sd">    array([0.5 2.00000000000000000 nan])</span>
+<span class="sd">    &gt;&gt;&gt; c = ak.arange(4,dtype=ak.float64).reshape(2,2)</span>
+<span class="sd">    &gt;&gt;&gt; d = ak.array([-0.5,2.5])</span>
+<span class="sd">    &gt;&gt;&gt; ak.minimum(c,d)</span>
+<span class="sd">    array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">nan</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_shapes</span><span class="p">,</span> <span class="n">broadcast_to</span>
+
+    <span class="n">tx1</span> <span class="o">=</span> <span class="n">x1</span>
+    <span class="n">tx2</span> <span class="o">=</span> <span class="n">x2</span>
+
+    <span class="c1">#  if both are scalars, just use numpy</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">)</span>
+
+    <span class="c1"># if tx1 was a scalar, then tx2 isn&#39;t (they can&#39;t both be, at this point).</span>
+    <span class="c1"># if tx1 is nan, then return all nans, otherwise:</span>
+    <span class="c1">#       where tx2 isn&#39;t nan, return the min of (tx1,tx2),</span>
+    <span class="c1">#       and where it is, return tx2</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx1</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">full</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="n">tx2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">)</span> <span class="k">else</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx2</span><span class="p">),</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">tx1</span> <span class="o">&lt;</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="c1"># if tx2 was a scalar, then tx1 isn&#39;t (they can&#39;t both be, at this point).</span>
+    <span class="c1"># if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,</span>
+    <span class="c1"># and if it isn&#39;t, return the min of (tx1,tx2).</span>
+
+    <span class="c1"># Note about the line marked &quot;nan special case&quot;:</span>
+    <span class="c1"># Numpy specifies that if both x1 and x2 are nan, then the output is x1.</span>
+    <span class="c1"># This is because in numpy, there are different types of nans.</span>
+
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx2</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">),</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">)</span>  <span class="c1"># nan special case</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">),</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">tx1</span> <span class="o">&lt;</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">))</span>
+
+    <span class="c1"># if both are pdarrays, broadcasting may be required</span>
+    <span class="c1">#    return tx1 where tx1 is a nan, otherwise</span>
+    <span class="c1">#    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tx1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">tx2</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mutual</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">tx1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">tx2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">tx1</span> <span class="o">=</span> <span class="n">tx1</span> <span class="k">if</span> <span class="n">mutual</span> <span class="o">==</span> <span class="n">tx1</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">mutual</span><span class="p">)</span>
+                <span class="n">tx2</span> <span class="o">=</span> <span class="n">tx2</span> <span class="k">if</span> <span class="n">mutual</span> <span class="o">==</span> <span class="n">tx2</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">tx2</span><span class="p">,</span> <span class="n">mutual</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shapes </span><span class="si">{</span><span class="n">tx1</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">tx2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> incompatible for minimum.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="k">return</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">),</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx2</span><span class="p">),</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">tx1</span> <span class="o">&lt;</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">)))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arguments to minimum must be pdarrays or scalars.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="maximum">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.maximum">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">maximum</span><span class="p">(</span><span class="n">x1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span> <span class="n">x2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,</span>
+<span class="sd">    else the greater of x1, x2.  If x1 and x2 are not the same shape, they are first</span>
+<span class="sd">    broadcast to a mutual shape, if possible.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : pdarray, numeric_scalars</span>
+<span class="sd">        first argument in comparison.</span>
+<span class="sd">    x2 : pdarray, numeric_scalars</span>
+<span class="sd">        second argument in comparison.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray, numeric_scalar</span>
+<span class="sd">        The element-wise maximum of x1 and x2.  If both are scalars, it invokes</span>
+<span class="sd">        numpy maximum, otherwise where either is a nan, the returned pdarray</span>
+<span class="sd">        Where neither is a nan, it stores the maximum of x1 and x2.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; a = ak.array([1.0,2.0,ak.nan])</span>
+<span class="sd">    &gt;&gt;&gt; b = ak.array([0.5,2.5,3.5])</span>
+<span class="sd">    &gt;&gt;&gt; ak.maximum(a,b)</span>
+<span class="sd">    array([1.00000000000000000 2.5 nan])</span>
+<span class="sd">    &gt;&gt;&gt; c = ak.arange(4,dtype=ak.float64).reshape(2,2)</span>
+<span class="sd">    &gt;&gt;&gt; d = ak.array([-0.5,2.5])</span>
+<span class="sd">    &gt;&gt;&gt; ak.maximum(c,d)</span>
+<span class="sd">    array([array([0.00000000000000000 2.5]) array([2.00000000000000000 3.00000000000000000])])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.imports</span><span class="w"> </span><span class="kn">import</span> <span class="n">nan</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_shapes</span><span class="p">,</span> <span class="n">broadcast_to</span>
+
+    <span class="n">tx1</span> <span class="o">=</span> <span class="n">x1</span>
+    <span class="n">tx2</span> <span class="o">=</span> <span class="n">x2</span>
+
+    <span class="c1">#  if both are scalars, just use numpy</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">)</span>
+
+    <span class="c1"># if tx1 was a scalar, then tx2 isn&#39;t (they can&#39;t both be, at this point).</span>
+    <span class="c1"># if tx1 is nan, then return all nans, otherwise:</span>
+    <span class="c1">#       where tx2 isn&#39;t nan, return the min of (tx1,tx2),</span>
+    <span class="c1">#       and where it is, return tx2</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx1</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">full</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="n">tx2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">)</span> <span class="k">else</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx2</span><span class="p">),</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">tx1</span> <span class="o">&gt;</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="c1"># if tx2 was a scalar, then tx1 isn&#39;t (they can&#39;t both be, at this point).</span>
+    <span class="c1"># if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,</span>
+    <span class="c1"># and if it isn&#39;t, return the min of (tx1,tx2).</span>
+
+    <span class="c1"># Note about the line marked &quot;nan special case&quot;:</span>
+    <span class="c1"># Numpy specifies that if both x1 and x2 are nan, then the output is x1.</span>
+    <span class="c1"># This is because in numpy, there are different types of nans.</span>
+
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tx2</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx2</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">),</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">)</span>  <span class="c1"># nan special case</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">),</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">tx1</span> <span class="o">&gt;</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">))</span>
+
+    <span class="c1"># if both are pdarrays, broadcasting may be required</span>
+    <span class="c1">#    return tx1 where tx1 is a nan, otherwise</span>
+    <span class="c1">#    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tx2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tx1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">tx2</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mutual</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">tx1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">tx2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">tx1</span> <span class="o">=</span> <span class="n">tx1</span> <span class="k">if</span> <span class="n">mutual</span> <span class="o">==</span> <span class="n">tx1</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">tx1</span><span class="p">,</span> <span class="n">mutual</span><span class="p">)</span>
+                <span class="n">tx2</span> <span class="o">=</span> <span class="n">tx2</span> <span class="k">if</span> <span class="n">mutual</span> <span class="o">==</span> <span class="n">tx2</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">tx2</span><span class="p">,</span> <span class="n">mutual</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shapes </span><span class="si">{</span><span class="n">tx1</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">tx2</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> incompatible for maximum.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="k">return</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx1</span><span class="p">),</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">isnan</span><span class="p">(</span><span class="n">tx2</span><span class="p">),</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="n">tx1</span> <span class="o">&gt;</span> <span class="n">tx2</span><span class="p">,</span> <span class="n">tx1</span><span class="p">,</span> <span class="n">tx2</span><span class="p">)))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arguments to minimum must be pdarrays or scalars.&quot;</span><span class="p">)</span></div>
 
 </pre></div>
         </article>
