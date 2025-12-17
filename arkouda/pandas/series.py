@@ -18,7 +18,7 @@ import arkouda.pandas.dataframe
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_NUMBERS, bool_scalars, dtype, float64, int64
 from arkouda.numpy.pdarrayclass import RegistrationError, any, argmaxk, create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import array as ak_array
+
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.util import get_callback, is_float
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
