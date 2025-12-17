@@ -9,7 +9,6 @@ import pytest
 import arkouda as ak
 
 from arkouda.client import get_array_ranks, get_max_array_rank
-from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import str_
 from arkouda.testing import assert_almost_equal, assert_arkouda_array_equivalent
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent

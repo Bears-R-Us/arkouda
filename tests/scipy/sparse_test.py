@@ -1,3 +1,5 @@
+from typing import Sequence
+
 import numpy as np
 import pytest
 
@@ -40,7 +42,14 @@ class TestSparse:
 
     def test_matmatmult(self):
         # Create a reference for matrix multiplication in python:
-        def matmatmult(rowsA, colsA, valsA, rowsB, colsB, valsB):
+        def matmatmult(
+            rowsA: Sequence[int],
+            colsA: Sequence[int],
+            valsA: Sequence[float],
+            rowsB: Sequence[int],
+            colsB: Sequence[int],
+            valsB: Sequence[float],
+        ) -> tuple[list[int], list[int], list[float]]:
             """
             Perform matrix-matrix multiplication of two sparse matrices represented by
             3 arrays of rows, cols, and vals.
@@ -48,22 +57,22 @@ class TestSparse:
 
             Parameters
             ----------
-            rowsA : list or array-like
+            rowsA : Sequence[int]
                 Row indices of non-zero elements in matrix A.
-            colsA : list or array-like
+            colsA : Sequence[int]
                 Column indices of non-zero elements in matrix A.
-            valsA : list or array-like
+            valsA : Sequence[float]
                 Values of non-zero elements in matrix A.
-            rowsB : list or array-like
+            rowsB : Sequence[int]
                 Row indices of non-zero elements in matrix B.
-            colsB : list or array-like
+            colsB : Sequence[int]
                 Column indices of non-zero elements in matrix B.
-            valsB : list or array-like
+            valsB : Sequence[float]
                 Values of non-zero elements in matrix B.
 
             Returns
             -------
-            Tuple[list, list, list]
+            tuple[list[int], list[int], list[float]]
                 result_rows : list
                     Row indices of non-zero elements in the result matrix.
                 result_cols : list

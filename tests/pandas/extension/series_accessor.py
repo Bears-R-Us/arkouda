@@ -4,7 +4,7 @@ import arkouda as ak
 
 from arkouda import Series
 from arkouda.numpy.strings import Strings
-from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+from arkouda.pandas.extension import ArkoudaExtensionArray
 from arkouda.pandas.extension._series_accessor import (
     ArkoudaSeriesAccessor,
     _ak_array_to_pandas_series,
