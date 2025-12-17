@@ -4,6 +4,11 @@ LIBIDN_BUILD_DIR := $(DEP_BUILD_DIR)/$(LIBIDN_NAME_VER)
 LIBIDN_INSTALL_DIR := $(DEP_INSTALL_DIR)/libidn2-install
 LIBIDN_LINK := https://ftp.gnu.org/gnu/libidn/libidn2-$(LIBIDN_VER).tar.gz
 
+.PHONY: \
+	idn2-download-source \
+	install-idn2 \
+	idn2-clean
+
 idn2-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
 

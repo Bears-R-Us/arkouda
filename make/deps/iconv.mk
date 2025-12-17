@@ -4,6 +4,12 @@ ICONV_BUILD_DIR := $(DEP_BUILD_DIR)/$(ICONV_NAME_VER)
 ICONV_INSTALL_DIR := $(DEP_INSTALL_DIR)/libiconv-install
 ICONV_LINK := https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VER).tar.gz
 
+.PHONY: \
+	iconv-download-source \
+	install-iconv \
+	iconv-clean
+
+
 iconv-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
 

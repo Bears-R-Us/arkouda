@@ -1,3 +1,9 @@
+.PHONY: \
+	pytables-download-source \
+	install-pytables \
+	pytables-clean
+
+
 pytables-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
 

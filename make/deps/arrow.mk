@@ -1,7 +1,3 @@
-install-arrow-quick:
-	./scripts/install_arrow_quick.sh $(DEP_BUILD_DIR)
-
-
 ARROW_VER := 19.0.1
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
 ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
@@ -13,6 +9,15 @@ ARROW_SOURCE_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_N
 NUM_CORES := $(shell nproc --all)
 
 ARROW_DEPENDENCY_SOURCE := BUNDLED
+
+.PHONY: \
+	install-arrow-quick \
+	arrow-download-source \
+	install-arrow \
+	arrow-clean
+
+install-arrow-quick:
+	./scripts/install_arrow_quick.sh $(DEP_BUILD_DIR)
 
 arrow-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
@@ -51,6 +56,6 @@ install-arrow: arrow-download-source
 arrow-clean:
 	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
 	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*
-	rm -rf $(ARROW_DEP_DIR)
 	rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
+	rm -rf $(ARROW_DEP_DIR)
 

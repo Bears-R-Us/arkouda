@@ -12,6 +12,11 @@ HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
 # I think this seems good, but I don't love the hardcoded "-3" I'd like some input on that
 HDF5_LINK := https://support.hdfgroup.org/releases/hdf5/$(UNDERSCORED_LINK_HDF5_MAJ_MIN_VER)/$(UNDERSCORED_LINK_HDF5_VER)/downloads/$(HDF5_NAME_VER)-3.tar.gz
 
+.PHONY: \
+	hdf5-download-source \
+	install-hdf5 \
+	hdf5-clean
+
 hdf5-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
     #If the build directory does not exist,  create it

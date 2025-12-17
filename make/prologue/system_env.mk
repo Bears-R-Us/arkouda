@@ -12,4 +12,3 @@ ifdef LD_LIBRARY_PATH
 CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
 endif
 
-#

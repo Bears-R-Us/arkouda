@@ -4,6 +4,12 @@ ZMQ_BUILD_DIR := $(DEP_BUILD_DIR)/$(ZMQ_NAME_VER)
 ZMQ_INSTALL_DIR := $(DEP_INSTALL_DIR)/zeromq-install
 ZMQ_LINK := https://github.com/zeromq/libzmq/releases/download/v$(ZMQ_VER)/$(ZMQ_NAME_VER).tar.gz
 
+.PHONY: \
+	zmq-download-source \
+	install-zmq \
+	zmq-clean
+
+
 zmq-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
     #If the build directory does not exist,  create it

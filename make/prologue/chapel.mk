@@ -54,3 +54,10 @@ ifneq (,$(findstring interleave-memory,$(CHPL_HELP)))
 CHPL_FLAGS += --interleave-memory
 endif
 
+# Allows the user to set a different instantiation limit
+ifneq ($(instantiate_max),)
+CHPL_USER_FLAGS += --instantiate-max=$(instantiate_max)
+endif
+
+CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -liconv -lidn2 -lparquet -larrow
+

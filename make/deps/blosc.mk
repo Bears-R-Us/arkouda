@@ -1,6 +1,12 @@
 BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc2
 BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
 
+.PHONY: \
+	blosc-download-source \
+	install-blosc \
+	blosc-clean
+
+
 blosc-download-source:
 	mkdir -p $(DEP_BUILD_DIR)
 

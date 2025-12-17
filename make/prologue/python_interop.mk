@@ -10,10 +10,4 @@ CHPL_FLAGS += -lpython$(shell python3 -c "import sysconfig; print(sysconfig.get_
 # Ignore warnings from the Python headers. This is irrelevant for newer Python versions
 CHPL_FLAGS += --ccflags -Wno-macro-redefined
 
-# Allows the user to set a different instantiation limit
-ifneq ($(instantiate_max),)
-CHPL_USER_FLAGS += --instantiate-max=$(instantiate_max)
-endif
-
-
 PYTHON_VERSION := $(shell python3 -c "import sys; print(*sys.version_info[:2], sep='.')")
