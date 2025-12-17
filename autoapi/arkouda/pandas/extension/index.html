@@ -425,16 +425,19 @@ production environments.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaInt64Dtype" title="arkouda.pandas.extension.ArkoudaInt64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaInt64Dtype</span></code></a></p></td>
 <td><p>Extension dtype for Arkouda-backed 64-bit integers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray" title="arkouda.pandas.extension.ArkoudaStringArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringArray</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor" title="arkouda.pandas.extension.ArkoudaSeriesAccessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor</span></code></a></p></td>
+<td><p>Arkouda-backed Series accessor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray" title="arkouda.pandas.extension.ArkoudaStringArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringArray</span></code></a></p></td>
 <td><p>Arkouda-backed string pandas ExtensionArray.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringDtype" title="arkouda.pandas.extension.ArkoudaStringDtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringDtype</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringDtype" title="arkouda.pandas.extension.ArkoudaStringDtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaStringDtype</span></code></a></p></td>
 <td><p>Arkouda-backed string dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint64Dtype" title="arkouda.pandas.extension.ArkoudaUint64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint64Dtype</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint64Dtype" title="arkouda.pandas.extension.ArkoudaUint64Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint64Dtype</span></code></a></p></td>
 <td><p>Arkouda-backed unsigned 64-bit integer dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint8Dtype" title="arkouda.pandas.extension.ArkoudaUint8Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint8Dtype</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaUint8Dtype" title="arkouda.pandas.extension.ArkoudaUint8Dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArkoudaUint8Dtype</span></code></a></p></td>
 <td><p>Arkouda-backed unsigned 8-bit integer dtype.</p></td>
 </tr>
 </tbody>
@@ -2383,6 +2386,245 @@ instances of <cite>type</cite>.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.extension.</span></span><span class="sig-name descname"><span class="pre">ArkoudaSeriesAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pandas_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Arkouda-backed Series accessor.</p>
+<p>Provides a symmetric API to the Index accessor for Series-level
+conversion and materialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pandas_obj</strong> (<em>pd.Series</em>) – The Series this accessor wraps.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nums&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Convert to Arkouda-backed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Materialize back:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">restored</span> <span class="o">=</span> <span class="n">ak_s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">restored</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Convert to legacy Arkouda:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_arr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_arr</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.series.Series&#39;&gt;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.collect">
+<span class="sig-name descname"><span class="pre">collect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.collect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.collect" title="Link to this definition">¶</a></dt>
+<dd><p>Materialize this Series back to a NumPy-backed pandas Series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A NumPy-backed Series.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<span class="go">&lt;class &#39;pandas.core.arrays.numpy_.NumpyExtensionArray&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.from_ak_legacy">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ak_legacy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">akarr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.from_ak_legacy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.from_ak_legacy" title="Link to this definition">¶</a></dt>
+<dd><p>Construct an Arkouda-backed pandas Series directly from a legacy Arkouda array.</p>
+<p>This performs zero-copy wrapping using ArkoudaExtensionArray and does
+not materialize data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>akarr</strong> (<em>Any</em>) – A legacy Arkouda array (pdarray, Strings, or Categorical).</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>) – Optional. Name of the resulting Series.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pandas Series backed by ArkoudaExtensionArray.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</pre></div>
+</div>
+<p>Basic example with a legacy <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">ak_arr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;values&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span>
+<span class="go">0    0</span>
+<span class="go">1    1</span>
+<span class="go">2    2</span>
+<span class="go">3    3</span>
+<span class="go">4    4</span>
+<span class="go">Name: values, dtype: int64</span>
+</pre></div>
+</div>
+<p>The underlying data remain on the Arkouda server:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_values</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Using a legacy <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_str</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_str</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">ak_str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;letters&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_str</span>
+<span class="go">0    a</span>
+<span class="go">1    b</span>
+<span class="go">2    c</span>
+<span class="go">Name: letters, dtype: string</span>
+</pre></div>
+</div>
+<p>Using a legacy <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_cat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">ak_cat</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;color&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_cat</span>
+<span class="go">0     red</span>
+<span class="go">1    blue</span>
+<span class="go">2     red</span>
+<span class="go">Name: color, dtype: category</span>
+</pre></div>
+</div>
+<p>No NumPy copies are made—the Series is a zero-copy wrapper over
+Arkouda server-side arrays.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.is_arkouda">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_arkouda</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></em><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.is_arkouda" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether the underlying Series is Arkouda-backed.</p>
+<p>A Series is Arkouda-backed if its underlying storage uses
+<a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak_s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak">
+<span class="sig-name descname"><span class="pre">to_ak</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.to_ak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak" title="Link to this definition">¶</a></dt>
+<dd><p>Convert this pandas Series into an Arkouda-backed Series.</p>
+<p>This method produces a pandas <code class="docutils literal notranslate"><span class="pre">Series</span></code> whose underlying storage uses
+<a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a>, meaning the
+data reside on the Arkouda server rather than in local NumPy buffers.
+The conversion is zero-copy with respect to NumPy: data are only
+materialized if the original Series is NumPy-backed.</p>
+<p>The returned Series preserves the original index (including index names)
+and the original Series <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A Series backed by an <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a>, referencing
+Arkouda server-side arrays. The resulting Series retains the original
+index and name.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.Series</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If the Series is already Arkouda-backed, this method returns a new
+Series that is semantically equivalent and still Arkouda-backed.</p></li>
+<li><p>If the Series is NumPy-backed, values are transferred to Arkouda
+server-side arrays via <code class="docutils literal notranslate"><span class="pre">ak.array</span></code>.</p></li>
+<li><p>No NumPy-side materialization occurs when converting an already
+Arkouda-backed Series.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Basic numeric conversion:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nums&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">s_ak</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.extension._arkouda_array.ArkoudaArray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[np.int64(1), np.int64(2), np.int64(3)]</span>
+</pre></div>
+</div>
+<p>Preserving the index and name:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;values&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;values&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;id&#39;</span>
+</pre></div>
+</div>
+<p>String data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;colors&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[np.str_(&#39;red&#39;), np.str_(&#39;blue&#39;), np.str_(&#39;green&#39;)]</span>
+</pre></div>
+</div>
+<p>Idempotence (calling <code class="docutils literal notranslate"><span class="pre">to_ak</span></code> repeatedly stays Arkouda-backed):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak2</span> <span class="o">=</span> <span class="n">s_ak</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak2</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">is_arkouda</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_ak2</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">==</span> <span class="n">s_ak</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak_legacy">
+<span class="sig-name descname"><span class="pre">to_ak_legacy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">arkouda.pandas.series.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.to_ak_legacy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak_legacy" title="Link to this definition">¶</a></dt>
+<dd><p>Convert this Series into a legacy Arkouda Series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The legacy Arkouda Series..</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ak_Series</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_arr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_arr</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.pandas.series.Series&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaStringArray">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.extension.</span></span><span class="sig-name descname"><span class="pre">ArkoudaStringArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray" title="arkouda.pandas.extension.ArkoudaStringArray"><span class="pre">ArkoudaStringArray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_string_array.html#ArkoudaStringArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaStringArray" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.api.extensions.ExtensionArray</span></code></p>
@@ -2945,6 +3187,14 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaInt64Dtype.na_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaInt64Dtype.na_value</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaInt64Dtype.name"><code class="docutils literal notranslate"><span class="pre">ArkoudaInt64Dtype.name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaInt64Dtype.type"><code class="docutils literal notranslate"><span class="pre">ArkoudaInt64Dtype.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.collect"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.collect()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.from_ak_legacy"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.from_ak_legacy()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.is_arkouda"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.is_arkouda</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.to_ak()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak_legacy"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.to_ak_legacy()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray"><code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray</span></code></a><ul>

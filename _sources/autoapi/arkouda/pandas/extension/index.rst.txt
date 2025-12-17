@@ -38,6 +38,7 @@ Classes
    arkouda.pandas.extension.ArkoudaFloat64Dtype
    arkouda.pandas.extension.ArkoudaIndexAccessor
    arkouda.pandas.extension.ArkoudaInt64Dtype
+   arkouda.pandas.extension.ArkoudaSeriesAccessor
    arkouda.pandas.extension.ArkoudaStringArray
    arkouda.pandas.extension.ArkoudaStringDtype
    arkouda.pandas.extension.ArkoudaUint64Dtype
@@ -1787,6 +1788,227 @@ Package Contents
       of ``ExtensionDtype.type`` for scalar ``item``, assuming
       that value is valid (not NA). NA values do not need to be
       instances of `type`.
+
+
+.. py:class:: ArkoudaSeriesAccessor(pandas_obj: pandas.Series)
+
+   Arkouda-backed Series accessor.
+
+   Provides a symmetric API to the Index accessor for Series-level
+   conversion and materialization.
+
+   :param pandas_obj: The Series this accessor wraps.
+   :type pandas_obj: pd.Series
+
+   .. rubric:: Examples
+
+   >>> import pandas as pd
+   >>> import arkouda as ak
+   >>> s = pd.Series([1, 2, 3], name="nums")
+
+   Convert to Arkouda-backed:
+
+   >>> ak_s = s.ak.to_ak()
+   >>> ak_s.ak.is_arkouda
+   True
+
+   Materialize back:
+
+   >>> restored = ak_s.ak.collect()
+   >>> restored.equals(s)
+   True
+
+   Convert to legacy Arkouda:
+
+   >>> ak_arr = s.ak.to_ak_legacy()
+   >>> type(ak_arr)
+   <class 'arkouda.pandas.series.Series'>
+
+
+   .. py:method:: collect() -> pandas.Series
+
+      Materialize this Series back to a NumPy-backed pandas Series.
+
+      :returns: A NumPy-backed Series.
+      :rtype: pd.Series
+
+      .. rubric:: Examples
+
+      >>> s = pd.Series([1,2,3]).ak.to_ak()
+      >>> out = s.ak.collect()
+      >>> type(out.array)
+      <class 'pandas.core.arrays.numpy_.NumpyExtensionArray'>
+
+
+
+   .. py:method:: from_ak_legacy(akarr: Any, name: str | None = None) -> pandas.Series
+      :staticmethod:
+
+
+      Construct an Arkouda-backed pandas Series directly from a legacy Arkouda array.
+
+      This performs zero-copy wrapping using ArkoudaExtensionArray and does
+      not materialize data.
+
+      :param akarr: A legacy Arkouda array (pdarray, Strings, or Categorical).
+      :type akarr: Any
+      :param name: Optional. Name of the resulting Series.
+      :type name: str | None
+
+      :returns: A pandas Series backed by ArkoudaExtensionArray.
+      :rtype: pd.Series
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> import pandas as pd
+
+      Basic example with a legacy ``pdarray``:
+
+      >>> ak_arr = ak.arange(5)
+      >>> s = pd.Series.ak.from_ak_legacy(ak_arr, name="values")
+      >>> s
+      0    0
+      1    1
+      2    2
+      3    3
+      4    4
+      Name: values, dtype: int64
+
+      The underlying data remain on the Arkouda server:
+
+      >>> type(s._values)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+      Using a legacy ``Strings`` object:
+
+      >>> ak_str = ak.array(["a", "b", "c"])
+      >>> s_str = pd.Series.ak.from_ak_legacy(ak_str, name="letters")
+      >>> s_str
+      0    a
+      1    b
+      2    c
+      Name: letters, dtype: string
+
+      Using a legacy ``Categorical``:
+
+      >>> ak_cat = ak.Categorical(ak.array(["red", "blue", "red"]))
+      >>> s_cat = pd.Series.ak.from_ak_legacy(ak_cat, name="color")
+      >>> s_cat
+      0     red
+      1    blue
+      2     red
+      Name: color, dtype: category
+
+      No NumPy copies are made—the Series is a zero-copy wrapper over
+      Arkouda server-side arrays.
+
+
+
+   .. py:property:: is_arkouda
+      :type: bool
+
+
+      Return whether the underlying Series is Arkouda-backed.
+
+      A Series is Arkouda-backed if its underlying storage uses
+      :class:`ArkoudaExtensionArray`.
+
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      >>> s = pd.Series([1, 2, 3])
+      >>> s.ak.is_arkouda
+      False
+
+      >>> ak_s = s.ak.to_ak()
+      >>> ak_s.ak.is_arkouda
+      True
+
+
+   .. py:method:: to_ak() -> pandas.Series
+
+      Convert this pandas Series into an Arkouda-backed Series.
+
+      This method produces a pandas ``Series`` whose underlying storage uses
+      :class:`~arkouda.pandas.extension.ArkoudaExtensionArray`, meaning the
+      data reside on the Arkouda server rather than in local NumPy buffers.
+      The conversion is zero-copy with respect to NumPy: data are only
+      materialized if the original Series is NumPy-backed.
+
+      The returned Series preserves the original index (including index names)
+      and the original Series ``name``.
+
+      :returns: A Series backed by an :class:`ArkoudaExtensionArray`, referencing
+                Arkouda server-side arrays. The resulting Series retains the original
+                index and name.
+      :rtype: pd.Series
+
+      .. rubric:: Notes
+
+      * If the Series is already Arkouda-backed, this method returns a new
+        Series that is semantically equivalent and still Arkouda-backed.
+      * If the Series is NumPy-backed, values are transferred to Arkouda
+        server-side arrays via ``ak.array``.
+      * No NumPy-side materialization occurs when converting an already
+        Arkouda-backed Series.
+
+      .. rubric:: Examples
+
+      Basic numeric conversion:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> s = pd.Series([1, 2, 3], name="nums")
+      >>> s_ak = s.ak.to_ak()
+      >>> type(s_ak.array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+      >>> s_ak.tolist()
+      [np.int64(1), np.int64(2), np.int64(3)]
+
+      Preserving the index and name:
+
+      >>> idx = pd.Index([10, 20, 30], name="id")
+      >>> s = pd.Series([100, 200, 300], index=idx, name="values")
+      >>> s_ak = s.ak.to_ak()
+      >>> s_ak.name
+      'values'
+      >>> s_ak.index.name
+      'id'
+
+      String data:
+
+      >>> s = pd.Series(["red", "blue", "green"], name="colors")
+      >>> s_ak = s.ak.to_ak()
+      >>> s_ak.tolist()
+      [np.str_('red'), np.str_('blue'), np.str_('green')]
+
+      Idempotence (calling ``to_ak`` repeatedly stays Arkouda-backed):
+
+      >>> s_ak2 = s_ak.ak.to_ak()
+      >>> s_ak2.ak.is_arkouda
+      True
+      >>> s_ak2.tolist() == s_ak.tolist()
+      True
+
+
+
+   .. py:method:: to_ak_legacy() -> arkouda.pandas.series.Series
+
+      Convert this Series into a legacy Arkouda Series.
+
+      :returns: The legacy Arkouda Series..
+      :rtype: ak_Series
+
+      .. rubric:: Examples
+
+      >>> import pandas as pd
+      >>> s = pd.Series([10,20,30])
+      >>> ak_arr = s.ak.to_ak_legacy()
+      >>> type(ak_arr)
+      <class 'arkouda.pandas.series.Series'>
+
 
 
 .. py:class:: ArkoudaStringArray(data: arkouda.numpy.strings.Strings | numpy.ndarray | Sequence[Any] | ArkoudaStringArray)
