@@ -36,7 +36,9 @@ def xlogy(x: Union[pdarray, np.float64], y: pdarray):
     array([0.00000000000000000 3.4657359027997265 5.4930614433405491 6.9314718055994531])
 
     """
-    if not isinstance(x, (np.float64, pdarray)) and np.can_cast(x, np.float64):
+    from arkouda.numpy.dtypes import can_cast
+
+    if not isinstance(x, (np.float64, pdarray)) and can_cast(x, np.float64):
         x = np.float64(x)
 
     if isinstance(x, pdarray) and isinstance(y, pdarray):
