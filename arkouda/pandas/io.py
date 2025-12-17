@@ -1561,20 +1561,24 @@ def to_hdf(
             mode = "append"
 
 
-def _get_hdf_filetype(filename: str) -> str:
+def _get_hdf_filetype(filename: str) -> Literal["single", "distribute"]:
     from arkouda.client import generic_msg
 
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
     cmd = "hdffileformat"
-    return cast(
+    result = cast(
         str,
         generic_msg(
             cmd=cmd,
             args={"filename": filename},
         ),
     )
+    if result not in ("single", "distribute"):
+        raise ValueError(f"Unexpected file type: {result!r}")
+
+    return cast(Literal["single", "distribute"], result)
 
 
 def _repack_hdf(prefix_path: str):
@@ -1989,7 +1993,10 @@ def load_all(
         if "does not exist" in str(re):
             try:
                 firstname = f"{prefix}_LOCALE0{extension}"
-                return {dataset: load(prefix, dataset=dataset) for dataset in get_datasets(firstname)}
+                return {
+                    dataset: load(prefix, dataset=dataset)[dataset]
+                    for dataset in get_datasets(firstname)
+                }
             except RuntimeError as re:
                 if "does not exist" in str(re):
                     raise ValueError(
@@ -2341,11 +2348,12 @@ def read_tagged_data(
         cmd="globExpansion",
         args={"file_count": len(filenames), "filenames": filenames},
     )
-    file_list = array(json.loads(j_str))
-    file_cat = Categorical.from_codes(
-        arange(file_list.size), file_list
-    )  # create a categorical from the ak.Strings representation of the file list
+    file_list_any = array(json.loads(j_str))
+    if not isinstance(file_list_any, Strings):
+        raise TypeError("globExpansion did not return a list of string filenames.")
+    file_list = cast(Strings, file_list_any)
 
+    file_cat = Categorical.from_codes(arange(file_list.size), file_list)
     ftype = get_filetype(filenames)
     if ftype.lower() == "hdf5":
         return (

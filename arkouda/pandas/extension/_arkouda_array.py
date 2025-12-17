@@ -188,15 +188,15 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # Fallback: local cast
         return self.to_ndarray().astype(npdt, copy=copy)
 
-    def isna(self) -> ExtensionArray | ndarray[Any, Any]:
+    def isna(self) -> ExtensionArray:
         from arkouda.numpy import isnan
         from arkouda.numpy.pdarraycreation import full as ak_full
         from arkouda.numpy.util import is_float
 
         if not is_float(self._data):
-            return ak_full(self._data.size, False, dtype=bool)
+            return ArkoudaArray(ak_full(self._data.size, False, dtype=bool))
 
-        return isnan(self._data)
+        return ArkoudaArray(isnan(self._data))
 
     @property
     def dtype(self):
