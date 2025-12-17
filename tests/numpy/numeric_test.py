@@ -1261,6 +1261,94 @@ class TestNumeric:
                 )
                 assert not (ak.array_equal(pda_a, pda_b))
 
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_minimum_pdarrays(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+            pda2[prob_size - 1] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_min = np.minimum(nda1, nda2)
+        ak_min = ak.minimum(pda1, pda2)
+        ak_assert_almost_equivalent(np_min, ak_min)
+        assert_arkouda_array_equivalent(ak_min, ak.minimum(pda2, pda1))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_minimum_scalars(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = True if num_type == ak.bool_ else (top + bottom) / 2
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2
+        np_min = np.minimum(nda1, nda2)
+        ak_min = ak.minimum(pda1, pda2)
+        ak_assert_almost_equivalent(np_min, ak_min)
+        assert_arkouda_array_equivalent(ak_min, ak.minimum(pda2, pda1))
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_minimum_diff_shapes(self, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, (1, 5), dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, (6, 1), dtype=num_type)
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_min = np.minimum(nda1, nda2)
+        ak_min = ak.minimum(pda1, pda2)
+        ak_assert_almost_equivalent(np_min, ak_min)
+        assert_arkouda_array_equivalent(ak_min, ak.minimum(pda2, pda1))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_maximum_pdarrays(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+            pda2[prob_size - 1] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_max = np.maximum(nda1, nda2)
+        ak_max = ak.maximum(pda1, pda2)
+        ak_assert_almost_equivalent(np_max, ak_max)
+        assert_arkouda_array_equivalent(ak_max, ak.maximum(pda2, pda1))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_maximum_scalars(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = True if num_type == ak.bool_ else (top + bottom) / 2
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2
+        np_max = np.maximum(nda1, nda2)
+        ak_max = ak.maximum(pda1, pda2)
+        ak_assert_almost_equivalent(np_max, ak_max)
+        assert_arkouda_array_equivalent(ak_max, ak.maximum(pda2, pda1))
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_maximum_diff_shapes(self, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, (1, 5), dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, (6, 1), dtype=num_type)
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_max = np.maximum(nda1, nda2)
+        ak_max = ak.maximum(pda1, pda2)
+        ak_assert_almost_equivalent(np_max, ak_max)
+        assert_arkouda_array_equivalent(ak_max, ak.maximum(pda2, pda1))
+
     @pytest.mark.parametrize("func", ["floor", "ceil", "trunc"])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_rounding_functions(self, prob_size, func):
