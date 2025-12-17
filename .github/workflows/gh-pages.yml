@@ -7,6 +7,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: gh-pages-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   ARKOUDA_QUICK_COMPILE: true
 
