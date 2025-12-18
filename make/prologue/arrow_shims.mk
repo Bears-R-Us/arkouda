@@ -13,16 +13,21 @@ ARROW_UTIL_CPP += $(ARROW_UTIL_FILE_NAME).cpp
 ARROW_UTIL_H += $(ARROW_UTIL_FILE_NAME).h
 ARROW_UTIL_O += $(ARKOUDA_SOURCE_DIR)/UtilParquet.o
 
-.PHONY: \
-	compile-arrow-cpp \
-	compile-arrow-write \
-	compile-arrow-read \
-	compile-arrow-util
+CHPL_CXX = $(shell $(ARKOUDA_CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
+ifeq ($(CHPL_CXX),)
+CHPL_CXX=$(CXX)
+endif
 
 SANITIZER = $(shell $(ARKOUDA_CHPL_HOME)/util/chplenv/chpl_sanitizers.py --exe 2>/dev/null)
 ifneq ($(SANITIZER),none)
 ARROW_SANITIZE = -fsanitize=$(SANITIZER)
 endif
+
+.PHONY: \
+	compile-arrow-cpp \
+	compile-arrow-write \
+	compile-arrow-read \
+	compile-arrow-util
 
 compile-arrow-cpp:
 	$(MAKE) compile-arrow-write
