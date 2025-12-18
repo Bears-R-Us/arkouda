@@ -392,18 +392,9 @@ class ArkoudaIndexAccessor:
         # MultiIndex
         # --------------------------------------------------------------
         if isinstance(idx, pd.MultiIndex):
-            arrays = []
-            for level in idx.levels:
-                arr = level.array
-                if isinstance(arr, ArkoudaExtensionArray):
-                    akcol = getattr(arr, "_data", None)
-                    if akcol is None:
-                        raise TypeError("Arkouda-backed index level does not expose '_data'")
-                    arrays.append(akcol.to_ndarray())
-                else:
-                    arrays.append(level.to_numpy())
-
-            return pd.MultiIndex.from_arrays(arrays, names=list(idx.names))
+            # Materialize full tuples; works for both Arkouda-backed and plain.
+            tuples = list(idx.to_list())
+            return pd.MultiIndex.from_tuples(tuples, names=list(idx.names))
 
         raise TypeError(f"Unsupported index type for collect(): {type(idx)!r}")
 

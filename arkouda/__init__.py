@@ -247,10 +247,12 @@ from arkouda.numpy import (
     matmul,
     max,
     maxk,
+    maximum,
     may_share_memory,
     mean,
     median,
     min,
+    minimum,
     mink,
     mod,
     nan,
@@ -416,7 +418,7 @@ from arkouda.dataframe import (
     merge,
 )
 from arkouda.index import Index, MultiIndex
-from arkouda.numpy.alignment import(
+from arkouda.numpy.alignment import (
     NonUniqueError,
     align,
     find,

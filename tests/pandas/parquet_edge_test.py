@@ -127,16 +127,16 @@ ARKOUDA_STRING_ERRORS = ("Bad index type or format", "data type '<U-1' not under
 
 def get_test_parquet_files() -> List[Path]:
     """
-    Discover parquet test files, excluding those known to crash the server.
+    Discover available parquet test files, excluding those known to crash the server.
+
+    If the test data directory is not configured or contains no usable parquet files,
+    an empty list is returned so that parametrized tests can be safely skipped.
 
     Returns
     -------
-        List of Path objects for parquet files to test (empty list if env var not set)
-
-    Raises
-    ------
-        FileNotFoundError: If test data directory doesn't exist
-        ValueError: If no parquet files found in valid directory
+    List[Path]
+        Paths to discoverable parquet files that should be tested. May be an empty
+        list if the test data directory is missing or contains no valid files.
     """
     if TEST_DATA_DIR is None:
         # Return empty list for parametrize at import time - tests will be skipped
@@ -180,11 +180,32 @@ def read_parquet_with_arkouda(
     filepath: Union[str, Path], skip_pandas_check: bool = False
 ) -> ParquetTestResult:
     """
-    Read a parquet file with Arkouda and optionally compare with pandas.
+    Read a parquet file with Arkouda and optionally compare the result with pandas.
+
+    This helper performs a multi-step check:
+    1. Load the file with Arkouda.
+    2. Optionally load the same file with pandas.
+    3. Convert the Arkouda DataFrame to pandas.
+    4. Compare correctness and record any failures in a ParquetTestResult.
+
+    Parameters
+    ----------
+    filepath : Union[str, Path]
+        Path to the parquet file to read.
+    skip_pandas_check : bool
+        If True, the pandas comparison step is skipped and only the Arkouda
+        read is validated. Default is False.
 
     Returns
     -------
-        ParquetTestResult object with test outcomes
+    ParquetTestResult
+        Structured result object containing:
+        - the filename
+        - whether Arkouda successfully read the file
+        - whether the pandas comparison was performed
+        - whether Arkouda output matches pandas (if checked)
+        - any error message encountered
+
     """
     filename = Path(filepath).name
 

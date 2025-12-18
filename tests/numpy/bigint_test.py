@@ -1,4 +1,3 @@
-import math
 import pickle
 import sys
 
@@ -7,7 +6,6 @@ import pytest
 
 import arkouda as ak
 
-from arkouda.numpy import dtypes
 from arkouda.numpy.dtypes import bigint_, can_cast, resolve_scalar_dtype, result_type
 
 

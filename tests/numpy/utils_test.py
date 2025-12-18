@@ -5,12 +5,16 @@ import arkouda as ak
 
 
 class TestFromNumericFunctions:
-    # def test_utils_docstrings(self):
-    #     import doctest
-    #
-    #     result = doctest.testmod(utils, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
-    #     assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
+    def test_utils_docstrings(self):
+        import doctest
 
+        from arkouda.numpy import utils
+
+        result = doctest.testmod(utils, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("x", [0, [0], [1, 2, 3], np.ndarray([0, 1, 2]), [[1, 3]], np.eye(3, 2)])
     def test_shape(self, x):
         assert ak.shape(x) == np.shape(x)

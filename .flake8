@@ -76,7 +76,6 @@ exclude =
     dep
     examples
     benchmarks
-    tests
     arkouda/_version.py
     converter/*
     pydoc/_ext/generic_linkcode_resolve_for_sphinx.py
