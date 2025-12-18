@@ -57,5 +57,5 @@ arrow-clean:
 	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
 	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*
 	rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
-	rm -rf $(ARROW_DEP_DIR)
+	rm -fr $(ARROW_DEP_DIR)
 
