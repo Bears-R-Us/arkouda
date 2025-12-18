@@ -12,7 +12,7 @@ from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equiv
 
 # --- Configuration ---
 N = 100  # array length under test
-SEED = 314159
+SEED = pytest.seed
 
 # Dtypes to exercise; expand as Arkouda implements more ops for bigint/others.
 DTYPES = [ak.int64, ak.uint64, ak.float64, ak.bool_]
@@ -53,8 +53,8 @@ UNARY_OPS: List[Tuple[str, Callable]] = [
 # --- Helpers ---
 
 
-def _rand_array(dtype, nonzero: bool = False, nonneg: bool = False):
-    rng = np.random.default_rng(SEED)
+def _rand_array(dtype, nonzero: bool = False, nonneg: bool = False, seed=SEED):
+    rng = ak.random.default_rng(seed)
 
     if dtype is ak.bool_:
         # Booleans from {0,1}
@@ -120,8 +120,8 @@ def test_binary_ops_array_array_alignment(dtype, name, fn):
     rhs_nonzero = name in {"truediv", "floordiv", "mod"}
     rhs_nonneg = name in {"lshift", "rshift", "pow"}
 
-    a = _rand_array(dtype)
-    b = _rand_array(dtype, nonzero=rhs_nonzero, nonneg=rhs_nonneg)
+    a = _rand_array(dtype, seed=SEED)
+    b = _rand_array(dtype, nonzero=rhs_nonzero, nonneg=rhs_nonneg, seed=SEED + 1)
 
     # Extra guarding for pow to keep magnitudes reasonable
     if name == "pow":
@@ -160,7 +160,7 @@ def test_binary_ops_array_scalar_alignment(dtype, name, fn):
     if name in {"lshift", "rshift"} and dtype is ak.bool_:
         pytest.skip(f"{name} not meaningful for bool")
 
-    a = _rand_array(dtype)
+    a = _rand_array(dtype, seed=SEED)
 
     # Choose a scalar compatible with dtype and operator constraints
     if dtype is ak.bool_:
@@ -203,8 +203,8 @@ def test_binary_ops_array_scalar_alignment(dtype, name, fn):
 @pytest.mark.parametrize("dtype", DTYPES)
 @pytest.mark.parametrize("name,fn", CMP_OPS)
 def test_comparison_ops_alignment(dtype, name, fn):
-    a = _rand_array(dtype)
-    b = _rand_array(dtype)
+    a = _rand_array(dtype, seed=SEED)
+    b = _rand_array(dtype, seed=SEED + 1)
     ak_res = fn(a, b)
     np_res = fn(_numpy_equivalent(a), _numpy_equivalent(b))
     assert_arkouda_array_equivalent(ak_res, np_res)
@@ -218,7 +218,9 @@ def test_unary_ops_alignment(dtype, name, fn):
     if name == "invert" and dtype is ak.float64:
         pytest.skip("bitwise invert not defined for float64")
 
-    a = _rand_array(dtype, nonneg=(name == "invert"))  # for invert on uint shifts OK either way
+    a = _rand_array(
+        dtype, nonneg=(name == "invert"), seed=SEED
+    )  # for invert on uint shifts OK either way
 
     # Special-case: boolean negation should raise TypeError in both Arkouda and NumPy
     if name == "neg" and dtype is ak.bool_:
