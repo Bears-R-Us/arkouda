@@ -1708,7 +1708,9 @@ class TestArkoudaArrayMap:
     def test_map_callable(self):
         """Mapping with a callable should apply the function to each element."""
         data = np.array([1, 2, 3], dtype="int64")
-        f = lambda x: x * x
+
+        def f(x):
+            return x * x
 
         ak_arr = ArkoudaArray(ak.array(data))
         result = ak_arr.map(f)
@@ -1723,7 +1725,9 @@ class TestArkoudaArrayMap:
     def test_map_callable_with_nan(self):
         """Callable mapping should receive NaN and preserve NaN in output."""
         data = np.array([1.0, np.nan, 3.0], dtype="float64")
-        f = lambda x: x + 1 if not pd.isna(x) else x
+
+        def f(x):
+            return x + 1 if not pd.isna(x) else x
 
         ak_arr = ArkoudaArray(ak.array(data))
         result = ak_arr.map(f)
@@ -1738,7 +1742,9 @@ class TestArkoudaArrayMap:
     def test_map_changes_dtype(self):
         """Mapping to strings should produce a string-like dtype similar to pandas."""
         data = np.array([1, 2, 3], dtype="int64")
-        f = lambda x: f"val_{x}"
+
+        def f(x):
+            return f"val_{x}"
 
         ak_arr = ArkoudaArray(ak.array(data))
         result = ak_arr.map(f)
@@ -1818,7 +1824,8 @@ class TestArkoudaArrayMap:
         ak_data = ak.array(values)
         arr = EA(ak_data)
 
-        f = lambda x: f"val_{x}"
+        def f(x):
+            return f"val_{x}"
 
         result = arr.map(f)
         expected = pd.array(values).map(f)
@@ -1840,7 +1847,9 @@ class TestArkoudaArrayMap:
         fails due to astype(copy=...) on the categorical index.
         """
         values = ["x", "y", "z"]
-        f = lambda x: f"val_{x}"
+
+        def f(x):
+            return f"val_{x}"
 
         ak_data = ak.Categorical(ak.array(values))
         arr = ArkoudaCategoricalArray(ak_data)
