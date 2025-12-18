@@ -96,30 +96,53 @@ module BinOp
 
     }
 
-  /*
-    Helper function(s) to ensure that floor division cases are handled in accordance with numpy
-  */
+  // vector-vector case of floor division      
 
-  proc floorDivisionType (type t1, type t2) type 
-    where (t1 == real || t1 == int || t1 == uint || t1 == bool) &&
-          (t2 == real || t2 == int || t2 == uint || t2 == bool) {
-    if t1 == real || t2 == real then
-        return real;
-    else if t1 == int || t2 == int then
-        return int;
-    else if t1 == uint || t2 == uint then
-        return uint;
-    else
-        return int;
+  proc floorDivision (dividend: [?d] ?tn, divisor: [d] ?td, type etype) : [d] etype throws {
+    var quotient = makeDistArray(d, etype);
+    coforall loc in Locales do on loc {
+        forall idx in d.localSubdomain() {
+            const numerator = dividend[idx]:etype ;
+            const denom     = divisor[idx]:etype;
+            quotient[idx] = floorDivisionHelper(numerator, denom, etype);
+        }
+    }
+    return quotient;
   }
-        
+                
+  // vector-scalar case of floor division
+         
+  proc floorDivision (dividend: [?d] ?tn, divisor : ?td, type etype) : [d] etype throws {
+    var quotient = makeDistArray(d, etype);
+    const denom = divisor:etype;
+    coforall loc in Locales do on loc {
+        forall idx in d.localSubdomain() {
+            const numerator = dividend[idx]:etype ;
+            quotient[idx] = floorDivisionHelper(numerator, denom, etype);
+        }
+    }
+    return quotient;
+  }
 
-  inline proc floorDivisionHelper(dividend : ?tn, divisor : ?td) : floorDivisionType(tn,td) {
-    type fDT = floorDivisionType(tn,td);
-    var  numerator = dividend : fDT;
-    var  denom     = divisor  : fDT;
+  // scalar-vector case of floor division
 
-    if fDT == real {
+  proc floorDivision (dividend : ?tn, divisor: [?d] ?td, type etype) : [d] etype throws {
+    var quotient = makeDistArray(d, etype);
+    const numerator = dividend:etype;
+    coforall loc in Locales do on loc {
+        forall idx in d.localSubdomain() {
+            const denom = divisor[idx]:etype ;
+            quotient[idx] = floorDivisionHelper(numerator, denom, etype);
+        }
+    }
+    return quotient;
+  }
+
+  proc floorDivisionHelper(dividend : ?tn, divisor : ?td, type etype) : etype {
+    var  numerator = dividend : etype;
+    var  denom     = divisor  : etype;
+
+    if isRealType(etype) {
       if (numerator == 0 && denom == 0) || (isInf(numerator) && (denom != 0 || isInf(denom))){
         return nan;
       }
@@ -151,7 +174,7 @@ module BinOp
       const qIsBelow = ((r > 0.0) != (denom > 0.0));
       return if qIsBelow then (q - 1.0) else q;
 
-    } else if fDT == int then
+    } else if isIntType(etype) then
         if (denom == 0) then
             return 0: int;
         else
@@ -169,7 +192,7 @@ module BinOp
     /*
       Helper function to ensure that mod cases are handled in accordance with numpy
     */
-    inline proc modHelper(dividend: ?t, divisor: ?t2): real {
+    proc modHelper(dividend: ?t, divisor: ?t2): real {
       extern proc fmod(x: real, y: real): real;
 
       var res = fmod(dividend, divisor);
@@ -330,7 +353,7 @@ module BinOp
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li: etype, ri: etype): etype;
+          ea = floorDivision(la, ra, etype);
         }
         when "**" {
           e = ((l.a: etype) ** (r.a: etype)): etype;
@@ -361,8 +384,7 @@ module BinOp
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
-          [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then
-                floorDivisionHelper(li: etype, ri: etype): etype else 0: etype;
+          ea = floorDivision(la, ra, etype);
         }
         when "**" {
           if || reduce (r.a<0)
@@ -462,7 +484,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref la = l.a;
-          [(ei,li) in zip(ea,la)] ei = floorDivisionHelper(li: etype, val: etype): etype;
+          ea = floorDivision(la, val, etype);
         }
         when "**" {
           e = ((l.a: etype) ** (val: etype)): etype;
@@ -491,8 +513,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref la = l.a;
-          [(ei,li) in zip(ea,la)] ei = if val != 0 then
-                 floorDivisionHelper(li: etype, val: etype): etype else 0: etype;
+          ea = floorDivision(la, val, etype);
         }
         when "**" {
           if val < 0
@@ -588,7 +609,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] ei = floorDivisionHelper(val: etype, ri: etype): etype;
+          ea = floorDivision(val, ra, etype);
         }
         when "**" {
           e = ((val: etype) ** (r.a: etype)): etype;
@@ -617,8 +638,7 @@ module BinOp
         when "//" {
           ref ea = e;
           ref ra = r.a;
-          [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then
-                floorDivisionHelper(val: etype, ri: etype): etype else 0: etype;
+          ea = floorDivision(val, ra, etype);
         }
         when "**" {
           if || reduce (r.a<0)
@@ -952,7 +972,7 @@ module BinOp
         ref ea = e;
         ref la = l.a;
         ref ra = r.a;
-        [(ei,li,ri) in zip(ea,la,ra)] ei = floorDivisionHelper(li: real, ri: real): real;
+        ea = floorDivision(la, ra, real);
         return e;
       }
       otherwise {

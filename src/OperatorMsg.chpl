@@ -410,7 +410,8 @@ module OperatorMsg
                 when "//=" { //floordiv
                     ref la = l.a;
                     ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
+                    //[(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
+                    la = floorDivision(la, ra, real);
                 }
                 when "**=" { l.a **= r.a; }
                 when "%=" {
@@ -430,7 +431,8 @@ module OperatorMsg
                 when "//=" { //floordiv
                     ref la = l.a;
                     ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
+                    //[(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
+                    la = floorDivision(la, ra, real);
                 }
                 when "**=" { l.a **= r.a; }
                 when "%=" {
@@ -450,7 +452,8 @@ module OperatorMsg
                 when "//=" { //floordiv
                     ref la = l.a;
                     ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
+                    //[(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
+                    la = floorDivision(la, ra, real);
                 }
                 when "**=" { l.a **= r.a; }
                 when "%=" {
@@ -857,7 +860,8 @@ module OperatorMsg
                 when "/=" {l.a /= val;}//truediv
                 when "//=" { //floordiv
                     ref la = l.a;
-                    [li in la] li = floorDivisionHelper(li, val);
+                    //[li in la] li = floorDivisionHelper(li, val);
+                    la = floorDivision(la, val, real);
                 }
                 when "**=" { l.a **= val; }
                 when "%=" {
