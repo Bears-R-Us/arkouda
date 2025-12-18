@@ -1,11 +1,18 @@
 # add-path: Append custom paths for non-system software.
 define add-path
+# Always add headers for both C compilation and Chapel-generated C compilation
+INCLUDE_FLAGS += -I$(1)/include
+CHPL_FLAGS    += -I$(1)/include
+
+# Add lib64 if present (independent of lib)
 ifneq ("$(wildcard $(1)/lib64)","")
-  INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib64
-  CHPL_FLAGS    += -I$(1)/include -L$(1)/lib64 --ldflags="-Wl,-rpath,$(1)/lib64"
+CHPL_FLAGS += -L$(1)/lib64 --ldflags="-Wl,-rpath,$(1)/lib64"
 endif
-INCLUDE_FLAGS += -I$(1)/include -L$(1)/lib
-CHPL_FLAGS    += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
+
+# Add lib if present
+ifneq ("$(wildcard $(1)/lib)","")
+CHPL_FLAGS += -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
+endif
 endef
 # Usage: $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                               ^ no space after comma
