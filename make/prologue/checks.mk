@@ -7,12 +7,6 @@ CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow check-iconv c
 endif
 check-deps: $(CHECK_DEPS)
 
-CHPL_CXX = $(shell $(ARKOUDA_CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
-ifeq ($(CHPL_CXX),)
-CHPL_CXX=$(CXX)
-endif
-
-
 CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
 # CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
 
