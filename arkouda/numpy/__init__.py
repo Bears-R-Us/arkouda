@@ -241,6 +241,7 @@ from arkouda.numpy.pdarrayclass import (
     dot,
     fmod,
     is_sorted,
+    logical_not,
     max,
     maxk,
     mean,
