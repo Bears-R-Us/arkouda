@@ -446,16 +446,12 @@ $(ARROW_READ_O): $(ARROW_READ_CPP) $(ARROW_READ_H)
 $(ARROW_WRITE_O): $(ARROW_WRITE_CPP) $(ARROW_WRITE_H)
 	make compile-arrow-write
 
-CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
-# CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 4  && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 2.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
+	$(error Chapel 2.4 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
-# ifeq ($(CHPL_VERSION_WARN),yes)
-# 	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
-# endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
