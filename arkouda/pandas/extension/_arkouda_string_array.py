@@ -99,3 +99,123 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
     def __repr__(self):
         return f"ArkoudaStringArray({self._data})"
+
+    def _not_implemented(self, name: str):
+        raise NotImplementedError(f"`{name}` is not implemented for Arkouda-backed arrays yet.")
+
+    def all(self, *args, **kwargs):
+        self._not_implemented("all")
+
+    def any(self, *args, **kwargs):
+        self._not_implemented("any")
+
+    def argpartition(self, *args, **kwargs):
+        self._not_implemented("argpartition")
+
+    def byteswap(self, *args, **kwargs):
+        self._not_implemented("byteswap")
+
+    def choose(self, *args, **kwargs):
+        self._not_implemented("choose")
+
+    def clip(self, *args, **kwargs):
+        self._not_implemented("clip")
+
+    def compress(self, *args, **kwargs):
+        self._not_implemented("compress")
+
+    def conj(self, *args, **kwargs):
+        self._not_implemented("conj")
+
+    def conjugate(self, *args, **kwargs):
+        self._not_implemented("conjugate")
+
+    def cumprod(self, *args, **kwargs):
+        self._not_implemented("cumprod")
+
+    def cumsum(self, *args, **kwargs):
+        self._not_implemented("cumsum")
+
+    def diagonal(self, *args, **kwargs):
+        self._not_implemented("diagonal")
+
+    def dot(self, *args, **kwargs):
+        self._not_implemented("dot")
+
+    def dump(self, *args, **kwargs):
+        self._not_implemented("dump")
+
+    def dumps(self, *args, **kwargs):
+        self._not_implemented("dumps")
+
+    def fill(self, *args, **kwargs):
+        self._not_implemented("fill")
+
+    def flatten(self, *args, **kwargs):
+        self._not_implemented("flatten")
+
+    def getfield(self, *args, **kwargs):
+        self._not_implemented("getfield")
+
+    def item(self, *args, **kwargs):
+        self._not_implemented("item")
+
+    def max(self, *args, **kwargs):
+        self._not_implemented("max")
+
+    def mean(self, *args, **kwargs):
+        self._not_implemented("mean")
+
+    def min(self, *args, **kwargs):
+        self._not_implemented("min")
+
+    def nonzero(self, *args, **kwargs):
+        self._not_implemented("nonzero")
+
+    def partition(self, *args, **kwargs):
+        self._not_implemented("partition")
+
+    def prod(self, *args, **kwargs):
+        self._not_implemented("prod")
+
+    def put(self, *args, **kwargs):
+        self._not_implemented("put")
+
+    def resize(self, *args, **kwargs):
+        self._not_implemented("resize")
+
+    def round(self, *args, **kwargs):
+        self._not_implemented("round")
+
+    def setfield(self, *args, **kwargs):
+        self._not_implemented("setfield")
+
+    def setflags(self, *args, **kwargs):
+        self._not_implemented("setflags")
+
+    def sort(self, *args, **kwargs):
+        self._not_implemented("sort")
+
+    def std(self, *args, **kwargs):
+        self._not_implemented("std")
+
+    def sum(self, *args, **kwargs):
+        self._not_implemented("sum")
+
+    def swapaxes(self, *args, **kwargs):
+        self._not_implemented("swapaxes")
+
+    def to_device(self, *args, **kwargs):
+        self._not_implemented("to_device")
+
+    def tobytes(self, *args, **kwargs):
+        self._not_implemented("tobytes")
+
+    def tofile(self, *args, **kwargs):
+        self._not_implemented("tofile")
+
+    def trace(self, *args, **kwargs):
+        self._not_implemented("trace")
+
+    def var(self, *args, **kwargs):
+        self._not_implemented("var")
