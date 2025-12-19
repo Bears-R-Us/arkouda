@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-import sys  #  needed to reconcile use of "where" as both function and parameter
+import sys  # needed to reconcile use of "where" as both function and parameter
 
 from enum import Enum
 from typing import (
@@ -1413,11 +1413,13 @@ def arctan2(
 
     Parameters
     ----------
-    num : pdarray or numeric_scalars
+    x1 : pdarray or numeric_scalars
         Numerator of the arctan2 argument.
-    denom : pdarray or numeric_scalars
+    x2 : pdarray or numeric_scalars
         Denominator of the arctan2 argument.
-    where : bool or pdarray, default=True
+    out : Optional, pdarray
+        A pdarray in which to store the result, or to use as a source when where is False.
+    where : Optional, bool or pdarray, default=True
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
         its original value. Default set to True.
