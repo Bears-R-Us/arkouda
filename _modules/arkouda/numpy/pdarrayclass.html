@@ -537,6 +537,7 @@
     <span class="s2">&quot;clear&quot;</span><span class="p">,</span>
     <span class="s2">&quot;any&quot;</span><span class="p">,</span>
     <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logical_not&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_sorted&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
@@ -821,6 +822,58 @@
         <span class="k">return</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">byteswap</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">numeric_scalars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">akbool</span><span class="p">:</span> <span class="o">...</span>
+
+
+<div class="viewcode-block" id="logical_not">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.logical_not">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">akbool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the truth value of NOT *x* element-wise.</span>
+
+<span class="sd">    This function returns a boolean ``pdarray`` where each element is</span>
+<span class="sd">    the logical negation of the corresponding element in ``x``. For</span>
+<span class="sd">    boolean arrays, this is equivalent to applying the unary ``~``</span>
+<span class="sd">    operator. For numeric arrays, zero is treated as False and</span>
+<span class="sd">    non-zero as True.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : pdarray</span>
+<span class="sd">        Input array on which to compute element-wise logical NOT.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A boolean ``pdarray`` with the same shape as ``x`` containing</span>
+<span class="sd">        the result of the NOT operation applied element-wise.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is a simplified version of :func:`numpy.logical_not`. It</span>
+<span class="sd">    currently does not support keyword arguments such as ``out`` or</span>
+<span class="sd">    ``where``, and always allocates a new result array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.array([True, False, True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logical_not(x)</span>
+<span class="sd">    array([False  True False])</span>
+
+<span class="sd">    &gt;&gt;&gt; y = ak.array([0, 1, 2])</span>
+<span class="sd">    &gt;&gt;&gt; ak.logical_not(y)</span>
+<span class="sd">    array([True False False])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span></div>
+
 
 
 <span class="c1"># class for the pdarray</span>
@@ -1447,6 +1500,13 @@
 
     <span class="c1"># overload unary- for pdarray implemented as pdarray*(-1)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;uint64&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="bp">self</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFFFFFFFFFF</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool_&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Unary negation (`-`) is not supported for boolean pdarrays; &quot;</span>
+                <span class="s2">&quot;use `~a` or `ak.logical_not(a)` instead.&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
 
     <span class="c1"># overload unary~ for pdarray implemented as pdarray^(~0)</span>
@@ -2166,6 +2226,42 @@
 <span class="sd">        Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.all(a))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pdarray.logical_not">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.logical_not">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">logical_not</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the truth value of NOT *self* element-wise.</span>
+
+<span class="sd">        This method is equivalent to :func:`arkouda.logical_not(self)`.</span>
+<span class="sd">        It returns a boolean ``pdarray`` where each element is the</span>
+<span class="sd">        logical negation of the corresponding element in ``self``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            A boolean ``pdarray`` with the same shape as ``self``</span>
+<span class="sd">            containing the result of the NOT operation.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; a = ak.array([True, False, True])</span>
+<span class="sd">        &gt;&gt;&gt; a.logical_not()</span>
+<span class="sd">        array([False  True False])</span>
+<span class="sd">        &gt;&gt;&gt; ak.logical_not(a)</span>
+<span class="sd">        array([False  True False])</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Works as a method of a ``pdarray`` (e.g. ``a.logical_not()``)</span>
+<span class="sd">        or as a standalone function (e.g. ``ak.logical_not(a)``). For</span>
+<span class="sd">        boolean arrays, this is equivalent to applying the unary ``~``</span>
+<span class="sd">        operator. For numeric arrays, zero is treated as False and</span>
+<span class="sd">        non-zero as True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">logical_not</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="pdarray.is_registered">

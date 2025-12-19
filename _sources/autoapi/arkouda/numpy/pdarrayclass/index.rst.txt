@@ -38,6 +38,7 @@ Functions
    arkouda.numpy.pdarrayclass.divmod
    arkouda.numpy.pdarrayclass.dot
    arkouda.numpy.pdarrayclass.fmod
+   arkouda.numpy.pdarrayclass.logical_not
    arkouda.numpy.pdarrayclass.maxk
    arkouda.numpy.pdarrayclass.mink
    arkouda.numpy.pdarrayclass.mod
@@ -460,6 +461,42 @@ Module Contents
 
    :raises TypeError: Raised if neither dividend nor divisor is a pdarray (at least one must be)
        or if any scalar or pdarray element is not one of int, uint, float, bigint
+
+
+.. py:function:: logical_not(x: pdarray) -> pdarray
+                 logical_not(x: arkouda.numpy.dtypes.numeric_scalars) -> arkouda.numpy.dtypes.bool_
+
+   Compute the truth value of NOT *x* element-wise.
+
+   This function returns a boolean ``pdarray`` where each element is
+   the logical negation of the corresponding element in ``x``. For
+   boolean arrays, this is equivalent to applying the unary ``~``
+   operator. For numeric arrays, zero is treated as False and
+   non-zero as True.
+
+   :param x: Input array on which to compute element-wise logical NOT.
+   :type x: pdarray
+
+   :returns: A boolean ``pdarray`` with the same shape as ``x`` containing
+             the result of the NOT operation applied element-wise.
+   :rtype: pdarray
+
+   .. rubric:: Notes
+
+   This is a simplified version of :func:`numpy.logical_not`. It
+   currently does not support keyword arguments such as ``out`` or
+   ``where``, and always allocates a new result array.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> x = ak.array([True, False, True])
+   >>> ak.logical_not(x)
+   array([False  True False])
+
+   >>> y = ak.array([0, 1, 2])
+   >>> ak.logical_not(y)
+   array([True False False])
 
 
 .. py:function:: maxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
@@ -1041,6 +1078,37 @@ Module Contents
 
    .. py:attribute:: itemsize
       :type:  arkouda.numpy.dtypes.int_scalars
+
+
+   .. py:method:: logical_not() -> pdarray
+
+      Compute the truth value of NOT *self* element-wise.
+
+      This method is equivalent to :func:`arkouda.logical_not(self)`.
+      It returns a boolean ``pdarray`` where each element is the
+      logical negation of the corresponding element in ``self``.
+
+      :returns: A boolean ``pdarray`` with the same shape as ``self``
+                containing the result of the NOT operation.
+      :rtype: pdarray
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> a = ak.array([True, False, True])
+      >>> a.logical_not()
+      array([False  True False])
+      >>> ak.logical_not(a)
+      array([False  True False])
+
+      .. rubric:: Notes
+
+      Works as a method of a ``pdarray`` (e.g. ``a.logical_not()``)
+      or as a standalone function (e.g. ``ak.logical_not(a)``). For
+      boolean arrays, this is equivalent to applying the unary ``~``
+      operator. For numeric arrays, zero is treated as False and
+      non-zero as True.
+
 
 
    .. py:method:: max(axis: Optional[Union[int, Tuple[int, Ellipsis]]] = None, keepdims: bool = False) -> Union[arkouda.numpy.dtypes.numeric_scalars, pdarray]
