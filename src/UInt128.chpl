@@ -1,6 +1,8 @@
 module UInt128 {
   use IO;
   use Sort;
+  use BigInteger;
+  use Math;
 
   // 128-bit unsigned integer as two 64-bit limbs
   record UInt128 {
@@ -12,6 +14,24 @@ module UInt128 {
       this.lo = 0;
     }
 
+    proc init=(x: UInt128) {
+      this.hi = x.hi;
+      this.lo = x.lo;
+    }
+
+    // from unsigned
+    proc init=(x: uint(64)) {
+      this.hi = 0:uint(64);
+      this.lo = x;
+    }
+
+    // Two’s-complement wrap (sign-extend from 64 -> 128)
+    proc init=(x: int(64)) {
+      // sign extension: if x is negative, high limb becomes all 1s, else 0
+      this.hi = if x < 0 then ~0:uint(64) else 0:uint(64);
+      this.lo = x:uint(64); // preserves the raw low bits
+    }
+
     proc init(x: uint(64)) {
       this.hi = 0;
       this.lo = x;
@@ -20,6 +40,71 @@ module UInt128 {
     proc init(hi: uint(64), lo: uint(64)) {
       this.hi = hi;
       this.lo = lo;
+    }
+
+    // Allow `x: UInt128` casts from int(64)
+    operator :(x: int(64), type t: UInt128): UInt128 {
+      return new UInt128(x);
+    }
+
+    // Allow `x: UInt128` casts from uint(64)
+    operator :(x: uint(64), type t: UInt128): UInt128 {
+      return new UInt128(x);
+    }
+
+    operator :(x: bigint, type t: UInt128): UInt128 {
+      const two64  = (1:bigint) << 64;
+      const two128 = (1:bigint) << 128;
+      const mask64  = two64  - 1;
+      const mask128 = two128 - 1;
+
+      // Wrap modulo 2^128 (works for negative too)
+      const y = x & mask128;
+
+      const lo = (y & mask64):uint(64);
+      const hi = (y >> 64):uint(64);
+
+      return new UInt128(hi, lo);
+    }
+
+    operator :(x: real(64), type t: UInt128): UInt128 {
+      if !isFinite(x) then
+        halt("cannot cast non-finite real to UInt128: ", x);
+
+      const tx = trunc(x);
+      if tx != x then
+        halt("cannot cast non-integer real to UInt128: ", x);
+
+      var b: bigint;
+      b.set(tx);          // <-- key: convert real->bigint via set()
+      return b:UInt128;   // uses your bigint->UInt128 operator
+    }
+
+    // UInt128 -> int(64) (wrap: take low limb, interpret as signed)
+    operator :(x: UInt128, type t: int(64)): int(64) {
+      return x.lo:int(64);
+    }
+
+    // UInt128 -> uint(w): wrap (take low bits)
+    operator :(x: UInt128, type t: uint(?w)): uint(w) {
+      return x.lo:uint(w);
+    }
+
+    operator :(x: UInt128, type t: real(64)): real(64) {
+      return ldExp(x.hi:real(64), 64) + x.lo:real(64);
+    }
+
+    operator :(x: UInt128, type t: bigint): bigint {
+      var b: bigint;
+      // b = hi<<64 + lo
+      b = (x.hi:bigint) << 64;
+      b += x.lo:bigint;
+      return b;
+    }
+
+    // UInt128 -> bool: true iff nonzero
+    operator :(x: UInt128, type t: bool): bool {
+      return (x.hi != 0:uint(64)) || (x.lo != 0:uint(64));
     }
 
     //

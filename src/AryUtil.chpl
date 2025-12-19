@@ -16,6 +16,7 @@ module AryUtil
     use CommAggregation;
     use CommPrimitives;
     use BigInteger;
+    use UInt128;
 
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
@@ -663,6 +664,21 @@ module AryUtil
         where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
       const keyHigh = key.size - 1;
       return key[keyHigh - rshift/bitsPerDigit]:int;
+    }
+
+    // UInt128 digit extraction for radix/LSD
+    // rshift counts from LSB upward.
+    @chplcheck.ignore("UnusedFormal")
+    inline proc getDigit(key: UInt128, rshift: int, last: bool, negs: bool): int {
+      // unsigned, so "last/negs" doesn't change anything, but keep signature consistent
+
+      if rshift >= numBits(uint) {
+        // pull from high limb; shift amount is relative to that limb
+        return getDigit(key.hi:uint, rshift - numBits(uint), last, negs);
+      } else {
+        // pull from low limb
+        return getDigit(key.lo:uint, rshift, last, negs);
+      }
     }
 
     proc getNumDigitsNumericArrays(names, st: borrowed SymTab) throws {

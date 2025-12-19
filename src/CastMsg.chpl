@@ -10,6 +10,7 @@ module CastMsg {
   use ServerConfig;
   use Cast;
   use BigInteger;
+  use UInt128;
 
   private config const logLevel = ServerConfig.logLevel;
   private config const logChannel = ServerConfig.logChannel;
@@ -26,8 +27,14 @@ module CastMsg {
   {
     const a = st[msgArgs["name"]]: SymEntry(array_dtype_from, array_nd);
     try {
-      const b = a.a: array_dtype_to;
-      return st.insert(new shared SymEntry(b));
+      if array_dtype_from == UInt128 || array_dtype_to == UInt128 {
+        const b: [a.a.domain] array_dtype_to =
+          [i in a.a.domain] a.a[i]: array_dtype_to;
+        return st.insert(new shared SymEntry(b));
+      } else {
+        const b = a.a: array_dtype_to;
+        return st.insert(new shared SymEntry(b));
+      }
     } catch {
       return MsgTuple.error("bad value in cast from %s to %s".format(
         type2str(array_dtype_from),
