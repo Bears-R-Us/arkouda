@@ -274,7 +274,6 @@ from arkouda.numpy.pdarraycreation import (
     arange,
     array,
     bigint_from_uint_arrays,
-    from_series,
     full,
     full_like,
     linspace,

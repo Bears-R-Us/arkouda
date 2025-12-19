@@ -95,7 +95,7 @@ class _AbstractBaseTime(pdarray):
 
     def __init__(self, pda, unit: str = _BASE_UNIT):
         from arkouda.numpy import cast as akcast
-        from arkouda.numpy.pdarraycreation import from_series
+        from arkouda.pandas.conversion import from_series
 
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit
