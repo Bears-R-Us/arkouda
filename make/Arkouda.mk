@@ -40,7 +40,7 @@ ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_COMPAT_MODULES_DIR)
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \< 6),1)
+ifeq ($(shell expr $(CHPL_MINOR) \< 5),1)
 	ARKOUDA_KEYPART_FLAG := -suseKeyPartStatus=true
 endif
 
