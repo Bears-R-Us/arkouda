@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys  #  needed to reconcile use of "where" as both function and parameter
 
 from enum import Enum
 from typing import (
@@ -1397,9 +1398,12 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 @typechecked
 def arctan2(
-    num: Union[pdarray, numeric_scalars],
-    denom: Union[pdarray, numeric_scalars],
-    where: Union[bool, pdarray] = True,
+    x1: Union[pdarray, numeric_scalars],
+    x2: Union[pdarray, numeric_scalars],
+    /,
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Union[bool, pdarray]] = None,
 ) -> pdarray:
     """
     Return the element-wise inverse tangent of the array pair. The result chosen is the
@@ -1441,72 +1445,99 @@ def arctan2(
     >>> ak.arctan2(y,x)
     array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])
     """
-    from arkouda.client import generic_msg
+    #  The line below is needed in order to get the "where" function without
+    #  a name conflict, since "where" is also a parameter name.
 
-    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
-        raise TypeError(
-            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
-        )
-    if isSupportedNumber(num) and isSupportedNumber(denom):
-        raise TypeError(
-            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
-        )
-    # TODO: handle shape broadcasting for multidimensional arrays
+    ak_where = sys.modules[__name__].where
 
-    if where is True:
-        pass
-    elif where is False:
-        return num / denom  # type: ignore
-    elif where.dtype != bool:
+    #  Begin with various checks.
+
+    if out is None and where is not None:
+        raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
+
+    if out is not None and out.dtype != ak_float64:
+        raise TypeError(f"Cannot return arctan2 result as type {out.dtype}")
+
+    if where is False:
+        if out is not None:
+            return out
+        else:
+            raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
+
+    if isinstance(where, pdarray) and where.dtype != bool:
         raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
 
-    if isinstance(num, pdarray) or isinstance(denom, pdarray):
-        ndim = num.ndim if isinstance(num, pdarray) else denom.ndim  # type: ignore[union-attr]
+    if np.isscalar(where) and type(where) is not bool:
+        raise TypeError(f"where must have dtype bool, got {type(where)} instead")
 
-        #   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based
-        #   on a and b.
+    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [x1, x2]):
+        raise TypeError(
+            f"Unsupported types {type(x1)} and/or {type(x2)}. Supported "
+            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
+        )
+    if isSupportedNumber(x1) and isSupportedNumber(x2):
+        raise TypeError(
+            f"Unsupported types {type(x1)} and/or {type(x2)}. Supported "
+            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
+        )
 
-        if isinstance(num, pdarray) and isinstance(denom, pdarray):
-            cmdstring = f"arctan2vv<{num.dtype},{ndim},{denom.dtype}>"
-            if where is True:
-                argdict = {
-                    "a": num,
-                    "b": denom,
-                }
-            elif where is False:
-                return num / denom  # type: ignore
-            else:
-                argdict = {
-                    "a": num[where],
-                    "b": denom[where],
-                }
-        elif not isinstance(denom, pdarray):
-            ts = resolve_scalar_dtype(denom)
+    #  Do the computation.  I'm keeping this in a separate function for readability.
+
+    tmp = _arctan2_(x1, x2)
+
+    if where is None or where is True:
+        return tmp
+    else:
+        if out is None:
+            raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
+
+    out[:] = ak_where(where, tmp, out)
+    return out
+
+
+@typechecked
+def _arctan2_(
+    x1: Union[pdarray, numeric_scalars],
+    x2: Union[pdarray, numeric_scalars],
+) -> pdarray:
+    from arkouda.client import generic_msg
+
+    # TODO: handle shape broadcasting for multidimensional arrays
+
+    if isinstance(x1, pdarray) or isinstance(x2, pdarray):
+        # This if-elif is awkward, since one must be a pdarray, but it prevents mypy errors.
+
+        if isinstance(x1, pdarray):
+            ndim = x1.ndim
+        elif isinstance(x2, pdarray):
+            ndim = x2.ndim
+
+        #   The code below will create the command string for arctan2vv, arctan2vs
+        #   or arctan2sv, based on x1 and x2.
+
+        argdict = {"a": x1, "b": x2}
+        if isinstance(x1, pdarray) and isinstance(x2, pdarray):
+            cmdstring = f"arctan2vv<{x1.dtype},{ndim},{x2.dtype}>"
+
+        elif isinstance(x1, pdarray) and not isinstance(x2, pdarray):
+            ts = resolve_scalar_dtype(x2)
             if ts in ["float64", "int64", "uint64", "bool"]:
-                cmdstring = "arctan2vs_" + ts + f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
+                cmdstring = "arctan2vs_" + ts + f"<{x1.dtype},{ndim}>"
             else:
-                raise TypeError(f"{ts} is not an allowed denom type for arctan2")
-            argdict = {"a": num if where is True else num[where], "b": denom}  # type: ignore
-        elif not isinstance(num, pdarray):
-            ts = resolve_scalar_dtype(num)
+                raise TypeError(f"{ts} is not an allowed x2 type for arctan2")
+
+        elif isinstance(x2, pdarray) and not isinstance(x1, pdarray):
+            ts = resolve_scalar_dtype(x1)
             if ts in ["float64", "int64", "uint64", "bool"]:
-                cmdstring = "arctan2sv_" + ts + f"<{denom.dtype},{ndim}>"
+                cmdstring = "arctan2sv_" + ts + f"<{x2.dtype},{ndim}>"
             else:
-                raise TypeError(f"{ts} is not an allowed num type for arctan2")
-            argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
+                raise TypeError(f"{ts} is not an allowed x1 type for arctan2")
 
         repMsg = generic_msg(cmd=cmdstring, args=argdict)
-        ret = create_pdarray(repMsg)
-        if where is True:
-            return ret
-        else:
-            new_pda = num / denom  # type : ignore
-            return _merge_where(new_pda, where, ret)
+        return create_pdarray(repMsg)
 
-    else:
-        return scalar_array(arctan2(num, denom) if where else num / denom)
+    else:  # should be impossible to reach here.
+        return scalar_array(np.arctan2(x1, x2))
 
 
 @typechecked

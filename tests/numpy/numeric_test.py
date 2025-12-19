@@ -519,63 +519,51 @@ class TestNumeric:
         truth_np = alternate(True, False, len(na_num))
         truth_ak = ak.array(truth_np)
 
-        assert np.allclose(
-            np.arctan2(na_num, na_denom, where=True),
-            ak.arctan2(pda_num, pda_denom, where=True).to_ndarray(),
-            equal_nan=True,
-        )
+        ak_assert_almost_equivalent(np.arctan2(na_num, na_denom), ak.arctan2(pda_num, pda_denom))
 
-        assert np.allclose(
-            np.arctan2(na_num[0], na_denom, where=True),
-            ak.arctan2(pda_num[0], pda_denom, where=True).to_ndarray(),
-            equal_nan=True,
-        )
-        assert np.allclose(
-            np.arctan2(na_num, na_denom[0], where=True),
-            ak.arctan2(pda_num, pda_denom[0], where=True).to_ndarray(),
-            equal_nan=True,
-        )
+        ak_assert_almost_equivalent(np.arctan2(na_num[0], na_denom), ak.arctan2(pda_num[0], pda_denom))
 
-        assert np.allclose(
-            na_num / na_denom,
-            ak.arctan2(pda_num, pda_denom, where=False).tolist(),
-            equal_nan=True,
-        )
-        assert np.allclose(
-            na_num[0] / na_denom,
-            ak.arctan2(pda_num[0], pda_denom, where=False).to_ndarray(),
-            equal_nan=True,
-        )
-        assert np.allclose(
-            na_num / na_denom[0],
-            ak.arctan2(pda_num, pda_denom[0], where=False).to_ndarray(),
-            equal_nan=True,
-        )
+        ak_assert_almost_equivalent(np.arctan2(na_num, na_denom[0]), ak.arctan2(pda_num, pda_denom[0]))
 
-        assert np.allclose(
-            [
-                (np.arctan2(na_num[i], na_denom[i]) if truth_np[i] else na_num[i] / na_denom[i])
-                for i in range(len(na_num))
-            ],
-            ak.arctan2(pda_num, pda_denom, where=truth_ak).to_ndarray(),
-            equal_nan=True,
+        na_out = np.ones_like(na_num).astype(np.float64)
+        pda_out = ak.array(na_out)
+        pda_outc = pda_out[:]
+
+        assert_arkouda_array_equivalent(pda_outc, ak.arctan2(pda_num, pda_denom, pda_out, where=False))
+        assert_arkouda_array_equivalent(pda_outc, pda_out)
+
+        assert_arkouda_array_equivalent(
+            pda_outc, ak.arctan2(pda_num[0], pda_denom, pda_out, where=False)
         )
-        assert np.allclose(
-            [
-                (np.arctan2(na_num[0], na_denom[i]) if truth_np[i] else na_num[0] / na_denom[i])
-                for i in range(len(na_denom))
-            ],
-            ak.arctan2(pda_num[0], pda_denom, where=truth_ak).to_ndarray(),
-            equal_nan=True,
+        assert_arkouda_array_equivalent(pda_outc, pda_out)
+
+        assert_arkouda_array_equivalent(
+            pda_outc, ak.arctan2(pda_num, pda_denom[0], pda_out, where=False)
         )
-        assert np.allclose(
-            [
-                (np.arctan2(na_num[i], na_denom[0]) if truth_np[i] else na_num[i] / na_denom[0])
-                for i in range(len(na_num))
-            ],
-            ak.arctan2(pda_num, pda_denom[0], where=truth_ak).to_ndarray(),
-            equal_nan=True,
+        assert_arkouda_array_equivalent(pda_outc, pda_out)
+
+        na_outc = na_out[:]
+        ak_assert_almost_equivalent(
+            np.arctan2(na_num, na_denom, na_outc, where=truth_np),
+            ak.arctan2(pda_num, pda_denom, pda_outc, where=truth_ak),
         )
+        ak_assert_almost_equivalent(na_outc, pda_outc)
+
+        na_outc = na_out[:]  # restore these two
+        pda_outc = pda_out[:]
+        ak_assert_almost_equivalent(
+            np.arctan2(na_num[0], na_denom, na_outc, where=truth_np),
+            ak.arctan2(pda_num[0], pda_denom, pda_outc, where=truth_ak),
+        )
+        ak_assert_almost_equivalent(na_outc, pda_outc)
+
+        na_outc = na_out[:]  # restore these two
+        pda_outc = pda_out[:]
+        ak_assert_almost_equivalent(
+            np.arctan2(na_num, na_denom[0], na_outc, where=truth_np),
+            ak.arctan2(pda_num, pda_denom[0], pda_outc, where=truth_ak),
+        )
+        ak_assert_almost_equivalent(na_outc, pda_outc)
 
         # Edge cases: infinities and zeros.  Doesn't use _infinity_edge_case_helper
         # because arctan2 needs two numbers (numerator and denominator) rather than one.
@@ -585,21 +573,14 @@ class TestNumeric:
         na2 = np.array([1, 10])
         pda2 = ak.array(na2)
 
-        assert np.allclose(
-            np.arctan2(na1, na2),
-            ak.arctan2(pda1, pda2).to_ndarray(),
-            equal_nan=True,
-        )
+        ak_assert_almost_equivalent(np.arctan2(na1, na2), ak.arctan2(pda1, pda2))
 
-        assert np.allclose(
-            np.arctan2(na2, na1),
-            ak.arctan2(pda2, pda1).to_ndarray(),
-            equal_nan=True,
-        )
-        assert np.allclose(np.arctan2(na1, 5), ak.arctan2(pda1, 5).to_ndarray(), equal_nan=True)
-        assert np.allclose(np.arctan2(5, na1), ak.arctan2(5, pda1).to_ndarray(), equal_nan=True)
-        assert np.allclose(np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True)
-        assert np.allclose(np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True)
+        ak_assert_almost_equivalent(np.arctan2(na2, na1), ak.arctan2(pda2, pda1))
+
+        ak_assert_almost_equivalent(np.arctan2(na1, 5), ak.arctan2(pda1, 5))
+        ak_assert_almost_equivalent(np.arctan2(5, na1), ak.arctan2(5, pda1))
+        ak_assert_almost_equivalent(np.arctan2(na1, 0), ak.arctan2(pda1, 0))
+        ak_assert_almost_equivalent(np.arctan2(0, na1), ak.arctan2(0, pda1))
 
         with pytest.raises(TypeError):
             ak.arctan2(
@@ -610,6 +591,8 @@ class TestNumeric:
             ak.arctan2(pda_num[0], np.array([range(10, 20)]).astype(num_type))
         with pytest.raises(TypeError):
             ak.arctan2(np.array([range(0, 10)]).astype(num_type), pda_denom[0])
+        with pytest.raises(TypeError):
+            ak.arctan2(pda1, pda2, pda_outc, where=pda1)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_rad2deg(self, num_type):
