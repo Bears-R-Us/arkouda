@@ -96,3 +96,73 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
     def __repr__(self):
         return f"ArkoudaCategoricalArray({self._data})"
+
+    def _not_implemented(self, name: str):
+        raise NotImplementedError(f"`{name}` is not implemented for ArkoudaCategoricalArray yet.")
+
+    def add_categories(self, *args, **kwargs):
+        self._not_implemented("add_categories")
+
+    def as_ordered(self, *args, **kwargs):
+        self._not_implemented("as_ordered")
+
+    def as_unordered(self, *args, **kwargs):
+        self._not_implemented("as_unordered")
+
+    def check_for_ordered(self, *args, **kwargs):
+        self._not_implemented("check_for_ordered")
+
+    def describe(self, *args, **kwargs):
+        self._not_implemented("describe")
+
+    @classmethod
+    def from_codes(cls, *args, **kwargs):
+        raise NotImplementedError("`from_codes` is not implemented for ArkoudaCategoricalArray yet.")
+
+    def isnull(self, *args, **kwargs):
+        self._not_implemented("isnull")
+
+    def max(self, *args, **kwargs):
+        self._not_implemented("max")
+
+    def memory_usage(self, *args, **kwargs):
+        self._not_implemented("memory_usage")
+
+    def min(self, *args, **kwargs):
+        self._not_implemented("min")
+
+    def notna(self, *args, **kwargs):
+        self._not_implemented("notna")
+
+    def notnull(self, *args, **kwargs):
+        self._not_implemented("notnull")
+
+    def remove_categories(self, *args, **kwargs):
+        self._not_implemented("remove_categories")
+
+    def remove_unused_categories(self, *args, **kwargs):
+        self._not_implemented("remove_unused_categories")
+
+    def rename_categories(self, *args, **kwargs):
+        self._not_implemented("rename_categories")
+
+    def reorder_categories(self, *args, **kwargs):
+        self._not_implemented("reorder_categories")
+
+    def set_categories(self, *args, **kwargs):
+        self._not_implemented("set_categories")
+
+    def set_ordered(self, *args, **kwargs):
+        self._not_implemented("set_ordered")
+
+    def sort_values(self, *args, **kwargs):
+        self._not_implemented("sort_values")
+
+    def swapaxes(self, *args, **kwargs):
+        self._not_implemented("swapaxes")
+
+    def to_list(self, *args, **kwargs):
+        self._not_implemented("to_list")
+
+    def value_counts(self, *args, **kwargs):
+        self._not_implemented("value_counts")
