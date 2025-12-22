@@ -2691,15 +2691,16 @@ class pdarray:
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
         # the lenshape variable addresses an error that occurred when a single integer was
         # passed
-        from arkouda.client import generic_msg
         from typing import get_args
+
+        from arkouda.client import generic_msg
 
         shape_seq: Sequence[int_scalars]
 
         if len(shape) == 1:
             arg = shape[0]
 
-            if isinstance(arg, get_args(int_scalars)) :
+            if isinstance(arg, get_args(int_scalars)):
                 shape_seq = (arg,)
 
             elif isinstance(arg, Sequence):
