@@ -107,6 +107,16 @@ module UInt128 {
       return (x.hi != 0:uint(64)) || (x.lo != 0:uint(64));
     }
 
+    operator :(x: UInt128, type t: string): string {
+      // Uses writeThis under the hood
+      return "%?".format(x);
+    }
+
+    operator :(s: string, type t: UInt128): UInt128 {
+      const b = parseBigintStrict(s);
+      return b:UInt128; // wrap or checked depending on your bigint->UInt128 operator
+    }
+
     //
     // Custom printing: write as hex without using BigInteger.
     // Example output: 0x1f2a... (no leading zeros beyond what’s needed).
@@ -266,5 +276,42 @@ module UInt128 {
 
   proc _cast(type t: uint(64), x: UInt128) {
     return x.lo;
+  }
+
+  proc numBits(type t) param where t == UInt128 do return 128;
+
+  // helper: parse string to bigint (decimal or 0x hex), strict
+  private proc parseBigintStrict(s: string): bigint {
+    var t = s.strip();
+    if t.size == 0 then halt("empty string");
+
+    var b: bigint;
+
+    // bigint parsing: use set() if that's what works in your environment
+    // Support hex with 0x/0X
+    if t.startsWith("0x") || t.startsWith("0X") {
+      // parse hex manually into bigint
+      // (bigint doesn't always accept 0x prefix depending on implementation)
+      var acc: bigint;
+      acc = 0;
+
+      for ch in t[2..] {
+        var v: int;
+        if ch >= "0" && ch <= "9" then v = (ch.byte(0) - "0".byte(0)):int;
+        else if ch >= "a" && ch <= "f" then v = 10 + (ch.byte(0) - "a".byte(0)):int;
+        else if ch >= "A" && ch <= "F" then v = 10 + (ch.byte(0) - "A".byte(0)):int;
+        else halt("invalid hex digit in: " + s);
+
+        acc *= 16;
+        acc += v;
+      }
+      b = acc;
+    } else {
+      // decimal: rely on bigint's string parsing
+      // If `t:bigint` doesn't compile, use `b.set(t)` if available.
+      b = t:bigint;
+    }
+
+    return b;
   }
 }

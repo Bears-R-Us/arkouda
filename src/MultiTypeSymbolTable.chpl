@@ -12,6 +12,7 @@ module MultiTypeSymbolTable
     use IO;
     use IOUtils;
     use Message;
+    use UInt128;
 
     use Map;
     use Registry;
