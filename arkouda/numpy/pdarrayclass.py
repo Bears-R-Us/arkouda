@@ -6,7 +6,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, Sequence, cast, overload
+from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, Union, cast, overload
 
 import numpy as np
 
@@ -17,6 +17,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
+    _val_isinstance_of_union,
     bigint,
     bool_scalars,
     dtype,
@@ -30,7 +31,6 @@ from arkouda.numpy.dtypes import (
     numpy_scalars,
     resolve_scalar_dtype,
     result_type,
-    _val_isinstance_of_union,
 )
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -2696,23 +2696,22 @@ class pdarray:
 
         shape_seq: Sequence[int_scalars]
 
-        if len(shape) == 1 :
-
+        if len(shape) == 1:
             arg = shape[0]
 
-            if _val_isinstance_of_union(arg, int_scalars) :
+            if _val_isinstance_of_union(arg, int_scalars):
                 shape_seq = (cast(int_scalars, arg),)
 
-            elif isinstance(arg, Sequence) :
+            elif isinstance(arg, Sequence):
                 shape_seq = tuple(arg)
 
-            elif isinstance(arg, pdarray) :
+            elif isinstance(arg, pdarray):
                 shape_seq = cast(Sequence[int_scalars], arg.tolist())
 
-            else :
-                raise TypeError (f"Invalid shape argument {shape}")
+            else:
+                raise TypeError(f"Invalid shape argument {shape}")
 
-        else :
+        else:
             shape_seq = cast(Sequence[int_scalars], shape)
 
         shape_arg: list[int_scalars] = list(shape_seq)
