@@ -823,6 +823,15 @@ Package Contents
       :type: str
 
 
+   .. py:method:: add_categories(*args, **kwargs)
+
+
+   .. py:method:: as_ordered(*args, **kwargs)
+
+
+   .. py:method:: as_unordered(*args, **kwargs)
+
+
    .. py:method:: astype(x, dtype)
       :abstractmethod:
 
@@ -868,10 +877,16 @@ Package Contents
 
 
 
+   .. py:method:: check_for_ordered(*args, **kwargs)
+
+
    .. py:attribute:: default_fill_value
       :type:  str
       :value: ''
 
+
+
+   .. py:method:: describe(*args, **kwargs)
 
 
    .. py:property:: dtype
@@ -882,6 +897,13 @@ Package Contents
 
       >>> pd.array([1, 2, 3]).dtype
       Int64Dtype()
+
+
+   .. py:method:: from_codes(*args, **kwargs)
+      :classmethod:
+
+      :abstractmethod:
+
 
 
    .. py:method:: isna()
@@ -908,6 +930,54 @@ Package Contents
       >>> arr.isna()
       array([False, False,  True,  True])
 
+
+
+   .. py:method:: isnull(*args, **kwargs)
+
+
+   .. py:method:: max(*args, **kwargs)
+
+
+   .. py:method:: memory_usage(*args, **kwargs)
+
+
+   .. py:method:: min(*args, **kwargs)
+
+
+   .. py:method:: notna(*args, **kwargs)
+
+
+   .. py:method:: notnull(*args, **kwargs)
+
+
+   .. py:method:: remove_categories(*args, **kwargs)
+
+
+   .. py:method:: remove_unused_categories(*args, **kwargs)
+
+
+   .. py:method:: rename_categories(*args, **kwargs)
+
+
+   .. py:method:: reorder_categories(*args, **kwargs)
+
+
+   .. py:method:: set_categories(*args, **kwargs)
+
+
+   .. py:method:: set_ordered(*args, **kwargs)
+
+
+   .. py:method:: sort_values(*args, **kwargs)
+
+
+   .. py:method:: swapaxes(*args, **kwargs)
+
+
+   .. py:method:: to_list(*args, **kwargs)
+
+
+   .. py:method:: value_counts(*args, **kwargs)
 
 
 .. py:class:: ArkoudaCategoricalDtype
