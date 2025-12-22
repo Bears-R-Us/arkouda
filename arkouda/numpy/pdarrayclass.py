@@ -2644,9 +2644,6 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    # at overload
-    # def reshape(self, shape: int_scalars) -> pdarray: ...
-
     @overload
     def reshape(self, shape: Sequence[int_scalars]) -> pdarray: ...
 
