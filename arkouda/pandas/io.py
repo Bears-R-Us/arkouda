@@ -1561,20 +1561,24 @@ def to_hdf(
             mode = "append"
 
 
-def _get_hdf_filetype(filename: str) -> str:
+def _get_hdf_filetype(filename: str) -> Literal["single", "distribute"]:
     from arkouda.client import generic_msg
 
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
     cmd = "hdffileformat"
-    return cast(
+    result = cast(
         str,
         generic_msg(
             cmd=cmd,
             args={"filename": filename},
         ),
     )
+    if result not in ("single", "distribute"):
+        raise ValueError(f"Unexpected file type: {result!r}")
+
+    return cast(Literal["single", "distribute"], result)
 
 
 def _repack_hdf(prefix_path: str):

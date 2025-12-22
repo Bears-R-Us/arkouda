@@ -56,6 +56,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Literal,
     Optional,
     Sequence,
     Tuple,
@@ -1233,8 +1234,8 @@ class Categorical:
         self,
         prefix_path,
         dataset="categorical_array",
-        mode="truncate",
-        file_type="distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """
         Save the Categorical to HDF5.

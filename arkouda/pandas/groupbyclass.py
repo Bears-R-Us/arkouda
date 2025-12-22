@@ -50,6 +50,7 @@ from typing import (
     TYPE_CHECKING,
     Dict,
     List,
+    Literal,
     Optional,
     Sequence,
     Tuple,
@@ -470,8 +471,8 @@ class GroupBy:
         self,
         prefix_path,
         dataset="groupby",
-        mode="truncate",
-        file_type="distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """
         Save the GroupBy to HDF5.
