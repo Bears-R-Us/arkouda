@@ -4,7 +4,13 @@ import builtins
 import sys
 
 from enum import Enum
-from typing import Literal, Union, cast
+from typing import (  # noqa: F401
+    Literal,
+    TypeAlias,
+    TypeGuard,
+    Union,
+    cast,
+)
 
 import numpy as np
 
@@ -686,8 +692,10 @@ intTypes = frozenset((dtype("int64"), dtype("uint64"), dtype("uint8")))
 bitType = uint64
 
 # Union aliases used for static and runtime type checking
-bool_scalars = Union[builtins.bool, np.bool_]
-float_scalars = Union[float, np.float64, np.float32]
+bool_scalars = Union[builtins.bool, np.bool_]  # type: TypeAlias
+
+float_scalars = Union[float, np.float64, np.float32]  # type: TypeAlias
+
 int_scalars = Union[
     int,
     np.int8,
@@ -698,9 +706,12 @@ int_scalars = Union[
     np.uint16,
     np.uint32,
     np.uint64,
-]
-numeric_scalars = Union[float_scalars, int_scalars]
-numeric_and_bool_scalars = Union[bool_scalars, numeric_scalars]
+]  # type: TypeAlias
+
+numeric_scalars = Union[float_scalars, int_scalars]  # type: TypeAlias
+
+numeric_and_bool_scalars = Union[bool_scalars, numeric_scalars]  # type: TypeAlias
+
 numpy_scalars = Union[
     np.float64,
     np.float32,
@@ -714,9 +725,11 @@ numpy_scalars = Union[
     np.uint16,
     np.uint32,
     np.uint64,
-]
-str_scalars = Union[str, np.str_]
-all_scalars = Union[bool_scalars, numeric_scalars, numpy_scalars, str_scalars]
+]  # type: TypeAlias
+
+str_scalars = Union[str, np.str_]  # type: TypeAlias
+
+all_scalars = Union[bool_scalars, numeric_scalars, numpy_scalars, str_scalars]  # type: TypeAlias
 
 """
 The DType enum defines the supported Arkouda data types in string form.
@@ -827,7 +840,7 @@ SeriesDTypes = {
 ScalarDTypes = frozenset(["bool_", "float64", "int64"])
 
 
-def isSupportedInt(num):
+def isSupportedInt(num) -> "TypeGuard[int_scalars]":
     """
     Whether a scalar is an arkouda supported integer dtype.
 
@@ -853,7 +866,7 @@ def isSupportedInt(num):
     return isinstance(num, ARKOUDA_SUPPORTED_INTS)
 
 
-def isSupportedFloat(num):
+def isSupportedFloat(num) -> "TypeGuard[float_scalars]":
     """
     Whether a scalar is an arkouda supported float dtype.
 
@@ -879,7 +892,7 @@ def isSupportedFloat(num):
     return isinstance(num, ARKOUDA_SUPPORTED_FLOATS)
 
 
-def isSupportedNumber(num):
+def isSupportedNumber(num) -> "TypeGuard[numeric_scalars]":
     """
     Whether a scalar is an arkouda supported numeric dtype.
 
@@ -905,7 +918,7 @@ def isSupportedNumber(num):
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
 
 
-def isSupportedBool(num):
+def isSupportedBool(num) -> "TypeGuard[bool_scalars]":
     """
     Whether a scalar is an arkouda supported boolean dtype.
 
