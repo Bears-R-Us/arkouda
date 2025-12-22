@@ -17,7 +17,6 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
-    _val_isinstance_of_union,
     bigint,
     bool_scalars,
     dtype,
@@ -2645,8 +2644,8 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    @overload
-    def reshape(self, shape: int_scalars) -> pdarray: ...
+    # at overload
+    # def reshape(self, shape: int_scalars) -> pdarray: ...
 
     @overload
     def reshape(self, shape: Sequence[int_scalars]) -> pdarray: ...
@@ -2693,14 +2692,15 @@ class pdarray:
         # the lenshape variable addresses an error that occurred when a single integer was
         # passed
         from arkouda.client import generic_msg
+        from typing import get_args
 
         shape_seq: Sequence[int_scalars]
 
         if len(shape) == 1:
             arg = shape[0]
 
-            if _val_isinstance_of_union(arg, int_scalars):
-                shape_seq = (cast(int_scalars, arg),)
+            if isinstance(arg, get_args(int_scalars)) :
+                shape_seq = (arg,)
 
             elif isinstance(arg, Sequence):
                 shape_seq = tuple(arg)
