@@ -6,7 +6,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast, overload
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union, Sequence, cast, overload
 
 import numpy as np
 
@@ -30,6 +30,7 @@ from arkouda.numpy.dtypes import (
     numpy_scalars,
     resolve_scalar_dtype,
     result_type,
+    _val_isinstance_of_union,
 )
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -2644,7 +2645,20 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    def reshape(self, *shape):
+    @overload
+    def reshape(self, shape: int_scalars) -> pdarray: ...
+
+    @overload
+    def reshape(self, shape: Sequence[int_scalars]) -> pdarray: ...
+
+    @overload
+    def reshape(self, *shape: int_scalars) -> pdarray: ...
+
+    @overload
+    def reshape(self, shape: pdarray) -> pdarray: ...
+
+    @typechecked
+    def reshape(self, *shape: Union[int_scalars, Sequence[int_scalars], pdarray]) -> pdarray:
         """
         Gives a new shape to an array without changing its data.
 
@@ -2680,19 +2694,37 @@ class pdarray:
         # passed
         from arkouda.client import generic_msg
 
-        if len(shape) == 1:
-            shape = shape[0]
-            lenshape = 1
-        if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
-            shape = [i for i in shape]
-            lenshape = len(shape)
+        shape_seq: Sequence[int_scalars]
+
+        if len(shape) == 1 :
+
+            arg = shape[0]
+
+            if _val_isinstance_of_union(arg, int_scalars) :
+                shape_seq = (cast(int_scalars, arg),)
+
+            elif isinstance(arg, Sequence) :
+                shape_seq = tuple(arg)
+
+            elif isinstance(arg, pdarray) :
+                shape_seq = cast(Sequence[int_scalars], arg.tolist())
+
+            else :
+                raise TypeError (f"Invalid shape argument {shape}")
+
+        else :
+            shape_seq = cast(Sequence[int_scalars], shape)
+
+        shape_arg: list[int_scalars] = list(shape_seq)
+
+        lenshape = len(shape_arg)
 
         return create_pdarray(
             generic_msg(
                 cmd=f"reshape<{self.dtype},{self.ndim},{lenshape}>",
                 args={
                     "name": self.name,
-                    "shape": shape,
+                    "shape": shape_arg,
                 },
             ),
             max_bits=self.max_bits,
