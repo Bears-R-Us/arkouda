@@ -26,16 +26,16 @@ ArkoudaLogger : Logger
 
 Functions
 ---------
-getArkoudaLogger(name, handlers=None, logFormat=None, logLevel=None)
+get_arkouda_logger(name, handlers=None, logFormat=None, logLevel=None)
     Instantiate a logger with customizable format and log level.
 
-getArkoudaClientLogger(name)
+get_arkouda_client_logger(name)
     Instantiate a logger for client-facing output (no formatting, INFO level default).
 
-enableVerbose()
+enable_verbose()
     Globally set all ArkoudaLoggers to DEBUG level.
 
-disableVerbose(logLevel=LogLevel.INFO)
+disable_verbose(logLevel=LogLevel.INFO)
     Globally disable DEBUG output by setting all loggers to the specified level.
 
 write_log(log_msg, tag="ClientGeneratedLog", log_lvl=LogLevel.INFO)
@@ -43,10 +43,10 @@ write_log(log_msg, tag="ClientGeneratedLog", log_lvl=LogLevel.INFO)
 
 Usage Example
 -------------
->>> from arkouda.logger import getArkoudaLogger, LogLevel
->>> logger = getArkoudaLogger("myLogger")
+>>> from arkouda.logger import get_arkouda_logger, LogLevel
+>>> logger = get_arkouda_logger("myLogger")
 >>> logger.info("This is an info message.")
->>> logger.enableVerbose()
+>>> logger.enable_verbose()
 >>> logger.debug("Now showing debug messages.")
 
 See Also
@@ -75,7 +75,7 @@ from typing import List, Optional, cast
 from typeguard import typechecked
 
 
-__all__ = ["LogLevel", "enableVerbose", "disableVerbose", "write_log"]
+__all__ = ["LogLevel", "enable_verbose", "disable_verbose", "write_log"]
 
 loggers = {}
 
@@ -210,7 +210,7 @@ class ArkoudaLogger(Logger):
             self.addHandler(handler)
 
     @typechecked
-    def changeLogLevel(self, level: LogLevel, handlerNames: Optional[List[str]] = None) -> None:
+    def change_log_level(self, level: LogLevel, handlerNames: Optional[List[str]] = None) -> None:
         """
         Dynamically changes the logging level for ArkoudaLogger and 1..n of configured Handlers.
 
@@ -246,12 +246,12 @@ class ArkoudaLogger(Logger):
                 if name == handler.name:
                     handler.setLevel(newLevel)
 
-    def enableVerbose(self) -> None:
+    def enable_verbose(self) -> None:
         """Enable verbose output by setting the log level for all handlers to DEBUG."""
-        self.changeLogLevel(LogLevel.DEBUG)
+        self.change_log_level(LogLevel.DEBUG)
 
     @typechecked
-    def disableVerbose(self, logLevel: LogLevel = LogLevel.INFO) -> None:
+    def disable_verbose(self, logLevel: LogLevel = LogLevel.INFO) -> None:
         """
         Disables verbose output.
 
@@ -270,10 +270,10 @@ class ArkoudaLogger(Logger):
             Raised if logLevel is not a LogLevel enum
 
         """
-        self.changeLogLevel(logLevel)
+        self.change_log_level(logLevel)
 
     @typechecked
-    def getHandler(self, name: str) -> Handler:
+    def get_handler(self, name: str) -> Handler:
         """
         Retrieve the Handler object corresponding to the name.
 
@@ -302,7 +302,7 @@ class ArkoudaLogger(Logger):
 
 
 @typechecked
-def getArkoudaLogger(
+def get_arkouda_logger(
     name: str,
     handlers: Optional[List[Handler]] = None,
     logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT,
@@ -349,7 +349,7 @@ def getArkoudaLogger(
 
 
 @typechecked
-def getArkoudaClientLogger(name: str) -> ArkoudaLogger:
+def get_arkouda_client_logger(name: str) -> ArkoudaLogger:
     """
     Instantiate an ArkoudaLogger that retrieves the logging level from ARKOUDA_LOG_LEVEL env variable.
 
@@ -378,17 +378,17 @@ def getArkoudaClientLogger(name: str) -> ArkoudaLogger:
     confirmation of successful login or pdarray creation
 
     """
-    return getArkoudaLogger(name=name, logFormat=ArkoudaLogger.CLIENT_LOG_FORMAT)
+    return get_arkouda_logger(name=name, logFormat=ArkoudaLogger.CLIENT_LOG_FORMAT)
 
 
-def enableVerbose() -> None:
+def enable_verbose() -> None:
     """Enable verbose logging (DEBUG log level) for all ArkoudaLoggers."""
     for logger in loggers.values():
-        logger.enableVerbose()
+        logger.enable_verbose()
 
 
 @typechecked
-def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
+def disable_verbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     """
     Disables verbose logging.
 
@@ -407,7 +407,7 @@ def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
 
     """
     for logger in loggers.values():
-        logger.disableVerbose(logLevel)
+        logger.disable_verbose(logLevel)
 
 
 @typechecked
