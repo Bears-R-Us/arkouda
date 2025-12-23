@@ -145,14 +145,14 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
     #   TODO:  Simplify to use underlying array setter
     def __setitem__(self, key, value):
-        from arkouda.numpy.dtypes import isSupportedInt
+        from arkouda.numpy.dtypes import is_supported_int
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
 
         # Convert numpy mask to pdarray if necessary
         if isinstance(key, np.ndarray) and key.dtype == bool:
             key = ak_array(key)
-        elif isinstance(key, np.ndarray) and isSupportedInt(key.dtype):
+        elif isinstance(key, np.ndarray) and is_supported_int(key.dtype):
             key = ak_array(key)
         if isinstance(value, ArkoudaArray):
             value = value._data

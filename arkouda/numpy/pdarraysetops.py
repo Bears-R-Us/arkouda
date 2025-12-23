@@ -7,7 +7,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -28,7 +28,7 @@ else:
 
 __all__ = ["in1d", "concatenate", "union1d", "intersect1d", "setdiff1d", "setxor1d", "indexof1d"]
 
-logger = getArkoudaLogger(name="pdarraysetops")
+logger = get_arkouda_logger(name="pdarraysetops")
 
 # TODO: combine in1d and _in1d_single into one function
 

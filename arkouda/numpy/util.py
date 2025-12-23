@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union
 
 from typeguard import typechecked
 
-from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
+from arkouda.client_dtypes import BitVector, IPv4, bit_vectorizer
 from arkouda.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
@@ -82,7 +82,7 @@ def get_callback(x):
     elif hasattr(x, "_cast"):
         return x._cast
     elif isinstance(x, BitVector):
-        return BitVectorizer(width=x.width, reverse=x.reverse)
+        return bit_vectorizer(width=x.width, reverse=x.reverse)
     else:
         return identity
 

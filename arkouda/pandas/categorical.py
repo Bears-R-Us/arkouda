@@ -71,7 +71,7 @@ from pandas import Index as pd_Index
 from typeguard import typechecked
 
 from arkouda.infoclass import information
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars, int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -159,7 +159,7 @@ class Categorical:
         from arkouda.numpy.strings import Strings
         from arkouda.pandas.groupbyclass import GroupBy, unique
 
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.logger = get_arkouda_logger(name=__class__.__name__)  # type: ignore
         if "codes" in kwargs and "categories" in kwargs:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored

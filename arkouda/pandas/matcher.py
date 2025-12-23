@@ -45,7 +45,7 @@ import re
 from typing import cast
 
 from arkouda.infoclass import list_symbol_table
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pandas.match import Match, MatchType
@@ -109,7 +109,7 @@ class Matcher:
         self.full_match_bool: pdarray
         self.full_match_ind: pdarray
         self.populated = False
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type:ignore
+        self.logger = get_arkouda_logger(name=__class__.__name__)  # type:ignore
 
     def find_locations(self) -> None:
         """Populate Matcher object by finding the positions of matches."""
