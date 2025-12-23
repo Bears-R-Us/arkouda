@@ -173,14 +173,14 @@ def randint(
     if dtype.name not in DTypes:
         raise TypeError(f"unsupported dtype {dtype}")
 
-    from arkouda.numpy.dtypes import isSupportedFloat
+    from arkouda.numpy.dtypes import is_supported_float
 
     # Legacy NumPy randint semantics:
     # - For integer/boolean output, floats in low/high are truncated toward zero
     if dtype == akint64 or dtype == "bool":
-        if isSupportedFloat(low):
+        if is_supported_float(low):
             low = int(low)
-        if isSupportedFloat(high):
+        if is_supported_float(high):
             high = int(high)
 
     # NumPy-style validation/error messages
@@ -343,7 +343,7 @@ def uniform(
     )
 
 
-def globalGeneratorExists():
+def global_generator_exists():
     """
     Used to determine is a generator has already been created.
 
@@ -356,9 +356,9 @@ def globalGeneratorExists():
     return theGenerator is not None
 
 
-def getGlobalGenerator() -> Generator:
+def get_global_generator() -> Generator:
     """Used to simplify the boilerplate code for each function."""
-    seed() if not globalGeneratorExists() else None
+    seed() if not global_generator_exists() else None
 
     if theGenerator:
         return theGenerator
@@ -385,7 +385,7 @@ def seed(seed=None):
     """
     global theGenerator
 
-    if globalGeneratorExists():
+    if global_generator_exists():
         theGenerator.destructor()
 
     theGenerator = default_rng(seed)
@@ -438,7 +438,7 @@ def integers(low, high=None, size=None, dtype=akint64, endpoint=False):
     array([5 9 7 7 9 9 7 7 8 6])
 
     """
-    return getGlobalGenerator().integers(low, high, size, dtype, endpoint)
+    return get_global_generator().integers(low, high, size, dtype, endpoint)
 
 
 def choice(a, size=None, replace=True, p=None):
@@ -473,7 +473,7 @@ def choice(a, size=None, replace=True, p=None):
     >>> ak.random.choice(ak.arange(10),size=5,replace=True)
     array([6 5 1 6 3])
     """
-    return getGlobalGenerator().choice(a, size, replace, p)
+    return get_global_generator().choice(a, size, replace, p)
 
 
 def exponential(scale=1.0, size=None, method="zig"):
@@ -514,7 +514,7 @@ def exponential(scale=1.0, size=None, method="zig"):
     array([0.35023958744297734 1.3308542074773211 1.819197246298274])
 
     """
-    return getGlobalGenerator().exponential(scale, size, method)
+    return get_global_generator().exponential(scale, size, method)
 
 
 def standard_exponential(size=None, method="zig"):
@@ -544,7 +544,7 @@ def standard_exponential(size=None, method="zig"):
     >>> ak.random.standard_exponential(size=3,method="zig")
     array([0.0036288331189547511 0.12747464978660919 2.4564938704378503])
     """
-    return getGlobalGenerator().standard_exponential(size, method)
+    return get_global_generator().standard_exponential(size, method)
 
 
 def logistic(loc=0.0, scale=0.0, size=None):
@@ -595,7 +595,7 @@ def logistic(loc=0.0, scale=0.0, size=None):
     >>> ak.random.logistic(3, 2.5, 3)
     array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
     """
-    return getGlobalGenerator().logistic(loc, scale, size)
+    return get_global_generator().logistic(loc, scale, size)
 
 
 def lognormal(mean=0.0, sigma=1.0, size=None, method="zig"):
@@ -653,7 +653,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None, method="zig"):
     array([75.587346973566639 9.4194790331678568 1.0996120079897966])
 
     """
-    return getGlobalGenerator().lognormal(mean, sigma, size, method)
+    return get_global_generator().lognormal(mean, sigma, size, method)
 
 
 def normal(loc=0.0, scale=1.0, size=None, method="zig"):
@@ -703,7 +703,7 @@ def normal(loc=0.0, scale=1.0, size=None, method="zig"):
     array([4.3252889011033728 2.2427797827243081 0.09495739757471533])
 
     """
-    return getGlobalGenerator().normal(loc, scale, size, method)
+    return get_global_generator().normal(loc, scale, size, method)
 
 
 def random(size=None):
@@ -742,7 +742,7 @@ def random(size=None):
     array([0.30447083571882388 0.89653821715718895 0.34737575437149532])
 
     """
-    return getGlobalGenerator().random(size)
+    return get_global_generator().random(size)
 
 
 def standard_gamma(shape, size=None):
@@ -782,7 +782,7 @@ def standard_gamma(shape, size=None):
     array([0.85277675774402018 3.1253116338237561 0.95808096440750634])
 
     """  # noqa: W605
-    return getGlobalGenerator().standard_gamma(shape, size)
+    return get_global_generator().standard_gamma(shape, size)
 
 
 def shuffle(
@@ -866,7 +866,7 @@ def shuffle(
     # it does not return a value.  The elements of x are shuffled in place.  That's
     # why this function has no return statement.
 
-    getGlobalGenerator().shuffle(
+    get_global_generator().shuffle(
         x, method=method, feistel_rounds=feistel_rounds, feistel_key=feistel_key
     )
 
@@ -905,7 +905,7 @@ def permutation(x, method="Argsort"):
     >>> ak.random.permutation(ak.arange(10))
     array([4 7 0 2 5 3 6 1 8 9])
     """
-    return getGlobalGenerator().permutation(x, method)
+    return get_global_generator().permutation(x, method)
 
 
 def poisson(lam=1.0, size=None):
@@ -946,4 +946,4 @@ def poisson(lam=1.0, size=None):
     array([3 4 3 3 5])
 
     """
-    return getGlobalGenerator().poisson(lam, size)
+    return get_global_generator().poisson(lam, size)

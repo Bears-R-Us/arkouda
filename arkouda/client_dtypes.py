@@ -13,7 +13,7 @@ domain-specific data while preserving Arkouda’s performance model and distribu
 
 Functions
 ---------
-- `BitVectorizer`: Creates a partially applied BitVector constructor.
+- `bit_vectorizer`: Creates a partially applied BitVector constructor.
 - `ip_address`: Converts various formats to an Arkouda IPv4 object.
 - `is_ipv4`: Returns a boolean array indicating IPv4 addresses.
 - `is_ipv6`: Returns a boolean array indicating IPv6 addresses.
@@ -49,6 +49,8 @@ array([True True])
 
 """
 
+import warnings
+
 from functools import partial
 from ipaddress import ip_address as _ip_address
 from typing import TYPE_CHECKING, Literal, Optional, TypeVar, Union
@@ -57,7 +59,7 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
+from arkouda.numpy.dtypes import bitType, intTypes, is_supported_int
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
@@ -73,7 +75,7 @@ else:
 
 __all__ = [
     "BitVector",
-    "BitVectorizer",
+    "bit_vectorizer",
     "Fields",
     "IPv4",
     "ip_address",
@@ -82,7 +84,7 @@ __all__ = [
 ]
 
 
-def BitVectorizer(width=64, reverse=False):
+def bit_vectorizer(width=64, reverse=False):
     """
     Make a callback (i.e. function) that can be called on an array to create a BitVector.
 
@@ -102,6 +104,15 @@ def BitVectorizer(width=64, reverse=False):
 
     """
     return partial(BitVector, width=width, reverse=reverse)
+
+
+def BitVectorizer(*args, **kwargs):
+    warnings.warn(
+        "BitVectorizer is deprecated; use bit_vectorizer",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return bit_vectorizer(*args, **kwargs)
 
 
 class BitVector(pdarray):
@@ -230,7 +241,7 @@ class BitVector(pdarray):
             A single formatted string or a BitVector slice.
 
         """
-        if isSupportedInt(key):
+        if is_supported_int(key):
             # Return single value as a formatted string
             return self.format(self.values[key])
         else:
@@ -252,7 +263,7 @@ class BitVector(pdarray):
         if isinstance(value, self.__class__):
             # Set a slice or selection of values directly
             self.values[key] = value.values
-        elif isSupportedInt(key) and isSupportedInt(value):
+        elif is_supported_int(key) and is_supported_int(value):
             # Set a single value
             self.values[key] = value
         else:
@@ -261,7 +272,7 @@ class BitVector(pdarray):
     def _binop(self, other, op):
         # Based on other type, select which data to pass
         # to _binop of pdarray
-        if isSupportedInt(other):
+        if is_supported_int(other):
             otherdata = other
         elif isinstance(other, self.__class__):
             otherdata = other.values
@@ -279,7 +290,7 @@ class BitVector(pdarray):
     def _r_binop(self, other, op):
         # Cases where left operand is BitVector are handled above by _binop
         # Only two cases to handle here: scalar int and int64 pdarray
-        if isSupportedInt(other):
+        if is_supported_int(other):
             if op in self.conserves:
                 return self._cast(self.values._r_binop(other, op))
             else:
@@ -306,7 +317,7 @@ class BitVector(pdarray):
 
         """
         # Based on other type, select data to pass to pdarray opeq
-        if isSupportedInt(other):
+        if is_supported_int(other):
             otherdata = other
         elif isinstance(other, self.__class__):
             otherdata = other.values
@@ -699,7 +710,7 @@ class IPv4(pdarray):
 
     def format(self, x):
         """Format a single integer IP address as a string."""
-        if not isSupportedInt(x):
+        if not is_supported_int(x):
             raise TypeError("Argument must be an integer scalar")
         return str(_ip_address(int(x)))
 
@@ -711,7 +722,7 @@ class IPv4(pdarray):
         and convert it to an integer.
 
         """
-        if not isSupportedInt(x):
+        if not is_supported_int(x):
             x = int(_ip_address(x))
         if x < 0:
             raise ValueError(f"Not an IP address: {_ip_address(x)}")
@@ -782,7 +793,7 @@ class IPv4(pdarray):
             Formatted IP address string or a sliced IPv4 instance.
 
         """
-        if isSupportedInt(key):
+        if is_supported_int(key):
             # Display single item as string
             return self.format(self.values[key])
         else:
