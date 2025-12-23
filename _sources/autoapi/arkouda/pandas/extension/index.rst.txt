@@ -2106,6 +2106,15 @@ Package Contents
       :type: str
 
 
+   .. py:method:: all(*args, **kwargs)
+
+
+   .. py:method:: any(*args, **kwargs)
+
+
+   .. py:method:: argpartition(*args, **kwargs)
+
+
    .. py:method:: astype(dtype, copy: bool = False)
 
       Cast to a NumPy array or ExtensionArray with 'dtype'.
@@ -2149,10 +2158,40 @@ Package Contents
 
 
 
+   .. py:method:: byteswap(*args, **kwargs)
+
+
+   .. py:method:: choose(*args, **kwargs)
+
+
+   .. py:method:: clip(*args, **kwargs)
+
+
+   .. py:method:: compress(*args, **kwargs)
+
+
+   .. py:method:: conj(*args, **kwargs)
+
+
+   .. py:method:: conjugate(*args, **kwargs)
+
+
+   .. py:method:: cumprod(*args, **kwargs)
+
+
+   .. py:method:: cumsum(*args, **kwargs)
+
+
    .. py:attribute:: default_fill_value
       :type:  str
       :value: ''
 
+
+
+   .. py:method:: diagonal(*args, **kwargs)
+
+
+   .. py:method:: dot(*args, **kwargs)
 
 
    .. py:property:: dtype
@@ -2163,6 +2202,21 @@ Package Contents
 
       >>> pd.array([1, 2, 3]).dtype
       Int64Dtype()
+
+
+   .. py:method:: dump(*args, **kwargs)
+
+
+   .. py:method:: dumps(*args, **kwargs)
+
+
+   .. py:method:: fill(*args, **kwargs)
+
+
+   .. py:method:: flatten(*args, **kwargs)
+
+
+   .. py:method:: getfield(*args, **kwargs)
 
 
    .. py:method:: isna()
@@ -2189,6 +2243,69 @@ Package Contents
       >>> arr.isna()
       array([False, False,  True,  True])
 
+
+
+   .. py:method:: item(*args, **kwargs)
+
+
+   .. py:method:: max(*args, **kwargs)
+
+
+   .. py:method:: mean(*args, **kwargs)
+
+
+   .. py:method:: min(*args, **kwargs)
+
+
+   .. py:method:: nonzero(*args, **kwargs)
+
+
+   .. py:method:: partition(*args, **kwargs)
+
+
+   .. py:method:: prod(*args, **kwargs)
+
+
+   .. py:method:: put(*args, **kwargs)
+
+
+   .. py:method:: resize(*args, **kwargs)
+
+
+   .. py:method:: round(*args, **kwargs)
+
+
+   .. py:method:: setfield(*args, **kwargs)
+
+
+   .. py:method:: setflags(*args, **kwargs)
+
+
+   .. py:method:: sort(*args, **kwargs)
+
+
+   .. py:method:: std(*args, **kwargs)
+
+
+   .. py:method:: sum(*args, **kwargs)
+
+
+   .. py:method:: swapaxes(*args, **kwargs)
+
+
+   .. py:method:: to_device(*args, **kwargs)
+
+
+   .. py:method:: tobytes(*args, **kwargs)
+
+
+   .. py:method:: tofile(*args, **kwargs)
+
+
+   .. py:method:: trace(*args, **kwargs)
+
+
+   .. py:method:: var(*args, **kwargs)
 
 
 .. py:class:: ArkoudaStringDtype

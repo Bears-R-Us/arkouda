@@ -476,7 +476,244 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ArkoudaStringArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ArkoudaStringArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ArkoudaStringArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_not_implemented</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` is not implemented for Arkouda-backed arrays yet.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ArkoudaStringArray.all">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.any">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.any">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;any&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.argpartition">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.argpartition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argpartition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;argpartition&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.byteswap">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.byteswap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">byteswap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;byteswap&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.choose">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.choose">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">choose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;choose&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.clip">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.clip">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;clip&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.compress">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.compress">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;compress&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.conj">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.conj">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;conj&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.conjugate">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.conjugate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conjugate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;conjugate&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.cumprod">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.cumprod">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cumprod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;cumprod&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.cumsum">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.cumsum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;cumsum&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.diagonal">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.diagonal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;diagonal&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.dot">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.dot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.dump">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.dump">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;dump&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.dumps">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.dumps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;dumps&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.fill">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.fill">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;fill&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.flatten">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.flatten">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;flatten&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.getfield">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.getfield">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;getfield&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.item">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.item">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.max">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.max">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.mean">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.min">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.min">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.nonzero">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.nonzero">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nonzero</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;nonzero&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.partition">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.partition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">partition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;partition&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.prod">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.prod">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;prod&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.put">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.put">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;put&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.resize">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.resize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;resize&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.round">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.round">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;round&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.setfield">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.setfield">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setfield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;setfield&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.setflags">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.setflags">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setflags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;setflags&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.sort">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.sort">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;sort&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.std">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.std">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;std&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.sum">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.sum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.swapaxes">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.swapaxes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;swapaxes&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.to_device">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.to_device">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;to_device&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.tobytes">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.tobytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tobytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;tobytes&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.tofile">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.tofile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tofile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;tofile&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.trace">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.trace">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;trace&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaStringArray.var">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.var">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_not_implemented</span><span class="p">(</span><span class="s2">&quot;var&quot;</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>
