@@ -2340,13 +2340,31 @@
         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span>
 
 
-<span class="c1"># this is # type: ignored and doesn&#39;t actually do any type checking</span>
-<span class="c1"># the type hints are there as a reference to show which types are expected</span>
-<span class="c1"># type validation is done within the function</span>
+<span class="n">HashableItems</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]</span>
+<span class="n">HashableList</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">HashableItems</span><span class="p">]</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">HashableItems</span><span class="p">,</span> <span class="n">full</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">HashableItems</span><span class="p">,</span> <span class="n">full</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">HashableList</span><span class="p">,</span> <span class="n">full</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">HashableList</span><span class="p">,</span> <span class="n">full</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
+
 <div class="viewcode-block" id="hash">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.hash">[docs]</a>
+<span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span>
-    <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>  <span class="c1"># type: ignore</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
         <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
         <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">SegArray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]],</span>
     <span class="p">],</span>

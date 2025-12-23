@@ -11076,7 +11076,10 @@ Package Contents
 
 
 
-.. py:function:: hash(pda: Union[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical], List[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.numpy.segarray.SegArray, arkouda.pandas.categorical.Categorical]]], full: bool = True) -> Union[Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray], arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: hash(pda: HashableItems, full: Literal[True] = True) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
+                 hash(pda: HashableItems, full: Literal[False]) -> arkouda.numpy.pdarrayclass.pdarray
+                 hash(pda: HashableList, full: Literal[True] = True) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
+                 hash(pda: HashableList, full: Literal[False]) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return an element-wise hash of the array or list of arrays.
 
