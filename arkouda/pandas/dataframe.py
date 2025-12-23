@@ -2419,7 +2419,7 @@ class DataFrame(UserDict):
 
     from arkouda.pandas.groupbyclass import GroupBy as GroupBy_class
 
-    def GroupBy(
+    def _build_groupby(
         self, keys, use_series=False, as_index=True, dropna=True
     ) -> Union[DataFrameGroupBy, GroupBy_class]:
         """
@@ -3588,7 +3588,7 @@ class DataFrame(UserDict):
 
         if isinstance(keys, str):
             keys = [keys]
-        gb = self.GroupBy(keys, use_series=False)
+        gb = self._build_groupby(keys, use_series=False)
         vals, cts = gb.size()
         if not high:
             positions = where(cts >= low, 1, 0)
@@ -3721,7 +3721,7 @@ class DataFrame(UserDict):
         1   2.0     1 (2 rows x 2 columns)
 
         """
-        return self.GroupBy(keys, use_series, as_index=as_index, dropna=dropna)
+        return self._build_groupby(keys, use_series, as_index=as_index, dropna=dropna)
 
     @typechecked
     def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:

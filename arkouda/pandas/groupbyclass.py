@@ -64,7 +64,7 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.logger import ArkoudaLogger, getArkoudaLogger
+from arkouda.logger import ArkoudaLogger, get_arkouda_logger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint, float_scalars, int_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -366,7 +366,7 @@ class GroupBy:
         if not isinstance(assume_sorted, bool):
             raise TypeError("assume_sorted must be of type bool.")
 
-        self.logger = getArkoudaLogger(name=self.__class__.__name__)
+        self.logger = get_arkouda_logger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.dropna = dropna
         if (

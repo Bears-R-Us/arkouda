@@ -13,7 +13,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.infoclass import information, pretty_print_information
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -23,9 +23,9 @@ from arkouda.numpy.dtypes import (
     get_byteorder,
     get_server_byteorder,
     int_scalars,
-    isSupportedBool,
-    isSupportedInt,
-    isSupportedNumber,
+    is_supported_bool,
+    is_supported_int,
+    is_supported_number,
     numeric_scalars,
     numpy_scalars,
     resolve_scalar_dtype,
@@ -202,7 +202,7 @@ __all__ = [
     "diff",
     "create_pdarray",
 ]
-logger = getArkoudaLogger(name="pdarrayclass")
+logger = get_arkouda_logger(name="pdarrayclass")
 
 SUPPORTED_REDUCTION_OPS = [
     "any",
@@ -871,7 +871,7 @@ class pdarray:
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
-        if isSupportedBool(other):
+        if is_supported_bool(other):
             dt = "bool"
 
         rep_msg = generic_msg(
@@ -922,7 +922,7 @@ class pdarray:
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
-        if isSupportedBool(other):
+        if is_supported_bool(other):
             dt = "bool"
 
         rep_msg = generic_msg(
@@ -4132,7 +4132,7 @@ def dot(
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy.numeric import _matmul2D as akmatmul2D
+    from arkouda.numpy.numeric import _matmul2d as akmatmul2d
 
     special_case = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
 
@@ -4153,7 +4153,7 @@ def dot(
         #   Second case is two 2D arrays.
 
         elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul2D will do the shape check
-            return ship(akmatmul2D(pda1, pda2), special_case)  # type: ignore
+            return ship(akmatmul2d(pda1, pda2), special_case)  # type: ignore
 
         #   Third and fourth cases involve left or right argument of N-dimensions, and right
         #   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,
@@ -4965,11 +4965,11 @@ def rotl(x, rot) -> pdarray:
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (
             isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
-        ) or isSupportedInt(rot):
+        ) or is_supported_int(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
+    elif is_supported_int(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, "<<<")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -5006,11 +5006,11 @@ def rotr(x, rot) -> pdarray:
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (
             isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
-        ) or isSupportedInt(rot):
+        ) or is_supported_int(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
+    elif is_supported_int(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -5241,13 +5241,13 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     from arkouda.client import generic_msg
 
     if not builtins.all(
-        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
+        is_supported_number(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
     ):
         raise TypeError(
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    if isSupportedNumber(dividend) and isSupportedNumber(divisor):
+    if is_supported_number(dividend) and is_supported_number(divisor):
         raise TypeError(
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -5268,7 +5268,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         scalar_dtype = resolve_scalar_dtype(divisor)
         if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
             acmd = "fmod2vs_" + scalar_dtype
-        else:  # this condition *should* be impossible because of the isSupportedNumber check
+        else:  # this condition *should* be impossible because of the is_supported_number check
             raise TypeError(f"Scalar divisor type {scalar_dtype} not allowed in fmod")
         if not (dividend.dtype.name == "float64" or scalar_dtype == "float64"):
             raise TypeError(
@@ -5281,7 +5281,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         scalar_dtype = resolve_scalar_dtype(dividend)
         if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
             acmd = "fmod2sv_" + scalar_dtype
-        else:  # this condition *should* be impossible because of the isSupportedNumber check
+        else:  # this condition *should* be impossible because of the is_supported_number check
             raise TypeError(f"Scalar dividend type {scalar_dtype} not allowed in fmod")
         if not (
             divisor.dtype.name == "float64" or scalar_dtype == "float64"  # type: ignore[union-attr]

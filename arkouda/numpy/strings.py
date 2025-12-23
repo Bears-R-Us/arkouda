@@ -24,7 +24,7 @@ from typeguard import typechecked
 import arkouda.numpy.dtypes
 
 from arkouda.infoclass import information, list_symbol_table
-from arkouda.logger import ArkoudaLogger, getArkoudaLogger
+from arkouda.logger import ArkoudaLogger, get_arkouda_logger
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     bool_scalars,
@@ -242,7 +242,7 @@ class Strings:
         self._bytes: Optional[pdarray] = None
         self._offsets: Optional[pdarray] = None
         self._regex_dict: Dict = dict()
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.logger = get_arkouda_logger(name=__class__.__name__)  # type: ignore
 
     """
     NOTE:
