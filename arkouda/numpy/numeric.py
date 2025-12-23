@@ -1859,11 +1859,29 @@ def _hash_helper(a):
         return a.name
 
 
-# this is # type: ignored and doesn't actually do any type checking
-# the type hints are there as a reference to show which types are expected
-# type validation is done within the function
+HashableItems = Union[pdarray, Strings, SegArray, Categorical]
+HashableList = List[HashableItems]
+
+
+@overload
+def hash(pda: HashableItems, full: Literal[True] = True) -> Tuple[pdarray, pdarray]: ...
+
+
+@overload
+def hash(pda: HashableItems, full: Literal[False]) -> pdarray: ...
+
+
+@overload
+def hash(pda: HashableList, full: Literal[True] = True) -> Tuple[pdarray, pdarray]: ...
+
+
+@overload
+def hash(pda: HashableList, full: Literal[False]) -> pdarray: ...
+
+
+@typechecked
 def hash(
-    pda: Union[  # type: ignore
+    pda: Union[
         Union[pdarray, Strings, SegArray, Categorical],
         List[Union[pdarray, Strings, SegArray, Categorical]],
     ],
