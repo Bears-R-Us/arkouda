@@ -28,7 +28,9 @@ NumericDTypeTypes: TypeAlias = _Union[
     None,
 ]
 
-StringDTypeTypes: TypeAlias = _Union[Literal["str", "str_"], type[str_], type[str], type[Strings]]
+StringDTypeTypes: TypeAlias = _Union[
+    Literal["str", "str_", "string"], type[str_], type[str], type[Strings]
+]
 
 _ArrayLikeNum: TypeAlias = _Union[
     np.ndarray,  # keeps it simple; or list your NDArray[...]
@@ -47,6 +49,7 @@ _StringDType: TypeAlias = _Union[
     type[str],
     type[Strings],
 ]
+
 
 _NumericLikeDType: TypeAlias = _Union[
     # string literals for common names
@@ -88,4 +91,4 @@ _NumericLikeDType: TypeAlias = _Union[
 
 def is_string_dtype_hint(x: object) -> TypeGuard["_StringDType"]:
     # accept the spellings you want to map to Arkouda Strings
-    return x in ("str", "str_") or x is str_ or x is str_ or x is Strings
+    return x in ("str", "str_", "string") or x is str_ or x is str or x is Strings

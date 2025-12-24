@@ -41,7 +41,7 @@ and Arkouda’s distributed arrays.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TypeAlias, Union
 
 import numpy as np
 
@@ -589,3 +589,13 @@ class ArkoudaCategoricalDtype(_ArkoudaBaseDtype):
         from ._arkouda_categorical_array import ArkoudaCategoricalArray
 
         return ArkoudaCategoricalArray
+
+
+arkouda_numeric_extension_dtypes: TypeAlias = Union[
+    ArkoudaInt64Dtype,
+    ArkoudaFloat64Dtype,
+    ArkoudaBigintDtype,
+    ArkoudaUint8Dtype,
+    ArkoudaUint64Dtype,
+    ArkoudaUint8Dtype,
+]

@@ -5,7 +5,12 @@ import pytest
 import arkouda as ak
 
 from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaStringArray, ArkoudaStringDtype
+from arkouda.pandas.extension import (
+    ArkoudaArray,
+    ArkoudaExtensionArray,
+    ArkoudaStringArray,
+    ArkoudaStringDtype,
+)
 from arkouda.testing import assert_equivalent
 
 
@@ -115,6 +120,89 @@ class TestArkoudaStringsExtension:
         s = pd.Series(pda.to_ndarray())
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data, s.take(idx1.to_ndarray()).to_numpy())
+
+
+class TestArkoudaStringArrayAsType:
+    def test_string_array_astype_object_returns_numpy_object_array(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        out = s.astype(object)
+
+        assert isinstance(out, np.ndarray)
+        assert out.dtype == object
+        assert out.tolist() == ["a", "b", "c"]
+
+    @pytest.mark.parametrize("dtype", ["string", "str", "str_", str, np.str_, pd.StringDtype()])
+    def test_string_array_astype_string_targets_stay_string_array(self, dtype):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+
+        out = s.astype(dtype, copy=False)
+        assert isinstance(out, ArkoudaStringArray)
+        # fast-path: should return the same object when copy=False
+        assert out is s
+        assert out.to_ndarray().tolist() == ["a", "b", "c"]
+
+    def test_string_array_astype_string_copy_true_returns_new_array(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+
+        out = s.astype("string", copy=True)
+        assert isinstance(out, ArkoudaStringArray)
+        assert out is not s
+        assert out.to_ndarray().tolist() == ["a", "b", "c"]
+
+    @pytest.mark.parametrize(
+        "dtype, values, expected",
+        [
+            ("int64", ["1", "2", "3"], np.array([1, 2, 3], dtype=np.int64)),
+            ("float64", ["1.5", "2.0", "3.25"], np.array([1.5, 2.0, 3.25], dtype=np.float64)),
+            ("bool", ["True", "False", "True"], np.array([True, False, True], dtype=bool)),
+        ],
+    )
+    def test_string_array_astype_non_string_returns_extension_array(self, dtype, values, expected):
+        s = ArkoudaStringArray(ak.array(values))
+
+        out = s.astype(dtype)
+
+        # must not fall back to numpy for non-object casts
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+
+        np.testing.assert_array_equal(out.to_ndarray(), expected)
+
+    def test_string_array_astype_non_string_dtype_object_uses_numpy_dtype_normalization(self):
+        # This checks the `hasattr(dtype, "numpy_dtype")` normalization path.
+        # We use pandas' numpy dtype wrapper as a proxy (pd.Int64Dtype has numpy_dtype).
+        s = ArkoudaStringArray(ak.array(["1", "2", "3"]))
+
+        out = s.astype(pd.Int64Dtype())
+        assert isinstance(out, ArkoudaExtensionArray)
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
+
+    def test_string_array_astype_invalid_parse_raises(self):
+        s = ArkoudaStringArray(ak.array(["x", "2", "3"]))
+
+        # exact exception type depends on arkouda Strings.astype implementation
+        with pytest.raises(RuntimeError):
+            _ = s.astype("int64")
+
+    def test_string_array_astype_extensiondtype_stringdtype_returns_self_when_copy_false(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        out = s.astype(pd.StringDtype(), copy=False)
+        assert out is s
+
+    def test_string_array_astype_extensiondtype_stringdtype_copy_true_returns_new_array(self):
+        s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        out = s.astype(pd.StringDtype(), copy=True)
+        assert isinstance(out, ArkoudaStringArray)
+        assert out is not s
+        assert out.to_ndarray().tolist() == ["a", "b", "c"]
+
+    def test_string_array_astype_extensiondtype_numeric_casts_and_returns_extension_array(self):
+        s = ArkoudaStringArray(ak.array(["1", "2", "3"]))
+        out = s.astype(pd.Int64Dtype())  # ExtensionDtype path
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
 
 
 class TestArkoudaStringArrayEq:
