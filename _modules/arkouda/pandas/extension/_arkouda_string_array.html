@@ -378,6 +378,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_extension_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaStringDtype</span>
 
@@ -473,7 +476,40 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ArkoudaStringArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">other</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Elementwise equality for string arrays using pandas ExtensionArray semantics.</span>
+<span class="sd">        Returns ArkoudaArray of booleans.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
+
+        <span class="c1"># Case 1: ArkoudaStringArray</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ArkoudaStringArray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lengths must match for elementwise comparison&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+
+        <span class="c1"># Case 2: arkouda pdarray (should contain encoded string indices)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lengths must match for elementwise comparison&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+        <span class="c1"># Case 3: scalar (string or bytes)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">str_</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+        <span class="c1"># Case 4: numpy array or Python sequence</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">other_ak</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">other_ak</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other_ak</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">other_ak</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lengths must match for elementwise comparison&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other_ak</span><span class="p">)</span>
+
+        <span class="c1"># Case 5: unsupported type</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ArkoudaStringArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span>

@@ -109,6 +109,24 @@ Package Contents
    ArkoudaArray([10 20 30])
 
 
+   .. py:method:: all(axis=0, skipna=True, **kwargs)
+
+      Return whether all elements are True.
+
+      This is mainly to support pandas' BaseExtensionArray.equals, which
+      calls `.all()` on the result of a boolean expression.
+
+
+
+   .. py:method:: any(axis=0, skipna=True, **kwargs)
+
+      Return whether any element is True.
+
+      Added for symmetry with `.all()` and to support potential pandas
+      boolean-reduction calls.
+
+
+
    .. py:method:: astype(dtype, copy: bool = False)
 
       Cast to a NumPy array or ExtensionArray with 'dtype'.

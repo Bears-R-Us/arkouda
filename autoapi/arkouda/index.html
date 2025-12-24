@@ -1612,6 +1612,22 @@ Default is False.</p></li>
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.ArkoudaArray.all">
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.ArkoudaArray.all" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether all elements are True.</p>
+<p>This is mainly to support pandas’ BaseExtensionArray.equals, which
+calls <cite>.all()</cite> on the result of a boolean expression.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.ArkoudaArray.any">
+<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.ArkoudaArray.any" title="Link to this definition">¶</a></dt>
+<dd><p>Return whether any element is True.</p>
+<p>Added for symmetry with <cite>.all()</cite> and to support potential pandas
+boolean-reduction calls.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.ArkoudaArray.astype">
 <span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.ArkoudaArray.astype" title="Link to this definition">¶</a></dt>
 <dd><p>Cast to a NumPy array or ExtensionArray with ‘dtype’.</p>
@@ -21954,6 +21970,8 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.AllSymbols"><code class="docutils literal notranslate"><span class="pre">AllSymbols</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.ArkoudaArray"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.ArkoudaArray.default_fill_value"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.default_fill_value</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.ArkoudaArray.all"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.all()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.ArkoudaArray.any"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.any()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.ArkoudaArray.astype"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.astype()</span></code></a></li>
 <li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.default_fill_value</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.ArkoudaArray.dtype"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.dtype</span></code></a></li>

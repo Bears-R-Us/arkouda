@@ -372,11 +372,14 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># new</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_extension_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalDtype</span>
 
@@ -470,7 +473,38 @@
         <span class="k">return</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">)</span> <span class="k">else</span> <span class="n">other</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Elementwise equality for ArkoudaCategoricalArray.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+
+        <span class="c1"># Case 1: Categorical vs Categorical</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lengths must match for elementwise comparison&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+
+        <span class="c1"># Case 2: Categorical vs arkouda pdarray (e.g., codes or labels, depending on ak semantics)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lengths must match for elementwise comparison&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+        <span class="c1"># Case 3: scalar (string / category label / code)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other</span><span class="p">)</span>
+
+        <span class="c1"># Case 4: numpy array or Python sequence</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">other_ak</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">other_ak</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other_ak</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">other_ak</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Lengths must match for elementwise comparison&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other_ak</span><span class="p">)</span>
+
+        <span class="c1"># Case 5: unsupported type</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ArkoudaCategoricalArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span>
