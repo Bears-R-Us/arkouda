@@ -333,9 +333,7 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
         from arkouda.numpy.pdarraycreation import array as ak_array
         from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
-        from arkouda.pandas.extension._arkouda_array import ArkoudaArray
-        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
-        from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
+        from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
 
         # Fast path: already an Arkouda column. Pick the matching subclass.
         if isinstance(scalars, pdarray):
