@@ -8,6 +8,9 @@ import numpy as np
 from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
+from arkouda.numpy.dtypes import str_
+from arkouda.pandas.extension import ArkoudaArray
+
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import ArkoudaStringDtype
 
@@ -95,7 +98,40 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
         return zeros(self._data.size, dtype="bool")
 
     def __eq__(self, other):
-        return self._data == (other._data if isinstance(other, ArkoudaStringArray) else other)
+        """
+        Elementwise equality for string arrays using pandas ExtensionArray semantics.
+        Returns ArkoudaArray of booleans.
+        """
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
+        # Case 1: ArkoudaStringArray
+        if isinstance(other, ArkoudaStringArray):
+            if len(self) != len(other):
+                raise ValueError("Lengths must match for elementwise comparison")
+            return ArkoudaArray(self._data == other._data)
+
+        # Case 2: arkouda pdarray (should contain encoded string indices)
+        if isinstance(other, pdarray):
+            if other.size not in (1, len(self)):
+                raise ValueError("Lengths must match for elementwise comparison")
+            return ArkoudaArray(self._data == other)
+
+        # Case 3: scalar (string or bytes)
+        if isinstance(other, (str, str_)):
+            return ArkoudaArray(self._data == other)
+
+        # Case 4: numpy array or Python sequence
+        if isinstance(other, (list, tuple, np.ndarray)):
+            other_ak = ak_array(other)
+            if other_ak.size == 1:
+                return ArkoudaArray(self._data == other_ak[0])
+            if other_ak.size != len(self):
+                raise ValueError("Lengths must match for elementwise comparison")
+            return ArkoudaArray(self._data == other_ak)
+
+        # Case 5: unsupported type
+        return NotImplemented
 
     def __repr__(self):
         return f"ArkoudaStringArray({self._data})"

@@ -4,7 +4,8 @@ import pytest
 
 import arkouda as ak
 
-from arkouda.pandas.extension import ArkoudaStringArray, ArkoudaStringDtype
+from arkouda.numpy.pdarraycreation import array as ak_array
+from arkouda.pandas.extension import ArkoudaArray, ArkoudaStringArray, ArkoudaStringDtype
 from arkouda.testing import assert_equivalent
 
 
@@ -114,3 +115,122 @@ class TestArkoudaStringsExtension:
         s = pd.Series(pda.to_ndarray())
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data, s.take(idx1.to_ndarray()).to_numpy())
+
+
+class TestArkoudaStringArrayEq:
+    def _make(self, values):
+        """Helper to construct an ArkoudaStringArray from Python/NumPy values."""
+        # ak_array will give a Strings object, which ArkoudaStringArray accepts
+        return ArkoudaStringArray(ak_array(values))
+
+    def test_eq_string_array_same_length_all_equal(self):
+        left = self._make(["a", "b", "c"])
+        right = self._make(["a", "b", "c"])
+
+        result = left == right
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 3
+        assert result._data.dtype == "bool"
+        assert result._data.all()
+
+    def test_eq_string_array_same_length_some_unequal(self):
+        # [ "a", "b", "c", "d", "e" ]
+        left = self._make(["a", "b", "c", "d", "e"])
+        # [ "a", "x", "c", "y", "e" ] -> True, False, True, False, True
+        right = self._make(["a", "x", "c", "y", "e"])
+
+        result = left == right
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 5
+        assert result._data.dtype == "bool"
+
+        expected = np.array([True, False, True, False, True])
+        np.testing.assert_array_equal(result._data.to_ndarray(), expected)
+        assert result._data.sum() == 3
+
+    def test_eq_string_array_length_mismatch_raises(self):
+        left = self._make(["a", "b", "c"])
+        right = self._make(["a", "b", "c", "d"])
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = left == right
+
+    def test_eq_scalar_broadcast_string(self):
+        arr = self._make(["foo", "bar", "foo", "baz"])
+
+        result = arr == "foo"
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 4
+        assert result._data.dtype == "bool"
+
+        # positions 0 and 2 are "foo"
+        expected = np.array([True, False, True, False])
+        np.testing.assert_array_equal(result._data.to_ndarray(), expected)
+        assert result._data.sum() == 2
+
+    def test_eq_with_numpy_array(self):
+        arr = self._make(["a", "b", "c"])
+        other = np.array(["a", "x", "c"], dtype=object)
+
+        result = arr == other
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 3
+        assert result._data.dtype == "bool"
+
+        expected = np.array([True, False, True])
+        np.testing.assert_array_equal(result._data.to_ndarray(), expected)
+        assert result._data.sum() == 2
+
+    def test_eq_with_numpy_array_length_mismatch_raises(self):
+        arr = self._make(["a", "b", "c"])
+        other = np.array(["a", "b"], dtype=object)
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr == other
+
+    def test_eq_with_python_sequence(self):
+        arr = self._make(["a", "b", "c", "d"])
+        other = ["a", "x", "c", "y"]
+
+        result = arr == other
+
+        assert isinstance(result, ArkoudaArray)
+        assert result._data.size == 4
+        assert result._data.dtype == "bool"
+
+        expected = np.array([True, False, True, False])
+        np.testing.assert_array_equal(result._data.to_ndarray(), expected)
+        assert result._data.sum() == 2
+
+    def test_eq_with_python_sequence_length_mismatch_raises(self):
+        arr = self._make(["a", "b", "c"])
+        other = ["a", "b"]
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr == other
+
+    def test_eq_with_unsupported_type_returns_all_false(self):
+        arr = self._make(["a", "b", "c"])
+
+        result = arr == {"not": "comparable"}
+
+        assert result is False
+
+    def test_eq_with_python_sequence_len1_broadcasts_strings(self):
+        arr = ArkoudaStringArray(ak.array(["a", "b", "c", "d"]))
+        result = arr == ["c"]
+        assert result._data.sum() == 1  # only index 2
+
+    def test_eq_with_numpy_array_len1_broadcasts_strings(self):
+        arr = ArkoudaStringArray(ak.array(["a", "b", "c", "d"]))
+        result = arr == np.array(["c"], dtype=object)
+        assert result._data.sum() == 1
+
+    def test_eq_with_python_sequence_length_mismatch_raises_strings(self):
+        arr = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = arr == ["a", "b"]  # len 2, not 1 and not len(arr)

@@ -5,7 +5,7 @@ extend-select = F403
 
 # E203 whitespace before ':': intentionally ignored to prevent conflicts with ruff/black
 extend-ignore =
-    E203
+    E203,E712
 per-file-ignores =
     tests/operator_test.py: E501
     tests/symbol_table_test.py: F841
