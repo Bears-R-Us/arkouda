@@ -28,7 +28,7 @@ from arkouda.pandas.extension._dataframe_accessor import (
 
 
 class TestDataFrameAccessorInternals:
-    def test_extension_docstrings(self):
+    def test_dataframe_extension_docstrings(self):
         import doctest
 
         from arkouda.pandas.extension import _dataframe_accessor
