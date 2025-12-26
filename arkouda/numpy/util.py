@@ -300,7 +300,7 @@ def attach(name: str):
     ]
 
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
-    rtn_obj : Attachable | None = None
+    rtn_obj: Attachable | None = None
     if rep_msg["objType"].lower() == pdarray.objType.lower():
         rtn_obj = create_pdarray(rep_msg["create"])
     elif rep_msg["objType"].lower() == Strings.objType.lower():
