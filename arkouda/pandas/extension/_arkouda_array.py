@@ -198,9 +198,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         return isnan(self._data)
 
-    def any(self):
-        return self._data.any()
-
     @property
     def dtype(self):
         if self._data.dtype == "int64":
