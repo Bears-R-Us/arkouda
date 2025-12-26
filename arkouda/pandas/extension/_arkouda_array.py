@@ -194,9 +194,12 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         from arkouda.numpy.util import is_float
 
         if not is_float(self._data):
-            return ak_full(self._data.size, False, dtype=bool)
+            return ArkoudaArray(ak_full(self._data.size, False, dtype=bool))
 
         return isnan(self._data)
+
+    def any(self):
+        return self._data.any()
 
     @property
     def dtype(self):
