@@ -3392,6 +3392,23 @@ class pdarray:
 
 # end pdarray class def
 
+# overloads for create_pdarray
+
+@overload
+def create_pdarray(repMsg: str, max_bits: None = ...) -> pdarray: ...
+
+
+@overload
+def create_pdarray(repMsg: str, max_bits: int) -> pdarray: ...
+
+
+@overload
+def create_pdarray(repMsg: memoryview, max_bits: None = ...) -> pdarray: ...
+
+
+@overload
+def create_pdarray(repMsg: memoryview, max_bits: int) -> pdarray: ...
+
 
 # creates pdarray object
 #   only after:
@@ -3401,13 +3418,20 @@ class pdarray:
 def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
-    The user should not call this function directly.
+    This intended for internal use only.  The user should not call this function
+    directly.
 
     Parameters
     ----------
-    repMsg : str
-        space-delimited string containing the pdarray name, datatype, size
-        dimension, shape,and itemsize
+    repMsg : str, memoryview
+        a space-delimited response from the arkouda server describing a newly
+        created array.  The message encodes, in order, the array name, dtype,
+        total size, rank, shape, and itemsize.  If provides as a memoryview,
+        it will be decoded to a UTF-8 string before parsing.
+
+    max_bits: int, otional
+        The maximum number of bits used to represent values in the array,
+        used for bigint.
 
     Returns
     -------
