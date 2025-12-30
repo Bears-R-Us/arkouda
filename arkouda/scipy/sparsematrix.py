@@ -57,7 +57,7 @@ def random_sparse_matrix(
     if layout not in ["CSR", "CSC"]:
         raise ValueError("layout must be 'CSR' or 'CSC'")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"random_sparse_matrix<{akdtype(dtype)},{layout}>",
         args={
             "shape": tuple([size, size]),
@@ -65,7 +65,7 @@ def random_sparse_matrix(
         },
     )
 
-    return create_sparray(repMsg)
+    return create_sparray(rep_msg)
 
 
 @typechecked
@@ -91,12 +91,12 @@ def sparse_matrix_matrix_mult(A, B: sparray) -> sparray:
         raise TypeError("A and B must be sparrays for sparse_matrix_matrix_mult")
     if not A.dtype == B.dtype:
         raise ValueError("A and B must have the same dtype for sparse matrix multiplication")
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sparse_matrix_matrix_mult<{A.dtype}>",
         args={"arg1": A.name, "arg2": B.name},
     )
 
-    return create_sparray(repMsg)
+    return create_sparray(rep_msg)
 
 
 def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray, layout: str) -> sparray:
@@ -138,9 +138,9 @@ def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray,
         raise TypeError(f"unsupported dtype {vals.dtype}")
 
     shape = (size, size)
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sparse_matrix_from_pdarrays<{vals.dtype},{layout}>",
         args={"rows": rows.name, "cols": cols.name, "vals": vals.name, "shape": shape},
     )
 
-    return create_sparray(repMsg)
+    return create_sparray(rep_msg)

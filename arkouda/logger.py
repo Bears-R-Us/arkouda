@@ -26,7 +26,7 @@ ArkoudaLogger : Logger
 
 Functions
 ---------
-getArkoudaLogger(name, handlers=None, logFormat=None, logLevel=None)
+getArkoudaLogger(name, handlers=None, log_format=None, log_level=None)
     Instantiate a logger with customizable format and log level.
 
 getArkoudaClientLogger(name)
@@ -35,7 +35,7 @@ getArkoudaClientLogger(name)
 enableVerbose()
     Globally set all ArkoudaLoggers to DEBUG level.
 
-disableVerbose(logLevel=LogLevel.INFO)
+disableVerbose(log_level=LogLevel.INFO)
     Globally disable DEBUG output by setting all loggers to the specified level.
 
 write_log(log_msg, tag="ClientGeneratedLog", log_lvl=LogLevel.INFO)
@@ -57,6 +57,7 @@ See Also
 """
 
 import os
+import warnings
 
 from enum import Enum
 from logging import (
@@ -146,24 +147,25 @@ class ArkoudaLogger(Logger):
     def __init__(
         self,
         name: str,
-        logLevel: LogLevel = LogLevel.INFO,
+        log_level: LogLevel = LogLevel.INFO,
         handlers: Optional[List[Handler]] = None,
-        logFormat: Optional[str] = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s",
+        log_format: Optional[str] = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s",
+        **kwargs,
     ) -> None:
         """
-        Initialize the ArkoudaLogger with the name, level, logFormat, and handlers parameters.
+        Initialize the ArkoudaLogger with the name, level, log_format, and handlers parameters.
 
         Parameters
         ----------
         name : str
             The logger name, prepends all logging errors
-        logLevel : LogLevel
+        log_level : LogLevel
             The desired log level in the form of a LogLevel enum value, defaults
             to INFO
         handlers : List[Handler]
             A list of logging.Handler objects, if None, a list consisting of
             one StreamHandler named 'console-handler' is generated and configured
-        logFormat : str
+        log_format : str
             Defines the string template used to format all log messages,
             defaults to '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'
 
@@ -174,7 +176,7 @@ class ArkoudaLogger(Logger):
         Raises
         ------
         TypeError
-            Raised if name or logFormat is not a str, logLevel is not a LogLevel
+            Raised if name or log_format is not a str, log_level is not a LogLevel
             enum, or handlers is not a list of str objects
 
         Notes
@@ -198,15 +200,38 @@ class ArkoudaLogger(Logger):
         the individual handlers.
 
         """
+        if "logLevel" in kwargs:
+            if log_level is not None:
+                raise TypeError("Pass only one of 'logLevel' or 'log_level'")
+            warnings.warn(
+                "'logLevel' is deprecated; use 'log_level' instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            log_level = kwargs.pop("logLevel")
+
+        if "logFormat" in kwargs:
+            if log_format is not None:
+                raise TypeError("Pass only one of 'logFormat' or 'log_format'")
+            warnings.warn(
+                "'logFormat' is deprecated; use 'log_format' instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            log_format = kwargs.pop("logFormat")
+
+        if kwargs:
+            raise TypeError(f"Unexpected keyword argument(s): {', '.join(kwargs)}")
+
         Logger.__init__(self, name=name, level=DEBUG)
         if handlers is None:
             handler = cast(Handler, StreamHandler())
             handler.name = "console-handler"
-            handler.setLevel(logLevel.value)
+            handler.setLevel(log_level.value)
             handlers = [handler]
         for handler in handlers:
-            if logFormat:
-                handler.setFormatter(Formatter(logFormat))
+            if log_format:
+                handler.setFormatter(Formatter(log_format))
             self.addHandler(handler)
 
     @typechecked
@@ -235,23 +260,23 @@ class ArkoudaLogger(Logger):
         the named Handler object is changed.
 
         """
-        newLevel = ArkoudaLogger.levelMappings[level]
+        new_level = ArkoudaLogger.levelMappings[level]
         if handlerNames is None:
             # No handler names supplied, so setLevel for all handlers
             for handler in self.handlers:
-                handler.setLevel(newLevel)
+                handler.setLevel(new_level)
         else:
             # setLevel for the named handlers
             for name, handler in zip(handlerNames, self.handlers):
                 if name == handler.name:
-                    handler.setLevel(newLevel)
+                    handler.setLevel(new_level)
 
     def enableVerbose(self) -> None:
         """Enable verbose output by setting the log level for all handlers to DEBUG."""
         self.changeLogLevel(LogLevel.DEBUG)
 
     @typechecked
-    def disableVerbose(self, logLevel: LogLevel = LogLevel.INFO) -> None:
+    def disableVerbose(self, log_level: LogLevel = LogLevel.INFO, **kwargs) -> None:
         """
         Disables verbose output.
 
@@ -260,17 +285,29 @@ class ArkoudaLogger(Logger):
 
         Parameters
         ----------
-        logLevel : LogLevel, defaults to LogLevel.INFO
+        log_level : LogLevel, defaults to LogLevel.INFO
             The desired log level that will disable verbose output (logging at
             the DEBUG level) by resetting the log level for all handlers.
 
         Raises
         ------
         TypeError
-            Raised if logLevel is not a LogLevel enum
+            Raised if log_level is not a LogLevel enum
 
         """
-        self.changeLogLevel(logLevel)
+        if "logLevel" in kwargs:
+            if log_level is not None:
+                raise TypeError("Pass only one of 'logLevel' or 'log_level'")
+            warnings.warn(
+                "'logLevel' is deprecated; use 'log_level' instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            log_level = kwargs.pop("logLevel")
+
+        if kwargs:
+            raise TypeError(f"Unexpected keyword argument(s): {', '.join(kwargs)}")
+        self.changeLogLevel(log_level)
 
     @typechecked
     def getHandler(self, name: str) -> Handler:
@@ -305,8 +342,9 @@ class ArkoudaLogger(Logger):
 def getArkoudaLogger(
     name: str,
     handlers: Optional[List[Handler]] = None,
-    logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT,
-    logLevel: Optional[LogLevel] = None,
+    log_format: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT,
+    log_level: Optional[LogLevel] = None,
+    **kwargs,
 ) -> ArkoudaLogger:
     """
     Instantiate an ArkoudaLogger that retrieves the logging level from ARKOUDA_LOG_LEVEL env variable.
@@ -318,7 +356,7 @@ def getArkoudaLogger(
     handlers : List[Handler]
         A list of logging.Handler objects, if None, a list consisting of
         one StreamHandler named 'console-handler' is generated and configured
-    logFormat : str
+    log_format : str
         The format for log messages, defaults to the following format:
         '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'
 
@@ -329,7 +367,7 @@ def getArkoudaLogger(
     Raises
     ------
     TypeError
-        Raised if either name or logFormat is not a str object or if handlers
+        Raised if either name or log_format is not a str object or if handlers
         is not a list of str objects
 
     Notes
@@ -340,10 +378,22 @@ def getArkoudaLogger(
     and updates for the specified handler.
 
     """
-    if not logLevel:
-        logLevel = LogLevel(os.getenv("ARKOUDA_LOG_LEVEL", LogLevel("INFO")))
+    if "logFormat" in kwargs:
+        if log_format is not None and kwargs["logFormat"] is not None:
+            raise TypeError("Pass only one of logFormat or log_format")
+        warnings.warn("logFormat is deprecated; use log_format", DeprecationWarning, stacklevel=2)
+        log_format = kwargs.pop("logFormat")
 
-    logger = ArkoudaLogger(name=name, handlers=handlers, logFormat=logFormat, logLevel=logLevel)
+    if "logLevel" in kwargs:
+        if log_level is not None and kwargs["logLevel"] is not None:
+            raise TypeError("Pass only one of logLevel or log_level")
+        warnings.warn("logLevel is deprecated; use log_level", DeprecationWarning, stacklevel=2)
+        log_level = kwargs.pop("logLevel")
+
+    if not log_level:
+        log_level = LogLevel(os.getenv("ARKOUDA_LOG_LEVEL", LogLevel("INFO")))
+
+    logger = ArkoudaLogger(name=name, handlers=handlers, log_format=log_format, log_level=log_level)
     loggers[logger.name] = logger
     return logger
 
@@ -378,7 +428,7 @@ def getArkoudaClientLogger(name: str) -> ArkoudaLogger:
     confirmation of successful login or pdarray creation
 
     """
-    return getArkoudaLogger(name=name, logFormat=ArkoudaLogger.CLIENT_LOG_FORMAT)
+    return getArkoudaLogger(name=name, log_format=ArkoudaLogger.CLIENT_LOG_FORMAT)
 
 
 def enableVerbose() -> None:
@@ -388,26 +438,39 @@ def enableVerbose() -> None:
 
 
 @typechecked
-def disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None:
+def disableVerbose(log_level: LogLevel = LogLevel.INFO, **kwargs) -> None:
     """
     Disables verbose logging.
 
     Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
-    the log level for each to the logLevel parameter.
+    the log level for each to the log_level parameter.
 
     Parameters
     ----------
-    logLevel : LogLevel
+    log_level : LogLevel
         The new log level, defaultts to LogLevel.INFO
 
     Raises
     ------
     TypeError
-        Raised if logLevel is not a LogLevel enum
+        Raised if log_level is not a LogLevel enum
 
     """
+    if "logLevel" in kwargs:
+        if log_level is not None:
+            raise TypeError("Pass only one of 'logLevel' or 'log_level'")
+        warnings.warn(
+            "'logLevel' is deprecated; use 'log_level' instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        log_level = kwargs.pop("logLevel")
+
+    if kwargs:
+        raise TypeError(f"Unexpected keyword argument(s): {', '.join(kwargs)}")
+
     for logger in loggers.values():
-        logger.disableVerbose(logLevel)
+        logger.disableVerbose(log_level)
 
 
 @typechecked

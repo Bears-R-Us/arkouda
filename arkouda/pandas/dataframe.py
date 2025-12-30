@@ -1253,7 +1253,7 @@ class DataFrame(UserDict):
             else:
                 msg_list.append(f"pdarray+{col}+{self[col].name}")
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="dataframe_idx",
@@ -1264,10 +1264,10 @@ class DataFrame(UserDict):
                 },
             ),
         )
-        msgList = json.loads(repMsg)
+        msg_list = json.loads(rep_msg)
 
         df_dict = {}
-        for m in msgList:
+        for m in msg_list:
             # Split to [datatype, column, create]
             msg = m.split("+", 2)
             t = msg[0]
@@ -1367,7 +1367,7 @@ class DataFrame(UserDict):
             else:
                 msg_list.append(f"pdarray+{col}+{self[col].name}")
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="sendDataframe",
@@ -1380,7 +1380,7 @@ class DataFrame(UserDict):
                 },
             ),
         )
-        return repMsg
+        return rep_msg
 
     def _shape_str(self):
         return f"{self._nrows} rows x {self._ncols()} columns"
@@ -2665,25 +2665,25 @@ class DataFrame(UserDict):
                 nbytes += val.codes.nbytes
                 nbytes += val.categories.nbytes
 
-        KB = 1024
-        MB = KB * KB
-        GB = MB * KB
+        kb = 1024
+        mb = kb * kb
+        gb = mb * kb
 
         # Get units that make the most sense.
         msg = ""
-        if nbytes < KB:
+        if nbytes < kb:
             msg = "{:,} B".format(nbytes)
-        elif nbytes < MB:
-            msg = "{:,} KB".format(int(nbytes / KB))
-        elif nbytes < GB:
-            msg = "{:,} MB".format(int(nbytes / MB))
+        elif nbytes < mb:
+            msg = "{:,} KB".format(int(nbytes / kb))
+        elif nbytes < gb:
+            msg = "{:,} MB".format(int(nbytes / mb))
             sys.stdout.write(f"This transfer will use {msg} .")
         else:
-            msg = "{:,} GB".format(int(nbytes / GB))
+            msg = "{:,} GB".format(int(nbytes / gb))
             sys.stdout.write(f"This will transfer {msg} from arkouda to pandas.")
         # If the total memory transfer requires more than `datalimit` per
         # column, we will warn the user and return.
-        if nbytes > (datalimit * len(self._columns) * MB):
+        if nbytes > (datalimit * len(self._columns) * mb):
             msg = f"This operation would transfer more than {datalimit} bytes."
             warn(msg, UserWarning)
             return None
@@ -2900,7 +2900,7 @@ class DataFrame(UserDict):
             str(obj.categories.dtype) if isinstance(obj, Categorical_) else str(obj.dtype)
             for obj in self.values()
         ]
-        col_objTypes = [
+        col_obj_types = [
             obj.special_objType if hasattr(obj, "special_objType") else obj.objType
             for obj in self.values()
         ]
@@ -2916,7 +2916,7 @@ class DataFrame(UserDict):
                     "objType": self.objType,
                     "num_cols": len(self.columns.values),
                     "column_names": self.columns.values,
-                    "column_objTypes": col_objTypes,
+                    "column_objTypes": col_obj_types,
                     "column_dtypes": dtypes,
                     "columns": column_data,
                     "index": self.index.values.name,
@@ -4639,7 +4639,7 @@ class DataFrame(UserDict):
             for obj in self.values()
         ]
 
-        col_objTypes = [
+        col_obj_types = [
             obj.special_objType if hasattr(obj, "special_objType") else obj.objType
             for obj in self.values()
         ]
@@ -4653,7 +4653,7 @@ class DataFrame(UserDict):
                 "num_cols": len(self.columns.values),
                 "column_names": self.columns.values,
                 "columns": column_data,
-                "col_objTypes": col_objTypes,
+                "col_objTypes": col_obj_types,
             },
         )
         self.registered_name = user_defined_name
@@ -4776,18 +4776,18 @@ class DataFrame(UserDict):
             (columnName, columnType)
 
         """
-        nameParts = entryName.split(" ")
-        regName = nameParts[1] if len(nameParts) > 1 else nameParts[0]
-        colParts = regName.split("_")
-        colType = colParts[2]
+        name_parts = entryName.split(" ")
+        reg_name = name_parts[1] if len(name_parts) > 1 else name_parts[0]
+        col_parts = reg_name.split("_")
+        col_type = col_parts[2]
 
         # Case of '_' in the column or dataframe name
-        if len(colParts) > 5:
-            nameInd = regName.rindex(dfName) - 1
-            startInd = len(colType) + 9
-            return regName[startInd:nameInd], colType
+        if len(col_parts) > 5:
+            name_ind = reg_name.rindex(dfName) - 1
+            start_ind = len(col_type) + 9
+            return reg_name[start_ind:name_ind], col_type
         else:
-            return colParts[3], colType
+            return col_parts[3], col_type
 
     @classmethod
     def from_return_msg(cls, rep_msg):

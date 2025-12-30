@@ -70,9 +70,9 @@ def broadcast_arrays(*arrays: Array) -> List[Array]:
     from arkouda.numpy.util import broadcast_shapes
 
     shapes = [a.shape for a in arrays]
-    bcShape = broadcast_shapes(*shapes)
+    bc_shape = broadcast_shapes(*shapes)
 
-    return [broadcast_to(a, shape=bcShape) for a in arrays]
+    return [broadcast_to(a, shape=bc_shape) for a in arrays]
 
 
 @implements_numpy(np.broadcast_to)
@@ -293,9 +293,9 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
     from arkouda.client import generic_msg
     from arkouda.numpy.util import _axis_validation
 
-    axisList = []
+    axis_list = []
     if axis is not None:
-        valid, axisList = _axis_validation(axis, x.ndim)
+        valid, axis_list = _axis_validation(axis, x.ndim)
         if not valid:
             raise IndexError(f"{axis} is not a valid axis/axes for array of rank {x.ndim}")
 
@@ -312,8 +312,8 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
                         ),
                         args={
                             "name": x._array,
-                            "nAxes": len(axisList),
-                            "axis": axisList,
+                            "nAxes": len(axis_list),
+                            "axis": axis_list,
                         },
                     ),
                 )
@@ -610,9 +610,9 @@ def roll(
     if isinstance(shift, tuple) and isinstance(axis, tuple) and (len(axis) != len(shift)):
         raise IndexError("When shift and axis are both tuples, they must have the same length.")
 
-    axisList = []
+    axis_list = []
     if axis is not None:
-        valid, axisList = _axis_validation(axis, x.ndim)
+        valid, axis_list = _axis_validation(axis, x.ndim)
         if not valid:
             raise IndexError(f"{axis} is not a valid axis/axes for array of rank {x.ndim}")
 
@@ -631,8 +631,8 @@ def roll(
                             "name": x._array,
                             "nShifts": len(shift) if isinstance(shift, tuple) else 1,
                             "shift": (list(shift) if isinstance(shift, tuple) else [shift]),
-                            "nAxes": len(axisList),
-                            "axis": axisList,
+                            "nAxes": len(axis_list),
+                            "axis": axis_list,
                         },
                     ),
                 )

@@ -113,7 +113,7 @@ def _in1d_single(
             raise TypeError("in1d does not support multi-dim inputs")
         if pda1.dtype == bigint and pda2.dtype == bigint:
             return in1d(pda1.bigint_to_uint_arrays(), pda2.bigint_to_uint_arrays(), invert=invert)
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="in1d",
             args={
                 "pda1": pda1,
@@ -121,9 +121,9 @@ def _in1d_single(
                 "invert": invert,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedIn1d",
             args={
                 "objType": pda1.objType,
@@ -133,7 +133,7 @@ def _in1d_single(
                 "invert": invert,
             },
         )
-        return create_pdarray(cast(str, repMsg))
+        return create_pdarray(cast(str, rep_msg))
     else:
         raise TypeError("Both pda1 and pda2 must be pdarray, Strings, or Categorical")
 
@@ -488,7 +488,7 @@ def concatenate(
         valid, axis_ = _integer_axis_validation(axis, arrays[0].ndim)
         if not valid:
             raise IndexError(f"{axis} is not a valid axis for array of rank {arrays[0].ndim}")
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"concatenate<{akdtype(dtype_).name},{arrays[0].ndim}>",
             args={
                 "names": list(arrays),
@@ -496,12 +496,12 @@ def concatenate(
                 "offsets": offsets,
             })
         if dtype_ == bigint:
-            ret = create_pdarray(cast(str, repMsg))
+            ret = create_pdarray(cast(str, rep_msg))
             ret.max_bits = m_bits
             return callback(ret)
-        return callback(create_pdarray(cast(str, repMsg)))
+        return callback(create_pdarray(cast(str, rep_msg)))
     elif objtype == Strings.objType or not ordered:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="concatenateStr",
             args={
                 "objType": objtype,
@@ -509,10 +509,10 @@ def concatenate(
                 "mode": mode,
             })
         if objtype == pdarray.objType:
-            return callback(create_pdarray(cast(str, repMsg)))
+            return callback(create_pdarray(cast(str, rep_msg)))
         elif objtype == Strings.objType:
             # ConcatenateMsg returns created attrib(name)+created nbytes=123
-            return Strings.from_return_msg(cast(str, repMsg))
+            return Strings.from_return_msg(cast(str, rep_msg))
         else:
             raise TypeError("arrays must be an array of pdarray or Strings objects")
     else:
@@ -542,8 +542,8 @@ def multiarray_setop_validation(
 # (A | B) Set Union: elements are in one or the other or both
 @typechecked
 def union1d(
-    A: groupable,
-    B: groupable,
+    ar1: groupable,
+    ar2: groupable,
 ) -> groupable:
     """
     Find the union of two arrays/List of Arrays.
@@ -553,8 +553,8 @@ def union1d(
 
     Parameters
     ----------
-    A : list of pdarrays, pdarray, Strings, or Categorical
-    B : list of pdarrays, pdarray, Strings, or Categorical
+    ar1 : list of pdarrays, pdarray, Strings, or Categorical
+    ar2 : list of pdarrays, pdarray, Strings, or Categorical
 
     Returns
     -------
@@ -564,7 +564,7 @@ def union1d(
     Raises
     ------
     TypeError
-        Raised if either A or B is not a groupable
+        Raised if either ar1 or ar2 is not a groupable
     RuntimeError
         Raised if the dtype of either input is not supported
 
@@ -596,24 +596,24 @@ def union1d(
     from arkouda.pandas.categorical import Categorical as Categorical_
 
     if (
-        isinstance(A, (pdarray, Strings, Categorical_))
-        and isinstance(B, (pdarray, Strings, Categorical_))
-        and type(A) is type(B)
+        isinstance(ar1, (pdarray, Strings, Categorical_))
+        and isinstance(ar2, (pdarray, Strings, Categorical_))
+        and type(ar1) is type(ar2)
     ):
-        if A.size == 0:
-            return B  # union is B
-        if B.size == 0:
-            return A  # union is A
-        if A.dtype == int and B.dtype == int or (A.dtype == akuint64 and B.dtype == akuint64):
-            repMsg = generic_msg(cmd="union1d", args={"arg1": A, "arg2": B})
-            return cast(pdarray, create_pdarray(repMsg))
-        x = cast(pdarray, unique(cast(pdarray, concatenate((unique(A), unique(B)), ordered=False))))
+        if ar1.size == 0:
+            return ar2  # union is ar2
+        if ar2.size == 0:
+            return ar1  # union is ar1
+        if ar1.dtype == int and ar2.dtype == int or (ar1.dtype == akuint64 and ar2.dtype == akuint64):
+            rep_msg = generic_msg(cmd="union1d", args={"arg1": ar1, "arg2": ar2})
+            return cast(pdarray, create_pdarray(rep_msg))
+        x = cast(pdarray, unique(cast(pdarray, concatenate((unique(ar1), unique(ar2)), ordered=False))))
         return x[argsort(x)]
-    elif isinstance(A, Sequence) and isinstance(B, Sequence):
-        multiarray_setop_validation(A, B)
-        ag = GroupBy(A)
+    elif isinstance(ar1, Sequence) and isinstance(ar2, Sequence):
+        multiarray_setop_validation(ar1, ar2)
+        ag = GroupBy(ar1)
         ua = ag.unique_keys
-        bg = GroupBy(B)
+        bg = GroupBy(ar2)
         ub = bg.unique_keys
 
         c = [concatenate(x, ordered=False) for x in zip(ua, ub)]
@@ -622,13 +622,15 @@ def union1d(
         return list(k)
     else:
         raise TypeError(
-            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"
         )
 
 
 # (A & B) Set Intersection: elements have to be in both arrays
 @typechecked
-def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
+def intersect1d(
+    ar1: groupable, ar2: groupable, assume_unique: bool = False
+) -> Union[pdarray, groupable]:
     """
     Find the intersection of two arrays.
 
@@ -636,8 +638,8 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
 
     Parameters
     ----------
-    A : list of pdarrays, pdarray, Strings, or Categorical
-    B : list of pdarrays, pdarray, Strings, or Categorical
+    ar1 : list of pdarrays, pdarray, Strings, or Categorical
+    ar2 : list of pdarrays, pdarray, Strings, or Categorical
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
@@ -650,7 +652,7 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     Raises
     ------
     TypeError
-        Raised if either A or B is not a groupable
+        Raised if either ar1 or ar2 is not a groupable
     RuntimeError
         Raised if the dtype of either pdarray is not supported
 
@@ -686,39 +688,41 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
     ub: groupable
 
     if (
-        isinstance(A, (pdarray, Strings, Categorical_))
-        and isinstance(B, (pdarray, Strings, Categorical_))
-        and type(A) is type(B)
+        isinstance(ar1, (pdarray, Strings, Categorical_))
+        and isinstance(ar2, (pdarray, Strings, Categorical_))
+        and type(ar1) is type(ar2)
     ):
-        if A.size == 0:
-            return A  # nothing in the intersection
-        if B.size == 0:
-            return B  # nothing in the intersection
-        if (A.dtype == int and B.dtype == int) or (A.dtype == akuint64 and B.dtype == akuint64):
-            repMsg = generic_msg(
-                cmd="intersect1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
+        if ar1.size == 0:
+            return ar1  # nothing in the intersection
+        if ar2.size == 0:
+            return ar2  # nothing in the intersection
+        if (ar1.dtype == int and ar2.dtype == int) or (ar1.dtype == akuint64 and ar2.dtype == akuint64):
+            rep_msg = generic_msg(
+                cmd="intersect1d", args={"arg1": ar1, "arg2": ar2, "assume_unique": assume_unique}
             )
-            return create_pdarray(cast(str, repMsg))
+            return create_pdarray(cast(str, rep_msg))
         if not assume_unique:
-            A = cast(pdarray, unique(A))
-            B = cast(pdarray, unique(B))
-        aux = concatenate((A, B), ordered=False)
+            ar1 = cast(pdarray, unique(ar1))
+            ar2 = cast(pdarray, unique(ar2))
+        aux = concatenate((ar1, ar2), ordered=False)
         aux_sort_indices = argsort(aux)
         aux = aux[aux_sort_indices]
         mask = aux[1:] == aux[:-1]
         int1d = aux[:-1][mask]
         return int1d
-    elif (isinstance(A, list) or isinstance(A, tuple)) and (isinstance(B, list) or isinstance(B, tuple)):
-        multiarray_setop_validation(A, B)
+    elif (isinstance(ar1, list) or isinstance(ar1, tuple)) and (
+        isinstance(ar2, list) or isinstance(ar2, tuple)
+    ):
+        multiarray_setop_validation(ar1, ar2)
 
         if not assume_unique:
-            ag = GroupBy(A)
+            ag = GroupBy(ar1)
             ua = ag.unique_keys
-            bg = GroupBy(B)
+            bg = GroupBy(ar2)
             ub = bg.unique_keys
         else:
-            ua = A
-            ub = B
+            ua = ar1
+            ub = ar1
 
         # Key for deinterleaving result
         isa = concatenate(
@@ -737,13 +741,13 @@ def intersect1d(A: groupable, B: groupable, assume_unique: bool = False) -> Unio
         return [x[in_union] for x in k]
     else:
         raise TypeError(
-            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"
         )
 
 
 # (A - B) Set Difference: elements have to be in first array but not second
 @typechecked
-def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
+def setdiff1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set difference of two arrays.
 
@@ -751,8 +755,8 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
 
     Parameters
     ----------
-    A : list of pdarrays, pdarray, Strings, or Categorical
-    B : list of pdarrays, pdarray, Strings, or Categorical
+    ar1 : list of pdarrays, pdarray, Strings, or Categorical
+    ar2 : list of pdarrays, pdarray, Strings, or Categorical
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
@@ -760,12 +764,12 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
     Returns
     -------
     pdarray/groupable
-        Sorted 1D array/List of sorted pdarrays of values in `A` that are not in `B`.
+        Sorted 1D array/List of sorted pdarrays of values in `ar1` that are not in `ar2`.
 
     Raises
     ------
     TypeError
-        Raised if either A or B is not a pdarray
+        Raised if either ar1 or ar2 is not a pdarray
     RuntimeError
         Raised if the dtype of either pdarray is not supported
 
@@ -805,35 +809,37 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
     ub: groupable
 
     if (
-        isinstance(A, (pdarray, Strings, Categorical_))
-        and isinstance(B, (pdarray, Strings, Categorical_))
-        and type(A) is type(B)
+        isinstance(ar1, (pdarray, Strings, Categorical_))
+        and isinstance(ar2, (pdarray, Strings, Categorical_))
+        and type(ar1) is type(ar2)
     ):
-        if A.size == 0:
-            return A  # return a zero length pdarray
-        if B.size == 0:
-            return A  # subtracting nothing return orig pdarray
-        if (A.dtype == int and B.dtype == int) or (A.dtype == akuint64 and B.dtype == akuint64):
-            repMsg = generic_msg(
-                cmd="setdiff1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
+        if ar1.size == 0:
+            return ar1  # return a zero length pdarray
+        if ar2.size == 0:
+            return ar1  # subtracting nothing return orig pdarray
+        if (ar1.dtype == int and ar2.dtype == int) or (ar1.dtype == akuint64 and ar2.dtype == akuint64):
+            rep_msg = generic_msg(
+                cmd="setdiff1d", args={"arg1": ar1, "arg2": ar2, "assume_unique": assume_unique}
             )
-            return create_pdarray(cast(str, repMsg))
+            return create_pdarray(cast(str, rep_msg))
         if not assume_unique:
-            A = cast(pdarray, unique(A))
-            B = cast(pdarray, unique(B))
-        x = A[in1d(A, B, invert=True)]
+            a = cast(pdarray, unique(ar1))
+            b = cast(pdarray, unique(ar2))
+        x = a[in1d(a, b, invert=True)]
         return x[argsort(x)]
-    elif (isinstance(A, list) or isinstance(A, tuple)) and (isinstance(B, list) or isinstance(B, tuple)):
-        multiarray_setop_validation(A, B)
+    elif (isinstance(ar1, list) or isinstance(ar1, tuple)) and (
+        isinstance(ar2, list) or isinstance(ar2, tuple)
+    ):
+        multiarray_setop_validation(ar1, ar2)
 
         if not assume_unique:
-            ag = GroupBy(A)
+            ag = GroupBy(ar1)
             ua = ag.unique_keys
-            bg = GroupBy(B)
+            bg = GroupBy(ar2)
             ub = bg.unique_keys
         else:
-            ua = A
-            ub = B
+            ua = ar1
+            ub = ar2
 
         # Key for deinterleaving result
         isa = concatenate(
@@ -853,13 +859,13 @@ def setdiff1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[
         return [x[atruth] for x in ua]
     else:
         raise TypeError(
-            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"
         )
 
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 @typechecked
-def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
+def setxor1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Union[pdarray, groupable]:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
 
@@ -868,8 +874,8 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
 
     Parameters
     ----------
-    A : list of pdarrays, pdarray, Strings, or Categorical
-    B : list of pdarrays, pdarray, Strings, or Categorical
+    ar1 : list of pdarrays, pdarray, Strings, or Categorical
+    ar2 : list of pdarrays, pdarray, Strings, or Categorical
     assume_unique : bool
         If True, the input arrays are both assumed to be unique, which
         can speed up the calculation.  Default is False.
@@ -883,7 +889,7 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
     Raises
     ------
     TypeError
-        Raised if either A or B is not a groupable
+        Raised if either ar1 or ar2 is not a groupable
     RuntimeError
         Raised if the dtype of either pdarray is not supported
 
@@ -915,38 +921,40 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
     ub: groupable
 
     if (
-        isinstance(A, (pdarray, Strings, Categorical_))
-        and isinstance(B, (pdarray, Strings, Categorical_))
-        and type(A) is type(B)
+        isinstance(ar1, (pdarray, Strings, Categorical_))
+        and isinstance(ar2, (pdarray, Strings, Categorical_))
+        and type(ar1) is type(ar2)
     ):
-        if A.size == 0:
-            return B  # return other pdarray if A is empty
-        if B.size == 0:
-            return A  # return other pdarray if B is empty
-        if (A.dtype == int and B.dtype == int) or (A.dtype == akuint64 and B.dtype == akuint64):
-            repMsg = generic_msg(
-                cmd="setxor1d", args={"arg1": A, "arg2": B, "assume_unique": assume_unique}
+        if ar1.size == 0:
+            return ar2  # return other pdarray if A is empty
+        if ar2.size == 0:
+            return ar1  # return other pdarray if B is empty
+        if (ar1.dtype == int and ar2.dtype == int) or (ar1.dtype == akuint64 and ar2.dtype == akuint64):
+            rep_msg = generic_msg(
+                cmd="setxor1d", args={"arg1": ar1, "arg2": ar2, "assume_unique": assume_unique}
             )
-            return create_pdarray(cast(str, repMsg))
+            return create_pdarray(cast(str, rep_msg))
         if not assume_unique:
-            A = cast(pdarray, unique(A))
-            B = cast(pdarray, unique(B))
-        aux = concatenate((A, B), ordered=False)
+            ar1 = cast(pdarray, unique(ar1))
+            ar2 = cast(pdarray, unique(ar2))
+        aux = concatenate((ar1, ar2), ordered=False)
         aux_sort_indices = argsort(aux)
         aux = aux[aux_sort_indices]
         flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
         return aux[flag[1:] & flag[:-1]]
-    elif (isinstance(A, list) or isinstance(A, tuple)) and (isinstance(B, list) or isinstance(B, tuple)):
-        multiarray_setop_validation(A, B)
+    elif (isinstance(ar1, list) or isinstance(ar1, tuple)) and (
+        isinstance(ar2, list) or isinstance(ar2, tuple)
+    ):
+        multiarray_setop_validation(ar1, ar2)
 
         if not assume_unique:
-            ag = GroupBy(A)
+            ag = GroupBy(ar1)
             ua = ag.unique_keys
-            bg = GroupBy(B)
+            bg = GroupBy(ar2)
             ub = bg.unique_keys
         else:
-            ua = A
-            ub = B
+            ua = ar1
+            ub = ar2
 
         # Key for deinterleaving result
         isa = concatenate(
@@ -965,5 +973,5 @@ def setxor1d(A: groupable, B: groupable, assume_unique: bool = False) -> Union[p
         return [x[single] for x in k]
     else:
         raise TypeError(
-            f"Both A and B must be pdarray, List, or Tuple. Received {type(A)} and {type(B)}"
+            f"Both A and B must be pdarray, List, or Tuple. Received {type(ar1)} and {type(ar2)}"
         )

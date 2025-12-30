@@ -172,8 +172,8 @@ def _mem_get_factor(unit: str) -> int:
         )
 
 
-logger = getArkoudaLogger(name="Arkouda Client", logLevel=LogLevel.INFO)
-clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message)s")
+logger = getArkoudaLogger(name="Arkouda Client", log_level=LogLevel.INFO)
+clientLogger = getArkoudaLogger(name="Arkouda User Logger", log_format="%(message)s")
 
 
 class ClientMode(Enum):
@@ -1452,8 +1452,8 @@ def get_server_commands() -> Mapping[str, str]:
 
 def print_server_commands():
     """Print the list of available server commands."""
-    cmdMap = get_server_commands()
-    cmds = [k for k in sorted(cmdMap.keys())]
+    cmd_map = get_server_commands()
+    cmds = [k for k in sorted(cmd_map.keys())]
     sys.stdout.write(f"Total available server commands: {len(cmds)}")
     for cmd in cmds:
         sys.stdout.write(f"\t{cmd}")
