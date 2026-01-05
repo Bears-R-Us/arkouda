@@ -148,24 +148,26 @@ module OperatorMsg
              "cmd: %? op: %? left pdarray: %? scalar: %?".format(
                                           cmd,op,st.attrib(msgArgs['a'].val), val));
 
-        // This probably doesn't handle all normal bigint cases, but it handles a decent number.
-        // This, at least, can be expanded when BinOp.chpl is cleaned up
-        // It will be reasonably straightforward to clean up here.
+        // At this point it should handle almost every bigint case
 
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
-                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
+                op != '/'
         {
           if boolOps.contains(op) {
-            // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
           }
           // call bigint specific func which returns dist bigint array
           const (tmp, max_bits) = doBigIntBinOpvs(l, val, op);
           return st.insert(new shared SymEntry(tmp, max_bits));
-        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
-          const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
+        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+                    (isRealType(binop_dtype_a) || isRealType(binop_dtype_b)) &&
+                    boolOps.contains(op) {
+          // call bigint specific func which returns distr bool array
+          return st.insert(new shared SymEntry(doBigIntBinOpvsBoolReturnRealInput(l.a, val, op)));
+        }
+        else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
+          return st.insert(new shared SymEntry(doBigIntBinOpvsRealReturn(l, val, op)));
         }
 
         if boolOps.contains(op) {
@@ -205,6 +207,7 @@ module OperatorMsg
         }
 
         return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, returnType, op, pn, st);
+
     }
 
     /*
@@ -236,24 +239,26 @@ module OperatorMsg
                  "cmd: %? op = %? scalar dtype = %? scalar = %? pdarray = %?".format(
                                    cmd,op,type2str(binop_dtype_b),msgArgs['value'].val,st.attrib(msgArgs['a'].val)));
 
-        // This probably doesn't handle all normal bigint cases, but it handles a decent number.
-        // This, at least, can be expanded when BinOp.chpl is cleaned up
-        // It will be reasonably straightforward to clean up here.
+        // At this point it should handle almost every bigint case
 
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
-                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
+                !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
+                op != '/'
         {
           if boolOps.contains(op) {
-            // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
           }
           // call bigint specific func which returns dist bigint array
           const (tmp, max_bits) = doBigIntBinOpsv(val, r, op);
           return st.insert(new shared SymEntry(tmp, max_bits));
-        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
-          const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
-          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
+        } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
+                    (isRealType(binop_dtype_a) || isRealType(binop_dtype_b)) &&
+                    boolOps.contains(op) {
+          // call bigint specific func which returns distr bool array
+          return st.insert(new shared SymEntry(doBigIntBinOpsvBoolReturnRealInput(val, r.a, op)));
+        }
+        else if (binop_dtype_a == bigint || binop_dtype_b == bigint) {
+          return st.insert(new shared SymEntry(doBigIntBinOpsvRealReturn(val, r, op)));
         }
 
         if boolOps.contains(op) {
@@ -293,7 +298,81 @@ module OperatorMsg
         }
 
         return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, returnType, op, pn, st);
+
     }
+
+    // --- NumPy-ish casting helpers for in-place ufunc semantics (casting='same_kind') ---
+    // These are because casting is a little different for things like += (vs. +)
+
+    proc isArithInplaceOp(op: string): bool {
+      return op == "+=" || op == "-=" || op == "*=" ||
+            op == "//=" || op == "%=" || op == "**=";
+    }
+
+    proc isBitInplaceOp(op: string): bool {
+      return op == "&=" || op == "|=" || op == "^=" ||
+            op == "<<=" || op == ">>=";
+    }
+
+    proc numpyLikeOpeqGate(type lhsT, type rhsT, op: string): int {
+      const isArith = isArithInplaceOp(op);
+      const isBit   = isBitInplaceOp(op);
+      if !isArith && !isBit then return 3;
+
+      param kL = splitType(lhsT);
+      param kR = splitType(rhsT);
+
+      // Float LHS: arithmetic ok, bitwise/shifts TypeError; float op= bigint => UFuncTypeError
+      if lhsT == real(64) {
+        if kR == 4 then return 2;
+        return if isBit then 1 else 0;
+      }
+
+      // Bool LHS special-case
+      if lhsT == bool {
+        if rhsT != bool then return 2;
+        // bool op= bool:
+        if op == "-=" then return 1;
+        if op == "+=" || op == "*=" || op == "&=" || op == "|=" || op == "^=" then return 0;
+        return 2; // //= %= **= <<= >>= are UFuncTypeError in your matrix
+      }
+
+      // Non-bigint LHS with bigint RHS => UFuncTypeError (cannot cast object/bigint result back)
+      if kL != 4 && kR == 4 {
+        return 2;
+      }
+
+      // Bigint LHS rules
+      if kL == 4 {
+        // allow **= with int/uint/bool/bigint on rhs. That's integer-like.
+        // For float rhs: cannot keep bigint dtype => TypeError
+        if kR == 3 then return 1;
+        return 0;
+      }
+
+      // Now we are in {int64,uint64,uint8} LHS cases.
+      // Mixed int64/uint64:
+      if lhsT == int(64) && rhsT == uint(64) {
+        return if isBit then 1 else 2;
+      }
+      if lhsT == uint(64) && rhsT == int(64) {
+        return if isBit then 1 else 2;
+      }
+
+      // uint8 op= int64 => all UFuncTypeError
+      if lhsT == uint(8) && rhsT == int(64) {
+        return 2;
+      }
+
+      // integer LHS with float RHS => arithmetic UFuncTypeError, bit TypeError
+      if kR == 3 {
+        return if isBit then 1 else 2;
+      }
+
+      // Otherwise allow (covers i64 op= i64/u8/b; u64 op= u64/u8/b; u8 op= u8/u64/b)
+      return 0;
+    }
+
 
     /*
       Parse and respond to opeqvv message.
@@ -324,6 +403,163 @@ module OperatorMsg
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                     "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,
                     st.attrib(msgArgs['a'].val),st.attrib(msgArgs['b'].val)));
+
+        const gate = numpyLikeOpeqGate(binop_dtype_a, binop_dtype_b, op);
+        param kL = splitType(binop_dtype_a);
+param kR = splitType(binop_dtype_b);
+ref la = l.a;
+        select gate {
+          when 0 { 
+
+// ---- bool/bool special-case (NumPy quirks) ----
+
+if kL == 0 && kR == 0 {
+  select op {
+    when "+=" { l.a = l.a | r.a; return MsgTuple.success(); }
+    when "*=" { l.a = l.a & r.a; return MsgTuple.success(); }
+    when "&=" { l.a &= r.a; return MsgTuple.success(); }
+    when "|=" { l.a |= r.a; return MsgTuple.success(); }
+    when "^=" { l.a ^= r.a; return MsgTuple.success(); }
+    when "-=" { return new MsgTuple("TypeError", MsgType.ERROR); }
+    otherwise { return new MsgTuple("TypeError", MsgType.ERROR); }
+  }
+}
+
+// If we are instantiated with bool LHS, the only supported RHS is bool,
+// and that case returned above. Prevent the compiler from typechecking
+// the generic arithmetic/bitwise code for bool LHS instantiations.
+if kL == 0 {
+  // matches numpyLikeOpeqGate for bool with non-bool RHS
+  return new MsgTuple("UFuncTypeError", MsgType.ERROR);
+}
+
+            // ---- general path (gate==0 and not bool/bool) ----
+            // If instantiated with bigint LHS and real RHS, we don't support it (and we must
+// prevent the compiler from typechecking casts from real->bigint).
+if kL == 4 && kR == 3 {
+  return new MsgTuple("TypeError", MsgType.ERROR);
+}
+const ra = r.a;
+var handled = true;
+
+// splitType: 0 bool, 1 uint, 2 int, 3 real, 4 bigint
+
+if isArithInplaceOp(op) {
+
+  if op == "+=" {
+    la += (ra: binop_dtype_a);
+
+  } else if op == "-=" {
+    la -= (ra: binop_dtype_a);
+
+  } else if op == "*=" {
+    la *= (ra: binop_dtype_a);
+
+  } else if op == "**=" {
+    if binop_dtype_a == int(64) {
+      if || reduce ((r.a: int(64)) < 0) {
+        return new MsgTuple(
+          "Attempt to exponentiate base of type Int64 to negative exponent",
+          MsgType.ERROR
+        );
+      }
+    }
+    // la **= (ra: binop_dtype_a);
+
+    if kL == 4 && l.max_bits != -1 {
+      const max_size = (1: bigint << l.max_bits);
+            forall (t, ri) in zip(la, ra) with (var local_max_size = max_size) {
+              powMod(t, t, ri, max_size);
+            }
+          }
+          else {
+            try {
+              forall (t, ri) in zip(la, ra) do t **= ri:binop_dtype_a;
+            } catch {
+              return new MsgTuple (
+                "Exponentiation too large; use smaller values or set max_bits",
+                MsgType.ERROR
+              );
+            }
+          }
+
+  } else if op == "//=" {
+
+    if kL == 3 && binop_dtype_a == real(64) {
+      // NumPy-like float floor-division
+      const rb = (r.a: real(64));
+      [(li, ri) in zip(la, rb)] li = floorDivisionHelper(li, ri);
+
+    } else {
+      // integer/bool/uint/bigint style, preserve your div-by-zero->0 behavior
+      ref la2 = l.a;
+      const rb = (r.a: binop_dtype_a);
+      [(li, ri) in zip(la2, rb)] li = if ri != 0 then li/ri else (0: binop_dtype_a);
+    }
+
+  } else if op == "%=" {
+
+    if kL == 3 && binop_dtype_a == real(64) {
+      // NumPy-like float modulo
+      const rb = (r.a: real(64));
+      [(li, ri) in zip(la, rb)] li = modHelper(li, ri);
+
+    } else {
+      // integer/bool/uint/bigint modulo, preserve div-by-zero->0 behavior if you want
+      ref la2 = l.a;
+      const rb = (r.a: binop_dtype_a);
+      [(li, ri) in zip(la2, rb)] li = if ri != 0 then li%ri else (0: binop_dtype_a);
+    }
+
+  } else {
+    handled = false;
+  }
+
+} else if isBitInplaceOp(op) {
+
+  // Bitwise + shifts must NOT compile for real LHS
+  if (kL == 0 || kL == 1 || kL == 2) {
+    select op {
+      when ">>=" { la >>= (ra: binop_dtype_a); }
+      when "<<=" { la <<= (ra: binop_dtype_a); }
+      when "&="  { la &=  (ra: binop_dtype_a); }
+      when "|="  { la |=  (ra: binop_dtype_a); }
+      when "^="  { la ^=  (ra: binop_dtype_a); }
+      otherwise { handled = false; }
+    }
+  } else if (kL == 0 || kL == 1 || kL == 2 || kL == 4) {
+select op {
+      when "&="  { la &=  (ra: binop_dtype_a); }
+      when "|="  { la |=  (ra: binop_dtype_a); }
+      when "^="  { la ^=  (ra: binop_dtype_a); }
+      otherwise { handled = false; }
+    }
+  } else {
+    // real LHS should not reach here; gate should have blocked it
+    return new MsgTuple("TypeError", MsgType.ERROR);
+  }
+
+} else {
+  handled = false;
+}
+
+if !handled then return MsgTuple.error(nie);
+  if kL == 4 {
+    const mask = (1: bigint << l.max_bits) - 1;
+    la &= mask;
+  }
+return MsgTuple.success();
+
+
+          }
+          when 1 { return new MsgTuple("TypeError", MsgType.ERROR); }
+          when 2 { return new MsgTuple("TypeError", MsgType.ERROR); } // Technically numpy views these
+                                                                      // as two different kinds of
+                                                                      // TypeError
+          otherwise { return MsgTuple.error(nie); }
+        }
+
+        return MsgTuple.success();
 
         if binop_dtype_a == int && binop_dtype_b == int  {
             select op {
