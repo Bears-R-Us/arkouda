@@ -305,7 +305,7 @@ module OperatorMsg
     // These are because casting is a little different for things like += (vs. +)
 
     proc isArithInplaceOp(op: string): bool {
-      return op == "+=" || op == "-=" || op == "*=" ||
+      return op == "+=" || op == "-=" || op == "*=" || op == "/=" ||
             op == "//=" || op == "%=" || op == "**=";
     }
 
@@ -321,6 +321,21 @@ module OperatorMsg
 
       param kL = splitType(lhsT);
       param kR = splitType(rhsT);
+
+      // --- True division (/=) special rule (NumPy in-place semantics) ---
+      // Only float LHS supports /= in-place in an array.
+      // (Integers/bool fail because result is float; bigint-as-bigint can't hold float.)
+      if op == "/=" {
+        if lhsT == real(64) {
+          // float LHS: allow unless RHS is bigint (you already treat that as UFuncTypeError)
+          if kR == 4 then return 2;
+          // RHS bool/int/uint/real are fine
+          return 0;
+        } else {
+          // int/uint/bool/bigint LHS: in-place true divide rejects (NumPy UFuncTypeError)
+          return 2;
+        }
+      }
 
       // Float LHS: arithmetic ok, bitwise/shifts TypeError; float op= bigint => UFuncTypeError
       if lhsT == real(64) {
@@ -393,609 +408,180 @@ module OperatorMsg
       type binop_dtype_b,
       param array_nd: int
     ): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
+      param pn = Reflection.getRoutineName();
 
-        var l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd);
-        const r = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-              op = msgArgs['op'].toScalar(string),
-              nie = notImplementedError(pn,type2str(binop_dtype_a),op,type2str(binop_dtype_b));
+      var l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd);
+      const r = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
+            op = msgArgs['op'].toScalar(string),
+            nie = notImplementedError(pn,type2str(binop_dtype_a),op,type2str(binop_dtype_b));
 
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,
-                    st.attrib(msgArgs['a'].val),st.attrib(msgArgs['b'].val)));
+      omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,
+                  st.attrib(msgArgs['a'].val),st.attrib(msgArgs['b'].val)));
 
-        const gate = numpyLikeOpeqGate(binop_dtype_a, binop_dtype_b, op);
-        param kL = splitType(binop_dtype_a);
-param kR = splitType(binop_dtype_b);
-ref la = l.a;
-        select gate {
-          when 0 { 
+      const gate = numpyLikeOpeqGate(binop_dtype_a, binop_dtype_b, op);
+      param kL = splitType(binop_dtype_a);
+      param kR = splitType(binop_dtype_b);
+      ref la = l.a;
+      select gate {
+        when 0 { 
 
-// ---- bool/bool special-case (NumPy quirks) ----
+          // ---- bool/bool special-case (NumPy quirks) ----
 
-if kL == 0 && kR == 0 {
-  select op {
-    when "+=" { l.a = l.a | r.a; return MsgTuple.success(); }
-    when "*=" { l.a = l.a & r.a; return MsgTuple.success(); }
-    when "&=" { l.a &= r.a; return MsgTuple.success(); }
-    when "|=" { l.a |= r.a; return MsgTuple.success(); }
-    when "^=" { l.a ^= r.a; return MsgTuple.success(); }
-    when "-=" { return new MsgTuple("TypeError", MsgType.ERROR); }
-    otherwise { return new MsgTuple("TypeError", MsgType.ERROR); }
-  }
-}
-
-// If we are instantiated with bool LHS, the only supported RHS is bool,
-// and that case returned above. Prevent the compiler from typechecking
-// the generic arithmetic/bitwise code for bool LHS instantiations.
-if kL == 0 {
-  // matches numpyLikeOpeqGate for bool with non-bool RHS
-  return new MsgTuple("UFuncTypeError", MsgType.ERROR);
-}
-
-            // ---- general path (gate==0 and not bool/bool) ----
-            // If instantiated with bigint LHS and real RHS, we don't support it (and we must
-// prevent the compiler from typechecking casts from real->bigint).
-if kL == 4 && kR == 3 {
-  return new MsgTuple("TypeError", MsgType.ERROR);
-}
-const ra = r.a;
-var handled = true;
-
-// splitType: 0 bool, 1 uint, 2 int, 3 real, 4 bigint
-
-if isArithInplaceOp(op) {
-
-  if op == "+=" {
-    la += (ra: binop_dtype_a);
-
-  } else if op == "-=" {
-    la -= (ra: binop_dtype_a);
-
-  } else if op == "*=" {
-    la *= (ra: binop_dtype_a);
-
-  } else if op == "**=" {
-    if binop_dtype_a == int(64) {
-      if || reduce ((r.a: int(64)) < 0) {
-        return new MsgTuple(
-          "Attempt to exponentiate base of type Int64 to negative exponent",
-          MsgType.ERROR
-        );
-      }
-    }
-    // la **= (ra: binop_dtype_a);
-
-    if kL == 4 && l.max_bits != -1 {
-      const max_size = (1: bigint << l.max_bits);
-            forall (t, ri) in zip(la, ra) with (var local_max_size = max_size) {
-              powMod(t, t, ri, max_size);
-            }
-          }
-          else {
-            try {
-              forall (t, ri) in zip(la, ra) do t **= ri:binop_dtype_a;
-            } catch {
-              return new MsgTuple (
-                "Exponentiation too large; use smaller values or set max_bits",
-                MsgType.ERROR
-              );
+          if kL == 0 && kR == 0 {
+            select op {
+              when "+=" { l.a = l.a | r.a; return MsgTuple.success(); }
+              when "*=" { l.a = l.a & r.a; return MsgTuple.success(); }
+              when "&=" { l.a &= r.a; return MsgTuple.success(); }
+              when "|=" { l.a |= r.a; return MsgTuple.success(); }
+              when "^=" { l.a ^= r.a; return MsgTuple.success(); }
+              when "-=" { return new MsgTuple("TypeError", MsgType.ERROR); }
+              otherwise { return new MsgTuple("TypeError", MsgType.ERROR); }
             }
           }
 
-  } else if op == "//=" {
-
-    if kL == 3 && binop_dtype_a == real(64) {
-      // NumPy-like float floor-division
-      const rb = (r.a: real(64));
-      [(li, ri) in zip(la, rb)] li = floorDivisionHelper(li, ri);
-
-    } else {
-      // integer/bool/uint/bigint style, preserve your div-by-zero->0 behavior
-      ref la2 = l.a;
-      const rb = (r.a: binop_dtype_a);
-      [(li, ri) in zip(la2, rb)] li = if ri != 0 then li/ri else (0: binop_dtype_a);
-    }
-
-  } else if op == "%=" {
-
-    if kL == 3 && binop_dtype_a == real(64) {
-      // NumPy-like float modulo
-      const rb = (r.a: real(64));
-      [(li, ri) in zip(la, rb)] li = modHelper(li, ri);
-
-    } else {
-      // integer/bool/uint/bigint modulo, preserve div-by-zero->0 behavior if you want
-      ref la2 = l.a;
-      const rb = (r.a: binop_dtype_a);
-      [(li, ri) in zip(la2, rb)] li = if ri != 0 then li%ri else (0: binop_dtype_a);
-    }
-
-  } else {
-    handled = false;
-  }
-
-} else if isBitInplaceOp(op) {
-
-  // Bitwise + shifts must NOT compile for real LHS
-  if (kL == 0 || kL == 1 || kL == 2) {
-    select op {
-      when ">>=" { la >>= (ra: binop_dtype_a); }
-      when "<<=" { la <<= (ra: binop_dtype_a); }
-      when "&="  { la &=  (ra: binop_dtype_a); }
-      when "|="  { la |=  (ra: binop_dtype_a); }
-      when "^="  { la ^=  (ra: binop_dtype_a); }
-      otherwise { handled = false; }
-    }
-  } else if (kL == 0 || kL == 1 || kL == 2 || kL == 4) {
-select op {
-      when "&="  { la &=  (ra: binop_dtype_a); }
-      when "|="  { la |=  (ra: binop_dtype_a); }
-      when "^="  { la ^=  (ra: binop_dtype_a); }
-      otherwise { handled = false; }
-    }
-  } else {
-    // real LHS should not reach here; gate should have blocked it
-    return new MsgTuple("TypeError", MsgType.ERROR);
-  }
-
-} else {
-  handled = false;
-}
-
-if !handled then return MsgTuple.error(nie);
-  if kL == 4 {
-    const mask = (1: bigint << l.max_bits) - 1;
-    la &= mask;
-  }
-return MsgTuple.success();
-
-
+          // If we are instantiated with bool LHS, the only supported RHS is bool,
+          // and that case returned above. Prevent the compiler from typechecking
+          // the generic arithmetic/bitwise code for bool LHS instantiations.
+          if kL == 0 {
+            // matches numpyLikeOpeqGate for bool with non-bool RHS
+            return new MsgTuple("TypeError", MsgType.ERROR);
           }
-          when 1 { return new MsgTuple("TypeError", MsgType.ERROR); }
-          when 2 { return new MsgTuple("TypeError", MsgType.ERROR); } // Technically numpy views these
-                                                                      // as two different kinds of
-                                                                      // TypeError
-          otherwise { return MsgTuple.error(nie); }
-        }
 
-        return MsgTuple.success();
+          // ---- general path (gate==0 and not bool/bool) ----
+          // If instantiated with bigint LHS and real RHS, we don't support it (and we must
+          // prevent the compiler from typechecking casts from real->bigint).
+          if kL == 4 && kR == 3 {
+            return new MsgTuple("TypeError", MsgType.ERROR);
+          }
+          const ra = r.a;
+          var handled = true;
 
-        if binop_dtype_a == int && binop_dtype_b == int  {
-            select op {
-                when "+=" { l.a += r.a; }
-                when "-=" { l.a -= r.a; }
-                when "*=" { l.a *= r.a; }
-                when ">>=" { l.a >>= r.a;}
-                when "<<=" { l.a <<= r.a;}
-                when "//=" {
-                    //l.a /= r.a;
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0;
-                }//floordiv
-                when "%=" {
-                    //l.a /= r.a;
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = if ri != 0 then li%ri else 0;
+          // splitType: 0 bool, 1 uint, 2 int, 3 real, 4 bigint
+
+          if isArithInplaceOp(op) {
+
+            if op == "+=" {
+              la += (ra: binop_dtype_a);
+
+            } else if op == "-=" {
+              la -= (ra: binop_dtype_a);
+
+            } else if op == "*=" {
+              la *= (ra: binop_dtype_a);
+
+            } else if op == "**=" {
+              if binop_dtype_a == int(64) {
+                if || reduce ((r.a: int(64)) < 0) {
+                  return new MsgTuple(
+                    "Attempt to exponentiate base of type Int64 to negative exponent",
+                    MsgType.ERROR
+                  );
                 }
-                when "**=" {
-                    if || reduce (r.a<0){
-                        var errorMsg =  "Attempt to exponentiate base of type Int64 to negative exponent";
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
-                    }
-                    else{ l.a **= r.a; }
+              }
+              // la **= (ra: binop_dtype_a);
+
+              if kL == 4 && l.max_bits != -1 {
+                const max_size = (1: bigint << l.max_bits);
+                forall (t, ri) in zip(la, ra) with (var local_max_size = max_size) {
+                  powMod(t, t, ri, max_size);
                 }
-                otherwise do return MsgTuple.error(nie);
+              } else {
+                try {
+                  forall (t, ri) in zip(la, ra) do t **= ri:binop_dtype_a;
+                } catch {
+                  return new MsgTuple (
+                    "Exponentiation too large; use smaller values or set max_bits",
+                    MsgType.ERROR
+                  );
+                }
+              }
+
+            } else if op == "//=" {
+
+              if kL == 3 && binop_dtype_a == real(64) {
+                // NumPy-like float floor-division
+                const rb = (r.a: real(64));
+                [(li, ri) in zip(la, rb)] li = floorDivisionHelper(li, ri);
+
+              } else {
+                // integer/bool/uint/bigint style, preserve div-by-zero->0 behavior
+                ref la2 = l.a;
+                const rb = (r.a: binop_dtype_a);
+                [(li, ri) in zip(la2, rb)] li = if ri != 0 then li/ri else (0: binop_dtype_a);
+              }
+
+            } else if op == "%=" {
+
+              if kL == 3 && binop_dtype_a == real(64) {
+                // NumPy-like float modulo
+                const rb = (r.a: real(64));
+                [(li, ri) in zip(la, rb)] li = modHelper(li, ri);
+
+              } else {
+                // integer/bool/uint/bigint modulo, preserve div-by-zero->0 behavior
+                ref la2 = l.a;
+                const rb = (r.a: binop_dtype_a);
+                [(li, ri) in zip(la2, rb)] li = if ri != 0 then li%ri else (0: binop_dtype_a);
+              }
+
+            } else if op == "/=" {
+              if kL == 3 && binop_dtype_a == real(64) {
+                // Only float LHS should reach here due to the gate.
+                // NumPy behavior for float division by zero is inf/nan (with warnings).
+                const rb = (r.a: real(64));
+                [(li, ri) in zip(la, rb)] li = li / ri;
+              }
+            } else {
+              handled = false;
             }
-        }
-        else if binop_dtype_a == int && binop_dtype_b == bool  {
-            select op {
-                when "+=" {l.a += r.a:int;}
-                when "-=" {l.a -= r.a:int;}
-                when "*=" {l.a *= r.a:int;}
-                when ">>=" { l.a >>= r.a:int;}
-                when "<<=" { l.a <<= r.a:int;}
-                otherwise do return MsgTuple.error(nie);
+
+          } else if isBitInplaceOp(op) {
+
+            // Bitwise + shifts must NOT compile for real LHS
+            if (kL == 0 || kL == 1 || kL == 2) {
+              select op {
+                when ">>=" { la >>= (ra: binop_dtype_a); }
+                when "<<=" { la <<= (ra: binop_dtype_a); }
+                when "&="  { la &=  (ra: binop_dtype_a); }
+                when "|="  { la |=  (ra: binop_dtype_a); }
+                when "^="  { la ^=  (ra: binop_dtype_a); }
+                otherwise { handled = false; }
+              }
+            } else if (kL == 0 || kL == 1 || kL == 2 || kL == 4) {
+              select op {
+                when "&="  { la &=  (ra: binop_dtype_a); }
+                when "|="  { la |=  (ra: binop_dtype_a); }
+                when "^="  { la ^=  (ra: binop_dtype_a); }
+                otherwise { handled = false; }
+              }
+            } else {
+              // real LHS should not reach here; gate should have blocked it
+              return new MsgTuple("TypeError", MsgType.ERROR);
             }
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == uint  {
-            select op {
-                when "+=" { l.a += r.a; }
-                when "-=" {
-                    l.a -= r.a;
-                }
-                when "*=" { l.a *= r.a; }
-                when "//=" {
-                    //l.a /= r.a;
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0;
-                }//floordiv
-                when "%=" {
-                    //l.a /= r.a;
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = if ri != 0 then li%ri else 0;
-                }
-                when "**=" {
-                    l.a **= r.a;
-                }
-                when ">>=" { l.a >>= r.a;}
-                when "<<=" { l.a <<= r.a;}
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == bool  {
-            select op {
-                when "+=" {l.a += r.a:uint;}
-                when "-=" {l.a -= r.a:uint;}
-                when "*=" {l.a *= r.a:uint;}
-                when ">>=" { l.a >>= r.a:uint;}
-                when "<<=" { l.a <<= r.a:uint;}
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == int  {
-            select op {
-                when "+=" {l.a += r.a;}
-                when "-=" {l.a -= r.a;}
-                when "*=" {l.a *= r.a;}
-                when "/=" {l.a /= r.a:real;} //truediv
-                when "//=" { //floordiv
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
-                }
-                when "**=" { l.a **= r.a; }
-                when "%=" {
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
-                }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == uint  {
-            select op {
-                when "+=" {l.a += r.a;}
-                when "-=" {l.a -= r.a;}
-                when "*=" {l.a *= r.a;}
-                when "/=" {l.a /= r.a:real;} //truediv
-                when "//=" { //floordiv
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
-                }
-                when "**=" { l.a **= r.a; }
-                when "%=" {
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
-                }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == real  {
-            select op {
-                when "+=" {l.a += r.a;}
-                when "-=" {l.a -= r.a;}
-                when "*=" {l.a *= r.a;}
-                when "/=" {l.a /= r.a;}//truediv
-                when "//=" { //floordiv
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = floorDivisionHelper(li, ri);
-                }
-                when "**=" { l.a **= r.a; }
-                when "%=" {
-                    ref la = l.a;
-                    ref ra = r.a;
-                    [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
-                }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == bool  {
-            select op {
-                when "+=" {l.a += r.a:real;}
-                when "-=" {l.a -= r.a:real;}
-                when "*=" {l.a *= r.a:real;}
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == bool  {
-            select op {
-                when "|=" {l.a |= r.a;}
-                when "&=" {l.a &= r.a;}
-                when "^=" {l.a ^= r.a;}
-                when "+=" {l.a |= r.a;}
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == bigint && binop_dtype_b == int  {
-            ref la = l.a;
-            ref ra = r.a;
-            var max_bits = l.max_bits;
-            var max_size = 1:bigint;
-            var has_max_bits = max_bits != -1;
-            if has_max_bits {
-              max_size <<= max_bits;
-              max_size -= 1;
-            }
-            select op {
-              when "+=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li += ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "-=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li -= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "*=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li *= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "//=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  if ri != 0 {
-                    li /= ri;
-                  }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "%=" {
-                // we can't use li %= ri because this can result in negatives
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  if ri != 0 {
-                    mod(li, li, ri);
-                  }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "**=" {
-                if || reduce (ra<0) {
-                  throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                }
-                if has_max_bits {
-                  forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                    powMod(li, li, ri, local_max_size + 1);
-                  }
-                }
-                else {
-                  forall (li, ri) in zip(la, ra) {
-                    li **= ri:uint;
-                  }
-                }
-              }
-              otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == bigint && binop_dtype_b == uint  {
-            ref la = l.a;
-            ref ra = r.a;
-            var max_bits = l.max_bits;
-            var max_size = 1:bigint;
-            var has_max_bits = max_bits != -1;
-            if has_max_bits {
-              max_size <<= max_bits;
-              max_size -= 1;
-            }
-            select op {
-              when "+=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li += ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "-=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li -= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "*=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li *= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "//=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  if ri != 0 {
-                    li /= ri;
-                  }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "%=" {
-                // we can't use li %= ri because this can result in negatives
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  if ri != 0 {
-                    mod(li, li, ri);
-                  }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "**=" {
-                if || reduce (ra<0) {
-                  throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                }
-                if has_max_bits {
-                  forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                    powMod(li, li, ri, local_max_size + 1);
-                  }
-                }
-                else {
-                  forall (li, ri) in zip(la, ra) {
-                    li **= ri:uint;
-                  }
-                }
-              }
-              otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == bigint && binop_dtype_b == bool  {
-            ref la = l.a;
-            var ra = r.a:bigint;
-            var max_bits = l.max_bits;
-            var max_size = 1:bigint;
-            var has_max_bits = max_bits != -1;
-            if has_max_bits {
-              max_size <<= max_bits;
-              max_size -= 1;
-            }
-            select op {
-              when "+=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li += ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "-=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li -= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "*=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li *= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == bigint && binop_dtype_b == bigint  {
-            ref la = l.a;
-            ref ra = r.a;
-            var max_bits = l.max_bits;
-            var max_size = 1:bigint;
-            var has_max_bits = max_bits != -1;
-            if has_max_bits {
-              max_size <<= max_bits;
-              max_size -= 1;
-            }
-            select op {
-              when "+=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li += ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "-=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li -= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "*=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  li *= ri;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "//=" {
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  if ri != 0 {
-                    li /= ri;
-                  }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "%=" {
-                // we can't use li %= ri because this can result in negatives
-                forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                  if ri != 0 {
-                    mod(li, li, ri);
-                  }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "**=" {
-                if || reduce (ra<0) {
-                  throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                }
-                if has_max_bits {
-                  forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
-                    powMod(li, li, ri, local_max_size + 1);
-                  }
-                }
-                else {
-                  forall (li, ri) in zip(la, ra) {
-                    li **= ri:uint;
-                  }
-                }
-              }
-              otherwise do return MsgTuple.error(nie);
-            }
+
           } else {
-            return MsgTuple.error(nie);
+            handled = false;
           }
 
-        return MsgTuple.success();
+          if !handled then return MsgTuple.error(nie);
+            if kL == 4 {
+              const mask = (1: bigint << l.max_bits) - 1;
+              la &= mask;
+            }
+          return MsgTuple.success();
+
+
+        }
+        when 1 { return new MsgTuple("TypeError", MsgType.ERROR); }
+        when 2 { return new MsgTuple("TypeError", MsgType.ERROR); } // Technically numpy views these
+                                                                    // as two different kinds of
+                                                                    // TypeError
+        otherwise { return MsgTuple.error(nie); }
+      }
+
+      return MsgTuple.success();
+
     }
 
     /*
