@@ -1,4 +1,7 @@
+import operator
+
 import numpy as np
+import pandas as pd
 import pytest
 
 import arkouda as ak
@@ -378,6 +381,7 @@ class TestArkoudaExtensionArray:
     def test_argsort_pdarray_float_ascending_nan_positions(self, na_position, expected):
         a = ak.array([3.0, float("nan"), 1.0, 2.0])
         ea = ArkoudaExtensionArray(a)
+
         perm = ea.argsort(ascending=True, na_position=na_position)
         self.assert_indices(perm, expected)
 
@@ -650,3 +654,63 @@ class TestArkoudaExtensionArray:
 
         # Values are equal
         np.testing.assert_array_equal(shallow.to_numpy(), ea.to_numpy())
+
+
+class TestArkoudaExtensionArrayArithmatic:
+    @pytest.mark.parametrize(
+        "op, np_op",
+        [
+            (operator.add, operator.add),
+            (operator.sub, operator.sub),
+            (operator.mul, operator.mul),
+        ],
+    )
+    def test_arith_method_with_arkouda_array_operand(self, op, np_op):
+        x = pd.array([1, 2, 3], dtype="ak_int64")
+        y = pd.array([10, 20, 30], dtype="ak_int64")
+
+        out = x._arith_method(y, op)
+
+        assert type(out) is type(x)
+        np.testing.assert_array_equal(out.to_numpy(), np_op(np.array([1, 2, 3]), np.array([10, 20, 30])))
+
+    @pytest.mark.parametrize(
+        "op, scalar, expected",
+        [
+            (operator.add, 5, np.array([6, 7, 8])),
+            (operator.sub, 1, np.array([0, 1, 2])),
+            (operator.mul, 2, np.array([2, 4, 6])),
+        ],
+    )
+    def test_arith_method_with_scalar_operand(self, op, scalar, expected):
+        x = pd.array([1, 2, 3], dtype="ak_int64")
+
+        out = x._arith_method(scalar, op)
+
+        assert type(out) is type(x)
+        np.testing.assert_array_equal(out.to_numpy(), expected)
+
+    def test_arith_method_returns_notimplemented_for_unsupported_other(self):
+        x = pd.array([1, 2, 3], dtype="ak_int64")
+
+        # list is not scalar and not an Arkouda EA => NotImplemented
+        out = x._arith_method([1, 2, 3], operator.add)
+        assert out is NotImplemented
+
+    def test_operator_add_raises_typeerror_for_unsupported_other(self):
+        # This checks the user-visible behavior when NotImplemented propagates.
+        x = pd.array([1, 2, 3], dtype="ak_int64")
+
+        with pytest.raises(TypeError):
+            _ = x + [1, 2, 3]
+
+    def test_arith_method_unwraps_other_data_attribute(self):
+        # Ensures the unwrap path is actually used.
+        x = pd.array([1, 2, 3], dtype="ak_int64")
+        y = pd.array([10, 20, 30], dtype="ak_int64")
+
+        # Make sure y is an EA and has _data (the thing we unwrap).
+        assert hasattr(y, "_data")
+
+        out = x._arith_method(y, operator.add)
+        np.testing.assert_array_equal(out.to_numpy(), np.array([11, 22, 33]))
