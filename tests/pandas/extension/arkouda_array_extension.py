@@ -1,3 +1,5 @@
+import inspect
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -233,18 +235,130 @@ class TestArkoudaArrayExtension:
         sorted_vals = arr._data[perm]
         assert ak.is_sorted(sorted_vals)
 
-    @pytest.mark.parametrize("reduction", ["all", "any", "sum", "prod", "min", "max"])
-    def test_reduce_ops(self, reduction):
+    @pytest.mark.parametrize(
+        "reduction",
+        [
+            "all",
+            "any",
+            "sum",
+            "prod",
+            "min",
+            "max",
+            "mean",
+            "var",
+            "std",
+            "median",
+            "mode",
+            "unique",
+            "count",
+            "first",
+            "nunique",
+        ],
+    )
+    def test_reduce_scalar_ops(self, reduction):
         ak_data = ak.arange(10)
         arr = ArkoudaArray(ak_data)
+
+        if not hasattr(ak_data, reduction):
+            pytest.xfail(f"{reduction} not implemented on pdarray backend yet")
+
         result = arr._reduce(reduction)
+
         assert isinstance(result, numeric_and_bool_scalars)
+
+    @pytest.mark.parametrize("reduction", ["argmin", "argmax"])
+    def test_reduce_arg_ops(self, reduction):
+        ak_data = ak.arange(10)
+        arr = ArkoudaArray(ak_data)
+
+        result = arr._reduce(reduction)
+
+        assert isinstance(result, numeric_and_bool_scalars)
+        assert result >= 0
+
+    @pytest.mark.parametrize("reduction", ["or", "and", "xor"])
+    def test_reduce_bitwise_ops(self, reduction):
+        ak_data = ak.array([True, False, True, False])
+        arr = ArkoudaArray(ak_data)
+
+        if not hasattr(ak_data, reduction):
+            pytest.xfail(f"{reduction} not implemented on pdarray backend yet")
+
+        result = arr._reduce(reduction)
+
+        assert isinstance(result, bool)
+
+    @pytest.mark.parametrize("reduction", ["unique", "mode"])
+    def test_reduce_array_ops(self, reduction):
+        ak_data = ak.array([1, 2, 2, 3, 3, 3])
+        arr = ArkoudaArray(ak_data)
+
+        if not hasattr(ak_data, reduction):
+            pytest.xfail(f"{reduction} not implemented on pdarray backend yet")
+
+        result = arr._reduce(reduction)
+
+        assert isinstance(result, ArkoudaArray | ak.pdarray)
+
+    @pytest.mark.parametrize(
+        "reduction",
+        ["sum", "mean", "min", "max", "var", "std"],
+    )
+    def test_reduce_skipna_kwarg(self, reduction):
+        ak_data = ak.array([1.0, 2.0, ak.nan, 4.0])
+        arr = ArkoudaArray(ak_data)
+
+        result = arr._reduce(reduction, skipna=True)
+
+        assert isinstance(result, numeric_and_bool_scalars)
+
+    @pytest.mark.parametrize("reduction", ["var", "std"])
+    def test_reduce_ddof_kwarg(self, reduction):
+        ak_data = ak.array([1.0, 2.0, 3.0, 4.0])
+        arr = ArkoudaArray(ak_data)
+
+        meth = getattr(ak_data, reduction, None)
+        if meth is None:
+            pytest.xfail(f"{reduction} not implemented on pdarray backend yet")
+
+        try:
+            accepts_ddof = "ddof" in inspect.signature(meth).parameters
+        except (TypeError, ValueError):
+            # If we can't introspect, just do a smoke test
+            accepts_ddof = False
+
+        if not accepts_ddof:
+            # ddof should be ignored by your filtering logic (no crash)
+            r = arr._reduce(reduction, ddof=1)
+            assert isinstance(r, numeric_and_bool_scalars)
+            return
+
+        r0 = arr._reduce(reduction, ddof=0)
+        r1 = arr._reduce(reduction, ddof=1)
+
+        # Compare to numpy for correctness
+        np_data = np.array([1.0, 2.0, 3.0, 4.0])
+        expected0 = getattr(np_data, reduction)(ddof=0)
+        expected1 = getattr(np_data, reduction)(ddof=1)
+
+        assert np.isclose(r0, expected0)
+        assert np.isclose(r1, expected1)
+
+    @pytest.mark.parametrize("reduction", ["sum", "mean", "min", "max"])
+    def test_reduce_ignores_unknown_kwargs(self, reduction):
+        ak_data = ak.arange(10)
+        arr = ArkoudaArray(ak_data)
+
+        r1 = arr._reduce(reduction)
+        r2 = arr._reduce(reduction, totally_not_a_real_kwarg=123)
+
+        assert r1 == r2
 
     def test_reduce_invalid(self):
         ak_data = ak.arange(10)
         arr = ArkoudaArray(ak_data)
         with pytest.raises(TypeError):
-            arr._reduce("mean")
+            arr._reduce("test")
 
     def test_concat_same_type(self):
         a1 = ArkoudaArray(ak.array([1, 2]))

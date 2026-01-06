@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, TypeVar
+import inspect
+
+from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar
 from typing import cast as type_cast
 
 import numpy as np
@@ -9,6 +11,7 @@ from numpy import ndarray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
+from arkouda.pandas.groupbyclass import GroupByReductionType
 
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._dtypes import (
@@ -224,21 +227,95 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return False
         return self._data.equals(other._data)
 
-    def _reduce(self, name, skipna=True, **kwargs):
-        if name == "all":
-            return self._data.all()
-        elif name == "any":
-            return self._data.any()
-        elif name == "sum":
-            return self._data.sum()
-        elif name == "prod":
-            return self._data.prod()
-        elif name == "min":
-            return self._data.min()
-        elif name == "max":
-            return self._data.max()
-        else:
-            raise TypeError(f"'ArkoudaArray' with dtype arkouda does not support reduction '{name}'")
+    def _reduce(
+        self,
+        name: str | GroupByReductionType,
+        skipna: bool = True,
+        **kwargs: Any,
+    ) -> Any:
+        """
+        Reduce the underlying data.
+
+        Parameters
+        ----------
+        name : str | GroupByReductionType
+            Reduction name, e.g. "sum", "mean", "nunique", ...
+        skipna : bool
+            If supported by the underlying implementation, skip NaN/NA values.
+            Default is True.
+        **kwargs : Any
+            Extra args for compatibility (e.g. ddof for var/std).
+
+        Returns
+        -------
+        Any
+            The reduction result.
+
+        Raises
+        ------
+        TypeError
+            If ``name`` is not a supported reduction or the underlying data does not
+            implement the requested reduction.
+        """
+        # Normalize: accept Enum or str
+        if hasattr(name, "value"):  # enum-like
+            name = name.value
+        if isinstance(name, tuple) and len(name) == 1:  # guards against UNIQUE="unique",
+            name = name[0]
+        if not isinstance(name, str):
+            raise TypeError(f"Reduction name must be a string or GroupByReductionType, got {type(name)}")
+
+        data = self._data
+
+        def _call_method(method_name: str, *args: Any, **kw: Any) -> Any:
+            if not hasattr(data, method_name):
+                raise TypeError(
+                    f"'ArkoudaArray' with dtype {self.dtype} does not support reduction '{name}' "
+                    f"(missing method {method_name!r} on {type(data).__name__})"
+                )
+            meth = getattr(data, method_name)
+
+            # Best-effort: pass skipna/ddof/etc only if the method accepts them.
+            try:
+                sig = inspect.signature(meth)
+            except (TypeError, ValueError):
+                return meth(*args, **kw)
+
+            params = sig.parameters
+            filtered: dict[str, Any] = {k: v for k, v in kw.items() if k in params}
+            return meth(*args, **filtered)
+
+        reductions: dict[str, Callable[[], Any]] = {
+            "all": lambda: _call_method("all", skipna=skipna, **kwargs),
+            "any": lambda: _call_method("any", skipna=skipna, **kwargs),
+            "sum": lambda: _call_method("sum", skipna=skipna, **kwargs),
+            "prod": lambda: _call_method("prod", skipna=skipna, **kwargs),
+            "min": lambda: _call_method("min", skipna=skipna, **kwargs),
+            "max": lambda: _call_method("max", skipna=skipna, **kwargs),
+            "mean": lambda: _call_method("mean", skipna=skipna, **kwargs),
+            "median": lambda: _call_method("median", skipna=skipna, **kwargs),
+            "var": lambda: _call_method("var", skipna=skipna, **kwargs),
+            "std": lambda: _call_method("std", skipna=skipna, **kwargs),
+            "argmin": lambda: _call_method("argmin", skipna=skipna, **kwargs),
+            "argmax": lambda: _call_method("argmax", skipna=skipna, **kwargs),
+            "count": lambda: _call_method("count", **kwargs),
+            "nunique": lambda: _call_method("nunique", **kwargs),
+            "or": lambda: _call_method("or", skipna=skipna, **kwargs),
+            "and": lambda: _call_method("and", skipna=skipna, **kwargs),
+            "xor": lambda: _call_method("xor", skipna=skipna, **kwargs),
+            "first": lambda: _call_method("first", skipna=skipna, **kwargs),
+            "mode": lambda: _call_method("mode", skipna=skipna, **kwargs),
+            "unique": lambda: _call_method("unique", **kwargs),
+        }
+
+        fn = reductions.get(name)
+        if fn is None:
+            raise TypeError(
+                f"'ArkoudaArray' with dtype {self.dtype} does not support reduction '{name}'. "
+                f"Supported: {sorted(reductions)}"
+            )
+
+        return fn()
 
     def __eq__(self, other):
         """
