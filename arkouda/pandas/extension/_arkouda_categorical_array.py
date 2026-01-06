@@ -131,72 +131,148 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
     def __repr__(self):
         return f"ArkoudaCategoricalArray({self._data})"
 
-    def _not_implemented(self, name: str):
-        raise NotImplementedError(f"`{name}` is not implemented for ArkoudaCategoricalArray yet.")
+    # ------------------------------------------------------------------
+    # pandas.Categorical-specific API that is not yet implemented
+    # ------------------------------------------------------------------
+
+    def _categories_match_up_to_permutation(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_categories_match_up_to_permutation is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def _constructor(self, *args, **kwargs):
+        raise NotImplementedError("_constructor is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _dir_additions(self, *args, **kwargs):
+        raise NotImplementedError("_dir_additions is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _dir_deletions(self, *args, **kwargs):
+        raise NotImplementedError("_dir_deletions is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _encode_with_my_categories(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_encode_with_my_categories is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def _from_inferred_categories(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_from_inferred_categories is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def _get_values_repr(self, *args, **kwargs):
+        raise NotImplementedError("_get_values_repr is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _internal_get_values(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_internal_get_values is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def _replace(self, *args, **kwargs):
+        raise NotImplementedError("_replace is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _repr_categories(self, *args, **kwargs):
+        raise NotImplementedError("_repr_categories is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _reset_cache(self, *args, **kwargs):
+        raise NotImplementedError("_reset_cache is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _reverse_indexer(self, *args, **kwargs):
+        raise NotImplementedError("_reverse_indexer is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _set_categories(self, *args, **kwargs):
+        raise NotImplementedError("_set_categories is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _set_dtype(self, *args, **kwargs):
+        raise NotImplementedError("_set_dtype is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _unbox_scalar(self, *args, **kwargs):
+        raise NotImplementedError("_unbox_scalar is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _validate_codes_for_dtype(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_validate_codes_for_dtype is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def _validate_listlike(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_validate_listlike is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def _values_for_rank(self, *args, **kwargs):
+        raise NotImplementedError("_values_for_rank is not yet implemented for ArkoudaCategoricalArray.")
 
     def add_categories(self, *args, **kwargs):
-        self._not_implemented("add_categories")
+        raise NotImplementedError("add_categories is not yet implemented for ArkoudaCategoricalArray.")
 
     def as_ordered(self, *args, **kwargs):
-        self._not_implemented("as_ordered")
+        raise NotImplementedError("as_ordered is not yet implemented for ArkoudaCategoricalArray.")
 
     def as_unordered(self, *args, **kwargs):
-        self._not_implemented("as_unordered")
+        raise NotImplementedError("as_unordered is not yet implemented for ArkoudaCategoricalArray.")
 
     def check_for_ordered(self, *args, **kwargs):
-        self._not_implemented("check_for_ordered")
+        raise NotImplementedError(
+            "check_for_ordered is not yet implemented for ArkoudaCategoricalArray."
+        )
 
     def describe(self, *args, **kwargs):
-        self._not_implemented("describe")
+        raise NotImplementedError("describe is not yet implemented for ArkoudaCategoricalArray.")
 
-    @classmethod
-    def from_codes(cls, *args, **kwargs):
-        raise NotImplementedError("`from_codes` is not implemented for ArkoudaCategoricalArray yet.")
+    def from_codes(self, *args, **kwargs):
+        raise NotImplementedError("from_codes is not yet implemented for ArkoudaCategoricalArray.")
 
     def isnull(self, *args, **kwargs):
-        self._not_implemented("isnull")
+        raise NotImplementedError("isnull is not yet implemented for ArkoudaCategoricalArray.")
+
+    def memory_usage(self, *args, **kwargs):
+        raise NotImplementedError("memory_usage is not yet implemented for ArkoudaCategoricalArray.")
+
+    def notna(self, *args, **kwargs):
+        raise NotImplementedError("notna is not yet implemented for ArkoudaCategoricalArray.")
+
+    def notnull(self, *args, **kwargs):
+        raise NotImplementedError("notnull is not yet implemented for ArkoudaCategoricalArray.")
+
+    def remove_categories(self, *args, **kwargs):
+        raise NotImplementedError(
+            "remove_categories is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def remove_unused_categories(self, *args, **kwargs):
+        raise NotImplementedError(
+            "remove_unused_categories is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def rename_categories(self, *args, **kwargs):
+        raise NotImplementedError(
+            "rename_categories is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def reorder_categories(self, *args, **kwargs):
+        raise NotImplementedError(
+            "reorder_categories is not yet implemented for ArkoudaCategoricalArray."
+        )
+
+    def set_categories(self, *args, **kwargs):
+        raise NotImplementedError("set_categories is not yet implemented for ArkoudaCategoricalArray.")
+
+    def set_ordered(self, *args, **kwargs):
+        raise NotImplementedError("set_ordered is not yet implemented for ArkoudaCategoricalArray.")
+
+    def sort_values(self, *args, **kwargs):
+        raise NotImplementedError("sort_values is not yet implemented for ArkoudaCategoricalArray.")
+
+    def to_list(self, *args, **kwargs):
+        raise NotImplementedError("to_list is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _not_implemented(self, name: str):
+        raise NotImplementedError(f"`{name}` is not implemented for ArkoudaCategoricalArray yet.")
 
     def max(self, *args, **kwargs):
         self._not_implemented("max")
 
-    def memory_usage(self, *args, **kwargs):
-        self._not_implemented("memory_usage")
-
     def min(self, *args, **kwargs):
         self._not_implemented("min")
-
-    def notna(self, *args, **kwargs):
-        self._not_implemented("notna")
-
-    def notnull(self, *args, **kwargs):
-        self._not_implemented("notnull")
-
-    def remove_categories(self, *args, **kwargs):
-        self._not_implemented("remove_categories")
-
-    def remove_unused_categories(self, *args, **kwargs):
-        self._not_implemented("remove_unused_categories")
-
-    def rename_categories(self, *args, **kwargs):
-        self._not_implemented("rename_categories")
-
-    def reorder_categories(self, *args, **kwargs):
-        self._not_implemented("reorder_categories")
-
-    def set_categories(self, *args, **kwargs):
-        self._not_implemented("set_categories")
-
-    def set_ordered(self, *args, **kwargs):
-        self._not_implemented("set_ordered")
-
-    def sort_values(self, *args, **kwargs):
-        self._not_implemented("sort_values")
-
-    def swapaxes(self, *args, **kwargs):
-        self._not_implemented("swapaxes")
-
-    def to_list(self, *args, **kwargs):
-        self._not_implemented("to_list")
 
     def value_counts(self, *args, **kwargs):
         self._not_implemented("value_counts")
