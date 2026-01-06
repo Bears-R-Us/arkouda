@@ -143,7 +143,7 @@ class TestPdarrayClass:
     def test_flatten_multidim(self, size, dtype):
         size = size - (size % 4)
         a = ak.arange(size, dtype=dtype)
-        b = a.reshape((2, 2, size / 4))
+        b = a.reshape((2, 2, size // 4))
         ak_assert_equal(b.flatten(), a)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
