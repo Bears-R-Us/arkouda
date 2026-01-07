@@ -149,7 +149,7 @@ __all__ = [
     "ULongLongDType",
     "UShortDType",
     "VoidDType",
-    "isSupportedDtype",
+    "isSupportedDType",
     "isSupportedInt",
     "isSupportedFloat",
     "isSupportedBool",
@@ -1012,9 +1012,9 @@ def is_supported_dtype(scalar: object) -> builtins.bool:
     return isinstance(scalar, ARKOUDA_SUPPORTED_DTYPES)
 
 
-def isSupportedDtype(num):
+def isSupportedDType(num):
     warnings.warn(
-        "isSupportedDtype is deprecated; use is_supported_dtype instead",
+        "isSupportedDType is deprecated; use is_supported_dtype instead",
         DeprecationWarning,
         stacklevel=2,
     )

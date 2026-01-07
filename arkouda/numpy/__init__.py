@@ -151,7 +151,7 @@ from arkouda.numpy.dtypes import (
     uint32,
     uint64,
     uint8,
-    isSupportedDtype,
+    isSupportedDType,
     isSupportedFloat,
     isSupportedInt,
     isSupportedNumber,
