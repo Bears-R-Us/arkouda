@@ -602,175 +602,205 @@ module OperatorMsg
     */
     @arkouda.instantiateAndRegister
     proc opeqvs(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab,
-      type binop_dtype_a,
-      param array_nd: int
+                type binop_dtype_a,
+                param array_nd: int
     ): MsgTuple throws {
-        param pn = Reflection.getRoutineName();
+      param pn = Reflection.getRoutineName();
 
-        // b is always the same type as a
-        type binop_dtype_b = binop_dtype_a;
+      // RHS is always the same type as LHS (typed scalar semantics)
+      type binop_dtype_b = binop_dtype_a;
 
-        var l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd);
-        const val = msgArgs['value'].toScalar(binop_dtype_b),
-              op = msgArgs['op'].toScalar(string),
-              nie = notImplementedError(pn,type2str(binop_dtype_a),op,type2str(binop_dtype_b));
+      var l = st[msgArgs["a"]]: borrowed SymEntry(binop_dtype_a, array_nd);
+      const val = msgArgs["value"].toScalar(binop_dtype_b),
+            op  = msgArgs["op"].toScalar(string),
+            nie = notImplementedError(pn, type2str(binop_dtype_a), op, type2str(binop_dtype_b));
 
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "op: %? pdarray: %? scalar: %?".format(op,st.attrib(msgArgs['a'].val),val));
+      omLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                    "op: %? pdarray: %? scalar: %?".format(op, st.attrib(msgArgs["a"].val), val));
 
-        if binop_dtype_a == int && binop_dtype_b == int  {
+      // Keep the same gate already built. Here lhsT == rhsT, so it will mostly:
+      // - block float bitwise/shift
+      // - enforce bool quirks (-=, etc.)
+      // - block int/uint /= (true-div) etc.
+      const gate = numpyLikeOpeqGate(binop_dtype_a, binop_dtype_b, op);
+      param kL = splitType(binop_dtype_a); // 0 bool, 1 uint, 2 int, 3 real, 4 bigint
+
+      ref la = l.a;
+
+      select gate {
+        when 0 {
+
+          // -----------------------------
+          // bool/bool special-case (NumPy quirks)
+          // -----------------------------
+          if kL == 0 {
+            // Only bool scalar is possible due to binop_dtype_b == binop_dtype_a,
+            // but keep this explicit and mirror opeqvv.
             select op {
-                when "+=" { l.a += val; }
-                when "-=" { l.a -= val; }
-                when "*=" { l.a *= val; }
-                when ">>=" { l.a >>= val; }
-                when "<<=" { l.a <<= val; }
-                when "//=" {
-                    if val != 0 {l.a /= val;} else {l.a = 0;}
-                }//floordiv
-                when "%=" {
-                    if val != 0 {l.a %= val;} else {l.a = 0;}
+              when "+=" { la |= val; return MsgTuple.success(); } // bool += bool -> OR
+              when "*=" { la &= val; return MsgTuple.success(); } // bool *= bool -> AND
+              when "&=" { la &= val; return MsgTuple.success(); }
+              when "|=" { la |= val; return MsgTuple.success(); }
+              when "^=" { la ^= val; return MsgTuple.success(); }
+              when "-=" { return new MsgTuple("TypeError", MsgType.ERROR); }
+              otherwise { return new MsgTuple("TypeError", MsgType.ERROR); }
+            }
+          }
+
+          var handled = true;
+
+          // -----------------------------
+          // arithmetic inplace ops
+          // -----------------------------
+          if isArithInplaceOp(op) {
+
+            if op == "+=" {
+              la += val;
+
+            } else if op == "-=" {
+              la -= val;
+
+            } else if op == "*=" {
+              la *= val;
+
+            } else if op == "/=" {
+              // With rhs==lhs, gate should only allow real(64) here.
+              if kL == 3 && binop_dtype_a == real(64) {
+                // NumPy-like: inf/nan on div-by-zero (warnings at Python layer, if any)
+                la /= val;
+              } else {
+                return new MsgTuple("TypeError", MsgType.ERROR);
+              }
+
+            } else if op == "**=" {
+
+              // int64 negative exponent check
+              if binop_dtype_a == int(64) {
+                if val: int(64) < 0 {
+                  return new MsgTuple(
+                    "Attempt to exponentiate base of type Int64 to negative exponent",
+                    MsgType.ERROR
+                  );
                 }
-                when "**=" {
-                    if val<0 {
-                        var errorMsg = "Attempt to exponentiate base of type int64 to negative exponent";
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                                          errorMsg);
-                        return new MsgTuple(errorMsg, MsgType.ERROR);
+              }
+              // bigint negative exponent check
+              if kL == 4 {
+                if val: bigint < 0 {
+                  return new MsgTuple(
+                    "Attempt to exponentiate base of type BigInt to negative exponent",
+                    MsgType.ERROR
+                  );
+                }
+
+                // preserve max_bits semantics
+                if l.max_bits != -1 {
+                  const max_size = (1: bigint << l.max_bits);
+                  forall t in la with (var local_val = val: bigint,
+                                      var local_max_size = max_size) {
+                    powMod(t, t, local_val, local_max_size);
+                  }
+                } else {
+                  try {
+                    forall t in la with (var local_val = val: bigint) {
+                      // existing code uses uint exponent when no max_bits
+                      t **= local_val;
                     }
-                    else{ l.a **= val; }
+                  } catch {
+                    return new MsgTuple(
+                      "Exponentiation too large; use smaller values or set max_bits",
+                      MsgType.ERROR
+                    );
+                  }
+                }
 
-                }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == uint && binop_dtype_b == uint  {
-            select op {
-                when "+=" { l.a += val; }
-                when "-=" {
-                    l.a -= val;
-                }
-                when "*=" { l.a *= val; }
-                when "//=" {
-                    if val != 0 {l.a /= val;} else {l.a = 0;}
-                }//floordiv
-                when "%=" {
-                    if val != 0 {l.a %= val;} else {l.a = 0;}
-                }
-                when "**=" {
-                    l.a **= val;
-                }
-                when ">>=" { l.a >>= val; }
-                when "<<=" { l.a <<= val; }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == bool && binop_dtype_b == bool  {
-            select op {
-                when "+=" {l.a |= val;}
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == real && binop_dtype_b == real  {
-            select op {
-                when "+=" {l.a += val;}
-                when "-=" {l.a -= val;}
-                when "*=" {l.a *= val;}
-                when "/=" {l.a /= val;}//truediv
-                when "//=" { //floordiv
-                    ref la = l.a;
-                    [li in la] li = floorDivisionHelper(li, val);
-                }
-                when "**=" { l.a **= val; }
-                when "%=" {
-                    ref la = l.a;
-                    [li in la] li = modHelper(li, val);
-                }
-                otherwise do return MsgTuple.error(nie);
-            }
-        }
-        else if binop_dtype_a == bigint && binop_dtype_b == bigint  {
-            ref la = l.a;
-            var max_bits = l.max_bits;
-            var max_size = 1:bigint;
-            var has_max_bits = max_bits != -1;
-            if has_max_bits {
-              max_size <<= max_bits;
-              max_size -= 1;
-            }
-            select op {
-              when "+=" {
-                forall li in la with (var local_val = val, var local_max_size = max_size) {
-                  li += local_val;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
+              } else {
+                // non-bigint normal exponentiation
+                la **= val;
+              }
+
+            } else if op == "//=" {
+
+              if kL == 3 && binop_dtype_a == real(64) {
+                // NumPy-like float floor-division
+                [li in la] li = floorDivisionHelper(li, val: real(64));
+              } else {
+                // int/uint/bigint style, preserve div-by-zero->0 behavior
+                // (including your bigint behavior; mask handled afterward)
+                if val != 0 {
+                  la /= val;
+                } else {
+                  la = 0: binop_dtype_a;
                 }
               }
-              when "-=" {
-                forall li in la with (var local_val = val, var local_max_size = max_size) {
-                  li -= local_val;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "*=" {
-                forall li in la with (var local_val = val, var local_max_size = max_size) {
-                  li *= local_val;
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "//=" {
-                forall li in la with (var local_val = val, var local_max_size = max_size) {
-                  if local_val != 0 {
-                    li /= local_val;
-                  }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
-                }
-              }
-              when "%=" {
-                // we can't use li %= val because this can result in negatives
-                forall li in la with (var local_val = val, var local_max_size = max_size) {
+
+            } else if op == "%=" {
+
+              if kL == 3 && binop_dtype_a == real(64) {
+                // NumPy-like float modulo
+                [li in la] li = modHelper(li, val: real(64));
+              } else if kL == 4 {
+                // Bigint modulo: avoid li %= val (can go negative). Match your old behavior.
+                forall li in la with (var local_val = val: bigint) {
                   if local_val != 0 {
                     mod(li, li, local_val);
+                  } else {
+                    li = 0: bigint;
                   }
-                  else {
-                    li = 0:bigint;
-                  }
-                  if has_max_bits {
-                    li &= local_max_size;
-                  }
+                }
+              } else {
+                // int/uint modulo, preserve div-by-zero->0
+                if val != 0 {
+                  la %= val;
+                } else {
+                  la = 0: binop_dtype_a;
                 }
               }
-              when "**=" {
-                if val<0 {
-                  throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
-                }
-                if has_max_bits {
-                  forall li in la with (var local_val = val, var local_max_size = max_size) {
-                    powMod(li, li, local_val, local_max_size + 1);
-                  }
-                }
-                else {
-                  forall li in la with (var local_val = val) {
-                    li **= local_val:uint;
-                  }
-                }
-              }
-              otherwise do return MsgTuple.error(nie);
+
+            } else {
+              handled = false;
             }
+
+          // -----------------------------
+          // bitwise inplace ops
+          // -----------------------------
+          } else if isBitInplaceOp(op) {
+
+            // Gate should have rejected real here. Keep defensive check.
+            if kL == 3 {
+              return new MsgTuple("TypeError", MsgType.ERROR);
+            }
+
+            // bool handled above; here we are int/uint/bigint
+            select op {
+              when ">>=" { la >>= val; }
+              when "<<=" { la <<= val; }
+              when "&="  { la &=  val; }
+              when "|="  { la |=  val; }
+              when "^="  { la ^=  val; }
+              otherwise  { handled = false; }
+            }
+
+          } else {
+            handled = false;
+          }
+
+          if !handled then return MsgTuple.error(nie);
+
+          // bigint post-mask (keep consistent with opeqvv)
+          if kL == 4 && l.max_bits != -1 {
+            const mask = (1: bigint << l.max_bits) - 1;
+            la &= mask;
+          }
+
+          return MsgTuple.success();
         }
-        else {
-          return MsgTuple.error(nie);
-        }
-        return MsgTuple.success();
+
+        when 1 { return new MsgTuple("TypeError", MsgType.ERROR); }
+        when 2 { return new MsgTuple("TypeError", MsgType.ERROR); } // same return type, finer-grain later if desired
+        otherwise { return MsgTuple.error(nie); }
+      }
+
+      return MsgTuple.success();
     }
+
 }
