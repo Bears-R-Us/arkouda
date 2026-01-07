@@ -17,5 +17,3 @@ or
 
    import ArkoudaSortCompat;
 
-.. function:: proc defaultComparator type
-

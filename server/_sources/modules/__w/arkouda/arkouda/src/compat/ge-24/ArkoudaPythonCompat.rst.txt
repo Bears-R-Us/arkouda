@@ -17,15 +17,7 @@ or
 
    import ArkoudaPythonCompat;
 
-.. function:: proc pythonModuleSupported param
-
 .. function:: proc pythonVersionString(): string
 
-.. class:: Interpreter
-
-.. class:: Value
-
-.. class:: Function : Value
-
-.. class:: Module : Value
+.. function:: proc pythonModuleSupported param
 

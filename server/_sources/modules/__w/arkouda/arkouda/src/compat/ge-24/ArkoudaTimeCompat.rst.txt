@@ -17,5 +17,3 @@ or
 
    import ArkoudaTimeCompat;
 
-.. method:: proc timeDelta.totalMicroseconds(): int
-

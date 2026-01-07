@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArkoudaPythonCompat &mdash; chpldoc 0.0.1 documentation</title>
+  <title>ArkoudaJSONCompat &mdash; chpldoc 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/css/theme.css?v=e59714d7" />
 
@@ -19,8 +19,8 @@
     <script src="../../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../../search.html" />
-    <link rel="next" title="ArkoudaSortCompat" href="ArkoudaSortCompat.html" />
-    <link rel="prev" title="ArkoudaJSONCompat" href="ArkoudaJSONCompat.html" /> 
+    <link rel="next" title="ArkoudaPythonCompat" href="ArkoudaPythonCompat.html" />
+    <link rel="prev" title="arkouda_server" href="../../arkouda_server.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -86,8 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../SymArrayDmap.html">SymArrayDmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Unique.html">Unique</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../arkouda_server.html">arkouda_server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ArkoudaJSONCompat.html">ArkoudaJSONCompat</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaPythonCompat</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArkoudaJSONCompat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArkoudaPythonCompat.html">ArkoudaPythonCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaSortCompat.html">ArkoudaSortCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaSparseMatrixCompat.html">ArkoudaSparseMatrixCompat</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ArkoudaTimeCompat.html">ArkoudaTimeCompat</a></li>
@@ -108,9 +108,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">ArkoudaPythonCompat</li>
+      <li class="breadcrumb-item active">ArkoudaJSONCompat</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/eq-22/ArkoudaPythonCompat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../../../../../../_sources/modules/__w/arkouda/arkouda/src/compat/ge-24/ArkoudaJSONCompat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -118,54 +118,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="arkoudapythoncompat">
-<span id="module-ArkoudaPythonCompat"></span><h1>ArkoudaPythonCompat<a class="headerlink" href="#arkoudapythoncompat" title="Link to this heading"></a></h1>
+  <section id="arkoudajsoncompat">
+<span id="module-ArkoudaJSONCompat"></span><h1>ArkoudaJSONCompat<a class="headerlink" href="#arkoudajsoncompat" title="Link to this heading"></a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaPythonCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ArkoudaJSONCompat</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaPythonCompat</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArkoudaJSONCompat</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaPythonCompat.pythonModuleSupported">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">pythonModuleSupported</span></span><span class="w"> </span><em class="property"> <span class="pre">param</span></em><a class="headerlink" href="#ArkoudaPythonCompat.pythonModuleSupported" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl function">
-<dt class="sig sig-object chpl" id="ArkoudaPythonCompat.pythonVersionString">
-<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">pythonVersionString</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">string</span></em><a class="headerlink" href="#ArkoudaPythonCompat.pythonVersionString" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl class">
-<dt class="sig sig-object chpl" id="ArkoudaPythonCompat.Interpreter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Interpreter</span></span><a class="headerlink" href="#ArkoudaPythonCompat.Interpreter" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl class">
-<dt class="sig sig-object chpl" id="ArkoudaPythonCompat.Value">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Value</span></span><a class="headerlink" href="#ArkoudaPythonCompat.Value" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl class">
-<dt class="sig sig-object chpl" id="ArkoudaPythonCompat.Function">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Function</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Value</span></em><a class="headerlink" href="#ArkoudaPythonCompat.Function" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="chpl class">
-<dt class="sig sig-object chpl" id="ArkoudaPythonCompat.Module">
-<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">Module</span></span><span class="w"> </span><em class="property"> <span class="pre">:</span> <span class="pre">Value</span></em><a class="headerlink" href="#ArkoudaPythonCompat.Module" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ArkoudaJSONCompat.html" class="btn btn-neutral float-left" title="ArkoudaJSONCompat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ArkoudaSortCompat.html" class="btn btn-neutral float-right" title="ArkoudaSortCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../arkouda_server.html" class="btn btn-neutral float-left" title="arkouda_server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ArkoudaPythonCompat.html" class="btn btn-neutral float-right" title="ArkoudaPythonCompat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
