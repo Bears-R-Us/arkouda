@@ -83,7 +83,7 @@ class sparray:
         if max_bits:
             self.max_bits = max_bits
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         from arkouda.client import generic_msg
 
         try:
