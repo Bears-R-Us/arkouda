@@ -637,3 +637,8 @@ class TestCategorical:
             if a is not None:
                 assert a is not b
                 assert_equal(a, b)
+
+    def test_categorical_NAvalue_deprecated_returns_find_na(self):
+        cat = Categorical(ak.array(["a", "b"]))
+        with pytest.deprecated_call():
+            assert cat.NAvalue == cat.na_value

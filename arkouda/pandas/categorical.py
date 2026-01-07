@@ -49,6 +49,7 @@ from __future__ import annotations
 
 import itertools
 import json
+import warnings
 
 from collections import defaultdict
 from typing import (
@@ -240,6 +241,22 @@ class Categorical:
         self.shape = self.codes.shape
         self.dtype = akdtype(str_)
         self.registered_name: Optional[str] = None
+
+    @property
+    def NAvalue(self):
+        """
+        Deprecated alias for `na_value`.
+
+        Returns
+        -------
+        Same value as `na_value`.
+        """
+        warnings.warn(
+            "Categorical.NAvalue is deprecated; use Categorical.find_na instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.na_value
 
     @property
     def nbytes(self):

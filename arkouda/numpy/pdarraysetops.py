@@ -722,7 +722,7 @@ def intersect1d(
             ub = bg.unique_keys
         else:
             ua = ar1
-            ub = ar1
+            ub = ar2
 
         # Key for deinterleaving result
         isa = concatenate(
@@ -823,9 +823,9 @@ def setdiff1d(ar1: groupable, ar2: groupable, assume_unique: bool = False) -> Un
             )
             return create_pdarray(cast(str, rep_msg))
         if not assume_unique:
-            a = cast(pdarray, unique(ar1))
-            b = cast(pdarray, unique(ar2))
-        x = a[in1d(a, b, invert=True)]
+            ar1 = cast(pdarray, unique(ar1))
+            ar2 = cast(pdarray, unique(ar2))
+        x = ar1[in1d(ar1, ar2, invert=True)]
         return x[argsort(x)]
     elif (isinstance(ar1, list) or isinstance(ar1, tuple)) and (
         isinstance(ar2, list) or isinstance(ar2, tuple)
