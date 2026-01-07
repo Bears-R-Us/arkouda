@@ -2423,37 +2423,52 @@ class DataFrame(UserDict):
         self, keys, use_series=False, as_index=True, dropna=True
     ) -> Union[DataFrameGroupBy, GroupBy_class]:
         """
-        Group the dataframe by a column or a list of columns.
+        Construct a GroupBy object for grouping the DataFrame by one or more columns.
+
+        This is an internal helper used by ``DataFrame.groupby`` to create either a
+        low-level ``GroupBy`` object or a pandas-compatible ``DataFrameGroupBy``
+        wrapper.
 
         Parameters
         ----------
-        keys : str or list of str
-            An (ordered) list of column names or a single string to group by.
-        use_series : bool, default=False
-            If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise an arkouda.pandas.groupbyclass.GroupBy object.
-        as_index: bool, default=True
-            If True, groupby columns will be set as index
-            otherwise, the groupby columns will be treated as DataFrame columns.
-        dropna : bool, default=True
-            If True, and the groupby keys contain NaN values,
-            the NaN values together with the corresponding row will be dropped.
-            Otherwise, the rows corresponding to NaN values will be kept.
+        keys : str or sequence of str
+            Column name or ordered sequence of column names to group by.
+        use_series : bool, default False
+            If True, return a pandas-compatible
+            ``arkouda.pandas.dataframe.DataFrameGroupBy`` object.
+            If False, return a lower-level
+            ``arkouda.pandas.groupbyclass.GroupBy`` object.
+        as_index : bool, default True
+            Only relevant when ``use_series=True``.
+            If True, the groupby keys become the index of the result.
+            If False, the groupby keys are returned as DataFrame columns.
+        dropna : bool, default True
+            Whether to drop rows containing NaN values in the groupby keys.
+            If True, rows with NaN keys are excluded from the grouping.
+            If False, NaN keys are retained as their own group.
 
         Returns
         -------
         arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.pandas.groupbyclass.GroupBy
-            If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.
+            A groupby object configured according to ``use_series`` and ``as_index``.
+
+        Raises
+        ------
+        TypeError
+            If ``keys`` is not a string or a sequence of strings.
 
         See Also
         --------
-        arkouda.GroupBy
+        DataFrame.groupby
+        arkouda.groupbyclass.GroupBy
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({'col1': [1.0, 1.0, 2.0, np.nan], 'col2': [4, 5, 6, 7]})
+        >>> import numpy as np
+        >>> df = ak.DataFrame(
+        ...     {"col1": [1.0, 1.0, 2.0, np.nan], "col2": [4, 5, 6, 7]}
+        ... )
         >>> df
            col1  col2
         0   1.0     4
@@ -2461,21 +2476,25 @@ class DataFrame(UserDict):
         2   2.0     6
         3   NaN     7 (4 rows x 2 columns)
 
-        >>> df.GroupBy("col1") # doctest: +SKIP
-        <arkouda.groupbyclass.GroupBy object at 0x7dbc23462510>
-        >>> df.GroupBy("col1").size()
-        (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
+        Low-level GroupBy object:
 
-        >>> df.GroupBy("col1",use_series=True).size()
+        >>> df.GroupBy("col1")  # doctest: +SKIP
+        <arkouda.groupbyclass.GroupBy object at ...>
+        >>> df.GroupBy("col1").size()
+        (array([1., 2.]), array([2, 1]))
+
+        pandas-compatible GroupBy:
+
+        >>> df.GroupBy("col1", use_series=True).size()
         col1
         1.0    2
         2.0    1
         dtype: int64
-        >>> df.GroupBy("col1",use_series=True, as_index = False).size()
+
+        >>> df.GroupBy("col1", use_series=True, as_index=False).size()
            col1  size
         0   1.0     2
         1   2.0     1 (2 rows x 2 columns)
-
         """
         self.update_nrows()
         if isinstance(keys, str):

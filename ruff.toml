@@ -75,7 +75,7 @@ ignore = [
 ignore-names = [
     #   These are kept to align with NumPy/Pandas:
     "mT","XOR","AND","OR","T",
-    #   These are deprecated and eventually removed:
+    #   These are deprecated and will be eventually removed:
   "isSupportedDtype",
   "isSupportedDType",
   "isSupportedInt",
