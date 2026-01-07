@@ -81,5 +81,5 @@ from arkouda.numpy.dtypes import (
     isSupportedNumber,
     isSupportedBool,
     isSupportedFloat,
-    isSupportedDtype
+    isSupportedDType
 )

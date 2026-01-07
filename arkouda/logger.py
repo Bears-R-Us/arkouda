@@ -514,20 +514,13 @@ def get_arkouda_client_logger(name: str) -> ArkoudaLogger:
     return get_arkouda_logger(name=name, log_format=ArkoudaLogger.CLIENT_LOG_FORMAT)
 
 
-def getArkoudaClientLogger(
-    name: str,
-    handlers: Optional[List[Handler]] = None,
-    logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT,
-    logLevel: Optional[LogLevel] = None,
-):
+def getArkoudaClientLogger(name: str):
     warnings.warn(
         "getArkoudaClientLogger is deprecated; use get_arkouda_client_logger",
         DeprecationWarning,
         stacklevel=2,
     )
-    return get_arkouda_client_logger(
-        name=name, handlers=handlers, logFormat=logFormat, logLevel=logLevel
-    )
+    return get_arkouda_client_logger(name=name)
 
 
 def enable_verbose() -> None:
