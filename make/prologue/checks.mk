@@ -7,16 +7,11 @@ CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow check-iconv c
 endif
 check-deps: $(CHECK_DEPS)
 
-CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 0  && echo yes)
-# CHPL_VERSION_WARN := $(shell test $(CHPL_MAJOR) -eq 1 -a $(CHPL_MINOR) -le 33 && echo yes)
-
+CHPL_VERSION_OK := $(shell test $(CHPL_MAJOR) -ge 2 -o $(CHPL_MINOR) -ge 4  && echo yes)
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
-	$(error Chapel 2.0 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
+	$(error Chapel 2.4 or newer is required, found $(CHPL_MAJOR).$(CHPL_MINOR))
 endif
-# ifeq ($(CHPL_VERSION_WARN),yes)
-# 	$(warning Chapel 1.33.0 or newer is recommended, found $(CHPL_MAJOR).$(CHPL_MINOR))
-# endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
