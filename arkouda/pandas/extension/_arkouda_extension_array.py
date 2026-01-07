@@ -44,17 +44,24 @@ array([ 1, 99,  3])
 
 """
 
-from typing import TYPE_CHECKING, Optional, Tuple, TypeVar, Union
+from __future__ import annotations
+
+from types import NotImplementedType
+from typing import TYPE_CHECKING, Any, Callable, Optional, Tuple, TypeVar, Union
 
 import numpy as np
 
 from pandas.api.extensions import ExtensionArray
+from typing_extensions import Self
 
 from arkouda.numpy.dtypes import all_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 from arkouda.pandas.categorical import Categorical
 
+
+# Self-type for correct return typing
+EA = TypeVar("EA", bound="ExtensionArray")
 
 if TYPE_CHECKING:
     from arkouda.numpy.strings import Strings
@@ -72,6 +79,8 @@ def _ensure_numpy(x):
 
 class ArkoudaExtensionArray(ExtensionArray):
     default_fill_value: Optional[Union[all_scalars, str]] = -1
+
+    _data: Any
 
     def __init__(self, data):
         # Subclasses should ensure this is the correct ak object
@@ -93,6 +102,62 @@ class ArkoudaExtensionArray(ExtensionArray):
         ``Strings``). Equivalent to querying ``self._data.size``.
         """
         return len(self._data)
+
+    @classmethod
+    def _from_data(cls: type[Self], data: Any) -> Self:
+        return cls(data)
+
+    def _arith_method(
+        self,
+        other: object,
+        op: Callable[[Any, Any], Any],
+    ) -> Union[Self, NotImplementedType]:
+        """
+        Apply an elementwise arithmetic operation between this ExtensionArray and
+        ``other``.
+
+        This is the pandas ExtensionArray arithmetic hook. Pandas uses this method
+        (via its internal operator dispatch) to implement operators like ``+``,
+        ``-``, ``*``, etc. for arrays/Series backed by Arkouda.
+
+        Parameters
+        ----------
+        other : object
+            The right-hand operand. Supported forms:
+
+            * ExtensionArray with a ``_data`` attribute: the operand is unwrapped to
+              its underlying Arkouda data.
+            * scalar: any NumPy scalar / Python scalar supported by the underlying
+              Arkouda operation.
+
+            Any other type returns ``NotImplemented`` so that pandas/Python can fall
+            back to alternate dispatch paths.
+        op : callable
+            A binary operator (e.g., ``operator.add``). Must accept
+            ``(self._data, other)`` and return an Arkouda-backed result.
+
+        Returns
+        -------
+        ExtensionArray or NotImplemented
+            A new array of the same ExtensionArray class as ``self`` containing the
+            elementwise result, or ``NotImplemented`` for unsupported operand types.
+
+        Notes
+        -----
+        * This method does **not** perform index alignment; pandas handles alignment
+          at the Series/DataFrame level before calling into the ExtensionArray.
+        * Type coercion / promotion behavior is determined by the underlying Arkouda
+          implementation of ``op``.
+        """
+        if isinstance(other, ExtensionArray) and hasattr(other, "_data"):
+            other = other._data
+        elif np.isscalar(other):
+            pass
+        else:
+            return NotImplemented
+
+        result = op(self._data, other)
+        return type(self)(result)
 
     def copy(self, deep: bool = True):
         """
