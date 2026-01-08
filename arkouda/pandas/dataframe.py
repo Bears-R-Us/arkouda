@@ -2797,7 +2797,7 @@ class DataFrame(UserDict):
             If True, save the index column. By default, do not save the index.
         columns: List, default = None
             List of columns to include in the file. If None, writes out all columns.
-        file_type: {single, distribute}
+        file_type: {"single", "distribute"}
             Whether to save to a single file or distribute across Locales.
             Default is "distribute".
 
