@@ -426,6 +426,7 @@
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
@@ -1671,10 +1672,10 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.to_hdf">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prefix_path</span><span class="p">,</span>
-        <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;categorical_array&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
-        <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+        <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;categorical_array&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the Categorical to HDF5.</span>
@@ -1688,10 +1689,10 @@
 <span class="sd">            Directory and filename prefix that all output files will share</span>
 <span class="sd">        dataset : str</span>
 <span class="sd">            Name prefix for saved data within the HDF5 file</span>
-<span class="sd">        mode : str {&#39;truncate&#39; | &#39;append&#39;}</span>
+<span class="sd">        mode : {&#39;truncate&#39;, &#39;append&#39;}</span>
 <span class="sd">            By default, truncate (overwrite) output files, if they exist.</span>
 <span class="sd">            If &#39;append&#39;, add data as a new column to existing files.</span>
-<span class="sd">        file_type: str (&quot;single&quot; | &quot;distribute&quot;)</span>
+<span class="sd">        file_type: {&quot;single&quot;, &quot;distribute&quot;}</span>
 <span class="sd">            Default: &quot;distribute&quot;</span>
 <span class="sd">            When set to single, dataset is written to a single file.</span>
 <span class="sd">            When distribute, dataset is written on a file per locale.</span>

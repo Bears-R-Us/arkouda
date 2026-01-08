@@ -1644,7 +1644,7 @@ Module Contents
 
 
 
-   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', file_type: str = 'distribute') -> str
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'array', mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute') -> str
 
       Save the pdarray to HDF5.
       The object can be saved to a collection of files or single file.
@@ -1655,12 +1655,12 @@ Module Contents
       :type dataset: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {'truncate', 'append'}
       :param file_type: Default: "distribute"
                         When set to single, dataset is written to a single file.
                         When distribute, dataset is written on a file per locale.
                         This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
+      :type file_type: {"single", "distribute"}
 
       :rtype: string message indicating result of save operation
 
@@ -1737,7 +1737,7 @@ Module Contents
 
 
 
-   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: str = 'truncate', compression: Optional[str] = None) -> str
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'array', mode: Literal['truncate', 'append'] = 'truncate', compression: Optional[str] = None) -> str
 
       Save the pdarray to Parquet. The result is a collection of files,
       one file per locale of the arkouda server, where each filename starts
@@ -1750,7 +1750,7 @@ Module Contents
       :type dataset: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', attempt to create new dataset in existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {'truncate', 'append'}
       :param compression: (None | "snappy" | "gzip" | "brotli" | "zstd" | "lz4")
                           Sets the compression type used with Parquet files
       :type compression: str (Optional)

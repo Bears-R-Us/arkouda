@@ -425,6 +425,7 @@
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">TypeVar</span><span class="p">,</span>
@@ -3231,7 +3232,9 @@
 
 <div class="viewcode-block" id="DataFrame.to_hdf">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.to_hdf">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;distribute&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save DataFrame to disk as hdf5, preserving column names.</span>
 
@@ -3243,8 +3246,9 @@
 <span class="sd">            If True, save the index column. By default, do not save the index.</span>
 <span class="sd">        columns: List, default = None</span>
 <span class="sd">            List of columns to include in the file. If None, writes out all columns.</span>
-<span class="sd">        file_type: str (single | distribute), default=distribute</span>
+<span class="sd">        file_type: {&quot;single&quot;, &quot;distribute&quot;}</span>
 <span class="sd">            Whether to save to a single file or distribute across Locales.</span>
+<span class="sd">            Default is &quot;distribute&quot;.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>

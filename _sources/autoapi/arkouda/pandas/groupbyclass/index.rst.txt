@@ -1212,7 +1212,7 @@ Module Contents
 
 
 
-   .. py:method:: to_hdf(prefix_path, dataset='groupby', mode='truncate', file_type='distribute')
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'groupby', mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute')
 
       Save the GroupBy to HDF5.
 
@@ -1225,12 +1225,12 @@ Module Contents
       :type dataset: str
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', add data as a new column to existing files.
-      :type mode: str {'truncate' | 'append'}
+      :type mode: {'truncate', 'append'}
       :param file_type: Default: "distribute"
                         When set to single, dataset is written to a single file.
                         When distribute, dataset is written on a file per locale.
                         This is only supported by HDF5 files and will have no impact of Parquet Files.
-      :type file_type: str ("single" | "distribute")
+      :type file_type: {"single", "distribute"}
 
       .. rubric:: Notes
 

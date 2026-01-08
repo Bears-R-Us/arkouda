@@ -1969,7 +1969,7 @@ Module Contents
 
 
 
-   .. py:method:: to_hdf(path, index=False, columns=None, file_type='distribute')
+   .. py:method:: to_hdf(path, index=False, columns=None, file_type: Literal['single', 'distribute'] = 'distribute')
 
       Save DataFrame to disk as hdf5, preserving column names.
 
@@ -1980,7 +1980,8 @@ Module Contents
       :param columns: List of columns to include in the file. If None, writes out all columns.
       :type columns: List, default = None
       :param file_type: Whether to save to a single file or distribute across Locales.
-      :type file_type: str (single | distribute), default=distribute
+                        Default is "distribute".
+      :type file_type: {"single", "distribute"}
 
       :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray.
 
