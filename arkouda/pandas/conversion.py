@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 else:
     Strings = TypeVar("Strings")
 
-__all_ = ["from_series"]
+__all__ = ["from_series"]
 
 
 @typechecked
