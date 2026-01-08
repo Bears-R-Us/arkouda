@@ -840,7 +840,7 @@ SeriesDTypes = {
 ScalarDTypes = frozenset(["bool_", "float64", "int64"])
 
 
-def isSupportedInt(num) -> "TypeGuard[int_scalars]":
+def isSupportedInt(num) -> TypeGuard[int_scalars]:
     """
     Whether a scalar is an arkouda supported integer dtype.
 
@@ -866,7 +866,7 @@ def isSupportedInt(num) -> "TypeGuard[int_scalars]":
     return isinstance(num, ARKOUDA_SUPPORTED_INTS)
 
 
-def isSupportedFloat(num) -> "TypeGuard[float_scalars]":
+def isSupportedFloat(num) -> TypeGuard[float_scalars]:
     """
     Whether a scalar is an arkouda supported float dtype.
 
@@ -892,7 +892,7 @@ def isSupportedFloat(num) -> "TypeGuard[float_scalars]":
     return isinstance(num, ARKOUDA_SUPPORTED_FLOATS)
 
 
-def isSupportedNumber(num) -> "TypeGuard[numeric_scalars]":
+def isSupportedNumber(num) -> TypeGuard[numeric_scalars]:
     """
     Whether a scalar is an arkouda supported numeric dtype.
 
@@ -918,7 +918,7 @@ def isSupportedNumber(num) -> "TypeGuard[numeric_scalars]":
     return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
 
 
-def isSupportedBool(num) -> "TypeGuard[bool_scalars]":
+def isSupportedBool(num) -> TypeGuard[bool_scalars]:
     """
     Whether a scalar is an arkouda supported boolean dtype.
 
