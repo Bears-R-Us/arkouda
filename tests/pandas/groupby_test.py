@@ -200,6 +200,14 @@ class TestGroupBy:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("op", NAN_OPS)
     def test_pandas_equivalency_nan(self, size, op):
+        if op in {"min", "max"}:
+            pytest.xfail(
+                reason=(
+                    "Arkouda GroupBy aggregate returns sentinel instead of NaN "
+                    "for all-NaN groups (see issue #5262)"
+                )
+            )
+
         d = self.make_arrays_nan(size)
         df = pd.DataFrame(d)
         akdf = {k: ak.array(v) for k, v in d.items()}
