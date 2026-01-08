@@ -8834,7 +8834,7 @@ Package Contents
 
 
 
-.. py:function:: isSupportedBool(num)
+.. py:function:: isSupportedBool(num) -> TypeGuard[bool_scalars]
 
    Whether a scalar is an arkouda supported boolean dtype.
 
@@ -8872,7 +8872,7 @@ Package Contents
    False
 
 
-.. py:function:: isSupportedFloat(num)
+.. py:function:: isSupportedFloat(num) -> TypeGuard[float_scalars]
 
    Whether a scalar is an arkouda supported float dtype.
 
@@ -8891,7 +8891,7 @@ Package Contents
    True
 
 
-.. py:function:: isSupportedInt(num)
+.. py:function:: isSupportedInt(num) -> TypeGuard[int_scalars]
 
    Whether a scalar is an arkouda supported integer dtype.
 
@@ -8910,7 +8910,7 @@ Package Contents
    False
 
 
-.. py:function:: isSupportedNumber(num)
+.. py:function:: isSupportedNumber(num) -> TypeGuard[numeric_scalars]
 
    Whether a scalar is an arkouda supported numeric dtype.
 

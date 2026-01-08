@@ -374,7 +374,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">TypeAlias</span><span class="p">,</span>
+    <span class="n">TypeGuard</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -1068,8 +1074,10 @@
 <span class="n">bitType</span> <span class="o">=</span> <span class="n">uint64</span>
 
 <span class="c1"># Union aliases used for static and runtime type checking</span>
-<span class="n">bool_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]</span>
-<span class="n">float_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span>
+<span class="n">bool_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
+
+<span class="n">float_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
+
 <span class="n">int_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
     <span class="nb">int</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
@@ -1080,9 +1088,12 @@
     <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
-<span class="p">]</span>
-<span class="n">numeric_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">float_scalars</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span>
-<span class="n">numeric_and_bool_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">]</span>
+<span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
+
+<span class="n">numeric_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">float_scalars</span><span class="p">,</span> <span class="n">int_scalars</span><span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
+
+<span class="n">numeric_and_bool_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
+
 <span class="n">numpy_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
     <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
@@ -1096,9 +1107,11 @@
     <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
     <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
-<span class="p">]</span>
-<span class="n">str_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">]</span>
-<span class="n">all_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]</span>
+<span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
+
+<span class="n">str_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
+
+<span class="n">all_scalars</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">,</span> <span class="n">numpy_scalars</span><span class="p">,</span> <span class="n">str_scalars</span><span class="p">]</span>  <span class="c1"># type: TypeAlias</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The DType enum defines the supported Arkouda data types in string form.</span>
@@ -1214,7 +1227,7 @@
 
 <div class="viewcode-block" id="isSupportedInt">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedInt">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported integer dtype.</span>
 
@@ -1243,7 +1256,7 @@
 
 <div class="viewcode-block" id="isSupportedFloat">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedFloat">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">float_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported float dtype.</span>
 
@@ -1272,7 +1285,7 @@
 
 <div class="viewcode-block" id="isSupportedNumber">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedNumber">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported numeric dtype.</span>
 
@@ -1301,7 +1314,7 @@
 
 <div class="viewcode-block" id="isSupportedBool">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedBool">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported boolean dtype.</span>
 

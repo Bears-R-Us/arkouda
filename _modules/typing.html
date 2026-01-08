@@ -1220,6 +1220,8 @@
 
 
 
+<div class="viewcode-block" id="TypeAlias">
+<a class="viewcode-back" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeAlias">[docs]</a>
 <span class="nd">@_SpecialForm</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">TypeAlias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Special form for marking type aliases.</span>
@@ -1234,7 +1236,8 @@
 
 <span class="sd">    It&#39;s invalid when used anywhere except as in the example above.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not subscriptable&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> is not subscriptable&quot;</span><span class="p">)</span></div>
+
 
 
 <span class="nd">@_SpecialForm</span>
@@ -1263,6 +1266,8 @@
     <span class="k">return</span> <span class="n">_ConcatenateGenericAlias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="TypeGuard">
+<a class="viewcode-back" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard">[docs]</a>
 <span class="nd">@_SpecialForm</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">TypeGuard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Special typing construct for marking user-defined type predicate functions.</span>
@@ -1316,7 +1321,8 @@
 <span class="sd">    PEP 647 (User-Defined Type Guards).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">item</span> <span class="o">=</span> <span class="n">_type_check</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s1"> accepts only single type.&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_GenericAlias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">item</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="n">_GenericAlias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">item</span><span class="p">,))</span></div>
+
 
 
 <span class="nd">@_SpecialForm</span>

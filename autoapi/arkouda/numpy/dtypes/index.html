@@ -489,6 +489,12 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.TimeDelta64DType" title="arkouda.numpy.dtypes.TimeDelta64DType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeDelta64DType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.TypeAlias" title="arkouda.numpy.dtypes.TypeAlias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TypeAlias</span></code></a></p></td>
+<td><p>Special form for marking type aliases.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TypeGuard</span></code></a></p></td>
+<td><p>Special typing construct for marking user-defined type predicate functions.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.UByteDType" title="arkouda.numpy.dtypes.UByteDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UByteDType</span></code></a></p></td>
 <td><p>DType class corresponding to the scalar type and dtype of the same name.</p></td>
 </tr>
@@ -636,19 +642,19 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.get_server_byteorder" title="arkouda.numpy.dtypes.get_server_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_server_byteorder</span></code></a>(→ str)</p></td>
 <td><p>Get the server's byteorder.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedBool" title="arkouda.numpy.dtypes.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedBool" title="arkouda.numpy.dtypes.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(→ TypeGuard[bool_scalars])</p></td>
 <td><p>Whether a scalar is an arkouda supported boolean dtype.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedDType" title="arkouda.numpy.dtypes.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(→ bool)</p></td>
 <td><p>Whether a scalar is an arkouda supported dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedFloat" title="arkouda.numpy.dtypes.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedFloat" title="arkouda.numpy.dtypes.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(→ TypeGuard[float_scalars])</p></td>
 <td><p>Whether a scalar is an arkouda supported float dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedInt" title="arkouda.numpy.dtypes.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(num)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedInt" title="arkouda.numpy.dtypes.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(→ TypeGuard[int_scalars])</p></td>
 <td><p>Whether a scalar is an arkouda supported integer dtype.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedNumber" title="arkouda.numpy.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.isSupportedNumber" title="arkouda.numpy.dtypes.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(→ TypeGuard[numeric_scalars])</p></td>
 <td><p>Whether a scalar is an arkouda supported numeric dtype.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.dtypes.resolve_scalar_dtype" title="arkouda.numpy.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
@@ -1191,11 +1197,11 @@ information.</p>
 <p>This form can be used to indicate to type checkers that the corresponding
 variable or function parameter has a value equivalent to the provided
 literal (or one of several literals):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">validate_simple</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]:</span>  <span class="c1"># always returns True</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w">\ </span><span class="nf">validate_simple</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]:</span>  <span class="c1"># always returns True</span>
     <span class="o">...</span>
 
 <span class="n">MODE</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">]</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">open_helper</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">MODE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w">\ </span><span class="nf">open_helper</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">MODE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="o">...</span>
 
 <span class="n">open_helper</span><span class="p">(</span><span class="s1">&#39;/some/path&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>  <span class="c1"># Passes type check</span>
@@ -1571,6 +1577,71 @@ information.</p>
 <p>Please see <cite>numpy.dtype</cite> for the typical way to create
 dtype instances and <span class="xref std std-ref">arrays.dtypes</span> for additional
 information.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.TypeAlias">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">TypeAlias</span></span><a class="reference internal" href="../../../../_modules/typing.html#TypeAlias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.TypeAlias" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_Final</span></code></p>
+<p>Special form for marking type aliases.</p>
+<p>Use TypeAlias to indicate that an assignment should
+be recognized as a proper type alias definition by type
+checkers.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Predicate</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>It’s invalid when used anywhere except as in the example above.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.numpy.dtypes.TypeGuard">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">TypeGuard</span></span><a class="reference internal" href="../../../../_modules/typing.html#TypeGuard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.TypeGuard" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_Final</span></code></p>
+<p>Special typing construct for marking user-defined type predicate functions.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TypeGuard</span></code> can be used to annotate the return type of a user-defined
+type predicate function.  <code class="docutils literal notranslate"><span class="pre">TypeGuard</span></code> only accepts a single type argument.
+At runtime, functions marked this way should return a boolean.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TypeGuard</span></code> aims to benefit <em>type narrowing</em> – a technique used by static
+type checkers to determine a more precise type of an expression within a
+program’s code flow.  Usually type narrowing is done by analyzing
+conditional code flow and applying the narrowing to a block of code.  The
+conditional expression here is sometimes referred to as a “type predicate”.</p>
+<p>Sometimes it would be convenient to use a user-defined boolean function
+as a type predicate.  Such a function should use <code class="docutils literal notranslate"><span class="pre">TypeGuard[...]</span></code> or
+<code class="docutils literal notranslate"><span class="pre">TypeIs[...]</span></code> as its return type to alert static type checkers to
+this intention. <code class="docutils literal notranslate"><span class="pre">TypeGuard</span></code> should be used over <code class="docutils literal notranslate"><span class="pre">TypeIs</span></code> when narrowing
+from an incompatible type (e.g., <code class="docutils literal notranslate"><span class="pre">list[object]</span></code> to <code class="docutils literal notranslate"><span class="pre">list[int]</span></code>) or when
+the function does not return <code class="docutils literal notranslate"><span class="pre">True</span></code> for all instances of the narrowed type.</p>
+<p>Using  <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">TypeGuard[NarrowedType]</span></code> tells the static type checker that
+for a given function:</p>
+<ol class="arabic simple">
+<li><p>The return value is a boolean.</p></li>
+<li><p>If the return value is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the type of its argument
+is <code class="docutils literal notranslate"><span class="pre">NarrowedType</span></code>.</p></li>
+</ol>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w">\ </span><span class="nf">is_str_list</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Determines whether all objects in the list are strings&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">val</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w">\ </span><span class="nf">func1</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="n">is_str_list</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+        <span class="c1"># Type of ``val`` is narrowed to ``list[str]``.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Type of ``val`` remains as ``list[object]``.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not a list of strings!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Strict type narrowing is not enforced – <code class="docutils literal notranslate"><span class="pre">TypeB</span></code> need not be a narrower
+form of <code class="docutils literal notranslate"><span class="pre">TypeA</span></code> (it can even be a wider form) and this may lead to
+type-unsafe results.  The main reason is to allow for things like
+narrowing <code class="docutils literal notranslate"><span class="pre">list[object]</span></code> to <code class="docutils literal notranslate"><span class="pre">list[str]</span></code> even though the latter is not
+a subtype of the former, since <code class="docutils literal notranslate"><span class="pre">list</span></code> is invariant.  The responsibility of
+writing type-safe type predicates is left to the user.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TypeGuard</span></code> also works with type variables.  For more information, see
+PEP 647 (User-Defined Type Guards).</p>
 </dd></dl>
 
 <dl class="py class">
@@ -2808,7 +2879,7 @@ is treated specially.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.isSupportedBool">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedBool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedBool" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.dtypes.bool_scalars" title="arkouda.numpy.dtypes.bool_scalars"><span class="pre">bool_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedBool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedBool" title="Link to this definition">¶</a></dt>
 <dd><p>Whether a scalar is an arkouda supported boolean dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2858,7 +2929,7 @@ is treated specially.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.isSupportedFloat">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedFloat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedFloat" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.dtypes.float_scalars" title="arkouda.numpy.dtypes.float_scalars"><span class="pre">float_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedFloat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedFloat" title="Link to this definition">¶</a></dt>
 <dd><p>Whether a scalar is an arkouda supported float dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2883,7 +2954,7 @@ is treated specially.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.isSupportedInt">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedInt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedInt" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">int_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedInt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedInt" title="Link to this definition">¶</a></dt>
 <dd><p>Whether a scalar is an arkouda supported integer dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2908,7 +2979,7 @@ is treated specially.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.dtypes.isSupportedNumber">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedNumber" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.dtypes.</span></span><span class="sig-name descname"><span class="pre">isSupportedNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><span class="pre">numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/dtypes.html#isSupportedNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.dtypes.isSupportedNumber" title="Link to this definition">¶</a></dt>
 <dd><p>Whether a scalar is an arkouda supported numeric dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -4009,6 +4080,8 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.ShortDType"><code class="docutils literal notranslate"><span class="pre">ShortDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.StrDType"><code class="docutils literal notranslate"><span class="pre">StrDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.TimeDelta64DType"><code class="docutils literal notranslate"><span class="pre">TimeDelta64DType</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.TypeAlias"><code class="docutils literal notranslate"><span class="pre">TypeAlias</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.dtypes.TypeGuard"><code class="docutils literal notranslate"><span class="pre">TypeGuard</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.UByteDType"><code class="docutils literal notranslate"><span class="pre">UByteDType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.UInt16DType"><code class="docutils literal notranslate"><span class="pre">UInt16DType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.dtypes.UInt32DType"><code class="docutils literal notranslate"><span class="pre">UInt32DType</span></code></a></li>
