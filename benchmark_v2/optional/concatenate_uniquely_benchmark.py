@@ -11,7 +11,8 @@ OVERLAP = (0.0, 0.25, 0.5, 0.75)
 
 # 1 => ak.unique(ak.concatenate([a, b], ordered=False))
 # 2 => Strings.concatenate_uniquely([a, b])
-METHOD = (1, 2)
+# 3 => Strings.concatenate_uniquely_with_inner_arrays([a, b])
+METHOD = (1, 2, 3)
 
 
 def _unique_concat(a: Strings, b: Strings) -> Strings:
@@ -20,6 +21,10 @@ def _unique_concat(a: Strings, b: Strings) -> Strings:
 
 def _concatenate_uniquely(a: Strings, b: Strings) -> Strings:
     return Strings.concatenate_uniquely([a, b])
+
+
+def _concatenate_uniquely_inner_arrays(a: Strings, b: Strings) -> Strings:
+    return Strings.concatenate_uniquely_with_inner_arrays([a, b])
 
 
 @pytest.mark.skip_numpy(True)
@@ -76,7 +81,8 @@ def bench_strings_concat_unique(benchmark, overlap, method):
     bytes_b = calc_num_bytes(b)
     num_bytes = bytes_a + bytes_b
 
-    fn = _unique_concat if method == 1 else _concatenate_uniquely
+    fns = [_unique_concat, _concatenate_uniquely, _concatenate_uniquely_inner_arrays]
+    fn = fns[method]
 
     benchmark.pedantic(
         fn,
