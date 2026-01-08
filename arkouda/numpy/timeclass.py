@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import numpy as np
 
@@ -226,8 +226,8 @@ class _AbstractBaseTime(pdarray):
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """Override of the pdarray to_hdf to store the special dtype."""
         from arkouda.client import generic_msg

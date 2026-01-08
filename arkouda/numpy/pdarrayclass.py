@@ -6,7 +6,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, cast, overload
+from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, Union, cast, overload
 
 import numpy as np
 
@@ -2926,7 +2926,7 @@ class pdarray:
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
+        mode: Literal["truncate", "append"] = "truncate",
         compression: Optional[str] = None,
     ) -> str:
         """
@@ -2941,7 +2941,7 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         compression : str (Optional)
@@ -3009,8 +3009,8 @@ class pdarray:
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ) -> str:
         """
         Save the pdarray to HDF5.
@@ -3022,10 +3022,10 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single", "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.

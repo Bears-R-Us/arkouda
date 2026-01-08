@@ -55,6 +55,7 @@ from typing import (
     Callable,
     Dict,
     List,
+    Literal,
     Optional,
     Tuple,
     TypeVar,
@@ -2782,7 +2783,9 @@ class DataFrame(UserDict):
             data["Index"] = self.index.values
         return data
 
-    def to_hdf(self, path, index=False, columns=None, file_type="distribute"):
+    def to_hdf(
+        self, path, index=False, columns=None, file_type: Literal["single", "distribute"] = "distribute"
+    ):
         """
         Save DataFrame to disk as hdf5, preserving column names.
 
@@ -2794,8 +2797,9 @@ class DataFrame(UserDict):
             If True, save the index column. By default, do not save the index.
         columns: List, default = None
             List of columns to include in the file. If None, writes out all columns.
-        file_type: str (single | distribute), default=distribute
+        file_type: {"single", "distribute"}
             Whether to save to a single file or distribute across Locales.
+            Default is "distribute".
 
         Raises
         ------
