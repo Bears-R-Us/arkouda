@@ -467,29 +467,10 @@ def enableVerbose() -> None:
         logger.enableVerbose()
 
 
-_UNSET = object()
-
-
 @typechecked
-def disableVerbose(log_level: object = _UNSET, **kwargs) -> None:
-    """
-    Disables verbose logging.
-
-    Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
-    the log level for each to the log_level parameter.
-
-    Parameters
-    ----------
-    log_level : LogLevel
-        The new log level, defaults to LogLevel.INFO
-
-    Raises
-    ------
-    TypeError
-        Raised if log_level is not a LogLevel enum
-    """
+def disableVerbose(log_level: Union[LogLevel, _Unset] = _UNSET, **kwargs) -> None:
     if "logLevel" in kwargs:
-        if log_level is not _UNSET:
+        if not isinstance(log_level, _Unset):
             raise TypeError("Pass only one of 'logLevel' or 'log_level'")
         warnings.warn(
             "'logLevel' is deprecated; use 'log_level' instead",
@@ -497,7 +478,7 @@ def disableVerbose(log_level: object = _UNSET, **kwargs) -> None:
             stacklevel=2,
         )
         log_level = kwargs.pop("logLevel")
-    elif log_level is _UNSET:
+    elif isinstance(log_level, _Unset):
         log_level = LogLevel.INFO
 
     if kwargs:
@@ -506,6 +487,7 @@ def disableVerbose(log_level: object = _UNSET, **kwargs) -> None:
     if not isinstance(log_level, LogLevel):
         raise TypeError("log_level must be a LogLevel")
 
+    log_level = cast(LogLevel, log_level)
     for logger in loggers.values():
         logger.disableVerbose(log_level)
 

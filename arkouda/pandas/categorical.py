@@ -161,6 +161,25 @@ class Categorical:
         from arkouda.pandas.groupbyclass import GroupBy, unique
 
         self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+
+        # --- deprecated kwarg aliases for na_value ---
+        _new = "na_value"
+        _deprecated = [k for k in ("naValue", "NAvalue") if k in kwargs]
+
+        cls_name = type(self).__name__
+
+        if _new in kwargs and _deprecated:
+            raise TypeError(f"{cls_name}() got both '{_new}' and '{_deprecated[0]}'. Use '{_new}'.")
+
+        if _deprecated:
+            old = _deprecated[0]
+            warnings.warn(
+                f"'{old}' is deprecated; use '{_new}' instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            kwargs[_new] = kwargs.pop(old)
+
         if "codes" in kwargs and "categories" in kwargs:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored

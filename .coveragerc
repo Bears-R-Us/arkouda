@@ -142,8 +142,10 @@ omit =
     tests/regex_test.py
     tests/scipy/scipy_test.py
     tests/scipy/sparse_test.py
+    tests/scipy/special_tests.py
     tests/security_test.py
     tests/stats_test.py
+    tests/summarization_test.py
     tests/test_no_ak_connect_doctest.py
     tests/testing/asserters_test.py
     tests/testing/equivalence_asserters_test.py
