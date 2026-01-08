@@ -57,7 +57,7 @@ ignore = ["D100","D101","D102","D103","D105","D205","D401",
 "ERA001",
 "E302",
 "E712", #   Keep this one, it allows x == False which arkouda uses for binops
-"N806","N803","N801","N815","N802","N816","N807","N818",
+"N806","N803","N801","N815","N816","N807","N818",
 "PLC0415",
 "PGH004","PGH003",
 "PIE810","PIE808","PIE790",
@@ -71,6 +71,30 @@ ignore = ["D100","D101","D102","D103","D105","D205","D401",
 "SLF001",
 "T201",
 "UP038","UP024","UP032","UP045","UP007","UP006","UP035","UP031","UP015","UP037","UP034","UP018"]
+
+[lint.pep8-naming]
+#   These functions are allowed to be camelCase:
+ignore-names = [
+    #   These are kept to align with NumPy/Pandas:
+    "mT","XOR","AND","OR","T",
+    #   These are deprecated and will be eventually removed:
+  "isSupportedDtype",
+  "isSupportedDType",
+  "isSupportedInt",
+  "isSupportedFloat",
+  "isSupportedNumber",
+  "isSupportedBool",
+  "getArkoudaLogger",
+  "getArkoudaClientLogger",
+  "enableVerbose",
+  "disableVerbose",
+  "BitVectorizer",
+  "globalGeneratorExists",
+  "getGlobalGenerator",
+  "changeLogLevel",
+  "getHandler",]
+
+
 
 
 [lint.isort]

@@ -31,7 +31,7 @@ from arkouda.numpy.dtypes import (
     _datatype_check,
     bigint,
     int_scalars,
-    isSupportedNumber,
+    is_supported_number,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
@@ -1443,12 +1443,12 @@ def arctan2(
     """
     from arkouda.client import generic_msg
 
-    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
+    if not all(is_supported_number(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    if isSupportedNumber(num) and isSupportedNumber(denom):
+    if is_supported_number(num) and is_supported_number(denom):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -2161,8 +2161,8 @@ def where(
     """
     from arkouda.client import generic_msg
 
-    if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
-        not isSupportedNumber(B) and not isinstance(B, pdarray)
+    if (not is_supported_number(A) and not isinstance(A, pdarray)) or (
+        not is_supported_number(B) and not isinstance(B, pdarray)
     ):
         from arkouda.pandas.categorical import Categorical  # type: ignore
 
@@ -3163,7 +3163,7 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int_scalars, ...]] = None) -> p
     )
 
 
-def _matmul2D(pda_L: pdarray, pda_R: pdarray) -> pdarray:
+def _matmul2d(pda_L: pdarray, pda_R: pdarray) -> pdarray:
     from arkouda.client import generic_msg
 
     if pda_L.ndim == 2 and pda_R.ndim == 2:
@@ -3253,7 +3253,7 @@ def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
     # Handle the 2D and 2D case.
 
     elif pda_L.ndim == 2 and pda_R.ndim == 2:
-        return _matmul2D(pda_L, pda_R)
+        return _matmul2d(pda_L, pda_R)
 
     # Handle both singleton 1D cases (i.e. either left or right is 1D, but not both)
 
