@@ -802,7 +802,7 @@ class pdarray:
         return fmt.format(other)
 
     # binary operators
-    def _binop(self, other: pdarray, op: str) -> pdarray:
+    def _binop(self, other: Union[pdarray, numeric_scalars], op: str) -> pdarray:
         """
         Execute binary operation specified by the op string.
 
@@ -882,7 +882,7 @@ class pdarray:
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
-    def _r_binop(self, other: pdarray, op: str) -> pdarray:
+    def _r_binop(self, other: Union[pdarray, numeric_scalars], op: str) -> pdarray:
         """
         Execute reverse binary operation specified by the op string.
 

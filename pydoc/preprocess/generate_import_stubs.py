@@ -53,9 +53,12 @@ def get_parent_class_str(obj):
 def write_formatted_docstring(f, doc_string, spaces):
     doc_string = insert_spaces_after_newlines(doc_string, spaces)
     if doc_string is not None and len(doc_string) > 0:
-        f.write(spaces + "r'''\n")
+        #   AutoApi cannot parse "def" inside a docstring, so replace:
+        doc_string = doc_string.replace("def ", "def\\ ")
+
+        f.write(spaces + 'r"""\n')
         f.write(f"{doc_string}\n")
-        f.write(spaces + "'''")
+        f.write(spaces + '"""')
         f.write("\n" + spaces + "...")
     else:
         f.write("\n" + spaces + "...")
