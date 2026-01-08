@@ -469,8 +469,8 @@ class GroupBy:
 
     def to_hdf(
         self,
-        prefix_path,
-        dataset="groupby",
+        prefix_path: str,
+        dataset: str = "groupby",
         mode: Literal["truncate", "append"] = "truncate",
         file_type: Literal["single", "distribute"] = "distribute",
     ):
@@ -486,10 +486,10 @@ class GroupBy:
             Directory and filename prefix that all output files will share
         dataset : str
             Name prefix for saved data within the HDF5 file
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', add data as a new column to existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single", "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
