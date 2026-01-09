@@ -23,7 +23,6 @@ from typeguard import typechecked
 from arkouda.numpy._typing._typing import _NumericLikeDType, _StringDType
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
-    DTypes,
     NumericDTypes,
     bigint,
     bool_scalars,
@@ -273,42 +272,8 @@ def array(
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
     if dtype is not None and dtype not in [bigint, "bigint"]:
         a = a.astype(dtype)
-    if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a) and dtype is None:
+    if a.dtype == object and dtype is None and all(isinstance(x, (int, np.integer)) for x in a.flat):
         dtype = bigint
-
-    #   Special case, to get around error when putting negative numbers in a bigint
-
-    if (
-        not isinstance(a, Strings)
-        and not np.issubdtype(a.dtype, np.str_)
-        and dtype == bigint
-        and (a < 0).any()
-    ):
-        neg_mask = array((a < 0) * -2 + 1)
-        abs_a = array(abs(a), dtype, max_bits=max_bits)
-        assert isinstance(abs_a, pdarray)  # This is for mypy reasons
-        return neg_mask * abs_a
-
-    if a.dtype == bigint or a.dtype.name not in DTypes or dtype == bigint:
-        # We need this array whether the number of dimensions is 1 or greater.
-        uint_arrays: List[Union[pdarray, Strings]] = []
-
-    if (a.dtype == bigint or dtype == bigint) and a.ndim in get_array_ranks() and a.ndim > 1:
-        sh = a.shape
-        try:
-            # attempt to break bigint into multiple uint64 arrays
-            # early out if we would have more uint arrays than can fit in max_bits
-            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
-            while (a != 0).any() and len(uint_arrays) < early_out:
-                low, a = a % 2**64, a // 2**64
-                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
-            # If uint_arrays is empty, this will create an empty ak array and reshape it.
-            if not uint_arrays:
-                return zeros(size=sh, dtype=bigint, max_bits=max_bits)
-            else:
-                return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
-        except TypeError:
-            raise RuntimeError(f"Unhandled dtype {a.dtype}")
 
     if a.ndim == 0 and a.dtype.name not in NumericDTypes:
         raise TypeError("Must be an iterable or have a numeric DType")
@@ -318,9 +283,6 @@ def array(
 
     if a.ndim not in get_array_ranks():
         raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
-
-    if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a.ravel()) and dtype is None:
-        dtype = bigint
     if a.dtype.kind in ("i", "u", "f", "O") and (dtype == bigint or dtype == "bigint"):
         return _bigint_from_numpy(a, max_bits)
     elif not (
@@ -403,7 +365,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
 
     a = np.asarray(np_a)
     out_shape = a.shape
-    flat = a.ravel()
+    flat = a.ravel()  # ndarray (view when possible)
 
     # Empty → empty bigint (shape-preserving)
     if a.size == 0:
@@ -414,10 +376,10 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
         raise TypeError(f"bigint requires numeric input, got dtype={a.dtype}")
 
     if a.dtype.kind == "O":
-        # Only allow Python ints
-        if not all(isinstance(x, (int, float)) for x in flat):
+        # Only allow Python ints and floats
+        if not all(isinstance(x, (int, float)) for x in a.flat):
             raise TypeError("bigint requires numeric input, got non-numeric object")
-        if any(isinstance(x, float) for x in flat):
+        if any(isinstance(x, float) for x in a.flat):
             a = a.astype(np.float64, copy=False)
 
     # Fast all-zero path or single limb path
@@ -444,7 +406,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
             )
         )
     else:
-        if all(int(x) == 0 for x in flat):
+        if all(int(x) == 0 for x in a.flat):
             return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
     any_neg = np.any(flat < 0)
     req_bits: int
@@ -456,7 +418,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
     mask = (1 << 64) - 1
     uint_arrays: List[Union[pdarray, Strings]] = []
     # attempt to break bigint into multiple uint64 arrays
-    while (flat != 0).any() and len(uint_arrays) < req_limbs:
+    for _ in range(req_limbs):
         low = flat & mask
         flat = flat >> 64  # type: ignore
         # low, flat = flat & mask, flat >> 64
