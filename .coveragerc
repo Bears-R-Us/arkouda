@@ -72,5 +72,4 @@ omit =
     arkouda/security.py
     arkouda/testing/_asserters.py
     arkouda/testing/_equivalence_asserters.py
-    server_util/test/server_test_util.py
 
