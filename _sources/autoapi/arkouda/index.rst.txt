@@ -10840,13 +10840,12 @@ Package Contents
    dtype is object).
 
    :param series: The Pandas Series with a dtype of bool, float64, int64, or string
-   :type series: Pandas Series
+   :type series: pd.Series
    :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
-   :type dtype: Optional[type]
+   :type dtype: Optional[Union[type, str]]
 
-   :rtype: Union[pdarray,Strings]
+   :rtype: Union[pdarray, Strings]
 
-   :raises TypeError: Raised if series is not a Pandas Series object
    :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
 
    .. rubric:: Examples

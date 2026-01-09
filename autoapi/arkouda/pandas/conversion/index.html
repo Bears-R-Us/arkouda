@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.numpy.manipulation_functions" href="../manipulation_functions/index.html"><link rel="prev" title="arkouda.numpy.linalg" href="../linalg/index.html">
+<link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.pandas.dataframe" href="../dataframe/index.html"><link rel="prev" title="arkouda.pandas.categorical" href="../categorical/index.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>arkouda.numpy.ma - arkouda documentation</title>
+        <title>arkouda.pandas.conversion - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
@@ -175,7 +175,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -257,58 +257,58 @@
 <li class="toctree-l3"><a class="reference internal" href="../../history/index.html">arkouda.history</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../infoclass/index.html">arkouda.infoclass</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../alignment/index.html">arkouda.numpy.alignment</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../char/index.html">arkouda.numpy.char</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dtypes/index.html">arkouda.numpy.dtypes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../err/index.html">arkouda.numpy.err</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../exceptions/index.html">arkouda.numpy.exceptions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../fft/index.html">arkouda.numpy.fft</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../imports/index.html">arkouda.numpy.imports</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/char/index.html">arkouda.numpy.char</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/err/index.html">arkouda.numpy.err</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/fft/index.html">arkouda.numpy.fft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/imports/index.html">arkouda.numpy.imports</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg/index.html">arkouda.numpy.linalg</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">arkouda.numpy.ma</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation_functions/index.html">arkouda.numpy.manipulation_functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../numeric/index.html">arkouda.numpy.numeric</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../pdarrayclass/index.html">arkouda.numpy.pdarrayclass</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../pdarraycreation/index.html">arkouda.numpy.pdarraycreation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../polynomial/index.html">arkouda.numpy.polynomial</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../random/generator/index.html">arkouda.numpy.random.generator</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/linalg/index.html">arkouda.numpy.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/ma/index.html">arkouda.numpy.ma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/manipulation_functions/index.html">arkouda.numpy.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/numeric/index.html">arkouda.numpy.numeric</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/pdarrayclass/index.html">arkouda.numpy.pdarrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/pdarraycreation/index.html">arkouda.numpy.pdarraycreation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../rec/index.html">arkouda.numpy.rec</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../segarray/index.html">arkouda.numpy.segarray</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../sorting/index.html">arkouda.numpy.sorting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../strings/index.html">arkouda.numpy.strings</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../timeclass/index.html">arkouda.numpy.timeclass</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../util/index.html">arkouda.numpy.util</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">arkouda.numpy.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/rec/index.html">arkouda.numpy.rec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/segarray/index.html">arkouda.numpy.segarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/sorting/index.html">arkouda.numpy.sorting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/strings/index.html">arkouda.numpy.strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/timeclass/index.html">arkouda.numpy.timeclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/util/index.html">arkouda.numpy.util</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../numpy/utils/index.html">arkouda.numpy.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/conversion/index.html">arkouda.pandas.conversion</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/extension/index.html">arkouda.pandas.extension</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/index/index.html">arkouda.pandas.index</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/io/index.html">arkouda.pandas.io</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/join/index.html">arkouda.pandas.join</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/match/index.html">arkouda.pandas.match</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/row/index.html">arkouda.pandas.row</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/series/index.html">arkouda.pandas.series</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../pandas/typing/index.html">arkouda.pandas.typing</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">arkouda.pandas.conversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../extension/index.html">arkouda.pandas.extension</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../io_util/index.html">arkouda.pandas.io_util</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../matcher/index.html">arkouda.pandas.matcher</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../row/index.html">arkouda.pandas.row</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../series/index.html">arkouda.pandas.series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../typing/index.html">arkouda.pandas.typing</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../plotting/index.html">arkouda.plotting</a></li>
@@ -357,7 +357,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../../_sources/autoapi/arkouda/numpy/ma/index.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../../_sources/autoapi/arkouda/pandas/conversion/index.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -370,13 +370,102 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-arkouda.numpy.ma">
-<span id="arkouda-numpy-ma"></span><h1>arkouda.numpy.ma<a class="headerlink" href="#module-arkouda.numpy.ma" title="Link to this heading">¶</a></h1>
+          <section id="module-arkouda.pandas.conversion">
+<span id="arkouda-pandas-conversion"></span><h1>arkouda.pandas.conversion<a class="headerlink" href="#module-arkouda.pandas.conversion" title="Link to this heading">¶</a></h1>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.conversion.from_series" title="arkouda.pandas.conversion.from_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_series</span></code></a>(...)</p></td>
+<td><p>Converts a Pandas Series to an Arkouda pdarray or Strings object. If</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pandas.conversion.from_series">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.conversion.</span></span><span class="sig-name descname"><span class="pre">from_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/conversion.html#from_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.conversion.from_series" title="Link to this definition">¶</a></dt>
+<dd><p>Converts a Pandas Series to an Arkouda pdarray or Strings object. If
+dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
+the dtype parameter is set if the dtype of the Pandas Series is to be
+overridden or is  unknown (for example, in situations where the Series
+dtype is object).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series</strong> (<em>pd.Series</em>) – The Pandas Series with a dtype of bool, float64, int64, or string</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>type</em><em>, </em><em>str</em><em>]</em><em>]</em>) – The valid dtype types are np.bool, np.float64, np.int64, and np.str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span>
+<span class="go">array([4 3 3 5 0])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">]),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="go">array([1 2 3 4 5])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)))</span>
+<span class="go">array([0.089433234324597599 0.1153776854774361 0.51874393620990389])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span>
+<span class="gp">... </span>        <span class="s1">&#39;0.57600036956445599&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;0.41619265571741659&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;0.6615356693784662&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">]),</span>
+<span class="gp">... </span>    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">array([0.57600036956445599 0.41619265571741659 0.6615356693784662])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1864</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)))</span>
+<span class="go">array([True True True False False])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="go">array([True True True True True])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
+<span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s1">&#39;1/1/2018&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="s1">&#39;2018-01-01&#39;</span><span class="p">)])))</span>
+<span class="go">array([1514764800000000000 1514764800000000000])</span>
+</pre></div>
+</div>
+<p class="rubric">Notes</p>
+<p>The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
+data type is either inferred from the the Series or is set via the dtype parameter.</p>
+<p>Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)</p>
+<p>A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+contains strings and sets the dtype to str</p>
+</dd></dl>
+
+</section>
 </section>
 
         </article>
@@ -384,23 +473,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../manipulation_functions/index.html">
+          <a class="next-page" href="../dataframe/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">arkouda.numpy.manipulation_functions</div>
+                <div class="title">arkouda.pandas.dataframe</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../linalg/index.html">
+          <a class="prev-page" href="../categorical/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">arkouda.numpy.linalg</div>
+                <div class="title">arkouda.pandas.categorical</div>
                 
               </div>
             </a>
@@ -422,8 +511,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">arkouda.pandas.conversion</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#arkouda.pandas.conversion.from_series"><code class="docutils literal notranslate"><span class="pre">from_series()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

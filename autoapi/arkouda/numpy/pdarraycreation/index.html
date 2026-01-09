@@ -296,6 +296,7 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../pandas/conversion/index.html">arkouda.pandas.conversion</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/extension/index.html">arkouda.pandas.extension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
@@ -390,52 +391,49 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.bigint_from_uint_arrays" title="arkouda.numpy.pdarraycreation.bigint_from_uint_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bigint_from_uint_arrays</span></code></a>(arrays[, max_bits])</p></td>
 <td><p>Create a bigint pdarray from an iterable of uint pdarrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.from_series" title="arkouda.numpy.pdarraycreation.from_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_series</span></code></a>(...)</p></td>
-<td><p>Converts a Pandas Series to an Arkouda pdarray or Strings object. If</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full" title="arkouda.numpy.pdarraycreation.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full" title="arkouda.numpy.pdarraycreation.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Create a pdarray filled with fill_value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full_like" title="arkouda.numpy.pdarraycreation.full_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_like</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full_like" title="arkouda.numpy.pdarraycreation.full_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full_like</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Create a pdarray filled with fill_value of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.linspace" title="arkouda.numpy.pdarraycreation.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.linspace" title="arkouda.numpy.pdarraycreation.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return evenly spaced numbers over a specified interval.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.logspace" title="arkouda.numpy.pdarraycreation.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.logspace" title="arkouda.numpy.pdarraycreation.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray of numbers evenly spaced on a log scale.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.ones" title="arkouda.numpy.pdarraycreation.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.ones" title="arkouda.numpy.pdarraycreation.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with ones.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.ones_like" title="arkouda.numpy.pdarraycreation.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.ones_like" title="arkouda.numpy.pdarraycreation.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a one-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.promote_to_common_dtype" title="arkouda.numpy.pdarraycreation.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.promote_to_common_dtype" title="arkouda.numpy.pdarraycreation.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
 <td><p>Promote a list of pdarrays to a common dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.randint" title="arkouda.numpy.pdarraycreation.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.randint" title="arkouda.numpy.pdarraycreation.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Generate a pdarray of randomized int, float, or bool values in a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_lognormal" title="arkouda.numpy.pdarraycreation.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_lognormal" title="arkouda.numpy.pdarraycreation.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
 <td><p>Generate random strings with log-normally distributed lengths and</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_uniform" title="arkouda.numpy.pdarraycreation.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.random_strings_uniform" title="arkouda.numpy.pdarraycreation.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
 <td><p>Generate random strings with lengths uniformly distributed between</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.scalar_array" title="arkouda.numpy.pdarraycreation.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.scalar_array" title="arkouda.numpy.pdarraycreation.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray from a single scalar value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.standard_normal" title="arkouda.numpy.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.standard_normal" title="arkouda.numpy.pdarraycreation.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.uniform" title="arkouda.numpy.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.uniform" title="arkouda.numpy.pdarraycreation.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.zeros" title="arkouda.numpy.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.zeros" title="arkouda.numpy.pdarraycreation.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.zeros_like" title="arkouda.numpy.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarraycreation.zeros_like" title="arkouda.numpy.pdarraycreation.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a zero-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
 </tbody>
@@ -649,83 +647,6 @@ if the pdarrays are not the same size.</p></li>
 <span class="go">True</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.numpy.pdarraycreation.from_series">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarraycreation.</span></span><span class="sig-name descname"><span class="pre">from_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../pandas/index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarraycreation.html#from_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarraycreation.from_series" title="Link to this definition">¶</a></dt>
-<dd><p>Converts a Pandas Series to an Arkouda pdarray or Strings object. If
-dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
-the dtype parameter is set if the dtype of the Pandas Series is to be
-overridden or is  unknown (for example, in situations where the Series
-dtype is object).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>series</strong> (<em>Pandas Series</em>) – The Pandas Series with a dtype of bool, float64, int64, or string</p></li>
-<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><em>type</em><em>]</em>) – The valid dtype types are np.bool, np.float64, np.int64, and np.str</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if series is not a Pandas Series object</p></li>
-<li><p><strong>ValueError</strong> – Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span>
-<span class="go">array([4 3 3 5 0])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">]),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="go">array([1 2 3 4 5])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)))</span>
-<span class="go">array([0.089433234324597599 0.1153776854774361 0.51874393620990389])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span>
-<span class="gp">... </span>        <span class="s1">&#39;0.57600036956445599&#39;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="s1">&#39;0.41619265571741659&#39;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="s1">&#39;0.6615356693784662&#39;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="p">]),</span>
-<span class="gp">... </span>    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="go">array([0.57600036956445599 0.41619265571741659 0.6615356693784662])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1864</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)))</span>
-<span class="go">array([True True True False False])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-<span class="go">array([True True True True True])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
-<span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s1">&#39;1/1/2018&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="s1">&#39;2018-01-01&#39;</span><span class="p">)])))</span>
-<span class="go">array([1514764800000000000 1514764800000000000])</span>
-</pre></div>
-</div>
-<p class="rubric">Notes</p>
-<p>The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
-data type is either inferred from the the Series or is set via the dtype parameter.</p>
-<p>Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)</p>
-<p>A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-contains strings and sets the dtype to str</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1503,7 +1424,6 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.numpy.pdarraycreation.arange"><code class="docutils literal notranslate"><span class="pre">arange()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarraycreation.array"><code class="docutils literal notranslate"><span class="pre">array()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarraycreation.bigint_from_uint_arrays"><code class="docutils literal notranslate"><span class="pre">bigint_from_uint_arrays()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.numpy.pdarraycreation.from_series"><code class="docutils literal notranslate"><span class="pre">from_series()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full"><code class="docutils literal notranslate"><span class="pre">full()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarraycreation.full_like"><code class="docutils literal notranslate"><span class="pre">full_like()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.numpy.pdarraycreation.linspace"><code class="docutils literal notranslate"><span class="pre">linspace()</span></code></a></li>
