@@ -94,7 +94,7 @@ def _in1d_single(
     array([False True])
     """
     from arkouda.core.client import generic_msg
-    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.numpy.pdarraycreation import zeros as ak_zeros
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
@@ -102,10 +102,10 @@ def _in1d_single(
         # While isinstance(thing, type) can be called on a tuple of types,
         # this causes an issue with mypy for unknown reasons.
         if pda1.size == 0:
-            return zeros(0, dtype=akbool)
+            return ak_zeros(0, dtype=akbool)
     if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
         if pda2.size == 0:
-            return zeros(pda1.size, dtype=akbool)
+            return ak_zeros(pda1.size, dtype=akbool)
     if hasattr(pda1, "categories"):
         x = cast(Categorical_, pda1).in1d(pda2)
         return x if not invert else ~x
