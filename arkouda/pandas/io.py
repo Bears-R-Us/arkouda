@@ -1321,22 +1321,22 @@ def _bulk_write_prep(
     names: Optional[List[str]] = None,
     convert_categoricals: bool = False,
 ):
-    datasetNames = []
+    dataset_names = []
     if names is not None:
         if len(names) != len(columns):
             raise ValueError("Number of names does not match number of columns")
         else:
-            datasetNames = names
+            dataset_names = names
 
     data = []  # init to avoid undefined errors
     if isinstance(columns, dict):
         data = list(columns.values())
         if names is None:
-            datasetNames = list(columns.keys())
+            dataset_names = list(columns.keys())
     elif isinstance(columns, list):
         data = cast(List[pdarray], columns)
         if names is None:
-            datasetNames = [str(column) for column in range(len(columns))]
+            dataset_names = [str(column) for column in range(len(columns))]
 
     if len(data) == 0:
         raise RuntimeError("No data was found.")
@@ -1348,7 +1348,7 @@ def _bulk_write_prep(
 
     col_objtypes = [c.objType for c in data]
 
-    return datasetNames, data, col_objtypes
+    return dataset_names, data, col_objtypes
 
 
 def _delete_arkouda_files(prefix_path: str):
@@ -1459,10 +1459,10 @@ def to_parquet(
     if mode.lower() == "truncate":
         _delete_arkouda_files(prefix_path)
 
-    datasetNames, data, col_objtypes = _bulk_write_prep(columns, names, convert_categoricals)
+    dataset_names, data, col_objtypes = _bulk_write_prep(columns, names, convert_categoricals)
     # append or single column use the old logic
     if mode.lower() == "append" or len(data) == 1:
-        for arr, name in zip(data, cast(List[str], datasetNames)):
+        for arr, name in zip(data, cast(List[str], dataset_names)):
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compression=compression)
     else:
         cast(
@@ -1471,7 +1471,7 @@ def to_parquet(
                 cmd="toParquet_multi",
                 args={
                     "columns": data,
-                    "col_names": datasetNames,
+                    "col_names": dataset_names,
                     "col_objtypes": col_objtypes,
                     "filename": prefix_path,
                     "num_cols": len(data),
@@ -1548,9 +1548,9 @@ def to_hdf(
     if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
 
-    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)
+    dataset_names, pdarrays, _ = _bulk_write_prep(columns, names)
 
-    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+    for arr, name in zip(pdarrays, cast(List[str], dataset_names)):
         arr.to_hdf(
             prefix_path=prefix_path,
             dataset=name,
@@ -1638,9 +1638,9 @@ def update_hdf(
       creating a copy of the file for each dataset
 
     """
-    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)
+    dataset_names, pdarrays, _ = _bulk_write_prep(columns, names)
 
-    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+    for arr, name in zip(pdarrays, cast(List[str], dataset_names)):
         # overwrite the data without repacking. Repack done once at end if set
         arr.update_hdf(prefix_path, dataset=name, repack=False)
 
@@ -1707,14 +1707,14 @@ def to_csv(
     """
     from arkouda.client import generic_msg
 
-    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)  # type: ignore
+    dataset_names, pdarrays, _ = _bulk_write_prep(columns, names)  # type: ignore
     dtypes = [a.dtype.name for a in pdarrays]
 
     generic_msg(
         cmd="writecsv",
         args={
             "datasets": pdarrays,
-            "col_names": datasetNames,
+            "col_names": dataset_names,
             "filename": prefix_path,
             "num_dsets": len(pdarrays),
             "col_delim": col_delim,

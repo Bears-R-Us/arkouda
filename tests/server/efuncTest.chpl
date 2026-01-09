@@ -13,7 +13,7 @@ prototype module efuncTest
         var st = new owned SymTab();
 
         var reqMsg: string;
-        var repMsg: string;
+        var rep_msg: string;
 
         // create an array filled with random float64
         var aname = nameForRandintMsg(LEN, DType.Float64, 0, NVALS, st);
@@ -23,18 +23,18 @@ prototype module efuncTest
         reqMsg = try! "%s %s".format(op, aname);
         var d: Diags;
         d.start();
-        repMsg = efuncMsg(cmd=cmd, payload=reqMsg, st).msg;
+        rep_msg = efuncMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("efuncMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
         // check for result
         cmd = "reduction";
         var subCmd = "sum";
-        var bname = parseName(repMsg); // get name from [pdarray] reply msg
+        var bname = parseName(rep_msg); // get name from [pdarray] reply msg
         reqMsg = try! "%s %s".format(subCmd, bname);
         d.start();
-        repMsg = reductionMsg(cmd=cmd, payload=reqMsg, st).msg;
+        rep_msg = reductionMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("reductionMsg");
-        //writeln("ANSWER >>> ",repMsg," <<<"); TODO 
+        //writeln("ANSWER >>> ",rep_msg," <<<"); TODO
     }
 }

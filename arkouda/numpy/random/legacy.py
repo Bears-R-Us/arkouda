@@ -203,7 +203,7 @@ def randint(
         if cast(float, high) < cast(float, low):
             raise ValueError("low >= high")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"randint<{dtype.name},{ndim}>",
         args={
             "shape": shape,
@@ -212,7 +212,7 @@ def randint(
             "seed": seed if seed is not None else -1,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked

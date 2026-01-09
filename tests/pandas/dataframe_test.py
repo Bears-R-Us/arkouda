@@ -1281,7 +1281,7 @@ class TestDataFrame:
                 if isinstance(ak_merge[col], ak.pdarray):
                     assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
                 elif isinstance(ak_merge[col], ak.Categorical):
-                    na = ak_merge[col].NAvalue
+                    na = ak_merge[col].na_value
                     from_ak = np.where(from_ak == na, "nan", from_ak)
                     from_ak = np.sort(from_ak)
                     from_pd = np.sort(from_pd.astype(str))

@@ -361,7 +361,7 @@ class Strings:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
-                repMsg = generic_msg(
+                rep_msg = generic_msg(
                     cmd="segmentedIndex",
                     args={
                         "subcmd": "intIndex",
@@ -371,14 +371,14 @@ class Strings:
                         "key": key,
                     },
                 )
-                _, value = repMsg.split(maxsplit=1)
+                _, value = rep_msg.split(maxsplit=1)
                 return parse_single_value(value)
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
         elif isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
             self.logger.debug(f"start: {start}; stop: {stop}; stride: {stride}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "sliceIndex",
@@ -388,13 +388,13 @@ class Strings:
                     "key": [start, stop, stride],
                 },
             )
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
         elif isinstance(key, pdarray):
             if key.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             if key.dtype == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "pdarrayIndex",
@@ -404,7 +404,7 @@ class Strings:
                     "key": key,
                 },
             )
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
         elif isinstance(key, np.ndarray):
             # convert numpy array to pdarray
             from arkouda.numpy.pdarraycreation import array as ak_array
@@ -1848,7 +1848,7 @@ class Strings:
             return self.regex_split(delimiter, return_segments=return_segments)
         else:
             cmd = "segmentedFlatten"
-            repMsg = cast(
+            rep_msg = cast(
                 str,
                 generic_msg(
                     cmd=cmd,
@@ -1862,10 +1862,10 @@ class Strings:
                 ),
             )
             if return_segments:
-                arrays = repMsg.split("+", maxsplit=2)
+                arrays = rep_msg.split("+", maxsplit=2)
                 return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
             else:
-                return Strings.from_return_msg(repMsg)
+                return Strings.from_return_msg(rep_msg)
 
     @typechecked
     def peel(
@@ -1957,7 +1957,7 @@ class Strings:
                 )
         if times < 1:
             raise ValueError("times must be >= 1")
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedPeel",
             args={
                 "subcmd": "peel",
@@ -1972,7 +1972,7 @@ class Strings:
                 "delim": delimiter,
             },
         )
-        arrays = cast(str, repMsg).split("+", maxsplit=3)
+        arrays = cast(str, rep_msg).split("+", maxsplit=3)
         # first two created are left Strings, last two are right strings
         left_str = Strings.from_return_msg("+".join(arrays[0:2]))
         right_str = Strings.from_return_msg("+".join(arrays[2:4]))
@@ -2195,7 +2195,7 @@ class Strings:
         """
         from arkouda.client import generic_msg
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedSubstring",
@@ -2210,12 +2210,12 @@ class Strings:
             ),
         )
         if return_origins:
-            parts = repMsg.split("+")
+            parts = rep_msg.split("+")
             prefixes = Strings.from_return_msg("+".join(parts[:2]))
             longenough = create_pdarray(parts[2])
             return prefixes, cast(pdarray, longenough)
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
 
     def get_suffixes(
         self, n: int_scalars, return_origins: bool = True, proper: bool = True
@@ -2247,7 +2247,7 @@ class Strings:
         """
         from arkouda.client import generic_msg
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedSubstring",
@@ -2262,12 +2262,12 @@ class Strings:
             ),
         )
         if return_origins:
-            parts = repMsg.split("+")
+            parts = rep_msg.split("+")
             suffixes = Strings.from_return_msg("+".join(parts[:2]))
             longenough = create_pdarray(parts[2])
             return suffixes, cast(pdarray, longenough)
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
 
     def hash(self) -> Tuple[pdarray, pdarray]:
         """
@@ -2289,8 +2289,8 @@ class Strings:
         from arkouda.client import generic_msg
 
         # TODO fix this to return a single pdarray of hashes
-        repMsg = generic_msg(cmd="segmentedHash", args={"objType": self.objType, "obj": self.entry})
-        h1, h2 = cast(str, repMsg).split("+")
+        rep_msg = generic_msg(cmd="segmentedHash", args={"objType": self.objType, "obj": self.entry})
+        h1, h2 = cast(str, rep_msg).split("+")
         return create_pdarray(h1), create_pdarray(h2)
 
     def group(self) -> pdarray:
@@ -3062,7 +3062,7 @@ class Strings:
         if self.size == 0:
             return zeros(0, dtype=akint64)  # Strings always maps to int64 indices
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="argsortStrings",
             args={
                 "name": self.entry.name,
@@ -3070,7 +3070,7 @@ class Strings:
             },
         )
 
-        sorted_array = create_pdarray(cast(str, repMsg))
+        sorted_array = create_pdarray(cast(str, rep_msg))
         return sorted_array if ascending else flip(sorted_array)
 
     def take(self, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> Strings:

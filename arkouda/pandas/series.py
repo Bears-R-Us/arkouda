@@ -1147,7 +1147,7 @@ class Series:
 
     @classmethod
     @typechecked
-    def from_return_msg(cls, repMsg: builtin_str) -> Series:
+    def from_return_msg(cls, rep_msg: builtin_str) -> Series:
         """
         Return a Series instance pointing to components created by the arkouda server.
 
@@ -1155,7 +1155,7 @@ class Series:
 
         Parameters
         ----------
-        repMsg : builtin_str
+        rep_msg : builtin_str
             + delimited string containing the values and indexes.
 
         Returns
@@ -1172,7 +1172,7 @@ class Series:
         from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
 
-        data = json.loads(repMsg)
+        data = json.loads(rep_msg)
         val_comps = data["value"].split("+|+")
         if val_comps[0] == Categorical.objType.upper():
             values = Categorical.from_return_msg(val_comps[1])
