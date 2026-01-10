@@ -322,20 +322,24 @@ class Generator:
     #   those generators must be destroyed individually before the python-side Generator
     #   is destroyed.  This is not strictly necessary, but should prevent memory creep in
     #   the event of reseeding the global Generator repeatedly.
-
     def destructor(self):
         from arkouda.client import generic_msg
 
+        # If the server restarted, our client-side generator names can be stale.
+        # Make deletion idempotent: missing symbols should not be fatal.
         for chapel_dt in get_registration_config()["parameter_classes"]["array"]["dtype"]:
             if chapel_dt not in _supported_chapel_types:
                 continue
             dt = dtype_for_chapel(chapel_dt)
-            generic_msg(
-                cmd="delGenerator",
-                args={
-                    "name": self._name_dict[dt],
-                },
-            )
+            try:
+                generic_msg(cmd="delGenerator", args={"name": self._name_dict[dt]})
+            except Exception as e:
+                msg = str(e).lower()
+                # Be narrow: only swallow the "unknown symbol" / symbol-not-found failure mode
+                if ("unknownsymbol" in msg) or ("unknown symbol" in msg):
+                    continue
+                raise
+
         self.__del__()
         return
 
