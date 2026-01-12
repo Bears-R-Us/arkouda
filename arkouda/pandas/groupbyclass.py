@@ -219,7 +219,7 @@ class GroupByReductionType(enum.Enum):
     MAX = "max"
     ARGMIN = "argmin"
     ARGMAX = "argmax"
-    NUNUNIQUE = "nunique"
+    NUNIQUE = "nunique"
     ANY = "any"
     ALL = "all"
     OR = "or"
