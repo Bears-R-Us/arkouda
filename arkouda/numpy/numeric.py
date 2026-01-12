@@ -34,8 +34,8 @@ from arkouda.numpy.dtypes import (
     int_scalars,
     isSupportedBool,
     isSupportedNumber,
-    numeric_scalars,
     numeric_and_bool_scalars,
+    numeric_scalars,
     resolve_scalar_dtype,
     str_,
 )
@@ -159,12 +159,15 @@ class ErrorMode(Enum):
 
 # _merge_where comes in handy in various functions.
 
+
 def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
 
+
 # _normalize_scalar is needed in arctan2 to handle broadcasts of np.bool_ scalars
+
 
 def _normalize_scalar(x):
     if isinstance(x, np.generic):
@@ -1466,19 +1469,18 @@ def arctan2(
     from arkouda.numpy.util import broadcast_shapes as bcast_shapes
     from arkouda.numpy.util import broadcast_to as bcast_to
 
-
-    def _isSupported(arg) :
+    def _isSupported(arg):
         return isSupportedNumber(arg) or isSupportedBool(arg)
 
-    def _bool_case(x1, x2) :
-        return (type(x1) in (bool, np.bool_) and type(x2) in (bool, np.bool))
+    def _bool_case(x1, x2):
+        return type(x1) in (bool, np.bool_) and type(x2) in (bool, np.bool)
 
     #   The function below is needed for the boolean scalar case.
 
     #   np.arctan2 returns float16 if x1 and x2 are both bool.  This helper converts it to float64
     #   because subsequent functions such as where can't accomodate float16.
 
-    def nparctan2(x1, x2) :
+    def nparctan2(x1, x2):
         return np.float64(np.arctan2(x1, x2)) if _bool_case(x1, x2) else np.arctan2(x1, x2)
 
     #  Begin with various checks.
@@ -1498,7 +1500,7 @@ def arctan2(
                     return out
                 else:
                     try:
-                        _where = where if isinstance(where,pdarray) else _normalize_scalar(where) 
+                        _where = where if isinstance(where, pdarray) else _normalize_scalar(where)
                         new_where = bcast_to(_where, out.shape)
                         out[:] = ak_where(new_where, nparctan2(x1, x2), out)
                         return out
@@ -1604,11 +1606,13 @@ def arctan2(
     out[:] = ak_where(_where, tmp, out)
     return out
 
-def handle_bools(x) :
-    if x.dtype in (bool, np.bool_, ak_bool) :
+
+def handle_bools(x):
+    if x.dtype in (bool, np.bool_, ak_bool):
         return x.astype(ak_float64)
-    else :
+    else:
         return x
+
 
 @typechecked
 def _arctan2_(
@@ -1618,15 +1622,14 @@ def _arctan2_(
     from arkouda.client import generic_msg
 
     if isinstance(x1, pdarray) or isinstance(x2, pdarray):
-
         # These four ifs look awkward, since one of x1, x2  MUST be a pdarray, but since mypy
         # doesn't know that, this is how we set ndim and handle bools without causing a mypy error.
 
-        if np.isscalar(x1) :
-            if isinstance(x1, (bool, np.bool_)) :
+        if np.isscalar(x1):
+            if isinstance(x1, (bool, np.bool_)):
                 x1 = int(x1)
-        if np.isscalar(x2) :
-            if isinstance(x2, (bool, np.bool_)) :
+        if np.isscalar(x2):
+            if isinstance(x2, (bool, np.bool_)):
                 x1 = int(x2)
 
         if isinstance(x1, pdarray):

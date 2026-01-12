@@ -58,8 +58,8 @@ ALLOWED_PUTMASK_PAIRS = [
 
 WHERE_OUT = [
     pytest.param(False, False, id="whereF_outF"),
-    pytest.param(False, True,  id="whereF_outT"),
-    pytest.param(True,  True,  id="whereT_outT"),
+    pytest.param(False, True, id="whereF_outT"),
+    pytest.param(True, True, id="whereT_outT"),
 ]
 
 
@@ -72,6 +72,7 @@ def alternate(L, R, n):
     v[::2] = L
     return v
 
+
 def random_scalar(dtype):
     if dtype is np.float64:
         return np.float64(np.random.random())
@@ -80,8 +81,8 @@ def random_scalar(dtype):
     elif dtype is np.uint64:
         return np.random.randint(0, 100, dtype=np.uint64)
     elif dtype is np.bool_:
-        return np.random.randint(2,dtype=np.bool_)
-    else :
+        return np.random.randint(2, dtype=np.bool_)
+    else:
         raise TypeError(f"Unsupported dtype: {dtype}")
 
 
@@ -538,10 +539,14 @@ class TestNumeric:
 
         #  Create numerator and denominator
 
-        na_num = random_scalar(num_type) if num_scalar else \
-            np.random.permutation(NP_TRIG_ARRAYS[num_type])
-        na_denom = random_scalar(denom_type) if denom_scalar else \
-            np.random.permutation(DENOM_ARCTAN2_ARRAYS[denom_type])
+        na_num = (
+            random_scalar(num_type) if num_scalar else np.random.permutation(NP_TRIG_ARRAYS[num_type])
+        )
+        na_denom = (
+            random_scalar(denom_type)
+            if denom_scalar
+            else np.random.permutation(DENOM_ARCTAN2_ARRAYS[denom_type])
+        )
         pda_num = na_num if num_scalar else ak.array(na_num, dtype=num_type)
         pda_denom = na_denom if denom_scalar else ak.array(na_denom, dtype=denom_type)
 
@@ -557,39 +562,39 @@ class TestNumeric:
 
         (rtol, atol) = (1.0e-3, 1.0e-3) if bool_case else (1.0e-5, 1.0e-08)
 
-        def recast_if_bool_case(x) :
-            if np.isscalar(x) :
+        def recast_if_bool_case(x):
+            if np.isscalar(x):
                 return np.float64(x)
-            elif isinstance(x, np.ndarray) :
+            elif isinstance(x, np.ndarray):
                 return x.astype(np.float64)
-            elif isinstance(x, ak.pdarray) :
+            elif isinstance(x, ak.pdarray):
                 return akcast(x, ak.float64)
-            else :
-                raise ValueError ("recast_if_bool_case only handles scalars, ndarrays, and pdarrays")
+            else:
+                raise ValueError("recast_if_bool_case only handles scalars, ndarrays, and pdarrays")
 
         #  Many cases to test.  Begin with both scalar.
         #  This test also covers broadcasting, because we supply "out" as a 1D pdarray.
 
-        if num_scalar and denom_scalar :
-            if not uses_out :
+        if num_scalar and denom_scalar:
+            if not uses_out:
                 assert np.arctan2(na_num, na_denom) == ak.arctan2(pda_num, pda_denom)
-            else :
-                na_out = np.array([1.0,1.0,1.0,1.0])
+            else:
+                na_out = np.array([1.0, 1.0, 1.0, 1.0])
                 na_outc = na_out.copy()
                 pda_out = ak.array(na_out)
                 pda_outc = pda_out.copy()
-                if not uses_where :
+                if not uses_where:
                     na_res = np.arctan2(na_num, na_denom, na_outc)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
-                else :
+                else:
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=True)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
                     na_outc = na_out.copy()
@@ -597,38 +602,40 @@ class TestNumeric:
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=False)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
-
 
         #  Now the cases where one is scalar and the other is a vector.
 
-        if num_scalar ^ denom_scalar :
-            if not uses_out :
+        if num_scalar ^ denom_scalar:
+            if not uses_out:
                 na_res = np.arctan2(na_num, na_denom)
                 na_res = recast_if_bool_case(na_res)
                 ak_assert_almost_equivalent(na_res, ak.arctan2(pda_num, pda_denom), rtol, atol)
-            else :
+            else:
                 na_out = np.ones(len(na_denom)) if num_scalar else np.ones(len(na_num))
                 na_outc = na_out.copy()
-                pda_out = ak.array(na_out) 
+                pda_out = ak.array(na_out)
                 pda_outc = pda_out.copy()
-                if not uses_where :
+                if not uses_where:
                     na_res = np.arctan2(na_num, na_denom, na_outc)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
-                else :
-                    na_where = alternate(True, False, len(na_denom)) if num_scalar else \
-                        alternate(True, False, len(na_num))
+                else:
+                    na_where = (
+                        alternate(True, False, len(na_denom))
+                        if num_scalar
+                        else alternate(True, False, len(na_num))
+                    )
                     pda_where = ak.array(na_where)
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=True)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
                     na_outc = na_out.copy()
@@ -636,7 +643,7 @@ class TestNumeric:
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=False)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
                     na_outc = na_out.copy()
@@ -644,39 +651,42 @@ class TestNumeric:
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=na_where)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=pda_where) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=pda_where)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
-            
+
         #  Finally the case where both are vectors.
         #  This test covers broadcasting as well, provided 2 is in the compiled ranks.
         #  Because in that case, we create out as a 2D array of size 2 x len(the 1D data vectors).
 
-        if not (num_scalar or denom_scalar) :    
-            if not uses_out :
+        if not (num_scalar or denom_scalar):
+            if not uses_out:
                 na_res = np.arctan2(na_num, na_denom)
                 na_res = recast_if_bool_case(na_res)
                 ak_assert_almost_equivalent(na_res, ak.arctan2(pda_num, pda_denom), rtol, atol)
-            else :
-                na_out = np.ones(len(na_denom)) if not (2 in get_array_ranks()) else \
-                    np.ones((2,len(na_denom)))
+            else:
+                na_out = (
+                    np.ones(len(na_denom))
+                    if not (2 in get_array_ranks())
+                    else np.ones((2, len(na_denom)))
+                )
                 na_outc = na_out.copy()
-                pda_out = ak.array(na_out) 
+                pda_out = ak.array(na_out)
                 pda_outc = pda_out.copy()
-                if not uses_where :
+                if not uses_where:
                     na_res = np.arctan2(na_num, na_denom, na_outc)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
-                else :
+                else:
                     na_where = alternate(True, False, len(na_denom))
                     pda_where = ak.array(na_where)
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=True)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
                     na_outc = na_out.copy()
@@ -684,7 +694,7 @@ class TestNumeric:
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=False)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
                     na_outc = na_out.copy()
@@ -692,22 +702,24 @@ class TestNumeric:
                     na_res = np.arctan2(na_num, na_denom, na_outc, where=na_where)
                     na_res = recast_if_bool_case(na_res)
                     na_outc = recast_if_bool_case(na_outc)
-                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=pda_where) 
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=pda_where)
                     ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
                     ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
 
-
-        
         # Edge cases: infinities and zeros.  Doesn't use _infinity_edge_case_helper
         # because arctan2 needs two numbers (numerator and denominator) rather than one.
 
         # This really doesn't need to be done for every case of the inputs.  May pull
         # it into a separate test.
 
-        if num_type is ak.float64 and denom_type is ak.float64 and \
-            num_scalar is False and denom_scalar is False and \
-            uses_where is False and uses_out is False:
-
+        if (
+            num_type is ak.float64
+            and denom_type is ak.float64
+            and num_scalar is False
+            and denom_scalar is False
+            and uses_where is False
+            and uses_out is False
+        ):
             na1 = np.array([np.inf, -np.inf])
             pda1 = ak.array(na1)
             na2 = np.array([1, 10])
