@@ -54,6 +54,15 @@ ALLOWED_PUTMASK_PAIRS = [
     (ak.bool_, ak.bool_),
 ]
 
+#   WHERE_OUT is used in test_arctan2
+
+WHERE_OUT = [
+    pytest.param(False, False, id="whereF_outF"),
+    pytest.param(False, True,  id="whereF_outT"),
+    pytest.param(True,  True,  id="whereT_outT"),
+]
+
+
 # There are many ways to create a vector of alternating values.
 # This is a fairly fast and fairly straightforward approach.
 
@@ -62,6 +71,18 @@ def alternate(L, R, n):
     v = np.full(n, R)
     v[::2] = L
     return v
+
+def random_scalar(dtype):
+    if dtype is np.float64:
+        return np.float64(np.random.random())
+    elif dtype is np.int64:
+        return np.random.randint(-100, 100, dtype=np.int64)
+    elif dtype is np.uint64:
+        return np.random.randint(0, 100, dtype=np.uint64)
+    elif dtype is np.bool_:
+        return np.random.randint(2,dtype=np.bool_)
+    else :
+        raise TypeError(f"Unsupported dtype: {dtype}")
 
 
 #  The following tuples support a simplification of the trigonometric
@@ -118,6 +139,7 @@ DENOM_ARCTAN2_ARRAYS = {
             np.array([np.nan, -np.inf, -1.0, 1.0, np.inf]),
         ]
     ),
+    ak.bool_: alternate(True, False, 10),
     ak.uint64: np.arange(2**64 - 10, 2**64, dtype=np.uint64),
 }
 
@@ -506,93 +528,210 @@ class TestNumeric:
             with pytest.raises(TypeError):
                 akfunc(np.array([range(0, 10)]).astype(num_type))
 
-    @pytest.mark.parametrize("num_type", NO_BOOL)
-    @pytest.mark.parametrize("denom_type", NO_BOOL)
-    def test_arctan2(self, num_type, denom_type):
+    @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
+    @pytest.mark.parametrize("denom_type", NUMERIC_TYPES)
+    @pytest.mark.parametrize("num_scalar", [True, False])
+    @pytest.mark.parametrize("denom_scalar", [True, False])
+    @pytest.mark.parametrize("uses_where, uses_out", WHERE_OUT)
+    def test_arctan2(self, num_type, denom_type, num_scalar, denom_scalar, uses_out, uses_where):
         np.random.seed(pytest.seed)
-        na_num = np.random.permutation(NP_TRIG_ARRAYS[num_type])
-        na_denom = np.random.permutation(DENOM_ARCTAN2_ARRAYS[denom_type])
 
-        pda_num = ak.array(na_num, dtype=num_type)
-        pda_denom = ak.array(na_denom, dtype=denom_type)
+        #  Create numerator and denominator
 
-        truth_np = alternate(True, False, len(na_num))
-        truth_ak = ak.array(truth_np)
+        na_num = random_scalar(num_type) if num_scalar else \
+            np.random.permutation(NP_TRIG_ARRAYS[num_type])
+        na_denom = random_scalar(denom_type) if denom_scalar else \
+            np.random.permutation(DENOM_ARCTAN2_ARRAYS[denom_type])
+        pda_num = na_num if num_scalar else ak.array(na_num, dtype=num_type)
+        pda_denom = na_denom if denom_scalar else ak.array(na_denom, dtype=denom_type)
 
-        ak_assert_almost_equivalent(np.arctan2(na_num, na_denom), ak.arctan2(pda_num, pda_denom))
+        #  Handle the bool-bool case.
 
-        ak_assert_almost_equivalent(np.arctan2(na_num[0], na_denom), ak.arctan2(pda_num[0], pda_denom))
+        #  This step is needed because of the comparison to numpy.  Numpy's
+        #  arctan2, when operating on bool types, returns np.float16.  This
+        #  causes a unit test issue:
+        #    - because the accuracy/precision is much less than float64,
+        #        the tolerances have to be adjusted for comparisons.
 
-        ak_assert_almost_equivalent(np.arctan2(na_num, na_denom[0]), ak.arctan2(pda_num, pda_denom[0]))
+        bool_case = (num_type in (bool, np.bool_)) and (denom_type in (bool, np.bool_))
 
-        na_out = np.ones_like(na_num).astype(np.float64)
-        pda_out = ak.array(na_out)
-        pda_outc = pda_out[:]
+        (rtol, atol) = (1.0e-3, 1.0e-3) if bool_case else (1.0e-5, 1.0e-08)
 
-        assert_arkouda_array_equivalent(pda_outc, ak.arctan2(pda_num, pda_denom, pda_out, where=False))
-        assert_arkouda_array_equivalent(pda_outc, pda_out)
+        def recast_if_bool_case(x) :
+            if np.isscalar(x) :
+                return np.float64(x)
+            elif isinstance(x, np.ndarray) :
+                return x.astype(np.float64)
+            elif isinstance(x, ak.pdarray) :
+                return akcast(x, ak.float64)
+            else :
+                raise ValueError ("recast_if_bool_case only handles scalars, ndarrays, and pdarrays")
 
-        assert_arkouda_array_equivalent(
-            pda_outc, ak.arctan2(pda_num[0], pda_denom, pda_out, where=False)
-        )
-        assert_arkouda_array_equivalent(pda_outc, pda_out)
+        #  Many cases to test.  Begin with both scalar.
+        #  This test also covers broadcasting, because we supply "out" as a 1D pdarray.
 
-        assert_arkouda_array_equivalent(
-            pda_outc, ak.arctan2(pda_num, pda_denom[0], pda_out, where=False)
-        )
-        assert_arkouda_array_equivalent(pda_outc, pda_out)
+        if num_scalar and denom_scalar :
+            if not uses_out :
+                assert np.arctan2(na_num, na_denom) == ak.arctan2(pda_num, pda_denom)
+            else :
+                na_out = np.array([1.0,1.0,1.0,1.0])
+                na_outc = na_out.copy()
+                pda_out = ak.array(na_out)
+                pda_outc = pda_out.copy()
+                if not uses_where :
+                    na_res = np.arctan2(na_num, na_denom, na_outc)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                else :
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=True)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                    na_outc = na_out.copy()
+                    pda_outc = pda_out.copy()
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=False)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
 
-        na_outc = na_out[:]
-        ak_assert_almost_equivalent(
-            np.arctan2(na_num, na_denom, na_outc, where=truth_np),
-            ak.arctan2(pda_num, pda_denom, pda_outc, where=truth_ak),
-        )
-        ak_assert_almost_equivalent(na_outc, pda_outc)
 
-        na_outc = na_out[:]  # restore these two
-        pda_outc = pda_out[:]
-        ak_assert_almost_equivalent(
-            np.arctan2(na_num[0], na_denom, na_outc, where=truth_np),
-            ak.arctan2(pda_num[0], pda_denom, pda_outc, where=truth_ak),
-        )
-        ak_assert_almost_equivalent(na_outc, pda_outc)
+        #  Now the cases where one is scalar and the other is a vector.
 
-        na_outc = na_out[:]  # restore these two
-        pda_outc = pda_out[:]
-        ak_assert_almost_equivalent(
-            np.arctan2(na_num, na_denom[0], na_outc, where=truth_np),
-            ak.arctan2(pda_num, pda_denom[0], pda_outc, where=truth_ak),
-        )
-        ak_assert_almost_equivalent(na_outc, pda_outc)
+        if num_scalar ^ denom_scalar :
+            if not uses_out :
+                na_res = np.arctan2(na_num, na_denom)
+                na_res = recast_if_bool_case(na_res)
+                ak_assert_almost_equivalent(na_res, ak.arctan2(pda_num, pda_denom), rtol, atol)
+            else :
+                na_out = np.ones(len(na_denom)) if num_scalar else np.ones(len(na_num))
+                na_outc = na_out.copy()
+                pda_out = ak.array(na_out) 
+                pda_outc = pda_out.copy()
+                if not uses_where :
+                    na_res = np.arctan2(na_num, na_denom, na_outc)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                else :
+                    na_where = alternate(True, False, len(na_denom)) if num_scalar else \
+                        alternate(True, False, len(na_num))
+                    pda_where = ak.array(na_where)
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=True)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                    na_outc = na_out.copy()
+                    pda_outc = pda_out.copy()
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=False)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                    na_outc = na_out.copy()
+                    pda_outc = pda_out.copy()
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=na_where)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=pda_where) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+            
+        #  Finally the case where both are vectors.
+        #  This test covers broadcasting as well, provided 2 is in the compiled ranks.
+        #  Because in that case, we create out as a 2D array of size 2 x len(the 1D data vectors).
 
+        if not (num_scalar or denom_scalar) :    
+            if not uses_out :
+                na_res = np.arctan2(na_num, na_denom)
+                na_res = recast_if_bool_case(na_res)
+                ak_assert_almost_equivalent(na_res, ak.arctan2(pda_num, pda_denom), rtol, atol)
+            else :
+                na_out = np.ones(len(na_denom)) if not (2 in get_array_ranks()) else \
+                    np.ones((2,len(na_denom)))
+                na_outc = na_out.copy()
+                pda_out = ak.array(na_out) 
+                pda_outc = pda_out.copy()
+                if not uses_where :
+                    na_res = np.arctan2(na_num, na_denom, na_outc)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                else :
+                    na_where = alternate(True, False, len(na_denom))
+                    pda_where = ak.array(na_where)
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=True)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=True) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                    na_outc = na_out.copy()
+                    pda_outc = pda_out.copy()
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=False)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=False) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+                    na_outc = na_out.copy()
+                    pda_outc = pda_out.copy()
+                    na_res = np.arctan2(na_num, na_denom, na_outc, where=na_where)
+                    na_res = recast_if_bool_case(na_res)
+                    na_outc = recast_if_bool_case(na_outc)
+                    pda_res = ak.arctan2(pda_num, pda_denom, pda_outc, where=pda_where) 
+                    ak.assert_almost_equivalent(na_res, pda_res, rtol, atol)
+                    ak.assert_almost_equivalent(na_outc, pda_outc, rtol, atol)
+
+
+        
         # Edge cases: infinities and zeros.  Doesn't use _infinity_edge_case_helper
         # because arctan2 needs two numbers (numerator and denominator) rather than one.
 
-        na1 = np.array([np.inf, -np.inf])
-        pda1 = ak.array(na1)
-        na2 = np.array([1, 10])
-        pda2 = ak.array(na2)
+        # This really doesn't need to be done for every case of the inputs.  May pull
+        # it into a separate test.
 
-        ak_assert_almost_equivalent(np.arctan2(na1, na2), ak.arctan2(pda1, pda2))
+        if num_type is ak.float64 and denom_type is ak.float64 and \
+            num_scalar is False and denom_scalar is False and \
+            uses_where is False and uses_out is False:
 
-        ak_assert_almost_equivalent(np.arctan2(na2, na1), ak.arctan2(pda2, pda1))
+            na1 = np.array([np.inf, -np.inf])
+            pda1 = ak.array(na1)
+            na2 = np.array([1, 10])
+            pda2 = ak.array(na2)
+            pda_out = ak.ones(len(pda1))
 
-        ak_assert_almost_equivalent(np.arctan2(na1, 5), ak.arctan2(pda1, 5))
-        ak_assert_almost_equivalent(np.arctan2(5, na1), ak.arctan2(5, pda1))
-        ak_assert_almost_equivalent(np.arctan2(na1, 0), ak.arctan2(pda1, 0))
-        ak_assert_almost_equivalent(np.arctan2(0, na1), ak.arctan2(0, pda1))
+            ak_assert_almost_equivalent(np.arctan2(na1, na2), ak.arctan2(pda1, pda2))
+            ak_assert_almost_equivalent(np.arctan2(na2, na1), ak.arctan2(pda2, pda1))
+            ak_assert_almost_equivalent(np.arctan2(na1, 5), ak.arctan2(pda1, 5))
+            ak_assert_almost_equivalent(np.arctan2(5, na1), ak.arctan2(5, pda1))
+            ak_assert_almost_equivalent(np.arctan2(na1, 0), ak.arctan2(pda1, 0))
+            ak_assert_almost_equivalent(np.arctan2(0, na1), ak.arctan2(0, pda1))
 
-        with pytest.raises(TypeError):
-            ak.arctan2(
-                np.array([range(0, 10)]).astype(num_type),
-                np.array([range(10, 20)]).astype(num_type),
-            )
-        with pytest.raises(TypeError):
-            ak.arctan2(pda_num[0], np.array([range(10, 20)]).astype(num_type))
-        with pytest.raises(TypeError):
-            ak.arctan2(np.array([range(0, 10)]).astype(num_type), pda_denom[0])
-        with pytest.raises(TypeError):
-            ak.arctan2(pda1, pda2, pda_outc, where=pda1)
+            with pytest.raises(TypeError):
+                ak.arctan2(
+                    np.array([range(0, 10)]).astype(num_type),
+                    np.array([range(10, 20)]).astype(num_type),
+                )
+            with pytest.raises(TypeError):
+                ak.arctan2(pda_num[0], np.array([range(10, 20)]).astype(num_type))
+            with pytest.raises(TypeError):
+                ak.arctan2(np.array([range(0, 10)]).astype(num_type), pda_denom[0])
+            with pytest.raises(TypeError):
+                ak.arctan2(pda1, pda2, pda_out, where=pda1)
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
     def test_rad2deg(self, num_type):
