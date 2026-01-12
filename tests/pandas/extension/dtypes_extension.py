@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
+import arkouda as ak
+
 from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
 
 # Module under test
@@ -299,8 +301,6 @@ class TestArkoudaDtypesExtension:
         import pandas as pd
         import pandas.testing as pdt
 
-        import arkouda as ak
-
         from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 
         ak_arr = ak.array(data, dtype=dtype_cls().name)
@@ -314,8 +314,6 @@ class TestArkoudaDtypesExtension:
         pdt.assert_series_equal(s.astype(object), expected, check_names=False)
 
     def test_series_with_strings_dtype(self):
-        import arkouda as ak
-
         from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
 
         a = ak.array(["a", "b", ""])
@@ -326,8 +324,6 @@ class TestArkoudaDtypesExtension:
         assert s.iloc[2] == ""
 
     def test_series_with_categorical_dtype(self):
-        import arkouda as ak
-
         from arkouda.pandas.extension._arkouda_categorical_array import (
             ArkoudaCategoricalArray,
         )
@@ -338,3 +334,54 @@ class TestArkoudaDtypesExtension:
         assert isinstance(s.dtype, ArkoudaCategoricalDtype)
         # categories round-trip to Python scalars on materialization
         assert list(s.to_numpy()) == ["x", "y", "x"]
+
+
+class TestArkoudaGenericDtypesExtension:
+    @pytest.mark.parametrize(
+        "data, expected_dtype_cls",
+        [
+            (np.array([1, 2, 3], dtype=np.int64), ArkoudaInt64Dtype),
+            (np.array([1.0, 2.0, 3.0], dtype=np.float64), ArkoudaFloat64Dtype),
+        ],
+    )
+    def test_pd_array_dtype_ak_dispatches_numeric(self, data, expected_dtype_cls):
+        arr = pd.array(data, dtype="ak")
+        assert isinstance(arr, ArkoudaArray)
+        assert isinstance(arr.dtype, expected_dtype_cls)
+
+    def test_pd_array_dtype_ak_dispatches_strings(self):
+        arr = pd.array(["red", "green", "blue"], dtype="ak")
+        assert isinstance(arr, ArkoudaStringArray)
+        assert isinstance(arr.dtype, ArkoudaStringDtype)
+
+    def test_pd_array_dtype_ak_dispatches_categorical_from_ak_pandas_object(self):
+        # ArkoudaExtensionArray dispatch checks for arkouda.pandas.categorical.Categorical
+        from arkouda.pandas.categorical import Categorical as PandasCategorical
+
+        cat = PandasCategorical(ak.array(["a", "b", "a", "c"]))
+        arr = pd.array(cat, dtype="ak")
+
+        assert isinstance(arr, ArkoudaCategoricalArray)
+        assert isinstance(arr.dtype, ArkoudaCategoricalDtype)
+
+    def test_series_dtype_ak_dispatches_numeric(self):
+        s = pd.Series(np.array([10, 20, 30], dtype=np.int64), dtype="ak")
+        assert isinstance(s.array, ArkoudaArray)
+        assert isinstance(s.dtype, ArkoudaInt64Dtype)
+
+    def test_series_dtype_ak_dispatches_strings(self):
+        s = pd.Series(["x", "y", "z"], dtype="ak")
+        assert isinstance(s.array, ArkoudaStringArray)
+        assert isinstance(s.dtype, ArkoudaStringDtype)
+
+    def test_series_dtype_ak_dispatches_categorical_from_ak_pandas_object(self):
+        from arkouda.pandas.categorical import Categorical as PandasCategorical
+
+        cat = PandasCategorical(ak.array(["dog", "cat", "dog"]))
+
+        # Key: construct the EA first; Series will accept the EA without iterating cat
+        arr = pd.array(cat, dtype="ak")
+        s = pd.Series(arr)
+
+        assert isinstance(s.array, ArkoudaCategoricalArray)
+        assert isinstance(s.dtype, ArkoudaCategoricalDtype)
