@@ -17,3 +17,4 @@ from arkouda.pandas.join import compute_join_size, gen_ranges, join_on_eq_with_d
 from arkouda.pandas.row import Row
 from arkouda.pandas.series import Series
 from arkouda.pandas.typing import ArkoudaArrayLike
+from arkouda.pandas.conversion import from_series
