@@ -878,6 +878,27 @@ def is_supported_int(num) -> TypeGuard[int_scalars]:
 
 
 def isSupportedInt(num):
+    """
+    Deprecated alias for :func:`is_supported_int`.
+
+    This function exists for backward compatibility only. Use
+    :func:`is_supported_int` instead.
+
+    Parameters
+    ----------
+    num : object
+        A scalar value to test.
+
+    Returns
+    -------
+    bool
+        True if ``num`` is an arkouda-supported integer dtype,
+        otherwise False.
+
+    See Also
+    --------
+    is_supported_int : Preferred replacement.
+    """
     warnings.warn(
         "isSupportedInt is deprecated; use is_supported_int instead",
         DeprecationWarning,
@@ -913,6 +934,27 @@ def is_supported_float(num) -> TypeGuard[float_scalars]:
 
 
 def isSupportedFloat(num):
+    """
+    Deprecated alias for :func:`is_supported_float`.
+
+    This function exists for backward compatibility only. Use
+    :func:`is_supported_float` instead.
+
+    Parameters
+    ----------
+    num : object
+        A scalar value to test.
+
+    Returns
+    -------
+    bool
+        True if ``num`` is an arkouda-supported float dtype,
+        otherwise False.
+
+    See Also
+    --------
+    is_supported_float : Preferred replacement.
+    """
     warnings.warn(
         "isSupportedFloat is deprecated; use is_supported_float instead",
         DeprecationWarning,
@@ -948,6 +990,27 @@ def is_supported_number(num) -> TypeGuard[numeric_scalars]:
 
 
 def isSupportedNumber(num):
+    """
+    Deprecated alias for :func:`is_supported_number`.
+
+    This function exists for backward compatibility only. Use
+    :func:`is_supported_number` instead.
+
+    Parameters
+    ----------
+    num : object
+        A scalar value to test.
+
+    Returns
+    -------
+    bool
+        True if ``num`` is an arkouda-supported numeric dtype,
+        otherwise False.
+
+    See Also
+    --------
+    is_supported_number : Preferred replacement.
+    """
     warnings.warn(
         "isSupportedNumber is deprecated; use is_supported_number instead",
         DeprecationWarning,
@@ -983,6 +1046,27 @@ def is_supported_bool(num) -> TypeGuard[bool_scalars]:
 
 
 def isSupportedBool(num):
+    """
+    Deprecated alias for :func:`is_supported_bool`.
+
+    This function exists for backward compatibility only. Use
+    :func:`is_supported_bool` instead.
+
+    Parameters
+    ----------
+    num : object
+        A scalar value to test.
+
+    Returns
+    -------
+    bool
+        True if ``num`` is an arkouda-supported boolean dtype,
+        otherwise False.
+
+    See Also
+    --------
+    is_supported_bool : Preferred replacement.
+    """
     warnings.warn(
         "isSupportedBool is deprecated; use is_supported_bool instead",
         DeprecationWarning,
@@ -1017,6 +1101,27 @@ def is_supported_dtype(scalar: object) -> builtins.bool:
 
 
 def isSupportedDType(num):
+    """
+    Deprecated alias for :func:`is_supported_dtype`.
+
+    This function exists for backward compatibility only. Use
+    :func:`is_supported_dtype` instead.
+
+    Parameters
+    ----------
+    num : object
+        A scalar value to test.
+
+    Returns
+    -------
+    bool
+        True if ``num`` is an arkouda-supported dtype,
+        otherwise False.
+
+    See Also
+    --------
+    is_supported_dtype : Preferred replacement.
+    """
     warnings.warn(
         "isSupportedDType is deprecated; use is_supported_dtype instead",
         DeprecationWarning,
