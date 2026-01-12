@@ -75,7 +75,7 @@ class TestLogger:
             assert INFO == handler_two.level
 
     def test_verbosity_controls(self):
-        logger = getArkoudaLogger(name="VerboseLogger", logLevel=LogLevel("INFO"))
+        logger = getArkoudaLogger(name="VerboseLogger", log_level=LogLevel("INFO"))
 
         assert INFO == logger.getHandler("console-handler").level
         logger.debug("non-working debug message")
@@ -87,8 +87,8 @@ class TestLogger:
         logger.debug("next non-working debug message")
 
     def test_enable_disable_verbose(self):
-        logger_one = getArkoudaLogger(name="logger_one", logLevel=LogLevel.INFO)
-        logger_two = getArkoudaLogger(name="logger_two", logLevel=LogLevel.INFO)
+        logger_one = getArkoudaLogger(name="logger_one", log_level=LogLevel.INFO)
+        logger_two = getArkoudaLogger(name="logger_two", log_level=LogLevel.INFO)
 
         logger_one.debug("logger_one before enableVerbose")
         logger_two.debug("logger_two before enableVerbose")
@@ -100,7 +100,7 @@ class TestLogger:
         logger_two.debug("logger_two after disableVerbose")
 
     def test_error_handling(self):
-        logger = getArkoudaLogger(name="VerboseLogger", logLevel=LogLevel("INFO"))
+        logger = getArkoudaLogger(name="VerboseLogger", log_level=LogLevel("INFO"))
         with pytest.raises(ValueError):
             logger.getHandler("not-a-handler")
 

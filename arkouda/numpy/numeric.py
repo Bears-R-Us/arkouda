@@ -299,11 +299,11 @@ def cast(
         if dt is Strings or akdtype(dt) == str_:
             if pda.ndim > 1:
                 raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"castToStrings<{pda.dtype}>",
                 args={"name": pda},
             )
-            return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
+            return Strings.from_parts(*(type_cast(str, rep_msg).split("+")))
         else:
             dt = akdtype(dt)
             return create_pdarray(
@@ -319,7 +319,7 @@ def cast(
             return Strings(type_cast(pdarray, array([], dtype="int64")), 0) if pda.size == 0 else pda[:]
         else:
             dt = akdtype(dt)
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"castStringsTo<{dt}>",
                 args={
                     "name": pda.entry.name,
@@ -327,10 +327,10 @@ def cast(
                 },
             )
             if errors == ErrorMode.return_validity:
-                a, b = repMsg.split("+")
+                a, b = rep_msg.split("+")
                 return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
             else:
-                return create_pdarray(repMsg)
+                return create_pdarray(rep_msg)
     elif isinstance(pda, Categorical):  # type: ignore
         if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda.categories[pda.codes]
@@ -371,13 +371,13 @@ def abs(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"abs<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -580,13 +580,13 @@ def sign(pda: pdarray) -> pdarray:
     from arkouda.client import generic_msg
 
     _datatype_check(pda.dtype, [int, float], "sign")
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sgn<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -619,13 +619,13 @@ def isfinite(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"isfinite<{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -658,13 +658,13 @@ def isinf(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"isinf<{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -705,13 +705,13 @@ def isnan(pda: pdarray) -> pdarray:
 
         return full(pda.shape, False, dtype=bool)
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"isnan<{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -757,13 +757,13 @@ def log(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -790,13 +790,13 @@ def log10(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log10<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -823,13 +823,13 @@ def log2(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log2<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -856,13 +856,13 @@ def log1p(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log1p<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -923,14 +923,14 @@ def nextafter(
 
     x1_, x2_, _, _ = broadcast_if_needed(x1_, x2_)
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"nextafter<{x1_.ndim}>",
         args={
             "x1": x1_,
             "x2": x2_,
         },
     )
-    return_array = create_pdarray(repMsg)
+    return_array = create_pdarray(rep_msg)
     if return_scalar:
         return return_array[0]
     return return_array
@@ -968,13 +968,13 @@ def exp(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"exp<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1009,13 +1009,13 @@ def expm1(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"expm1<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1110,7 +1110,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
         if not valid:
             raise IndexError(f"{axis} is not valid for the given array.")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"cumSum<{pda_.dtype},{pda_.ndim}>",
         args={
             "x": pda_,
@@ -1118,7 +1118,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
             "includeInitial": False,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1180,7 +1180,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
         if not valid:
             raise IndexError(f"{axis} is not valid for the given array.")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"cumProd<{pda_.dtype},{pda_.ndim}>",
         args={
             "x": pda_,
@@ -1188,7 +1188,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
             "includeInitial": False,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1497,8 +1497,8 @@ def arctan2(
                 raise TypeError(f"{ts} is not an allowed num type for arctan2")
             argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
 
-        repMsg = generic_msg(cmd=cmdstring, args=argdict)
-        ret = create_pdarray(repMsg)
+        rep_msg = generic_msg(cmd=cmdstring, args=argdict)
+        ret = create_pdarray(rep_msg)
         if where is True:
             return ret
         else:
@@ -1742,25 +1742,25 @@ def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True)
 
     _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
     if where is True:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"{func}<{pda.dtype},{pda.ndim}>",
             args={
                 "x": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
     elif where is False:
         return pda
     else:
         if where.dtype != bool:
             raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"{func}<{pda.dtype},{pda.ndim}>",
             args={
                 "x": pda[where],
             },
         )
-        return _merge_where(pda[:], where, create_pdarray(repMsg))
+        return _merge_where(pda[:], where, create_pdarray(rep_msg))
 
 
 @typechecked
@@ -1995,24 +1995,24 @@ def _hash_single(pda: pdarray, full: bool = True):
         return hash(pda.bigint_to_uint_arrays())
     _datatype_check(pda.dtype, [float, int, ak_uint64], "hash")
     hname = "hash128" if full else "hash64"
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"{hname}<{pda.dtype},{pda.ndim}>",
         args={
             "x": pda,
         },
     )
     if full:
-        a, b = repMsg.split("+")
+        a, b = rep_msg.split("+")
         return create_pdarray(a), create_pdarray(b)
     else:
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 @no_type_check
 def _str_cat_where(
     condition: pdarray,
-    A: Union[str, Strings, Categorical],
-    B: Union[str, Strings, Categorical],
+    a: Union[str, Strings, Categorical],
+    b: Union[str, Strings, Categorical],
 ) -> Union[Strings, Categorical]:
     # added @no_type_check because mypy can't handle Categorical not being declared
     # sooner, but there are circular dependencies preventing that
@@ -2020,62 +2020,62 @@ def _str_cat_where(
     from arkouda.numpy.pdarraysetops import concatenate
     from arkouda.pandas.categorical import Categorical
 
-    if isinstance(A, str) and isinstance(B, (Categorical, Strings)):
+    if isinstance(a, str) and isinstance(b, (Categorical, Strings)):
         # This allows us to assume if a str is present it is B
-        A, B, condition = B, A, ~condition
+        a, b, condition = b, a, ~condition
 
     # one cat and one str
-    if isinstance(A, Categorical) and isinstance(B, str):
-        is_in_categories = A.categories == B
+    if isinstance(a, Categorical) and isinstance(b, str):
+        is_in_categories = a.categories == b
         if ak_any(is_in_categories):
-            new_categories = A.categories
+            new_categories = a.categories
             b_code = argmax(is_in_categories)
         else:
-            new_categories = concatenate([A.categories, array([B])])
-            b_code = A.categories.size
-        new_codes = where(condition, A.codes, b_code)
-        return Categorical.from_codes(new_codes, new_categories, NAvalue=A.NAvalue).reset_categories()
+            new_categories = concatenate([a.categories, array([b])])
+            b_code = a.categories.size
+        new_codes = where(condition, a.codes, b_code)
+        return Categorical.from_codes(new_codes, new_categories, na_value=a.na_value).reset_categories()
 
     # both cat
-    if isinstance(A, Categorical) and isinstance(B, Categorical):
-        if A.codes.size != B.codes.size:
+    if isinstance(a, Categorical) and isinstance(b, Categorical):
+        if a.codes.size != b.codes.size:
             raise TypeError("Categoricals must be same length")
-        if A.categories.size != B.categories.size or not ak_all(A.categories == B.categories):
-            A, B = A.standardize_categories([A, B])
-        new_codes = where(condition, A.codes, B.codes)
-        return Categorical.from_codes(new_codes, A.categories, NAvalue=A.NAvalue).reset_categories()
+        if a.categories.size != b.categories.size or not ak_all(a.categories == b.categories):
+            a, b = a.standardize_categories([a, b])
+        new_codes = where(condition, a.codes, b.codes)
+        return Categorical.from_codes(new_codes, a.categories, na_value=a.na_value).reset_categories()
 
     # one strings and one str
-    if isinstance(A, Strings) and isinstance(B, str):
-        new_lens = where(condition, A.get_lengths(), len(B))
-        repMsg = generic_msg(
+    if isinstance(a, Strings) and isinstance(b, str):
+        new_lens = where(condition, a.get_lengths(), len(b))
+        rep_msg = generic_msg(
             cmd="segmentedWhere",
             args={
-                "seg_str": A,
-                "other": B,
+                "seg_str": a,
+                "other": b,
                 "is_str_literal": True,
                 "new_lens": new_lens,
                 "condition": condition,
             },
         )
-        return Strings.from_return_msg(repMsg)
+        return Strings.from_return_msg(rep_msg)
 
     # both strings
-    if isinstance(A, Strings) and isinstance(B, Strings):
-        if A.size != B.size:
+    if isinstance(a, Strings) and isinstance(b, Strings):
+        if a.size != b.size:
             raise TypeError("Strings must be same length")
-        new_lens = where(condition, A.get_lengths(), B.get_lengths())
-        repMsg = generic_msg(
+        new_lens = where(condition, a.get_lengths(), b.get_lengths())
+        rep_msg = generic_msg(
             cmd="segmentedWhere",
             args={
-                "seg_str": A,
-                "other": B,
+                "seg_str": a,
+                "other": b,
                 "is_str_literal": False,
                 "new_lens": new_lens,
                 "condition": condition,
             },
         )
-        return Strings.from_return_msg(repMsg)
+        return Strings.from_return_msg(rep_msg)
 
     raise TypeError("ak.where is not supported between Strings and Categorical")
 
@@ -2209,7 +2209,7 @@ def where(
             raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
         cmdstring = "wheress_" + ta + "_" + tb + f"<{condition.ndim}>"
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=cmdstring,
         args={
             "condition": condition,
@@ -2218,7 +2218,7 @@ def where(
         },
     )
 
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(type_cast(str, rep_msg))
 
 
 # histogram helper
@@ -2254,7 +2254,7 @@ def histogram(
     bins : int_scalars, default=10
         The number of equal-size bins to use (default: 10)
 
-    range : (minVal, maxVal), optional
+    range : (min_val, max_val), optional
         The range of the values to count.
         Values outside of this range are dropped.
         By default, all values are counted.
@@ -2308,13 +2308,13 @@ def histogram(
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
 
-    minVal, maxVal = _conv_dim(pda, range)
+    min_val, max_val = _conv_dim(pda, range)
 
-    b = linspace(minVal, maxVal, bins + 1)
-    repMsg = generic_msg(
-        cmd="histogram", args={"array": pda, "bins": bins, "minVal": minVal, "maxVal": maxVal}
+    b = linspace(min_val, max_val, bins + 1)
+    rep_msg = generic_msg(
+        cmd="histogram", args={"array": pda, "bins": bins, "minVal": min_val, "maxVal": max_val}
     )
-    return create_pdarray(type_cast(str, repMsg)), b
+    return create_pdarray(type_cast(str, rep_msg)), b
 
 
 # Typechecking removed due to circular dependencies with arrayview
@@ -2344,7 +2344,7 @@ def histogram2d(
         If [int, int], the number of bins in each dimension (nx, ny = bins).
         Defaults to 10
 
-    range : ((xMin, xMax), (yMin, yMax)), optional
+    range : ((x_min, x_max), (y_min, y_max)), optional
         The ranges of the values in x and y to count.
         Values outside of these ranges are dropped.
         By default, all values are counted.
@@ -2413,26 +2413,26 @@ def histogram2d(
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
 
-    xMin, xMax = _conv_dim(x, range[0] if range else None)
-    yMin, yMax = _conv_dim(y, range[1] if range else None)
+    x_min, x_max = _conv_dim(x, range[0] if range else None)
+    y_min, y_max = _conv_dim(y, range[1] if range else None)
 
-    x_bin_boundaries = linspace(xMin, xMax, x_bins + 1)
-    y_bin_boundaries = linspace(yMin, yMax, y_bins + 1)
-    repMsg = generic_msg(
+    x_bin_boundaries = linspace(x_min, x_max, x_bins + 1)
+    y_bin_boundaries = linspace(y_min, y_max, y_bins + 1)
+    rep_msg = generic_msg(
         cmd="histogram2D",
         args={
             "x": x,
             "y": y,
             "xBins": x_bins,
             "yBins": y_bins,
-            "xMin": xMin,
-            "xMax": xMax,
-            "yMin": yMin,
-            "yMax": yMax,
+            "xMin": x_min,
+            "xMax": x_max,
+            "yMin": y_min,
+            "yMax": y_max,
         },
     )
     return (
-        create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
+        create_pdarray(type_cast(str, rep_msg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
         y_bin_boundaries,
     )
@@ -2457,7 +2457,7 @@ def histogramdd(
         If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).
         Defaults to 10
 
-    range : Sequence[optional (minVal, maxVal)], optional
+    range : Sequence[optional (min_val, max_val)], optional
         The ranges of the values to count for each array in sample.
         Values outside of these ranges are dropped.
         By default, all values are counted.
@@ -2536,7 +2536,7 @@ def histogramdd(
     bin_boundaries = [linspace(r[0], r[1], b + 1) for r, b in zip(range_list, bins)]
     d_curr, d_next = 1, 1
     dim_prod = [(d_curr := d_next, d_next := d_curr * int(v))[0] for v in bins[::-1]][::-1]  # noqa: F841
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="histogramdD",
         args={
             "sample": sample,
@@ -2548,7 +2548,7 @@ def histogramdd(
             "num_samples": sample[0].size,
         },
     )
-    return create_pdarray(repMsg).reshape(bins), bin_boundaries
+    return create_pdarray(rep_msg).reshape(bins), bin_boundaries
 
 
 @typechecked
@@ -2674,16 +2674,16 @@ def clip(
     # If any of the inputs are float, then make everything float.
     # Some type checking is needed, because scalars and pdarrays get cast differently.
 
-    dataFloat = pda.dtype == float
-    minFloat = isinstance(lo, float) or (isinstance(lo, pdarray) and lo.dtype == float)
-    maxFloat = isinstance(hi, float) or (isinstance(hi, pdarray) and hi.dtype == float)
-    forceFloat = dataFloat or minFloat or maxFloat
-    if forceFloat:
-        if not dataFloat:
+    data_float = pda.dtype == float
+    min_float = isinstance(lo, float) or (isinstance(lo, pdarray) and lo.dtype == float)
+    max_float = isinstance(hi, float) or (isinstance(hi, pdarray) and hi.dtype == float)
+    force_float = data_float or min_float or max_float
+    if force_float:
+        if not data_float:
             pda = cast(pda, np.float64)
-        if lo is not None and not minFloat:
+        if lo is not None and not min_float:
             lo = cast(lo, np.float64) if isinstance(lo, pdarray) else float(lo)
-        if hi is not None and not maxFloat:
+        if hi is not None and not max_float:
             hi = cast(hi, np.float64) if isinstance(hi, pdarray) else float(hi)
 
     # Now do the clipping.
@@ -2906,7 +2906,7 @@ def putmask(
     """
     from arkouda.client import generic_msg
 
-    ALLOWED_PUTMASK_PAIRS = [
+    allowed_putmask_pairs = [
         (ak_float64, ak_float64),
         (ak_float64, ak_int64),
         (ak_float64, ak_uint64),
@@ -2918,7 +2918,7 @@ def putmask(
         (ak_bool, ak_bool),
     ]
 
-    if (A.dtype, Values.dtype) not in ALLOWED_PUTMASK_PAIRS:
+    if (A.dtype, Values.dtype) not in allowed_putmask_pairs:
         raise RuntimeError(f"Types {A.dtype} and {Values.dtype} are not compatible in putmask.")
     if mask.size != A.size:
         raise RuntimeError("mask and A must be same size in putmask")
@@ -3280,20 +3280,20 @@ def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
         right_preshape = pda_R.shape[0:-2]  # both shapes
         try:
             tmp_preshape = broadcast_shapes(left_preshape, right_preshape)
-            tmp_pda_Lshape = list(tmp_preshape)
-            tmp_pda_Lshape.append(pda_L.shape[-2])  # restore the last 2 dims
-            tmp_pda_Lshape.append(pda_L.shape[-1])  # of the left shape
-            new_pda_Lshape = tuple(tmp_pda_Lshape)
-            tmp_pda_Rshape = list(tmp_preshape)  # now do the same jiggery-pokery
-            tmp_pda_Rshape.append(pda_R.shape[-2])  # with the shape of pda_R
-            tmp_pda_Rshape.append(pda_R.shape[-1])
-            new_pda_Rshape = tuple(tmp_pda_Rshape)
-            new_pda_L = broadcast_to(pda_L, new_pda_Lshape)
-            new_pda_R = broadcast_to(pda_R, new_pda_Rshape)  # args are now ready
-            cmd = f"multidimmatmul<{pda_L.dtype},{new_pda_L.ndim},{pda_R.dtype},{new_pda_R.ndim}>"
+            tmp_pda_lshape = list(tmp_preshape)
+            tmp_pda_lshape.append(pda_L.shape[-2])  # restore the last 2 dims
+            tmp_pda_lshape.append(pda_L.shape[-1])  # of the left shape
+            new_pda_lshape = tuple(tmp_pda_lshape)
+            tmp_pda_rshape = list(tmp_preshape)  # now do the same jiggery-pokery
+            tmp_pda_rshape.append(pda_R.shape[-2])  # with the shape of pda_R
+            tmp_pda_rshape.append(pda_R.shape[-1])
+            new_pda_rshape = tuple(tmp_pda_rshape)
+            new_pda_l = broadcast_to(pda_L, new_pda_lshape)
+            new_pda_r = broadcast_to(pda_R, new_pda_rshape)  # args are now ready
+            cmd = f"multidimmatmul<{pda_L.dtype},{new_pda_l.ndim},{pda_R.dtype},{new_pda_r.ndim}>"
             args = {
-                "a": new_pda_L,
-                "b": new_pda_R,
+                "a": new_pda_l,
+                "b": new_pda_r,
             }
             return create_pdarray(
                 generic_msg(

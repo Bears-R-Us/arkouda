@@ -822,7 +822,7 @@ class SegArray:
         """
         from arkouda.client import generic_msg
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedHash",
             args={
                 "objType": self.objType,
@@ -831,7 +831,7 @@ class SegArray:
                 "valObjType": self.values.objType,
             },
         )
-        h1, h2 = repMsg.split("+")
+        h1, h2 = rep_msg.split("+")
         return create_pdarray(h1), create_pdarray(h2)
 
     def to_hdf(

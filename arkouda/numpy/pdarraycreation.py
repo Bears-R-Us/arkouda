@@ -692,9 +692,9 @@ def zeros(
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.zeros.")
 
-    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
+    rep_msg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
-    return create_pdarray(repMsg, max_bits=max_bits)
+    return create_pdarray(rep_msg, max_bits=max_bits)
 
 
 @typechecked
@@ -840,9 +840,9 @@ def full(
     if isinstance(shape, tuple) and len(shape) == 0:
         raise ValueError("size () not currently supported in ak.full.")
 
-    repMsg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
+    rep_msg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
-    a = create_pdarray(repMsg)
+    a = create_pdarray(rep_msg)
     a.fill(fill_value)
 
     if max_bits:
@@ -922,8 +922,8 @@ def _full_string(
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
-    return Strings.from_return_msg(cast(str, repMsg))
+    rep_msg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
+    return Strings.from_return_msg(cast(str, rep_msg))
 
 
 @typechecked
@@ -1211,11 +1211,11 @@ def arange(
         if step < 0:
             stop = stop + 2
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"arange<{arg_dtype},1>",
             args={"start": start, "stop": stop, "step": step},
         )
-        arr = create_pdarray(repMsg, max_bits=max_bits)
+        arr = create_pdarray(rep_msg, max_bits=max_bits)
         return arr if aktype == akint64 else akcast(arr, dt=aktype)
 
     raise TypeError(f"start, stop, step must be ints; got {args!r}")
@@ -1703,7 +1703,7 @@ def random_strings_uniform(
     if minlen < 0 or maxlen <= minlen or size < 0:
         raise ValueError("Incompatible arguments: minlen < 0, maxlen " + "<= minlen, or size < 0")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="randomStrings",
         args={
             "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
@@ -1714,7 +1714,7 @@ def random_strings_uniform(
             "seed": seed,
         },
     )
-    return Strings.from_return_msg(cast(str, repMsg))
+    return Strings.from_return_msg(cast(str, rep_msg))
 
 
 @typechecked
@@ -1782,7 +1782,7 @@ def random_strings_lognormal(
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="randomStrings",
         args={
             "size": NUMBER_FORMAT_STRINGS["int64"].format(size),
@@ -1793,4 +1793,4 @@ def random_strings_lognormal(
             "seed": seed,
         },
     )
-    return Strings.from_return_msg(cast(str, repMsg))
+    return Strings.from_return_msg(cast(str, rep_msg))

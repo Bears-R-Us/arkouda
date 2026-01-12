@@ -27,7 +27,7 @@ prototype module UnitTestArgSort
         var st = new owned SymTab();
 
         var reqMsg: string;
-        var repMsg: string;
+        var rep_msg: string;
 
         // create an array filled with random int64 returned in symbol table
         var aname = nameForRandintMsg(LEN, DType.Int64, 0, NVALS, st);
@@ -39,32 +39,32 @@ prototype module UnitTestArgSort
         reqMsg = try! "%s".format(aname);
         var d: Diags;
         d.start();
-        repMsg = localArgsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        rep_msg = localArgsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("localArgsortMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
         // apply iv to pdarray return sorted array
         cmd = "[pdarray]";
-        var ivname = parseName(repMsg); // get name from argsort reply msg
+        var ivname = parseName(rep_msg); // get name from argsort reply msg
         var iv = toSymEntry(st.lookup(ivname), int);
         writeIntArray(iv.a, filename+".permutation");
         reqMsg = try! "%s %s".format(aname, ivname);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        rep_msg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("pdarrayIndexMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
         // check for result to be sorted
         cmd = "reduction";
         var subCmd = "is_locally_sorted";
-        var bname = parseName(repMsg); // get name from [pdarray] reply msg
+        var bname = parseName(rep_msg); // get name from [pdarray] reply msg
         var locSorted = toSymEntry(st.lookup(bname), int);
         writeIntArray(locSorted.a, filename+".locally_sorted");
         reqMsg = try! "%s %s".format(subCmd, bname);
         d.start();
-        repMsg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        rep_msg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("reductionMsg");
-        writeln("ANSWER >>> ",repMsg," <<<");
+        writeln("ANSWER >>> ",rep_msg," <<<");
     }
 
 }
