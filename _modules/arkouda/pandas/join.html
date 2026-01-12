@@ -482,7 +482,7 @@
     <span class="c1"># groupby on a2</span>
     <span class="n">g2</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span>
     <span class="c1"># pass result into server joinEqWithDT operation</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;joinEqWithDT&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;a1&quot;</span><span class="p">:</span> <span class="n">a1</span><span class="p">,</span>
@@ -497,10 +497,10 @@
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="c1"># create pdarrays for results</span>
-    <span class="n">resIAttr</span><span class="p">,</span> <span class="n">resJAttr</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
-    <span class="n">resI</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">resIAttr</span><span class="p">)</span>
-    <span class="n">resJ</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">resJAttr</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">resI</span><span class="p">,</span> <span class="n">resJ</span></div>
+    <span class="n">res_i_attr</span><span class="p">,</span> <span class="n">res_j_attr</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+    <span class="n">res_i</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">res_i_attr</span><span class="p">)</span>
+    <span class="n">res_j</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">res_j_attr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res_i</span><span class="p">,</span> <span class="n">res_j</span></div>
 
 
 
@@ -615,17 +615,17 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    Tuple[pdarray, pdarray]</span>
-<span class="sd">        leftInds : pdarray(int64)</span>
+<span class="sd">        left_inds : pdarray(int64)</span>
 <span class="sd">            The left indices of pairs that meet the join condition</span>
-<span class="sd">        rightInds : pdarray(int64)</span>
+<span class="sd">        right_inds : pdarray(int64)</span>
 <span class="sd">            The right indices of pairs that meet the join condition</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The return values satisfy the following assertions</span>
 
-<span class="sd">    `assert (left[leftInds] == right[rightInds]).all()`</span>
-<span class="sd">    `assert wherefunc(whereargs[0][leftInds], whereargs[1][rightInds]).all()`</span>
+<span class="sd">    `assert (left[left_inds] == right[right_inds]).all()`</span>
+<span class="sd">    `assert wherefunc(whereargs[0][left_inds], whereargs[1][right_inds]).all()`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">inspect</span><span class="w"> </span><span class="kn">import</span> <span class="n">signature</span>
@@ -678,23 +678,23 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Error evaluating wherefunc&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="c1"># Need dense 0-up right index, to filter out left not in right</span>
-    <span class="n">keep</span><span class="p">,</span> <span class="p">(</span><span class="n">denseLeft</span><span class="p">,</span> <span class="n">denseRight</span><span class="p">)</span> <span class="o">=</span> <span class="n">right_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+    <span class="n">keep</span><span class="p">,</span> <span class="p">(</span><span class="n">dense_left</span><span class="p">,</span> <span class="n">dense_right</span><span class="p">)</span> <span class="o">=</span> <span class="n">right_align</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">keep</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Intersection is empty</span>
         <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">),</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">keep</span><span class="o">.</span><span class="n">size</span><span class="p">)[</span><span class="n">keep</span><span class="p">]</span>
     <span class="c1"># GroupBy right</span>
-    <span class="n">byRight</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">denseRight</span><span class="p">)</span>
+    <span class="n">by_right</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">dense_right</span><span class="p">)</span>
     <span class="c1"># Get segment boundaries (starts, ends) of right for each left item</span>
-    <span class="n">rightSegs</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">byRight</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">denseRight</span><span class="o">.</span><span class="n">size</span><span class="p">])))</span>
-    <span class="n">starts</span> <span class="o">=</span> <span class="n">rightSegs</span><span class="p">[</span><span class="n">denseLeft</span><span class="p">]</span>
-    <span class="n">ends</span> <span class="o">=</span> <span class="n">rightSegs</span><span class="p">[</span><span class="n">denseLeft</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">right_segs</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">by_right</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">dense_right</span><span class="o">.</span><span class="n">size</span><span class="p">])))</span>
+    <span class="n">starts</span> <span class="o">=</span> <span class="n">right_segs</span><span class="p">[</span><span class="n">dense_left</span><span class="p">]</span>
+    <span class="n">ends</span> <span class="o">=</span> <span class="n">right_segs</span><span class="p">[</span><span class="n">dense_left</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
     <span class="c1"># gen_ranges for gather of right items</span>
-    <span class="n">fullSegs</span><span class="p">,</span> <span class="n">ranges</span> <span class="o">=</span> <span class="n">gen_ranges</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">)</span>
+    <span class="n">full_segs</span><span class="p">,</span> <span class="n">ranges</span> <span class="o">=</span> <span class="n">gen_ranges</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">)</span>
     <span class="c1"># Evaluate where clause</span>
     <span class="k">if</span> <span class="n">wherefunc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">filtRanges</span> <span class="o">=</span> <span class="n">ranges</span>
-        <span class="n">filtSegs</span> <span class="o">=</span> <span class="n">fullSegs</span>
+        <span class="n">filt_ranges</span> <span class="o">=</span> <span class="n">ranges</span>
+        <span class="n">filt_segs</span> <span class="o">=</span> <span class="n">full_segs</span>
         <span class="n">keep12</span> <span class="o">=</span> <span class="n">keep</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">whereargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -703,35 +703,35 @@
             <span class="n">left</span> <span class="o">=</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
                 <span class="c1"># Gather right whereargs</span>
-                <span class="n">rightWhere</span> <span class="o">=</span> <span class="n">right</span><span class="p">[</span><span class="n">byRight</span><span class="o">.</span><span class="n">permutation</span><span class="p">][</span><span class="n">ranges</span><span class="p">]</span>
+                <span class="n">right_where</span> <span class="o">=</span> <span class="n">right</span><span class="p">[</span><span class="n">by_right</span><span class="o">.</span><span class="n">permutation</span><span class="p">][</span><span class="n">ranges</span><span class="p">]</span>
                 <span class="c1"># Expand left whereargs</span>
                 <span class="n">keep_where</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
                 <span class="n">keep_where</span> <span class="o">=</span> <span class="n">keep_where</span><span class="o">.</span><span class="n">codes</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keep_where</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="k">else</span> <span class="n">keep_where</span>
-                <span class="n">leftWhere</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">fullSegs</span><span class="p">,</span> <span class="n">keep_where</span><span class="p">,</span> <span class="n">ranges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                <span class="n">left_where</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">full_segs</span><span class="p">,</span> <span class="n">keep_where</span><span class="p">,</span> <span class="n">ranges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Gather right whereargs</span>
-                <span class="n">rightWhere</span> <span class="o">=</span> <span class="p">[</span><span class="n">wa</span><span class="p">[</span><span class="n">byRight</span><span class="o">.</span><span class="n">permutation</span><span class="p">][</span><span class="n">ranges</span><span class="p">]</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">right_where</span> <span class="o">=</span> <span class="p">[</span><span class="n">wa</span><span class="p">[</span><span class="n">by_right</span><span class="o">.</span><span class="n">permutation</span><span class="p">][</span><span class="n">ranges</span><span class="p">]</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
                 <span class="c1"># Expand left whereargs</span>
                 <span class="n">keep_where</span> <span class="o">=</span> <span class="p">[</span><span class="n">wa</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span> <span class="k">for</span> <span class="n">wa</span> <span class="ow">in</span> <span class="n">whereargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-                <span class="n">leftWhere</span> <span class="o">=</span> <span class="p">[</span><span class="n">broadcast</span><span class="p">(</span><span class="n">fullSegs</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">ranges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">keep_where</span><span class="p">]</span>
+                <span class="n">left_where</span> <span class="o">=</span> <span class="p">[</span><span class="n">broadcast</span><span class="p">(</span><span class="n">full_segs</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">ranges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">keep_where</span><span class="p">]</span>
             <span class="c1"># Evaluate wherefunc and filter ranges, recompute segments</span>
-            <span class="n">whereSatisfied</span> <span class="o">=</span> <span class="n">wherefunc</span><span class="p">(</span><span class="n">leftWhere</span><span class="p">,</span> <span class="n">rightWhere</span><span class="p">)</span>
-            <span class="n">filtRanges</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="n">whereSatisfied</span><span class="p">]</span>
-            <span class="n">scan</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">whereSatisfied</span><span class="p">)</span> <span class="o">-</span> <span class="n">whereSatisfied</span>
-            <span class="n">filtSegsWithZeros</span> <span class="o">=</span> <span class="n">scan</span><span class="p">[</span><span class="n">fullSegs</span><span class="p">]</span>
-            <span class="n">filtSegSizes</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
+            <span class="n">where_satisfied</span> <span class="o">=</span> <span class="n">wherefunc</span><span class="p">(</span><span class="n">left_where</span><span class="p">,</span> <span class="n">right_where</span><span class="p">)</span>
+            <span class="n">filt_ranges</span> <span class="o">=</span> <span class="n">ranges</span><span class="p">[</span><span class="n">where_satisfied</span><span class="p">]</span>
+            <span class="n">scan</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">(</span><span class="n">where_satisfied</span><span class="p">)</span> <span class="o">-</span> <span class="n">where_satisfied</span>
+            <span class="n">filt_segs_with_zeros</span> <span class="o">=</span> <span class="n">scan</span><span class="p">[</span><span class="n">full_segs</span><span class="p">]</span>
+            <span class="n">filt_seg_sizes</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="n">filtSegsWithZeros</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">filtSegsWithZeros</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">array</span><span class="p">([</span><span class="n">whereSatisfied</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">filtSegsWithZeros</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]),</span>
+                    <span class="n">filt_segs_with_zeros</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">filt_segs_with_zeros</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">array</span><span class="p">([</span><span class="n">where_satisfied</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">filt_segs_with_zeros</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">keep2</span> <span class="o">=</span> <span class="n">filtSegSizes</span> <span class="o">&gt;</span> <span class="mi">0</span>
-            <span class="n">filtSegs</span> <span class="o">=</span> <span class="n">filtSegsWithZeros</span><span class="p">[</span><span class="n">keep2</span><span class="p">]</span>
+            <span class="n">keep2</span> <span class="o">=</span> <span class="n">filt_seg_sizes</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="n">filt_segs</span> <span class="o">=</span> <span class="n">filt_segs_with_zeros</span><span class="p">[</span><span class="n">keep2</span><span class="p">]</span>
             <span class="n">keep12</span> <span class="o">=</span> <span class="n">keep</span><span class="p">[</span><span class="n">keep2</span><span class="p">]</span>
     <span class="c1"># Gather right inds and expand left inds</span>
-    <span class="n">rightInds</span> <span class="o">=</span> <span class="n">byRight</span><span class="o">.</span><span class="n">permutation</span><span class="p">[</span><span class="n">filtRanges</span><span class="p">]</span>
-    <span class="n">leftInds</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">filtSegs</span><span class="p">,</span> <span class="n">arange</span><span class="p">(</span><span class="n">left_size</span><span class="p">)[</span><span class="n">keep12</span><span class="p">],</span> <span class="n">filtRanges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">leftInds</span><span class="p">,</span> <span class="n">rightInds</span>
+    <span class="n">right_inds</span> <span class="o">=</span> <span class="n">by_right</span><span class="o">.</span><span class="n">permutation</span><span class="p">[</span><span class="n">filt_ranges</span><span class="p">]</span>
+    <span class="n">left_inds</span> <span class="o">=</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">filt_segs</span><span class="p">,</span> <span class="n">arange</span><span class="p">(</span><span class="n">left_size</span><span class="p">)[</span><span class="n">keep12</span><span class="p">],</span> <span class="n">filt_ranges</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">left_inds</span><span class="p">,</span> <span class="n">right_inds</span>
 </pre></div>
         </article>
       </div>

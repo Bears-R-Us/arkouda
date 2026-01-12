@@ -1290,7 +1290,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedHash&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
@@ -1299,7 +1299,7 @@
                 <span class="s2">&quot;valObjType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+        <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">h1</span><span class="p">),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">h2</span><span class="p">)</span></div>
 
 

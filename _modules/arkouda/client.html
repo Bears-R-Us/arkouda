@@ -543,8 +543,8 @@
         <span class="p">)</span>
 
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda Client&quot;</span><span class="p">,</span> <span class="n">logLevel</span><span class="o">=</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-<span class="n">clientLogger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda User Logger&quot;</span><span class="p">,</span> <span class="n">logFormat</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda Client&quot;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">clientLogger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Arkouda User Logger&quot;</span><span class="p">,</span> <span class="n">log_format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">ClientMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -1855,8 +1855,8 @@
 <a class="viewcode-back" href="../../autoapi/arkouda/client/index.html#arkouda.client.print_server_commands">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_server_commands</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the list of available server commands.&quot;&quot;&quot;</span>
-    <span class="n">cmdMap</span> <span class="o">=</span> <span class="n">get_server_commands</span><span class="p">()</span>
-    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cmdMap</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+    <span class="n">cmd_map</span> <span class="o">=</span> <span class="n">get_server_commands</span><span class="p">()</span>
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cmd_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total available server commands: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cmds</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">cmds</span><span class="p">:</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>

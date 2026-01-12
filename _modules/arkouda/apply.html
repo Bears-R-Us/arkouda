@@ -548,19 +548,19 @@
         <span class="k">if</span> <span class="n">result_type</span> <span class="o">!=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;result_dtype must match the dtype of the input&quot;</span><span class="p">)</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;applyStr&lt;</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;funcStr&quot;</span><span class="p">:</span> <span class="n">func</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="n">pickleData</span> <span class="o">=</span> <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="n">pickleDataStr</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">pickleData</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">pickle_data</span> <span class="o">=</span> <span class="n">cloudpickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="n">pickle_data_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">pickle_data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;applyPickle&lt;</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">result_type</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
-            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;pickleData&quot;</span><span class="p">:</span> <span class="n">pickleDataStr</span><span class="p">},</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">arr</span><span class="p">,</span> <span class="s2">&quot;pickleData&quot;</span><span class="p">:</span> <span class="n">pickle_data_str</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;func must be a string or a callable function&quot;</span><span class="p">)</span></div>
 

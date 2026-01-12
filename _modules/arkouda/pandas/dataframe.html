@@ -1651,7 +1651,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">msg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pdarray+</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">+</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;dataframe_idx&quot;</span><span class="p">,</span>
@@ -1662,10 +1662,10 @@
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">msgList</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="n">msg_list</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
         <span class="n">df_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">msgList</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">msg_list</span><span class="p">:</span>
             <span class="c1"># Split to [datatype, column, create]</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
             <span class="n">t</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1767,7 +1767,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">msg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pdarray+</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">+</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sendDataframe&quot;</span><span class="p">,</span>
@@ -1780,7 +1780,7 @@
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">repMsg</span></div>
+        <span class="k">return</span> <span class="n">rep_msg</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3110,25 +3110,25 @@
                 <span class="n">nbytes</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">nbytes</span>
                 <span class="n">nbytes</span> <span class="o">+=</span> <span class="n">val</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">nbytes</span>
 
-        <span class="n">KB</span> <span class="o">=</span> <span class="mi">1024</span>
-        <span class="n">MB</span> <span class="o">=</span> <span class="n">KB</span> <span class="o">*</span> <span class="n">KB</span>
-        <span class="n">GB</span> <span class="o">=</span> <span class="n">MB</span> <span class="o">*</span> <span class="n">KB</span>
+        <span class="n">kb</span> <span class="o">=</span> <span class="mi">1024</span>
+        <span class="n">mb</span> <span class="o">=</span> <span class="n">kb</span> <span class="o">*</span> <span class="n">kb</span>
+        <span class="n">gb</span> <span class="o">=</span> <span class="n">mb</span> <span class="o">*</span> <span class="n">kb</span>
 
         <span class="c1"># Get units that make the most sense.</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">nbytes</span> <span class="o">&lt;</span> <span class="n">KB</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">nbytes</span> <span class="o">&lt;</span> <span class="n">kb</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,}</span><span class="s2"> B&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nbytes</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">nbytes</span> <span class="o">&lt;</span> <span class="n">MB</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,}</span><span class="s2"> KB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nbytes</span> <span class="o">/</span> <span class="n">KB</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">nbytes</span> <span class="o">&lt;</span> <span class="n">GB</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,}</span><span class="s2"> MB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nbytes</span> <span class="o">/</span> <span class="n">MB</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">nbytes</span> <span class="o">&lt;</span> <span class="n">mb</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,}</span><span class="s2"> KB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nbytes</span> <span class="o">/</span> <span class="n">kb</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">nbytes</span> <span class="o">&lt;</span> <span class="n">gb</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,}</span><span class="s2"> MB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nbytes</span> <span class="o">/</span> <span class="n">mb</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This transfer will use </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,}</span><span class="s2"> GB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nbytes</span> <span class="o">/</span> <span class="n">GB</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{:,}</span><span class="s2"> GB&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nbytes</span> <span class="o">/</span> <span class="n">gb</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This will transfer </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2"> from arkouda to pandas.&quot;</span><span class="p">)</span>
         <span class="c1"># If the total memory transfer requires more than `datalimit` per</span>
         <span class="c1"># column, we will warn the user and return.</span>
-        <span class="k">if</span> <span class="n">nbytes</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">datalimit</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">)</span> <span class="o">*</span> <span class="n">MB</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">nbytes</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">datalimit</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">)</span> <span class="o">*</span> <span class="n">mb</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;This operation would transfer more than </span><span class="si">{</span><span class="n">datalimit</span><span class="si">}</span><span class="s2"> bytes.&quot;</span>
             <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -3355,7 +3355,7 @@
             <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="p">]</span>
-        <span class="n">col_objTypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">col_obj_types</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">special_objType</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;special_objType&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">objType</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="p">]</span>
@@ -3371,7 +3371,7 @@
                     <span class="s2">&quot;objType&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objType</span><span class="p">,</span>
                     <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
                     <span class="s2">&quot;column_names&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-                    <span class="s2">&quot;column_objTypes&quot;</span><span class="p">:</span> <span class="n">col_objTypes</span><span class="p">,</span>
+                    <span class="s2">&quot;column_objTypes&quot;</span><span class="p">:</span> <span class="n">col_obj_types</span><span class="p">,</span>
                     <span class="s2">&quot;column_dtypes&quot;</span><span class="p">:</span> <span class="n">dtypes</span><span class="p">,</span>
                     <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">column_data</span><span class="p">,</span>
                     <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -5162,7 +5162,7 @@
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="p">]</span>
 
-        <span class="n">col_objTypes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">col_obj_types</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">special_objType</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;special_objType&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">obj</span><span class="o">.</span><span class="n">objType</span>
             <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="p">]</span>
@@ -5176,7 +5176,7 @@
                 <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
                 <span class="s2">&quot;column_names&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
                 <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">column_data</span><span class="p">,</span>
-                <span class="s2">&quot;col_objTypes&quot;</span><span class="p">:</span> <span class="n">col_objTypes</span><span class="p">,</span>
+                <span class="s2">&quot;col_objTypes&quot;</span><span class="p">:</span> <span class="n">col_obj_types</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span> <span class="o">=</span> <span class="n">user_defined_name</span>
@@ -5306,18 +5306,18 @@
 <span class="sd">            (columnName, columnType)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">nameParts</span> <span class="o">=</span> <span class="n">entryName</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-        <span class="n">regName</span> <span class="o">=</span> <span class="n">nameParts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nameParts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">nameParts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">colParts</span> <span class="o">=</span> <span class="n">regName</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
-        <span class="n">colType</span> <span class="o">=</span> <span class="n">colParts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">name_parts</span> <span class="o">=</span> <span class="n">entryName</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="n">reg_name</span> <span class="o">=</span> <span class="n">name_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">name_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">col_parts</span> <span class="o">=</span> <span class="n">reg_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="n">col_type</span> <span class="o">=</span> <span class="n">col_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
         <span class="c1"># Case of &#39;_&#39; in the column or dataframe name</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">colParts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="n">nameInd</span> <span class="o">=</span> <span class="n">regName</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="n">dfName</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="n">startInd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">colType</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span>
-            <span class="k">return</span> <span class="n">regName</span><span class="p">[</span><span class="n">startInd</span><span class="p">:</span><span class="n">nameInd</span><span class="p">],</span> <span class="n">colType</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">name_ind</span> <span class="o">=</span> <span class="n">reg_name</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="n">dfName</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">start_ind</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_type</span><span class="p">)</span> <span class="o">+</span> <span class="mi">9</span>
+            <span class="k">return</span> <span class="n">reg_name</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">name_ind</span><span class="p">],</span> <span class="n">col_type</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">colParts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">colType</span>
+            <span class="k">return</span> <span class="n">col_parts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">col_type</span>
 
 <div class="viewcode-block" id="DataFrame.from_return_msg">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.from_return_msg">[docs]</a>

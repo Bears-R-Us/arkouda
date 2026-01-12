@@ -548,24 +548,24 @@
     <span class="n">grouping_keys</span><span class="p">,</span> <span class="n">nkeys</span> <span class="o">=</span> <span class="n">_get_grouping_keys</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
     <span class="n">keynames</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">grouping_keys</span><span class="p">]</span>
     <span class="n">keytypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">grouping_keys</span><span class="p">]</span>
-    <span class="n">effectiveKeys</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grouping_keys</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">effective_keys</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grouping_keys</span><span class="p">)</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;unique&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;returnGroupStr&quot;</span><span class="p">:</span> <span class="n">return_groups</span><span class="p">,</span>
             <span class="s2">&quot;assumeSortedStr&quot;</span><span class="p">:</span> <span class="n">assume_sorted</span><span class="p">,</span>
-            <span class="s2">&quot;nstr&quot;</span><span class="p">:</span> <span class="n">effectiveKeys</span><span class="p">,</span>
+            <span class="s2">&quot;nstr&quot;</span><span class="p">:</span> <span class="n">effective_keys</span><span class="p">,</span>
             <span class="s2">&quot;keynames&quot;</span><span class="p">:</span> <span class="n">keynames</span><span class="p">,</span>
             <span class="s2">&quot;keytypes&quot;</span><span class="p">:</span> <span class="n">keytypes</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">return_groups</span><span class="p">:</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
         <span class="n">permutation</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
         <span class="n">segments</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
         <span class="n">unique_key_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">unique_key_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
+        <span class="n">unique_key_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">nkeys</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="n">unique_keys</span> <span class="o">=</span> <span class="n">pda</span><span class="p">[</span><span class="n">unique_key_indices</span><span class="p">]</span>
@@ -887,7 +887,7 @@
 
         <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">]</span>
 
-        <span class="n">objTypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>  <span class="c1"># pdarray, Strings, and Categorical all have objType prop</span>
+        <span class="n">obj_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>  <span class="c1"># pdarray, Strings, and Categorical all have objType prop</span>
         <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
 
         <span class="c1"># access the names of the key or names of properties for categorical</span>
@@ -914,7 +914,7 @@
                 <span class="s2">&quot;num_keys&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">),</span>
                 <span class="s2">&quot;key_names&quot;</span><span class="p">:</span> <span class="n">gb_keys</span><span class="p">,</span>
                 <span class="s2">&quot;key_dtypes&quot;</span><span class="p">:</span> <span class="n">dtypes</span><span class="p">,</span>
-                <span class="s2">&quot;key_objTypes&quot;</span><span class="p">:</span> <span class="n">objTypes</span><span class="p">,</span>
+                <span class="s2">&quot;key_objTypes&quot;</span><span class="p">:</span> <span class="n">obj_types</span><span class="p">,</span>
                 <span class="s2">&quot;unique_key_idx&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uki</span><span class="p">,</span>
                 <span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
                 <span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
@@ -972,7 +972,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">]</span>
 
-        <span class="n">objTypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>  <span class="c1"># pdarray, Strings, and Categorical all have objType prop</span>
+        <span class="n">obj_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>  <span class="c1"># pdarray, Strings, and Categorical all have objType prop</span>
         <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
 
         <span class="c1"># access the names of the key or names of properties for categorical</span>
@@ -999,7 +999,7 @@
                 <span class="s2">&quot;num_keys&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">),</span>
                 <span class="s2">&quot;key_names&quot;</span><span class="p">:</span> <span class="n">gb_keys</span><span class="p">,</span>
                 <span class="s2">&quot;key_dtypes&quot;</span><span class="p">:</span> <span class="n">dtypes</span><span class="p">,</span>
-                <span class="s2">&quot;key_objTypes&quot;</span><span class="p">:</span> <span class="n">objTypes</span><span class="p">,</span>
+                <span class="s2">&quot;key_objTypes&quot;</span><span class="p">:</span> <span class="n">obj_types</span><span class="p">,</span>
                 <span class="s2">&quot;unique_key_idx&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uki</span><span class="p">,</span>
                 <span class="s2">&quot;permutation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
                 <span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span>
@@ -1052,12 +1052,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sizeReduction&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;segments&quot;</span><span class="p">:</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">segments</span><span class="p">),</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GroupBy.count">
@@ -1185,7 +1185,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">permuted_values</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">values</span><span class="p">)[</span><span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">)]</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">permuted_values</span><span class="p">,</span>
@@ -1195,14 +1195,14 @@
                 <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="n">ddof</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">operator</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;arg&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span>
-                <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">[</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)]),</span>
+                <span class="n">cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">[</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)]),</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GroupBy.sum">
@@ -2160,7 +2160,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
@@ -2171,9 +2171,9 @@
                 <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
-        <span class="n">ret_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="n">ret_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">return_indices</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">ret_indices</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2245,7 +2245,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span>
@@ -2256,9 +2256,9 @@
                 <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
-        <span class="n">ret_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="n">ret_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">return_indices</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">ret_indices</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2454,7 +2454,7 @@
             <span class="c1"># the below is equivalent to doing `_, weight_sum = self.sum(weights)`, but</span>
             <span class="c1"># by calling segmentedReduction directly, we avoid permuting the weights twice.</span>
             <span class="c1"># it&#39;s unclear if this is worth the additional code complexity</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedReduction&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">permuted_weights</span><span class="p">,</span>
@@ -2464,7 +2464,7 @@
                     <span class="s2">&quot;ddof&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
-            <span class="n">weight_sum</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+            <span class="n">weight_sum</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="n">weight_sum</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All segments must have at least one value of non-zero weight&quot;</span><span class="p">)</span>
@@ -2479,7 +2479,7 @@
 
         <span class="n">has_seed</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedSample&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;genName&quot;</span><span class="p">:</span> <span class="n">gen_name</span><span class="p">,</span>
@@ -2497,9 +2497,9 @@
         <span class="p">)</span>
         <span class="n">random_state</span><span class="o">.</span><span class="n">_state</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="c1"># sorting the sample permutation gives the sampled indices</span>
-        <span class="n">sampled_idx</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span> <span class="k">if</span> <span class="n">permute_samples</span> <span class="k">else</span> <span class="n">sort</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">))</span>
+        <span class="n">sampled_idx</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span> <span class="k">if</span> <span class="n">permute_samples</span> <span class="k">else</span> <span class="n">sort</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">return_indices</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">sampled_idx</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
@@ -2650,7 +2650,7 @@
             <span class="n">str_vals</span> <span class="o">=</span> <span class="n">values</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">str_vals</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;gbbroadcast&quot;</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
@@ -2663,7 +2663,7 @@
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">str_vals</span><span class="p">[</span><span class="n">broadcasted</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_str</span> <span class="k">else</span> <span class="n">broadcasted</span></div>
 
 
@@ -2698,17 +2698,17 @@
 
             <span class="k">return</span> <span class="n">g</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">missingKeys</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">missing_keys</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="s2">&quot;orig_keys&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">missingKeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;orig_keys&quot;</span><span class="p">)</span>
+                <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;orig_keys&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;permutation&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">missingKeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;permutation&quot;</span><span class="p">)</span>
+                <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;permutation&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;unique_keys&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">missingKeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;unique_keys&quot;</span><span class="p">)</span>
+                <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;unique_keys&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;segments&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">missingKeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;segments&quot;</span><span class="p">)</span>
+                <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;segments&quot;</span><span class="p">)</span>
 
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t build GroupBy. kwargs is missing required keys: </span><span class="si">{</span><span class="n">missingKeys</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t build GroupBy. kwargs is missing required keys: </span><span class="si">{</span><span class="n">missing_keys</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_groupby_required_pieces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -2722,9 +2722,9 @@
 <span class="sd">                Components (keys, permutation)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">requiredPieces</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;keys&quot;</span><span class="p">,</span> <span class="s2">&quot;permutation&quot;</span><span class="p">,</span> <span class="s2">&quot;unique_keys&quot;</span><span class="p">,</span> <span class="s2">&quot;segments&quot;</span><span class="p">])</span>
+        <span class="n">required_pieces</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="s2">&quot;keys&quot;</span><span class="p">,</span> <span class="s2">&quot;permutation&quot;</span><span class="p">,</span> <span class="s2">&quot;unique_keys&quot;</span><span class="p">,</span> <span class="s2">&quot;segments&quot;</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">piece_name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">piece_name</span> <span class="ow">in</span> <span class="n">requiredPieces</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">piece_name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">piece_name</span> <span class="ow">in</span> <span class="n">required_pieces</span><span class="p">}</span>
 
 <div class="viewcode-block" id="GroupBy.register">
 <a class="viewcode-back" href="../../../usage/groupby.html#arkouda.pandas.groupbyclass.GroupBy.register">[docs]</a>
@@ -2992,7 +2992,7 @@
         <span class="n">values</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">str_vals</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 
     <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;gbbroadcast&quot;</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
@@ -3005,7 +3005,7 @@
             <span class="p">},</span>
         <span class="p">),</span>
     <span class="p">)</span>
-    <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+    <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">str_vals</span><span class="p">[</span><span class="n">broadcasted</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_str</span> <span class="k">else</span> <span class="n">broadcasted</span></div>
 
 </pre></div>

@@ -394,7 +394,7 @@ in Arkouda.</p>
 <li><p>Automatic detection of unique category labels</p></li>
 <li><p>Integer-based encoding via <cite>.codes</cite> attribute</p></li>
 <li><p>Efficient groupby-compatible structure (<cite>.permutation</cite> and <cite>.segments</cite>)</p></li>
-<li><p>Support for missing data using a configurable <cite>NAvalue</cite></p></li>
+<li><p>Support for missing data using a configurable <cite>na_value</cite></p></li>
 <li><p>Pandas-like API for accessing labels and categories</p></li>
 </ul>
 </section>
@@ -444,7 +444,7 @@ work in initialization.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em>, </em><em>pd.Categorical</em>) – Values to convert to categories</p></li>
-<li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
+<li><p><strong>na_value</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
 </dl>
@@ -540,6 +540,17 @@ work in initialization.</p>
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.BinOps">
 <span class="sig-name descname"><span class="pre">BinOps</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.BinOps" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.NAvalue">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NAvalue</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.NAvalue" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <cite>na_value</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Same value as <cite>na_value</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.RegisterablePieces">
@@ -930,7 +941,7 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.isna">
 <span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.isna" title="Link to this definition">¶</a></dt>
-<dd><p>Find where values are missing or null (as defined by self.NAvalue).</p>
+<dd><p>Find where values are missing or null (as defined by self.na_value).</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1042,13 +1053,13 @@ other operations.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.set_categories">
-<span class="sig-name descname"><span class="pre">set_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NAvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.set_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.set_categories" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.set_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.set_categories" title="Link to this definition">¶</a></dt>
 <dd><p>Set categories to user-defined values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>new_categories</strong> (<a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The array of new categories to use. Must be unique.</p></li>
-<li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
+<li><p><strong>na_value</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1088,13 +1099,13 @@ be assigned the NA value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.standardize_categories">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">standardize_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NAvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'N/A'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.standardize_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.standardize_categories" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">standardize_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'N/A'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.standardize_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.standardize_categories" title="Link to this definition">¶</a></dt>
 <dd><p>Standardize an array of Categoricals so that they share the same categories.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arrays</strong> (<em>sequence</em><em> of </em><em>Categoricals</em>) – The Categoricals to standardize</p></li>
-<li><p><strong>NAvalue</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
+<li><p><strong>na_value</strong> (<em>str scalar</em>) – The value to use to represent missing/null data</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1485,6 +1496,7 @@ automatic creation of a file without the inaccessible data.</p></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.ndim"><code class="docutils literal notranslate"><span class="pre">Categorical.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.shape"><code class="docutils literal notranslate"><span class="pre">Categorical.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.BinOps"><code class="docutils literal notranslate"><span class="pre">Categorical.BinOps</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.NAvalue"><code class="docutils literal notranslate"><span class="pre">Categorical.NAvalue</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.RegisterablePieces"><code class="docutils literal notranslate"><span class="pre">Categorical.RegisterablePieces</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.RequiredPieces"><code class="docutils literal notranslate"><span class="pre">Categorical.RequiredPieces</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.categorical.Categorical.argsort"><code class="docutils literal notranslate"><span class="pre">Categorical.argsort()</span></code></a></li>

@@ -390,7 +390,7 @@
 <span class="sd">- Automatic detection of unique category labels</span>
 <span class="sd">- Integer-based encoding via `.codes` attribute</span>
 <span class="sd">- Efficient groupby-compatible structure (`.permutation` and `.segments`)</span>
-<span class="sd">- Support for missing data using a configurable `NAvalue`</span>
+<span class="sd">- Support for missing data using a configurable `na_value`</span>
 <span class="sd">- Pandas-like API for accessing labels and categories</span>
 
 <span class="sd">Typical Use</span>
@@ -420,6 +420,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -487,7 +488,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    values : Strings, Categorical, pd.Categorical</span>
 <span class="sd">        Values to convert to categories</span>
-<span class="sd">    NAvalue : str scalar</span>
+<span class="sd">    na_value : str scalar</span>
 <span class="sd">        The value to use to represent missing/null data</span>
 
 <span class="sd">    Attributes</span>
@@ -534,6 +535,25 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">unique</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="c1"># --- deprecated kwarg aliases for na_value ---</span>
+        <span class="n">_new</span> <span class="o">=</span> <span class="s2">&quot;na_value&quot;</span>
+        <span class="n">_deprecated</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;naValue&quot;</span><span class="p">,</span> <span class="s2">&quot;NAvalue&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">]</span>
+
+        <span class="n">cls_name</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+
+        <span class="k">if</span> <span class="n">_new</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">_deprecated</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cls_name</span><span class="si">}</span><span class="s2">() got both &#39;</span><span class="si">{</span><span class="n">_new</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">_deprecated</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;. Use &#39;</span><span class="si">{</span><span class="n">_new</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_deprecated</span><span class="p">:</span>
+            <span class="n">old</span> <span class="o">=</span> <span class="n">_deprecated</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">old</span><span class="si">}</span><span class="s2">&#39; is deprecated; use &#39;</span><span class="si">{</span><span class="n">_new</span><span class="si">}</span><span class="s2">&#39; instead&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">_new</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">old</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="s2">&quot;codes&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s2">&quot;categories&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="c1"># This initialization is called by Categorical.from_codes()</span>
             <span class="c1"># The values arg is ignored</span>
@@ -594,17 +614,17 @@
         <span class="k">if</span> <span class="s2">&quot;_akNAcode&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_akNAcode&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;_akNAcode&quot;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">:</span> <span class="n">int_scalars</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NAvalue&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
-            <span class="n">findNA</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span>
-            <span class="k">if</span> <span class="n">findNA</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;na_value&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">)</span>
+            <span class="n">find_na</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span>
+            <span class="k">if</span> <span class="n">find_na</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-                    <span class="n">type_cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">],</span> <span class="n">akcast</span><span class="p">(</span><span class="n">findNA</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">())</span>
+                    <span class="n">type_cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">],</span> <span class="n">akcast</span><span class="p">(</span><span class="n">find_na</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">())</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Append NA value</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">])))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">na_value</span><span class="p">])))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_akNAcode</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span><span class="p">])</span>
         <span class="c1"># Always set these values</span>
@@ -614,6 +634,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">str_</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">NAvalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deprecated alias for `na_value`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Same value as `na_value`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Categorical.NAvalue is deprecated; use Categorical.find_na instead.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -734,7 +770,7 @@
 <div class="viewcode-block" id="Categorical.standardize_categories">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.standardize_categories">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">standardize_categories</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="s2">&quot;N/A&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">standardize_categories</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">arrays</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="s2">&quot;N/A&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Standardize an array of Categoricals so that they share the same categories.</span>
 
@@ -742,7 +778,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        arrays : sequence of Categoricals</span>
 <span class="sd">            The Categoricals to standardize</span>
-<span class="sd">        NAvalue : str scalar</span>
+<span class="sd">        na_value : str scalar</span>
 <span class="sd">            The value to use to represent missing/null data</span>
 
 <span class="sd">        Returns</span>
@@ -757,11 +793,11 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All arguments must be </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">new_categories</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">concatenate</span><span class="p">([</span><span class="n">arr</span><span class="o">.</span><span class="n">categories</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">],</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-        <span class="n">findNA</span> <span class="o">=</span> <span class="n">new_categories</span> <span class="o">==</span> <span class="n">NAvalue</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">findNA</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">find_na</span> <span class="o">=</span> <span class="n">new_categories</span> <span class="o">==</span> <span class="n">na_value</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">find_na</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="c1"># Append NA value</span>
-            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">new_categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">NAvalue</span><span class="p">])))</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">arr</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">NAvalue</span><span class="p">)</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span></div>
+            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">new_categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">na_value</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">arr</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="n">new_categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="n">na_value</span><span class="p">)</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Categorical.equals">
@@ -806,7 +842,7 @@
 
 <div class="viewcode-block" id="Categorical.set_categories">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.set_categories">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set categories to user-defined values.</span>
 
@@ -814,7 +850,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        new_categories : Strings</span>
 <span class="sd">            The array of new categories to use. Must be unique.</span>
-<span class="sd">        NAvalue : str scalar</span>
+<span class="sd">        na_value : str scalar</span>
 <span class="sd">            The value to use to represent missing/null data</span>
 
 <span class="sd">        Returns</span>
@@ -830,17 +866,17 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
 
-        <span class="k">if</span> <span class="n">NAvalue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">NAvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span>
-        <span class="n">findNA</span> <span class="o">=</span> <span class="n">new_categories</span> <span class="o">==</span> <span class="n">NAvalue</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">findNA</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">na_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">na_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">na_value</span>
+        <span class="n">find_na</span> <span class="o">=</span> <span class="n">new_categories</span> <span class="o">==</span> <span class="n">na_value</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">find_na</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="c1"># Append NA value</span>
-            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">new_categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">NAvalue</span><span class="p">])))</span>
-            <span class="n">NAcode</span> <span class="o">=</span> <span class="n">new_categories</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="n">new_categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">na_value</span><span class="p">])))</span>
+            <span class="n">na_code</span> <span class="o">=</span> <span class="n">new_categories</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">NAcode</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">findNA</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">())</span>
+            <span class="n">na_code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">akcast</span><span class="p">(</span><span class="n">find_na</span><span class="p">,</span> <span class="n">akint64</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">())</span>
         <span class="n">code_mapping</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akint64</span><span class="p">)</span>
-        <span class="n">code_mapping</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">NAcode</span><span class="p">)</span>
+        <span class="n">code_mapping</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">na_code</span><span class="p">)</span>
         <span class="c1"># Concatenate old and new categories and unique codes</span>
         <span class="n">bothcats</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">),</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">bothcodes</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span>
@@ -869,7 +905,7 @@
         <span class="n">code_mapping</span><span class="p">[</span><span class="n">scatterinds</span><span class="p">]</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">new_categories</span><span class="o">.</span><span class="n">size</span><span class="p">)[</span><span class="n">gatherinds</span><span class="p">]</span>
         <span class="c1"># Apply the lookup to map old codes to new codes</span>
         <span class="n">new_codes</span> <span class="o">=</span> <span class="n">code_mapping</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">NAvalue</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="n">na_value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Categorical.to_ndarray">
@@ -1202,7 +1238,7 @@
 <div class="viewcode-block" id="Categorical.isna">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical.isna">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find where values are missing or null (as defined by self.NAvalue).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find where values are missing or null (as defined by self.na_value).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">codes</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_NAcode</span></div>
 
 
@@ -1230,7 +1266,7 @@
         <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">]</span>
         <span class="n">newvals</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
-            <span class="n">newvals</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">permutation</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span> <span class="n">segments</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span>
+            <span class="n">newvals</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">permutation</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">permutation</span><span class="p">,</span> <span class="n">segments</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">na_value</span>
         <span class="p">)</span></div>
 
 
@@ -1447,7 +1483,7 @@
 
         <span class="c1"># __doc__ = unique.__doc__</span>
         <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span>
-            <span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span>
+            <span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_categories_used</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">na_value</span>
         <span class="p">)</span></div>
 
 
@@ -1661,12 +1697,12 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">newvals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categories</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_arrays</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">standardize_categories</span><span class="p">([</span><span class="bp">self</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">others</span><span class="p">),</span> <span class="n">NAvalue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span>
+            <span class="n">new_arrays</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">standardize_categories</span><span class="p">([</span><span class="bp">self</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">others</span><span class="p">),</span> <span class="n">na_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">na_value</span><span class="p">)</span>
             <span class="n">new_categories</span> <span class="o">=</span> <span class="n">new_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">categories</span>
             <span class="n">new_codes</span> <span class="o">=</span> <span class="n">type_cast</span><span class="p">(</span>
                 <span class="n">pdarray</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">arr</span><span class="o">.</span><span class="n">codes</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">new_arrays</span><span class="p">],</span> <span class="n">ordered</span><span class="o">=</span><span class="n">ordered</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">na_value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Categorical.to_hdf">

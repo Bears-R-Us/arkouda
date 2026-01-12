@@ -675,11 +675,11 @@
         <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">Strings</span> <span class="ow">or</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">==</span> <span class="n">str_</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot cast a multi-dimensional pdarray to Strings&quot;</span><span class="p">)</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;castToStrings&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">},</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_parts</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_parts</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
@@ -695,7 +695,7 @@
             <span class="k">return</span> <span class="n">Strings</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">pda</span><span class="p">[:]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">akdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;castStringsTo&lt;</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="o">.</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -703,10 +703,10 @@
                 <span class="p">},</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">errors</span> <span class="o">==</span> <span class="n">ErrorMode</span><span class="o">.</span><span class="n">return_validity</span><span class="p">:</span>
-                <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+                <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">a</span><span class="p">)),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">Strings</span> <span class="ow">or</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Strings&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">dt</span> <span class="o">==</span> <span class="n">str_</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">pda</span><span class="o">.</span><span class="n">codes</span><span class="p">]</span>
@@ -750,13 +750,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;abs&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -977,13 +977,13 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;sign&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sgn&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1019,13 +1019,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;isfinite&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1061,13 +1061,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;isinf&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1111,13 +1111,13 @@
 
         <span class="k">return</span> <span class="n">full</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;isnan&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1166,13 +1166,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1202,13 +1202,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log10&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1238,13 +1238,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log2&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1274,13 +1274,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;log1p&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1344,14 +1344,14 @@
 
     <span class="n">x1_</span><span class="p">,</span> <span class="n">x2_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">broadcast_if_needed</span><span class="p">(</span><span class="n">x1_</span><span class="p">,</span> <span class="n">x2_</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;nextafter&lt;</span><span class="si">{</span><span class="n">x1_</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;x1&quot;</span><span class="p">:</span> <span class="n">x1_</span><span class="p">,</span>
             <span class="s2">&quot;x2&quot;</span><span class="p">:</span> <span class="n">x2_</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">return_array</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+    <span class="n">return_array</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">return_scalar</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">return_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">return_array</span></div>
@@ -1392,13 +1392,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;exp&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1436,13 +1436,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;expm1&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1543,7 +1543,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not valid for the given array.&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cumSum&lt;</span><span class="si">{</span><span class="n">pda_</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda_</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda_</span><span class="p">,</span>
@@ -1551,7 +1551,7 @@
             <span class="s2">&quot;includeInitial&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1616,7 +1616,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not valid for the given array.&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;cumProd&lt;</span><span class="si">{</span><span class="n">pda_</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda_</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda_</span><span class="p">,</span>
@@ -1624,7 +1624,7 @@
             <span class="s2">&quot;includeInitial&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -1954,8 +1954,8 @@
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2"> is not an allowed num type for arctan2&quot;</span><span class="p">)</span>
             <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span> <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">]}</span>  <span class="c1"># type: ignore</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">argdict</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">argdict</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ret</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2218,25 +2218,25 @@
 
     <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_int64</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">],</span> <span class="n">func</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pda</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where must have dtype bool, got </span><span class="si">{</span><span class="n">where</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> instead&quot;</span><span class="p">)</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">pda</span><span class="p">[:],</span> <span class="n">where</span><span class="p">,</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="rad2deg">
@@ -2480,24 +2480,24 @@
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">())</span>
     <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">],</span> <span class="s2">&quot;hash&quot;</span><span class="p">)</span>
     <span class="n">hname</span> <span class="o">=</span> <span class="s2">&quot;hash128&quot;</span> <span class="k">if</span> <span class="n">full</span> <span class="k">else</span> <span class="s2">&quot;hash64&quot;</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">hname</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
 
 <span class="nd">@no_type_check</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_str_cat_where</span><span class="p">(</span>
     <span class="n">condition</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span>
-    <span class="n">A</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
-    <span class="n">B</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
+    <span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
+    <span class="n">b</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]:</span>
     <span class="c1"># added @no_type_check because mypy can&#39;t handle Categorical not being declared</span>
     <span class="c1"># sooner, but there are circular dependencies preventing that</span>
@@ -2505,62 +2505,62 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="p">(</span><span class="n">Categorical</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)):</span>
         <span class="c1"># This allows us to assume if a str is present it is B</span>
-        <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="o">~</span><span class="n">condition</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">condition</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="o">~</span><span class="n">condition</span>
 
     <span class="c1"># one cat and one str</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">is_in_categories</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">B</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">is_in_categories</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">b</span>
         <span class="k">if</span> <span class="n">ak_any</span><span class="p">(</span><span class="n">is_in_categories</span><span class="p">):</span>
-            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span>
+            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">categories</span>
             <span class="n">b_code</span> <span class="o">=</span> <span class="n">argmax</span><span class="p">(</span><span class="n">is_in_categories</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">B</span><span class="p">])])</span>
-            <span class="n">b_code</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span>
-        <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">b_code</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
+            <span class="n">new_categories</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">array</span><span class="p">([</span><span class="n">b</span><span class="p">])])</span>
+            <span class="n">b_code</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">b_code</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">na_value</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
 
     <span class="c1"># both cat</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Categoricals must be same length&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">categories</span><span class="p">):</span>
-            <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">standardize_categories</span><span class="p">([</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>
-        <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">B</span><span class="o">.</span><span class="n">codes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">NAvalue</span><span class="o">=</span><span class="n">A</span><span class="o">.</span><span class="n">NAvalue</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">ak_all</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">categories</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">categories</span><span class="p">):</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">standardize_categories</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+        <span class="n">new_codes</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">codes</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">codes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_codes</span><span class="p">(</span><span class="n">new_codes</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span> <span class="n">na_value</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">na_value</span><span class="p">)</span><span class="o">.</span><span class="n">reset_categories</span><span class="p">()</span>
 
     <span class="c1"># one strings and one str</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">new_lens</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">get_lengths</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">new_lens</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">get_lengths</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedWhere&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;seg_str&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span>
-                <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span>
+                <span class="s2">&quot;seg_str&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+                <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span>
                 <span class="s2">&quot;is_str_literal&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="s2">&quot;new_lens&quot;</span><span class="p">:</span> <span class="n">new_lens</span><span class="p">,</span>
                 <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
     <span class="c1"># both strings</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">B</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Strings must be same length&quot;</span><span class="p">)</span>
-        <span class="n">new_lens</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">get_lengths</span><span class="p">(),</span> <span class="n">B</span><span class="o">.</span><span class="n">get_lengths</span><span class="p">())</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">new_lens</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">get_lengths</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">get_lengths</span><span class="p">())</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedWhere&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;seg_str&quot;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span>
-                <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span>
+                <span class="s2">&quot;seg_str&quot;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span>
+                <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span>
                 <span class="s2">&quot;is_str_literal&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s2">&quot;new_lens&quot;</span><span class="p">:</span> <span class="n">new_lens</span><span class="p">,</span>
                 <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ak.where is not supported between Strings and Categorical&quot;</span><span class="p">)</span>
 
@@ -2696,7 +2696,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where does not accept scalar type </span><span class="si">{</span><span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;wheress_&quot;</span> <span class="o">+</span> <span class="n">ta</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">tb</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">condition</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;condition&quot;</span><span class="p">:</span> <span class="n">condition</span><span class="p">,</span>
@@ -2705,7 +2705,7 @@
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
 
 
 
@@ -2744,7 +2744,7 @@
 <span class="sd">    bins : int_scalars, default=10</span>
 <span class="sd">        The number of equal-size bins to use (default: 10)</span>
 
-<span class="sd">    range : (minVal, maxVal), optional</span>
+<span class="sd">    range : (min_val, max_val), optional</span>
 <span class="sd">        The range of the values to count.</span>
 <span class="sd">        Values outside of this range are dropped.</span>
 <span class="sd">        By default, all values are counted.</span>
@@ -2798,13 +2798,13 @@
     <span class="k">if</span> <span class="n">bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bins must be 1 or greater&quot;</span><span class="p">)</span>
 
-    <span class="n">minVal</span><span class="p">,</span> <span class="n">maxVal</span> <span class="o">=</span> <span class="n">_conv_dim</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span>
+    <span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span> <span class="o">=</span> <span class="n">_conv_dim</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span>
 
-    <span class="n">b</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">minVal</span><span class="p">,</span> <span class="n">maxVal</span><span class="p">,</span> <span class="n">bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogram&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;bins&quot;</span><span class="p">:</span> <span class="n">bins</span><span class="p">,</span> <span class="s2">&quot;minVal&quot;</span><span class="p">:</span> <span class="n">minVal</span><span class="p">,</span> <span class="s2">&quot;maxVal&quot;</span><span class="p">:</span> <span class="n">maxVal</span><span class="p">}</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">,</span> <span class="n">bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogram&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;bins&quot;</span><span class="p">:</span> <span class="n">bins</span><span class="p">,</span> <span class="s2">&quot;minVal&quot;</span><span class="p">:</span> <span class="n">min_val</span><span class="p">,</span> <span class="s2">&quot;maxVal&quot;</span><span class="p">:</span> <span class="n">max_val</span><span class="p">}</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)),</span> <span class="n">b</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)),</span> <span class="n">b</span></div>
 
 
 
@@ -2837,7 +2837,7 @@
 <span class="sd">        If [int, int], the number of bins in each dimension (nx, ny = bins).</span>
 <span class="sd">        Defaults to 10</span>
 
-<span class="sd">    range : ((xMin, xMax), (yMin, yMax)), optional</span>
+<span class="sd">    range : ((x_min, x_max), (y_min, y_max)), optional</span>
 <span class="sd">        The ranges of the values in x and y to count.</span>
 <span class="sd">        Values outside of these ranges are dropped.</span>
 <span class="sd">        By default, all values are counted.</span>
@@ -2906,26 +2906,26 @@
     <span class="k">if</span> <span class="n">x_bins</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">y_bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bins must be 1 or greater&quot;</span><span class="p">)</span>
 
-    <span class="n">xMin</span><span class="p">,</span> <span class="n">xMax</span> <span class="o">=</span> <span class="n">_conv_dim</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">range</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">yMin</span><span class="p">,</span> <span class="n">yMax</span> <span class="o">=</span> <span class="n">_conv_dim</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">range</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">_conv_dim</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">range</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">_conv_dim</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="nb">range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">range</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="n">x_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">xMin</span><span class="p">,</span> <span class="n">xMax</span><span class="p">,</span> <span class="n">x_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">y_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">yMin</span><span class="p">,</span> <span class="n">yMax</span><span class="p">,</span> <span class="n">y_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">x_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">y_bin_boundaries</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">y_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogram2D&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
             <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
             <span class="s2">&quot;xBins&quot;</span><span class="p">:</span> <span class="n">x_bins</span><span class="p">,</span>
             <span class="s2">&quot;yBins&quot;</span><span class="p">:</span> <span class="n">y_bins</span><span class="p">,</span>
-            <span class="s2">&quot;xMin&quot;</span><span class="p">:</span> <span class="n">xMin</span><span class="p">,</span>
-            <span class="s2">&quot;xMax&quot;</span><span class="p">:</span> <span class="n">xMax</span><span class="p">,</span>
-            <span class="s2">&quot;yMin&quot;</span><span class="p">:</span> <span class="n">yMin</span><span class="p">,</span>
-            <span class="s2">&quot;yMax&quot;</span><span class="p">:</span> <span class="n">yMax</span><span class="p">,</span>
+            <span class="s2">&quot;xMin&quot;</span><span class="p">:</span> <span class="n">x_min</span><span class="p">,</span>
+            <span class="s2">&quot;xMax&quot;</span><span class="p">:</span> <span class="n">x_max</span><span class="p">,</span>
+            <span class="s2">&quot;yMin&quot;</span><span class="p">:</span> <span class="n">y_min</span><span class="p">,</span>
+            <span class="s2">&quot;yMax&quot;</span><span class="p">:</span> <span class="n">y_max</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span>
-        <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span><span class="p">),</span>
+        <span class="n">create_pdarray</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span><span class="p">),</span>
         <span class="n">x_bin_boundaries</span><span class="p">,</span>
         <span class="n">y_bin_boundaries</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -2953,7 +2953,7 @@
 <span class="sd">        If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).</span>
 <span class="sd">        Defaults to 10</span>
 
-<span class="sd">    range : Sequence[optional (minVal, maxVal)], optional</span>
+<span class="sd">    range : Sequence[optional (min_val, max_val)], optional</span>
 <span class="sd">        The ranges of the values to count for each array in sample.</span>
 <span class="sd">        Values outside of these ranges are dropped.</span>
 <span class="sd">        By default, all values are counted.</span>
@@ -3032,7 +3032,7 @@
     <span class="n">bin_boundaries</span> <span class="o">=</span> <span class="p">[</span><span class="n">linspace</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">b</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">range_list</span><span class="p">,</span> <span class="n">bins</span><span class="p">)]</span>
     <span class="n">d_curr</span><span class="p">,</span> <span class="n">d_next</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
     <span class="n">dim_prod</span> <span class="o">=</span> <span class="p">[(</span><span class="n">d_curr</span> <span class="o">:=</span> <span class="n">d_next</span><span class="p">,</span> <span class="n">d_next</span> <span class="o">:=</span> <span class="n">d_curr</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># noqa: F841</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;histogramdD&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="p">,</span>
@@ -3044,7 +3044,7 @@
             <span class="s2">&quot;num_samples&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">bins</span><span class="p">),</span> <span class="n">bin_boundaries</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">bins</span><span class="p">),</span> <span class="n">bin_boundaries</span></div>
 
 
 
@@ -3176,16 +3176,16 @@
     <span class="c1"># If any of the inputs are float, then make everything float.</span>
     <span class="c1"># Some type checking is needed, because scalars and pdarrays get cast differently.</span>
 
-    <span class="n">dataFloat</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">float</span>
-    <span class="n">minFloat</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lo</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">float</span><span class="p">)</span>
-    <span class="n">maxFloat</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">hi</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">float</span><span class="p">)</span>
-    <span class="n">forceFloat</span> <span class="o">=</span> <span class="n">dataFloat</span> <span class="ow">or</span> <span class="n">minFloat</span> <span class="ow">or</span> <span class="n">maxFloat</span>
-    <span class="k">if</span> <span class="n">forceFloat</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dataFloat</span><span class="p">:</span>
+    <span class="n">data_float</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">float</span>
+    <span class="n">min_float</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lo</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">max_float</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">hi</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">force_float</span> <span class="o">=</span> <span class="n">data_float</span> <span class="ow">or</span> <span class="n">min_float</span> <span class="ow">or</span> <span class="n">max_float</span>
+    <span class="k">if</span> <span class="n">force_float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data_float</span><span class="p">:</span>
             <span class="n">pda</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">lo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">minFloat</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">min_float</span><span class="p">:</span>
             <span class="n">lo</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">lo</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">hi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">maxFloat</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">hi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">max_float</span><span class="p">:</span>
             <span class="n">hi</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hi</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span>
 
     <span class="c1"># Now do the clipping.</span>
@@ -3420,7 +3420,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">ALLOWED_PUTMASK_PAIRS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">allowed_putmask_pairs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_float64</span><span class="p">),</span>
         <span class="p">(</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_int64</span><span class="p">),</span>
         <span class="p">(</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">),</span>
@@ -3432,7 +3432,7 @@
         <span class="p">(</span><span class="n">ak_bool</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">),</span>
     <span class="p">]</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_PUTMASK_PAIRS</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_putmask_pairs</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Types </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">Values</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> are not compatible in putmask.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">A</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;mask and A must be same size in putmask&quot;</span><span class="p">)</span>
@@ -3809,20 +3809,20 @@
         <span class="n">right_preshape</span> <span class="o">=</span> <span class="n">pda_R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># both shapes</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">tmp_preshape</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">left_preshape</span><span class="p">,</span> <span class="n">right_preshape</span><span class="p">)</span>
-            <span class="n">tmp_pda_Lshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tmp_preshape</span><span class="p">)</span>
-            <span class="n">tmp_pda_Lshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_L</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># restore the last 2 dims</span>
-            <span class="n">tmp_pda_Lshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_L</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># of the left shape</span>
-            <span class="n">new_pda_Lshape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tmp_pda_Lshape</span><span class="p">)</span>
-            <span class="n">tmp_pda_Rshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tmp_preshape</span><span class="p">)</span>  <span class="c1"># now do the same jiggery-pokery</span>
-            <span class="n">tmp_pda_Rshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># with the shape of pda_R</span>
-            <span class="n">tmp_pda_Rshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">new_pda_Rshape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tmp_pda_Rshape</span><span class="p">)</span>
-            <span class="n">new_pda_L</span> <span class="o">=</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">pda_L</span><span class="p">,</span> <span class="n">new_pda_Lshape</span><span class="p">)</span>
-            <span class="n">new_pda_R</span> <span class="o">=</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">pda_R</span><span class="p">,</span> <span class="n">new_pda_Rshape</span><span class="p">)</span>  <span class="c1"># args are now ready</span>
-            <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;multidimmatmul&lt;</span><span class="si">{</span><span class="n">pda_L</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">new_pda_L</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda_R</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">new_pda_R</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="n">tmp_pda_lshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tmp_preshape</span><span class="p">)</span>
+            <span class="n">tmp_pda_lshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_L</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># restore the last 2 dims</span>
+            <span class="n">tmp_pda_lshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_L</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># of the left shape</span>
+            <span class="n">new_pda_lshape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tmp_pda_lshape</span><span class="p">)</span>
+            <span class="n">tmp_pda_rshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tmp_preshape</span><span class="p">)</span>  <span class="c1"># now do the same jiggery-pokery</span>
+            <span class="n">tmp_pda_rshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># with the shape of pda_R</span>
+            <span class="n">tmp_pda_rshape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pda_R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">new_pda_rshape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">tmp_pda_rshape</span><span class="p">)</span>
+            <span class="n">new_pda_l</span> <span class="o">=</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">pda_L</span><span class="p">,</span> <span class="n">new_pda_lshape</span><span class="p">)</span>
+            <span class="n">new_pda_r</span> <span class="o">=</span> <span class="n">broadcast_to</span><span class="p">(</span><span class="n">pda_R</span><span class="p">,</span> <span class="n">new_pda_rshape</span><span class="p">)</span>  <span class="c1"># args are now ready</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;multidimmatmul&lt;</span><span class="si">{</span><span class="n">pda_L</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">new_pda_l</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda_R</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">new_pda_r</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">new_pda_L</span><span class="p">,</span>
-                <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">new_pda_R</span><span class="p">,</span>
+                <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">new_pda_l</span><span class="p">,</span>
+                <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">new_pda_r</span><span class="p">,</span>
             <span class="p">}</span>
             <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
                 <span class="n">generic_msg</span><span class="p">(</span>

@@ -663,7 +663,7 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFindAll&quot;</span><span class="p">,</span>
@@ -679,10 +679,10 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">return_match_origins</span><span class="p">:</span>
-            <span class="n">arrays</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">arrays</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Match.group">
@@ -735,7 +735,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
         <span class="c1"># We don&#39;t cache the locations of groups, find the location info and call findAll</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFindLoc&quot;</span><span class="p">,</span>
@@ -747,7 +747,7 @@
                 <span class="p">},</span>
             <span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">created_map</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="n">created_map</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="n">global_starts</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;Starts&quot;</span><span class="p">])</span>
         <span class="n">global_lengths</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;Lens&quot;</span><span class="p">])</span>
         <span class="n">global_indices</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">created_map</span><span class="p">[</span><span class="s2">&quot;Indices&quot;</span><span class="p">])</span>
@@ -764,7 +764,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_match_type</span><span class="si">}</span><span class="s2"> is not a MatchType&quot;</span><span class="p">)</span>
         <span class="n">starts</span> <span class="o">=</span> <span class="n">global_starts</span><span class="p">[</span><span class="n">global_indices</span><span class="p">[</span><span class="n">matched</span><span class="p">]]</span>
         <span class="n">lengths</span> <span class="o">=</span> <span class="n">global_lengths</span><span class="p">[</span><span class="n">global_indices</span><span class="p">[</span><span class="n">matched</span><span class="p">]]</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">str</span><span class="p">,</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFindAll&quot;</span><span class="p">,</span>
@@ -780,10 +780,10 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">return_group_origins</span><span class="p">:</span>
-            <span class="n">arrays</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">arrays</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

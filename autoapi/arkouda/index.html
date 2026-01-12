@@ -1096,7 +1096,7 @@ to Python users.</p>
 <td><p>Calculate the n-th discrete difference along the given axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.disableVerbose" title="arkouda.disableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disableVerbose</span></code></a>(→ None)</p></td>
-<td><p>Disables verbose logging.</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.divmod" title="arkouda.divmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divmod</span></code></a>(→ Tuple[pdarray, pdarray])</p></td>
 <td><p></p></td>
@@ -5253,12 +5253,12 @@ This value cannot be a list.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Series.from_return_msg">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../usage/series.html#arkouda.Series" title="arkouda.Series"><span class="pre">Series</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/series.html#Series.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Series.from_return_msg" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../usage/series.html#arkouda.Series" title="arkouda.Series"><span class="pre">Series</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/series.html#Series.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Series.from_return_msg" title="Link to this definition">¶</a></dt>
 <dd><p>Return a Series instance pointing to components created by the arkouda server.</p>
 <p>The user should not call this function directly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>repMsg</strong> (<em>builtin_str</em>) – <ul class="simple">
+<dd class="field-odd"><p><strong>rep_msg</strong> (<em>builtin_str</em>) – <ul class="simple">
 <li><p>delimited string containing the values and indexes.</p></li>
 </ul>
 </p>
@@ -12483,19 +12483,8 @@ integer type first:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.disableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.disableVerbose" title="Link to this definition">¶</a></dt>
-<dd><p>Disables verbose logging.</p>
-<p>Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
-the log level for each to the logLevel parameter.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logLevel</strong> (<a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><em>LogLevel</em></a>) – The new log level, defaultts to LogLevel.INFO</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if logLevel is not a LogLevel enum</p>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><span class="pre">LogLevel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_Unset</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_UNSET</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.disableVerbose" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.divmod">
@@ -14228,7 +14217,7 @@ non-numeric types will be grouped and encoded before plotting.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
 <li><p><strong>bins</strong> (<a class="reference internal" href="#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use (default: 10)</p></li>
-<li><p><strong>range</strong> (<em>(</em><em>minVal</em><em>, </em><em>maxVal</em><em>)</em><em>, </em><em>optional</em>) – The range of the values to count.
+<li><p><strong>range</strong> (<em>(</em><em>min_val</em><em>, </em><em>max_val</em><em>)</em><em>, </em><em>optional</em>) – The range of the values to count.
 Values outside of this range are dropped.
 By default, all values are counted.</p></li>
 </ul>
@@ -14289,7 +14278,7 @@ If range parameter is provided, the interval is [range[0], range[1]].</p>
 If int, the number of bins for the two dimensions (nx=ny=bins).
 If [int, int], the number of bins in each dimension (nx, ny = bins).
 Defaults to 10</p></li>
-<li><p><strong>range</strong> (<em>(</em><em>(</em><em>xMin</em><em>, </em><em>xMax</em><em>)</em><em>, </em><em>(</em><em>yMin</em><em>, </em><em>yMax</em><em>)</em><em>)</em><em>, </em><em>optional</em>) – The ranges of the values in x and y to count.
+<li><p><strong>range</strong> (<em>(</em><em>(</em><em>x_min</em><em>, </em><em>x_max</em><em>)</em><em>, </em><em>(</em><em>y_min</em><em>, </em><em>y_max</em><em>)</em><em>)</em><em>, </em><em>optional</em>) – The ranges of the values in x and y to count.
 Values outside of these ranges are dropped.
 By default, all values are counted.</p></li>
 </ul>
@@ -14359,7 +14348,7 @@ by range[0] for x and range[1] for y..</p>
 If int, the number of bins for all dimensions (nx=ny=…=bins).
 If [int, int, …], the number of bins in each dimension (nx, ny, … = bins).
 Defaults to 10</p></li>
-<li><p><strong>range</strong> (<em>Sequence</em><em>[</em><em>optional</em><em> (</em><em>minVal</em><em>, </em><em>maxVal</em><em>)</em><em>]</em><em>, </em><em>optional</em>) – The ranges of the values to count for each array in sample.
+<li><p><strong>range</strong> (<em>Sequence</em><em>[</em><em>optional</em><em> (</em><em>min_val</em><em>, </em><em>max_val</em><em>)</em><em>]</em><em>, </em><em>optional</em>) – The ranges of the values to count for each array in sample.
 Values outside of these ranges are dropped.
 By default, all values are counted.</p></li>
 </ul>
@@ -15005,14 +14994,14 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.intersect1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">intersect1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#intersect1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.intersect1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">intersect1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#intersect1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.intersect1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the intersection of two arrays.</p>
 <p>Return the sorted, unique values that are in both of the input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
@@ -15025,7 +15014,7 @@ can speed up the calculation.  Default is False.</p></li>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either A or B is not a groupable</p></li>
+<li><p><strong>TypeError</strong> – Raised if either ar1 or ar2 is not a groupable</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported</p></li>
 </ul>
 </dd>
@@ -19328,27 +19317,27 @@ If the dtype of <cite>a</cite> and <cite>v</cite> does not match</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.setdiff1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">setdiff1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#setdiff1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.setdiff1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">setdiff1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#setdiff1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.setdiff1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the set difference of two arrays.</p>
 <p>Return the sorted, unique values in <cite>A</cite> that are not in <cite>B</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Sorted 1D array/List of sorted pdarrays of values in <cite>A</cite> that are not in <cite>B</cite>.</p>
+<dd class="field-even"><p>Sorted 1D array/List of sorted pdarrays of values in <cite>ar1</cite> that are not in <cite>ar2</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pdarray/groupable</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either A or B is not a pdarray</p></li>
+<li><p><strong>TypeError</strong> – Raised if either ar1 or ar2 is not a pdarray</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported</p></li>
 </ul>
 </dd>
@@ -19428,15 +19417,15 @@ this callable; it is stored for future use.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.setxor1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">setxor1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#setxor1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.setxor1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">setxor1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#setxor1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.setxor1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the set exclusive-or (symmetric difference) of two arrays.</p>
 <p>Return the sorted, unique values that are in only one (not both) of the
 input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
@@ -19450,7 +19439,7 @@ arrays.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either A or B is not a groupable</p></li>
+<li><p><strong>TypeError</strong> – Raised if either ar1 or ar2 is not a groupable</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either pdarray is not supported</p></li>
 </ul>
 </dd>
@@ -21300,15 +21289,15 @@ is invoked with a dtype of float64</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.union1d">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">union1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#union1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.union1d" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">union1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ar2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarraysetops.html#union1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.union1d" title="Link to this definition">¶</a></dt>
 <dd><p>Find the union of two arrays/List of Arrays.</p>
 <p>Return the unique, sorted array of values that are in either
 of the two input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -21319,7 +21308,7 @@ of the two input arrays.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if either A or B is not a groupable</p></li>
+<li><p><strong>TypeError</strong> – Raised if either ar1 or ar2 is not a groupable</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if the dtype of either input is not supported</p></li>
 </ul>
 </dd>

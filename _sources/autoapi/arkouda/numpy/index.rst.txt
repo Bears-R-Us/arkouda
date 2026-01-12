@@ -8046,7 +8046,7 @@ Package Contents
    :param range: The range of the values to count.
                  Values outside of this range are dropped.
                  By default, all values are counted.
-   :type range: (minVal, maxVal), optional
+   :type range: (min_val, max_val), optional
 
    :returns: The number of values present in each bin and the bin edges
    :rtype: (pdarray, Union[pdarray, int64 or float64])
@@ -8100,7 +8100,7 @@ Package Contents
    :param range: The ranges of the values in x and y to count.
                  Values outside of these ranges are dropped.
                  By default, all values are counted.
-   :type range: ((xMin, xMax), (yMin, yMax)), optional
+   :type range: ((x_min, x_max), (y_min, y_max)), optional
 
    :returns:
 
@@ -8162,7 +8162,7 @@ Package Contents
    :param range: The ranges of the values to count for each array in sample.
                  Values outside of these ranges are dropped.
                  By default, all values are counted.
-   :type range: Sequence[optional (minVal, maxVal)], optional
+   :type range: Sequence[optional (min_val, max_val)], optional
 
    :returns:
 
@@ -8672,16 +8672,16 @@ Package Contents
 
 
 
-.. py:function:: intersect1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
+.. py:function:: intersect1d(ar1: arkouda.pandas.groupbyclass.groupable, ar2: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the intersection of two arrays.
 
    Return the sorted, unique values that are in both of the input arrays.
 
-   :param A:
-   :type A: list of pdarrays, pdarray, Strings, or Categorical
-   :param B:
-   :type B: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar1:
+   :type ar1: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar2:
+   :type ar2: list of pdarrays, pdarray, Strings, or Categorical
    :param assume_unique: If True, the input arrays are both assumed to be unique, which
                          can speed up the calculation.  Default is False.
    :type assume_unique: bool
@@ -8689,7 +8689,7 @@ Package Contents
    :returns: Sorted 1D array/List of sorted pdarrays of common and unique elements.
    :rtype: pdarray/groupable
 
-   :raises TypeError: Raised if either A or B is not a groupable
+   :raises TypeError: Raised if either ar1 or ar2 is not a groupable
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
    .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`union1d`
@@ -12124,24 +12124,24 @@ Package Contents
    array([0 1 2 5])
 
 
-.. py:function:: setdiff1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
+.. py:function:: setdiff1d(ar1: arkouda.pandas.groupbyclass.groupable, ar2: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the set difference of two arrays.
 
    Return the sorted, unique values in `A` that are not in `B`.
 
-   :param A:
-   :type A: list of pdarrays, pdarray, Strings, or Categorical
-   :param B:
-   :type B: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar1:
+   :type ar1: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar2:
+   :type ar2: list of pdarrays, pdarray, Strings, or Categorical
    :param assume_unique: If True, the input arrays are both assumed to be unique, which
                          can speed up the calculation.  Default is False.
    :type assume_unique: bool
 
-   :returns: Sorted 1D array/List of sorted pdarrays of values in `A` that are not in `B`.
+   :returns: Sorted 1D array/List of sorted pdarrays of values in `ar1` that are not in `ar2`.
    :rtype: pdarray/groupable
 
-   :raises TypeError: Raised if either A or B is not a pdarray
+   :raises TypeError: Raised if either ar1 or ar2 is not a pdarray
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
    .. seealso:: :py:obj:`arkouda.pandas.groupbyclass.unique`, :py:obj:`setxor1d`
@@ -12209,17 +12209,17 @@ Package Contents
    this callable; it is stored for future use.
 
 
-.. py:function:: setxor1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
+.. py:function:: setxor1d(ar1: arkouda.pandas.groupbyclass.groupable, ar2: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.pandas.groupbyclass.groupable]
 
    Find the set exclusive-or (symmetric difference) of two arrays.
 
    Return the sorted, unique values that are in only one (not both) of the
    input arrays.
 
-   :param A:
-   :type A: list of pdarrays, pdarray, Strings, or Categorical
-   :param B:
-   :type B: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar1:
+   :type ar1: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar2:
+   :type ar2: list of pdarrays, pdarray, Strings, or Categorical
    :param assume_unique: If True, the input arrays are both assumed to be unique, which
                          can speed up the calculation.  Default is False.
    :type assume_unique: bool
@@ -12228,7 +12228,7 @@ Package Contents
              arrays.
    :rtype: pdarray/groupable
 
-   :raises TypeError: Raised if either A or B is not a groupable
+   :raises TypeError: Raised if either ar1 or ar2 is not a groupable
    :raises RuntimeError: Raised if the dtype of either pdarray is not supported
 
    .. rubric:: Examples
@@ -13736,22 +13736,22 @@ Package Contents
    array([0.30013431967121934 0.47383036230759112 1.0441791878997098])
 
 
-.. py:function:: union1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable) -> arkouda.pandas.groupbyclass.groupable
+.. py:function:: union1d(ar1: arkouda.pandas.groupbyclass.groupable, ar2: arkouda.pandas.groupbyclass.groupable) -> arkouda.pandas.groupbyclass.groupable
 
    Find the union of two arrays/List of Arrays.
 
    Return the unique, sorted array of values that are in either
    of the two input arrays.
 
-   :param A:
-   :type A: list of pdarrays, pdarray, Strings, or Categorical
-   :param B:
-   :type B: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar1:
+   :type ar1: list of pdarrays, pdarray, Strings, or Categorical
+   :param ar2:
+   :type ar2: list of pdarrays, pdarray, Strings, or Categorical
 
    :returns: Unique, sorted union of the input arrays.
    :rtype: groupable
 
-   :raises TypeError: Raised if either A or B is not a groupable
+   :raises TypeError: Raised if either ar1 or ar2 is not a groupable
    :raises RuntimeError: Raised if the dtype of either input is not supported
 
    .. seealso:: :py:obj:`intersect1d`, :py:obj:`arkouda.pandas.groupbyclass.unique`

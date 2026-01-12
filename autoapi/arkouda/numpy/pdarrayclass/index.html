@@ -744,12 +744,12 @@ cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.create_pdarray">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">create_pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repMsg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">memoryview</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#create_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.create_pdarray" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">create_pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">memoryview</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#create_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.create_pdarray" title="Link to this definition">¶</a></dt>
 <dd><p>Return a pdarray instance pointing to an array created by the arkouda server.
 The user should not call this function directly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>repMsg</strong> (<em>str</em>) – space-delimited string containing the pdarray name, datatype, size
+<dd class="field-odd"><p><strong>rep_msg</strong> (<em>str</em>) – space-delimited string containing the pdarray name, datatype, size
 dimension, shape,and itemsize</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -760,7 +760,7 @@ dimension, shape,and itemsize</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – If there’s an error in parsing the repMsg parameter into the six
+<li><p><strong>ValueError</strong> – If there’s an error in parsing the rep_msg parameter into the six
 values needed to create the pdarray instance</p></li>
 <li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of creating
 the pdarray instance</p></li>

@@ -443,9 +443,9 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_shapes</span>
 
     <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
-    <span class="n">bcShape</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">shapes</span><span class="p">)</span>
+    <span class="n">bc_shape</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">shapes</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">[</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">bcShape</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">bc_shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span></div>
 
 
 
@@ -678,9 +678,9 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_axis_validation</span>
 
-    <span class="n">axisList</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">axis_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">valid</span><span class="p">,</span> <span class="n">axisList</span> <span class="o">=</span> <span class="n">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="n">valid</span><span class="p">,</span> <span class="n">axis_list</span> <span class="o">=</span> <span class="n">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis/axes for array of rank </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -697,8 +697,8 @@
                         <span class="p">),</span>
                         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
-                            <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axisList</span><span class="p">),</span>
-                            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axisList</span><span class="p">,</span>
+                            <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
+                            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
                         <span class="p">},</span>
                     <span class="p">),</span>
                 <span class="p">)</span>
@@ -1010,9 +1010,9 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shift</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;When shift and axis are both tuples, they must have the same length.&quot;</span><span class="p">)</span>
 
-    <span class="n">axisList</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">axis_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">valid</span><span class="p">,</span> <span class="n">axisList</span> <span class="o">=</span> <span class="n">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="n">valid</span><span class="p">,</span> <span class="n">axis_list</span> <span class="o">=</span> <span class="n">_axis_validation</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> is not a valid axis/axes for array of rank </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1031,8 +1031,8 @@
                             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_array</span><span class="p">,</span>
                             <span class="s2">&quot;nShifts&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
                             <span class="s2">&quot;shift&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">shift</span><span class="p">]),</span>
-                            <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axisList</span><span class="p">),</span>
-                            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axisList</span><span class="p">,</span>
+                            <span class="s2">&quot;nAxes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis_list</span><span class="p">),</span>
+                            <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="n">axis_list</span><span class="p">,</span>
                         <span class="p">},</span>
                     <span class="p">),</span>
                 <span class="p">)</span>

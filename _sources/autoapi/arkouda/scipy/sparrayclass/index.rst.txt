@@ -23,19 +23,19 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: create_sparray(repMsg: str, max_bits=None) -> sparray
+.. py:function:: create_sparray(rep_msg: str, max_bits=None) -> sparray
 
    Return a sparray instance pointing to an array created by the arkouda server.
    The user should not call this function directly.
 
-   :param repMsg: space-delimited string containing the sparray name, datatype, size
-                  dimension, shape,and itemsize
-   :type repMsg: str
+   :param rep_msg: space-delimited string containing the sparray name, datatype, size
+                   dimension, shape,and itemsize
+   :type rep_msg: str
 
    :returns: A sparray with the same attributes as on the server
    :rtype: sparray
 
-   :raises ValueError: If there's an error in parsing the repMsg parameter into the six
+   :raises ValueError: If there's an error in parsing the rep_msg parameter into the six
        values needed to create the pdarray instance
    :raises RuntimeError: Raised if a server-side error is thrown in the process of creating
        the pdarray instance

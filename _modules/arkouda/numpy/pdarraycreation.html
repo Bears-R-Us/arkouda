@@ -1074,9 +1074,9 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size () not currently supported in ak.zeros.&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
 
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span></div>
 
 
 
@@ -1228,9 +1228,9 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size () not currently supported in ak.full.&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;create&lt;</span><span class="si">{</span><span class="n">dtype_name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">})</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
     <span class="n">a</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">max_bits</span><span class="p">:</span>
@@ -1314,8 +1314,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFull&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span> <span class="s2">&quot;fill_value&quot;</span><span class="p">:</span> <span class="n">fill_value</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;segmentedFull&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span> <span class="s2">&quot;fill_value&quot;</span><span class="p">:</span> <span class="n">fill_value</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="zeros_like">
@@ -1614,11 +1614,11 @@
         <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">stop</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">+</span> <span class="mi">2</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;arange&lt;</span><span class="si">{</span><span class="n">arg_dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="n">stop</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="n">step</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="n">arr</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">arr</span> <span class="k">if</span> <span class="n">aktype</span> <span class="o">==</span> <span class="n">akint64</span> <span class="k">else</span> <span class="n">akcast</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">aktype</span><span class="p">)</span>
 
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;start, stop, step must be ints; got </span><span class="si">{</span><span class="n">args</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span></div>
@@ -2124,7 +2124,7 @@
     <span class="k">if</span> <span class="n">minlen</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">maxlen</span> <span class="o">&lt;=</span> <span class="n">minlen</span> <span class="ow">or</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incompatible arguments: minlen &lt; 0, maxlen &quot;</span> <span class="o">+</span> <span class="s2">&quot;&lt;= minlen, or size &lt; 0&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;randomStrings&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -2135,7 +2135,7 @@
             <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">seed</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
 
 
 
@@ -2206,7 +2206,7 @@
     <span class="k">if</span> <span class="n">logstd</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incompatible arguments: logstd &lt;= 0 or size &lt; 0&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;randomStrings&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">[</span><span class="s2">&quot;int64&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -2217,7 +2217,7 @@
             <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="n">seed</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
 
 </pre></div>
         </article>

@@ -25,7 +25,7 @@ arkouda.pandas.categorical
    - Automatic detection of unique category labels
    - Integer-based encoding via `.codes` attribute
    - Efficient groupby-compatible structure (`.permutation` and `.segments`)
-   - Support for missing data using a configurable `NAvalue`
+   - Support for missing data using a configurable `na_value`
    - Pandas-like API for accessing labels and categories
 
    Typical Use
@@ -68,8 +68,8 @@ Module Contents
 
    :param values: Values to convert to categories
    :type values: Strings, Categorical, pd.Categorical
-   :param NAvalue: The value to use to represent missing/null data
-   :type NAvalue: str scalar
+   :param na_value: The value to use to represent missing/null data
+   :type na_value: str scalar
 
    .. attribute:: categories
 
@@ -121,6 +121,13 @@ Module Contents
 
 
    .. py:attribute:: BinOps
+
+
+   .. py:property:: NAvalue
+
+      Deprecated alias for `na_value`.
+
+      :rtype: Same value as `na_value`.
 
 
    .. py:attribute:: RegisterablePieces
@@ -444,7 +451,7 @@ Module Contents
 
    .. py:method:: isna()
 
-      Find where values are missing or null (as defined by self.NAvalue).
+      Find where values are missing or null (as defined by self.na_value).
 
 
 
@@ -532,14 +539,14 @@ Module Contents
       :type:  Union[arkouda.numpy.pdarrayclass.pdarray, None]
 
 
-   .. py:method:: set_categories(new_categories, NAvalue=None)
+   .. py:method:: set_categories(new_categories, na_value=None)
 
       Set categories to user-defined values.
 
       :param new_categories: The array of new categories to use. Must be unique.
       :type new_categories: Strings
-      :param NAvalue: The value to use to represent missing/null data
-      :type NAvalue: str scalar
+      :param na_value: The value to use to represent missing/null data
+      :type na_value: str scalar
 
       :returns: A new Categorical with the user-defined categories. Old values present
                 in new categories will appear unchanged. Old values not present will
@@ -565,7 +572,7 @@ Module Contents
 
 
 
-   .. py:method:: standardize_categories(arrays, NAvalue='N/A')
+   .. py:method:: standardize_categories(arrays, na_value='N/A')
       :classmethod:
 
 
@@ -573,8 +580,8 @@ Module Contents
 
       :param arrays: The Categoricals to standardize
       :type arrays: sequence of Categoricals
-      :param NAvalue: The value to use to represent missing/null data
-      :type NAvalue: str scalar
+      :param na_value: The value to use to represent missing/null data
+      :type na_value: str scalar
 
       :returns: A list of the original Categoricals remapped to the shared categories.
       :rtype: List of Categoricals

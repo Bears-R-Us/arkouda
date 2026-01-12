@@ -397,7 +397,7 @@
 
 <span class="sd">Functions</span>
 <span class="sd">---------</span>
-<span class="sd">getArkoudaLogger(name, handlers=None, logFormat=None, logLevel=None)</span>
+<span class="sd">getArkoudaLogger(name, handlers=None, log_format=None, log_level=None)</span>
 <span class="sd">    Instantiate a logger with customizable format and log level.</span>
 
 <span class="sd">getArkoudaClientLogger(name)</span>
@@ -406,7 +406,7 @@
 <span class="sd">enableVerbose()</span>
 <span class="sd">    Globally set all ArkoudaLoggers to DEBUG level.</span>
 
-<span class="sd">disableVerbose(logLevel=LogLevel.INFO)</span>
+<span class="sd">disableVerbose(log_level=LogLevel.INFO)</span>
 <span class="sd">    Globally disable DEBUG output by setting all loggers to the specified level.</span>
 
 <span class="sd">write_log(log_msg, tag=&quot;ClientGeneratedLog&quot;, log_lvl=LogLevel.INFO)</span>
@@ -428,7 +428,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CRITICAL</span><span class="p">,</span>
@@ -441,7 +443,7 @@
     <span class="n">Logger</span><span class="p">,</span>
     <span class="n">StreamHandler</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Final</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
@@ -503,6 +505,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="c1"># sentinel</span>
+
+<span class="n">_UnsetType</span> <span class="o">=</span> <span class="nb">object</span>  <span class="c1"># just for readability in the union</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Unset</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<span class="n">_UNSET</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">_Unset</span><span class="p">]</span> <span class="o">=</span> <span class="n">_Unset</span><span class="p">()</span>
+
+
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
     <span class="n">DEFAULT_LOG_FORMAT</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%(name)s</span><span class="s2">] Line </span><span class="si">%(lineno)d</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
 
@@ -520,24 +535,25 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+        <span class="n">log_level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">LogLevel</span><span class="p">,</span> <span class="n">_UnsetType</span><span class="p">]</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span>  <span class="c1"># sentinel means &quot;not provided&quot;</span>
         <span class="n">handlers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Handler</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">logFormat</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%(name)s</span><span class="s2">] Line </span><span class="si">%(lineno)d</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">log_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%(name)s</span><span class="s2">] Line </span><span class="si">%(lineno)d</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the ArkoudaLogger with the name, level, logFormat, and handlers parameters.</span>
+<span class="sd">        Initialize the ArkoudaLogger with the name, level, log_format, and handlers parameters.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        name : str</span>
 <span class="sd">            The logger name, prepends all logging errors</span>
-<span class="sd">        logLevel : LogLevel</span>
+<span class="sd">        log_level : LogLevel</span>
 <span class="sd">            The desired log level in the form of a LogLevel enum value, defaults</span>
 <span class="sd">            to INFO</span>
 <span class="sd">        handlers : List[Handler]</span>
 <span class="sd">            A list of logging.Handler objects, if None, a list consisting of</span>
 <span class="sd">            one StreamHandler named &#39;console-handler&#39; is generated and configured</span>
-<span class="sd">        logFormat : str</span>
+<span class="sd">        log_format : str</span>
 <span class="sd">            Defines the string template used to format all log messages,</span>
 <span class="sd">            defaults to &#39;[%(name)s] Line %(lineno)d %(levelname)s: %(message)s&#39;</span>
 
@@ -548,7 +564,7 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
-<span class="sd">            Raised if name or logFormat is not a str, logLevel is not a LogLevel</span>
+<span class="sd">            Raised if name or log_format is not a str, log_level is not a LogLevel</span>
 <span class="sd">            enum, or handlers is not a list of str objects</span>
 
 <span class="sd">        Notes</span>
@@ -572,15 +588,50 @@
 <span class="sd">        the individual handlers.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># --- log_level alias handling ---</span>
+        <span class="k">if</span> <span class="s2">&quot;logLevel&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">log_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_UNSET</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pass only one of &#39;logLevel&#39; or &#39;log_level&#39;&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;logLevel&#39; is deprecated; use &#39;log_level&#39; instead&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logLevel&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">log_level</span> <span class="ow">is</span> <span class="n">_UNSET</span><span class="p">:</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span>
+
+        <span class="c1"># --- log_format alias handling ---</span>
+        <span class="k">if</span> <span class="s2">&quot;logFormat&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">log_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_UNSET</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pass only one of &#39;logFormat&#39; or &#39;log_format&#39;&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;logFormat&#39; is deprecated; use &#39;log_format&#39; instead&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">log_format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logFormat&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">log_format</span> <span class="ow">is</span> <span class="n">_UNSET</span><span class="p">:</span>
+            <span class="n">log_format</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%(name)s</span><span class="s2">] Line </span><span class="si">%(lineno)d</span><span class="s2"> </span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_level must be a LogLevel&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_format</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_format must be a str&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected keyword argument(s): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">handlers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">handler</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Handler</span><span class="p">,</span> <span class="n">StreamHandler</span><span class="p">())</span>
             <span class="n">handler</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;console-handler&quot;</span>
-            <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logLevel</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="n">handlers</span> <span class="o">=</span> <span class="p">[</span><span class="n">handler</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">handlers</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">logFormat</span><span class="p">:</span>
-                <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">Formatter</span><span class="p">(</span><span class="n">logFormat</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">log_format</span><span class="p">:</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">Formatter</span><span class="p">(</span><span class="n">log_format</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
@@ -609,23 +660,23 @@
 <span class="sd">        the named Handler object is changed.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">newLevel</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">levelMappings</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
+        <span class="n">new_level</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">levelMappings</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">handlerNames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># No handler names supplied, so setLevel for all handlers</span>
             <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-                <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">newLevel</span><span class="p">)</span>
+                <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">new_level</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># setLevel for the named handlers</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">handler</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">handlerNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">handler</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                    <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">newLevel</span><span class="p">)</span>
+                    <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">new_level</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">enableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable verbose output by setting the log level for all handlers to DEBUG.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">changeLogLevel</span><span class="p">(</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">|</span> <span class="n">_Unset</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disables verbose output.</span>
 
@@ -634,17 +685,34 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        logLevel : LogLevel, defaults to LogLevel.INFO</span>
+<span class="sd">        log_level : LogLevel, defaults to LogLevel.INFO</span>
 <span class="sd">            The desired log level that will disable verbose output (logging at</span>
 <span class="sd">            the DEBUG level) by resetting the log level for all handlers.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
-<span class="sd">            Raised if logLevel is not a LogLevel enum</span>
-
+<span class="sd">            Raised if log_level is not a LogLevel enum</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">changeLogLevel</span><span class="p">(</span><span class="n">logLevel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;logLevel&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pass only one of &#39;logLevel&#39; or &#39;log_level&#39;&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;logLevel&#39; is deprecated; use &#39;log_level&#39; instead&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logLevel&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">):</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected keyword argument(s): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_level must be a LogLevel&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">changeLogLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">getHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Handler</span><span class="p">:</span>
@@ -679,45 +747,57 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">getArkoudaLogger</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">handlers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Handler</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">logFormat</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">DEFAULT_LOG_FORMAT</span><span class="p">,</span>
-    <span class="n">logLevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LogLevel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># &lt;-- key change</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LogLevel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># keep as-is (env fallback)</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaLogger</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Instantiate an ArkoudaLogger that retrieves the logging level from ARKOUDA_LOG_LEVEL env variable.</span>
+    <span class="k">if</span> <span class="s2">&quot;logFormat&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="c1"># If caller passed both names, always error (regardless of value)</span>
+        <span class="k">if</span> <span class="n">log_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pass only one of &#39;logFormat&#39; or &#39;log_format&#39;&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;&#39;logFormat&#39; is deprecated; use &#39;log_format&#39; instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">log_format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logFormat&quot;</span><span class="p">)</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name : str</span>
-<span class="sd">        The name of the ArkoudaLogger</span>
-<span class="sd">    handlers : List[Handler]</span>
-<span class="sd">        A list of logging.Handler objects, if None, a list consisting of</span>
-<span class="sd">        one StreamHandler named &#39;console-handler&#39; is generated and configured</span>
-<span class="sd">    logFormat : str</span>
-<span class="sd">        The format for log messages, defaults to the following format:</span>
-<span class="sd">        &#39;[%(name)s] Line %(lineno)d %(levelname)s: %(message)s&#39;</span>
+    <span class="k">if</span> <span class="s2">&quot;logLevel&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">log_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pass only one of &#39;logLevel&#39; or &#39;log_level&#39;&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;&#39;logLevel&#39; is deprecated; use &#39;log_level&#39; instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logLevel&quot;</span><span class="p">)</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ArkoudaLogger</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected keyword argument(s): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if either name or logFormat is not a str object or if handlers</span>
-<span class="sd">        is not a list of str objects</span>
+    <span class="c1"># Resolve defaults BEFORE validation</span>
+    <span class="k">if</span> <span class="n">log_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">log_format</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">DEFAULT_LOG_FORMAT</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Important note: if a list of 1..n logging.Handler objects is passed in, and</span>
-<span class="sd">    dynamic changes to 1..n handlers is desired, set a name for each Handler</span>
-<span class="sd">    object as follows: handler.name = &lt;desired name&gt;, which will enable retrieval</span>
-<span class="sd">    and updates for the specified handler.</span>
+    <span class="k">if</span> <span class="n">log_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">env_val</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARKOUDA_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log_level</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="p">(</span><span class="n">env_val</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid ARKOUDA_LOG_LEVEL=</span><span class="si">{</span><span class="n">env_val</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">logLevel</span><span class="p">:</span>
-        <span class="n">logLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ARKOUDA_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">(</span><span class="s2">&quot;INFO&quot;</span><span class="p">)))</span>
+    <span class="c1"># Validate after defaults</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_format</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_format must be a str&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_level must be a LogLevel&quot;</span><span class="p">)</span>
 
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">handlers</span><span class="o">=</span><span class="n">handlers</span><span class="p">,</span> <span class="n">logFormat</span><span class="o">=</span><span class="n">logFormat</span><span class="p">,</span> <span class="n">logLevel</span><span class="o">=</span><span class="n">logLevel</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">handlers</span><span class="o">=</span><span class="n">handlers</span><span class="p">,</span>
+        <span class="n">log_format</span><span class="o">=</span><span class="n">log_format</span><span class="p">,</span>
+        <span class="n">log_level</span><span class="o">=</span><span class="n">log_level</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">loggers</span><span class="p">[</span><span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">logger</span>
     <span class="k">return</span> <span class="n">logger</span>
 
@@ -752,7 +832,7 @@
 <span class="sd">    confirmation of successful login or pdarray creation</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">logFormat</span><span class="o">=</span><span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">CLIENT_LOG_FORMAT</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">log_format</span><span class="o">=</span><span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">CLIENT_LOG_FORMAT</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="enableVerbose">
@@ -767,26 +847,28 @@
 <div class="viewcode-block" id="disableVerbose">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.disableVerbose">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Disables verbose logging.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="n">log_level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">LogLevel</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">]</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;logLevel&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pass only one of &#39;logLevel&#39; or &#39;log_level&#39;&quot;</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;&#39;logLevel&#39; is deprecated; use &#39;log_level&#39; instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logLevel&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">):</span>
+        <span class="n">log_level</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span>
 
-<span class="sd">    Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting</span>
-<span class="sd">    the log level for each to the logLevel parameter.</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected keyword argument(s): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    logLevel : LogLevel</span>
-<span class="sd">        The new log level, defaultts to LogLevel.INFO</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_level must be a LogLevel&quot;</span><span class="p">)</span>
 
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if logLevel is not a LogLevel enum</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log_level</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">,</span> <span class="n">log_level</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">disableVerbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">disableVerbose</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span></div>
 
 
 

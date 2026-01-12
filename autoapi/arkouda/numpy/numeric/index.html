@@ -1598,7 +1598,7 @@ do a rotation by the ordinal of the array.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
 <li><p><strong>bins</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default=10</em>) – The number of equal-size bins to use (default: 10)</p></li>
-<li><p><strong>range</strong> (<em>(</em><em>minVal</em><em>, </em><em>maxVal</em><em>)</em><em>, </em><em>optional</em>) – The range of the values to count.
+<li><p><strong>range</strong> (<em>(</em><em>min_val</em><em>, </em><em>max_val</em><em>)</em><em>, </em><em>optional</em>) – The range of the values to count.
 Values outside of this range are dropped.
 By default, all values are counted.</p></li>
 </ul>
@@ -1659,7 +1659,7 @@ If range parameter is provided, the interval is [range[0], range[1]].</p>
 If int, the number of bins for the two dimensions (nx=ny=bins).
 If [int, int], the number of bins in each dimension (nx, ny = bins).
 Defaults to 10</p></li>
-<li><p><strong>range</strong> (<em>(</em><em>(</em><em>xMin</em><em>, </em><em>xMax</em><em>)</em><em>, </em><em>(</em><em>yMin</em><em>, </em><em>yMax</em><em>)</em><em>)</em><em>, </em><em>optional</em>) – The ranges of the values in x and y to count.
+<li><p><strong>range</strong> (<em>(</em><em>(</em><em>x_min</em><em>, </em><em>x_max</em><em>)</em><em>, </em><em>(</em><em>y_min</em><em>, </em><em>y_max</em><em>)</em><em>)</em><em>, </em><em>optional</em>) – The ranges of the values in x and y to count.
 Values outside of these ranges are dropped.
 By default, all values are counted.</p></li>
 </ul>
@@ -1729,7 +1729,7 @@ by range[0] for x and range[1] for y..</p>
 If int, the number of bins for all dimensions (nx=ny=…=bins).
 If [int, int, …], the number of bins in each dimension (nx, ny, … = bins).
 Defaults to 10</p></li>
-<li><p><strong>range</strong> (<em>Sequence</em><em>[</em><em>optional</em><em> (</em><em>minVal</em><em>, </em><em>maxVal</em><em>)</em><em>]</em><em>, </em><em>optional</em>) – The ranges of the values to count for each array in sample.
+<li><p><strong>range</strong> (<em>Sequence</em><em>[</em><em>optional</em><em> (</em><em>min_val</em><em>, </em><em>max_val</em><em>)</em><em>]</em><em>, </em><em>optional</em>) – The ranges of the values to count for each array in sample.
 Values outside of these ranges are dropped.
 By default, all values are counted.</p></li>
 </ul>

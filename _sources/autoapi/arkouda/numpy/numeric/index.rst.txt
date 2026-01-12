@@ -896,7 +896,7 @@ Module Contents
    :param range: The range of the values to count.
                  Values outside of this range are dropped.
                  By default, all values are counted.
-   :type range: (minVal, maxVal), optional
+   :type range: (min_val, max_val), optional
 
    :returns: The number of values present in each bin and the bin edges
    :rtype: (pdarray, Union[pdarray, int64 or float64])
@@ -950,7 +950,7 @@ Module Contents
    :param range: The ranges of the values in x and y to count.
                  Values outside of these ranges are dropped.
                  By default, all values are counted.
-   :type range: ((xMin, xMax), (yMin, yMax)), optional
+   :type range: ((x_min, x_max), (y_min, y_max)), optional
 
    :returns:
 
@@ -1012,7 +1012,7 @@ Module Contents
    :param range: The ranges of the values to count for each array in sample.
                  Values outside of these ranges are dropped.
                  By default, all values are counted.
-   :type range: Sequence[optional (minVal, maxVal)], optional
+   :type range: Sequence[optional (min_val, max_val)], optional
 
    :returns:
 

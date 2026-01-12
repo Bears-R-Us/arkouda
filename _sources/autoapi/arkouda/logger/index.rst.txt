@@ -32,7 +32,7 @@ arkouda.logger
 
    Functions
    ---------
-   getArkoudaLogger(name, handlers=None, logFormat=None, logLevel=None)
+   getArkoudaLogger(name, handlers=None, log_format=None, log_level=None)
        Instantiate a logger with customizable format and log level.
 
    getArkoudaClientLogger(name)
@@ -41,7 +41,7 @@ arkouda.logger
    enableVerbose()
        Globally set all ArkoudaLoggers to DEBUG level.
 
-   disableVerbose(logLevel=LogLevel.INFO)
+   disableVerbose(log_level=LogLevel.INFO)
        Globally disable DEBUG output by setting all loggers to the specified level.
 
    write_log(log_msg, tag="ClientGeneratedLog", log_lvl=LogLevel.INFO)
@@ -131,18 +131,7 @@ Module Contents
 
 
 
-.. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None
-
-   Disables verbose logging.
-
-   Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
-   the log level for each to the logLevel parameter.
-
-   :param logLevel: The new log level, defaultts to LogLevel.INFO
-   :type logLevel: LogLevel
-
-   :raises TypeError: Raised if logLevel is not a LogLevel enum
-
+.. py:function:: disableVerbose(log_level: Union[LogLevel, _Unset] = _UNSET, **kwargs) -> None
 
 .. py:function:: enableVerbose() -> None
 

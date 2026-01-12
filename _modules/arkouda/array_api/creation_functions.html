@@ -603,7 +603,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported device </span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">M</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">N</span>  <span class="c1"># noqa: N806</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">akdtype</span>
 

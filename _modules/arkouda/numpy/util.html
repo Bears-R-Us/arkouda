@@ -973,7 +973,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;sparseSumHelp&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;idx1&quot;</span><span class="p">:</span> <span class="n">idx1</span><span class="p">,</span>
@@ -984,7 +984,7 @@
             <span class="s2">&quot;percent_transfer_limit&quot;</span><span class="p">:</span> <span class="n">percent_transfer_limit</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">inds</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">inds</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">inds</span><span class="p">),</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span></div>
 
 
@@ -1067,8 +1067,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">shapes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span>
-    <span class="n">bcShape</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">shapes</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">bcShape</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span></div>
+    <span class="n">bc_shape</span> <span class="o">=</span> <span class="n">broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">shapes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">bc_shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">]</span></div>
 
 
 
@@ -1185,31 +1185,31 @@
 <span class="sd">    &gt;&gt;&gt; broadcast_dims((4,), (3, 1))</span>
 <span class="sd">    (3, 4)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">Na</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
-    <span class="n">Nb</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">Na</span><span class="p">,</span> <span class="n">Nb</span><span class="p">)</span>
-    <span class="n">shapeOut</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span>
+    <span class="n">n_a</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+    <span class="n">n_b</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_a</span><span class="p">,</span> <span class="n">n_b</span><span class="p">)</span>
+    <span class="n">shape_out</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
 
-    <span class="n">i</span> <span class="o">=</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="k">while</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">n1</span> <span class="o">=</span> <span class="n">Na</span> <span class="o">-</span> <span class="n">N</span> <span class="o">+</span> <span class="n">i</span>
-        <span class="n">n2</span> <span class="o">=</span> <span class="n">Nb</span> <span class="o">-</span> <span class="n">N</span> <span class="o">+</span> <span class="n">i</span>
+        <span class="n">n1</span> <span class="o">=</span> <span class="n">n_a</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="n">i</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="n">n_b</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="n">i</span>
 
         <span class="n">d1</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="k">if</span> <span class="n">n1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
         <span class="n">d2</span> <span class="o">=</span> <span class="n">sb</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="k">if</span> <span class="n">n2</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="n">d1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">shapeOut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d2</span>
+            <span class="n">shape_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d2</span>
         <span class="k">elif</span> <span class="n">d2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">shapeOut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
+            <span class="n">shape_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
         <span class="k">elif</span> <span class="n">d1</span> <span class="o">==</span> <span class="n">d2</span><span class="p">:</span>
-            <span class="n">shapeOut</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
+            <span class="n">shape_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Incompatible dimensions for broadcasting&quot;</span><span class="p">)</span>
 
         <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
 
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shapeOut</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape_out</span><span class="p">)</span></div>
 
 
 

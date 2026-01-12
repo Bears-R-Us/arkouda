@@ -430,7 +430,7 @@
     <span class="k">if</span> <span class="n">layout</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CSR&quot;</span><span class="p">,</span> <span class="s2">&quot;CSC&quot;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;layout must be &#39;CSR&#39; or &#39;CSC&#39;&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;random_sparse_matrix&lt;</span><span class="si">{</span><span class="n">akdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">]),</span>
@@ -438,7 +438,7 @@
         <span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -467,12 +467,12 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;A and B must be sparrays for sparse_matrix_matrix_mult&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">A</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A and B must have the same dtype for sparse matrix multiplication&quot;</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_matrix_matrix_mult&lt;</span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arg1&quot;</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;arg2&quot;</span><span class="p">:</span> <span class="n">B</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -517,12 +517,12 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_matrix_from_pdarrays&lt;</span><span class="si">{</span><span class="n">vals</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="n">rows</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="n">cols</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;vals&quot;</span><span class="p">:</span> <span class="n">vals</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">shape</span><span class="p">},</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">create_sparray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

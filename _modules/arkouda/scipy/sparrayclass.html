@@ -516,10 +516,10 @@
         <span class="c1"># check dtype for error</span>
         <span class="k">if</span> <span class="n">dtype_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">NumericDTypes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">responseArrays</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">response_arrays</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sparse_to_pdarrays&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;matrix&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
         <span class="p">)</span>
-        <span class="n">array_list</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">responseArrays</span><span class="p">))</span>
+        <span class="n">array_list</span> <span class="o">=</span> <span class="n">create_pdarrays</span><span class="p">(</span><span class="n">type_cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">response_arrays</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">array_list</span></div>
 
 
@@ -551,14 +551,14 @@
 <div class="viewcode-block" id="create_sparray">
 <a class="viewcode-back" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html#arkouda.scipy.sparrayclass.create_sparray">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_sparray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_sparray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sparray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a sparray instance pointing to an array created by the arkouda server.</span>
 <span class="sd">    The user should not call this function directly.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    repMsg : str</span>
+<span class="sd">    rep_msg : str</span>
 <span class="sd">        space-delimited string containing the sparray name, datatype, size</span>
 <span class="sd">        dimension, shape,and itemsize</span>
 
@@ -570,14 +570,14 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        If there&#39;s an error in parsing the repMsg parameter into the six</span>
+<span class="sd">        If there&#39;s an error in parsing the rep_msg parameter into the six</span>
 <span class="sd">        values needed to create the pdarray instance</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if a server-side error is thrown in the process of creating</span>
 <span class="sd">        the pdarray instance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">mydtype</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>

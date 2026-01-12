@@ -167,7 +167,7 @@ Module Contents
 
 
 
-   .. py:method:: from_return_msg(repMsg: str) -> Series
+   .. py:method:: from_return_msg(rep_msg: str) -> Series
       :classmethod:
 
 
@@ -175,9 +175,9 @@ Module Contents
 
       The user should not call this function directly.
 
-      :param repMsg:
-                     + delimited string containing the values and indexes.
-      :type repMsg: builtin_str
+      :param rep_msg:
+                      + delimited string containing the values and indexes.
+      :type rep_msg: builtin_str
 
       :returns: A Series representing a set of pdarray components on the server.
       :rtype: Series

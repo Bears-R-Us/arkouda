@@ -1236,7 +1236,7 @@
                 <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">tmp_x1</span><span class="p">,</span> <span class="n">tmp_x2</span> <span class="o">=</span> <span class="n">broadcast_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;shape mismatch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopvv&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="p">},</span>
             <span class="p">)</span>
@@ -1244,7 +1244,7 @@
                 <span class="k">del</span> <span class="n">x1</span>
             <span class="k">if</span> <span class="n">tmp_x2</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">x2</span>
-            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="c1"># pdarray binop scalar</span>
         <span class="c1"># If scalar cannot be safely cast, server will infer the return dtype</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
@@ -1259,11 +1259,11 @@
         <span class="k">if</span> <span class="n">isSupportedBool</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="s2">&quot;bool&quot;</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopvs&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">other</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
     <span class="c1"># reverse binary operators</span>
     <span class="c1"># pdarray binop pdarray: taken care of by binop function</span>
@@ -1310,11 +1310,11 @@
         <span class="k">if</span> <span class="n">isSupportedBool</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="s2">&quot;bool&quot;</span>
 
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopsv&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">other</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
 <div class="viewcode-block" id="pdarray.transfer">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.pdarray.transfer">[docs]</a>
@@ -1638,20 +1638,20 @@
                 <span class="c1"># Interpret negative key as offset from end of array</span>
                 <span class="n">key</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-                <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                     <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                         <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                         <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
-                <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[int] </span><span class="si">{</span><span class="n">orig_key</span><span class="si">}</span><span class="s2"> is out of bounds with size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[slice]&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
@@ -1661,7 +1661,7 @@
                     <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="c1"># handle None and Ellipsis in the key tuple</span>
@@ -1674,14 +1674,14 @@
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scalar_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
                 <span class="c1"># all scalars: use simpler indexing (and return a scalar)</span>
-                <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                     <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;[int]&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                         <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                         <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">clean_key</span><span class="p">,</span>
                     <span class="p">},</span>
                 <span class="p">)</span>
-                <span class="n">ret_array</span> <span class="o">=</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                <span class="n">ret_array</span> <span class="o">=</span> <span class="n">parse_single_value</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarray_axes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">clean_key</span><span class="p">):</span>
@@ -1766,14 +1766,14 @@
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported pdarray index type </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">key</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;size mismatch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+            <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;[pdarray]&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
                     <span class="s2">&quot;idx&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
         <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -2118,7 +2118,7 @@
             <span class="k">return</span> <span class="n">coargsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">(),</span> <span class="n">algorithm</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
 
         <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;argsort&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -2128,7 +2128,7 @@
             <span class="p">},</span>
         <span class="p">)</span>
 
-        <span class="n">sorted_array</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span>
+        <span class="n">sorted_array</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">ascending</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">sorted_array</span>
@@ -3930,14 +3930,14 @@
 <div class="viewcode-block" id="create_pdarray">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.create_pdarray">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">],</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">],</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a pdarray instance pointing to an array created by the arkouda server.</span>
 <span class="sd">    The user should not call this function directly.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    repMsg : str</span>
+<span class="sd">    rep_msg : str</span>
 <span class="sd">        space-delimited string containing the pdarray name, datatype, size</span>
 <span class="sd">        dimension, shape,and itemsize</span>
 
@@ -3949,17 +3949,17 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        If there&#39;s an error in parsing the repMsg parameter into the six</span>
+<span class="sd">        If there&#39;s an error in parsing the rep_msg parameter into the six</span>
 <span class="sd">        values needed to create the pdarray instance</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if a server-side error is thrown in the process of creating</span>
 <span class="sd">        the pdarray instance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repMsg</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">):</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">):</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">mydtype</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
@@ -3983,14 +3983,14 @@
 
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_pdarrays</span><span class="p">(</span><span class="n">repMsg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_pdarrays</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a list of pdarray instances pointing to arrays created by the</span>
 <span class="sd">    arkouda server.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    repMsg : str</span>
+<span class="sd">    rep_msg : str</span>
 <span class="sd">        A JSON list of space delimited strings, each containing the pdarray</span>
 <span class="sd">        name, datatype, size,</span>
 
@@ -4002,7 +4002,7 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        If there&#39;s an error in parsing the repMsg parameter into the six</span>
+<span class="sd">        If there&#39;s an error in parsing the rep_msg parameter into the six</span>
 <span class="sd">        values needed to create the pdarray instance</span>
 <span class="sd">    RuntimeError</span>
 <span class="sd">        Raised if a server-side error is thrown in the process of creating</span>
@@ -4010,8 +4010,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: maybe add more robust json parsing here</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">)</span>
-        <span class="n">responses</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">repMsg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&quot;,&#39;</span><span class="p">)]</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">)</span>
+        <span class="n">responses</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rep_msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&quot;,&#39;</span><span class="p">)]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">responses</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -4672,7 +4672,7 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">_matmul2D</span> <span class="k">as</span> <span class="n">akmatmul2D</span>
 
-    <span class="n">specialCase</span> <span class="o">=</span> <span class="n">int_uint_case</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>  <span class="c1"># used to handle the (int,uint)-&gt;(float) case</span>
+    <span class="n">special_case</span> <span class="o">=</span> <span class="n">int_uint_case</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>  <span class="c1"># used to handle the (int,uint)-&gt;(float) case</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">ship</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>  <span class="c1"># &quot;ship&quot; converts to float for the (int,uint) case</span>
         <span class="k">return</span> <span class="n">akcast</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">akfloat64</span><span class="p">)</span> <span class="k">if</span> <span class="n">flag</span> <span class="k">else</span> <span class="n">result</span>  <span class="c1"># else leaves type alone</span>
@@ -4684,14 +4684,14 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akbool</span> <span class="ow">or</span> <span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">akbool</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ship</span><span class="p">(</span><span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span><span class="p">,</span> <span class="n">specialCase</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+                <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ship</span><span class="p">(</span><span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span><span class="p">,</span> <span class="n">special_case</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="p">(</span><span class="n">pda1</span> <span class="o">&amp;</span> <span class="n">pda2</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
 
         <span class="c1">#   Second case is two 2D arrays.</span>
 
         <span class="k">elif</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># matmul2D will do the shape check</span>
-            <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">akmatmul2D</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">specialCase</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">akmatmul2D</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">special_case</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
         <span class="c1">#   Third and fourth cases involve left or right argument of N-dimensions, and right</span>
         <span class="c1">#   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,</span>
@@ -4708,7 +4708,7 @@
                 <span class="n">d2_case</span> <span class="o">=</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
                 <span class="n">temp_pda2</span> <span class="o">=</span> <span class="n">pda2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">pda2</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">d1_case</span> <span class="k">else</span> <span class="n">pda2</span>  <span class="c1"># type: ignore</span>
                 <span class="n">temp_pda1</span> <span class="o">=</span> <span class="n">pda1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">if</span> <span class="n">d2_case</span> <span class="k">else</span> <span class="n">pda1</span>
-                <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+                <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
                     <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dot&lt;</span><span class="si">{</span><span class="n">pda1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">temp_pda1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">temp_pda2</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                     <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                         <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">temp_pda1</span><span class="p">,</span>
@@ -4717,19 +4717,19 @@
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">d1_case</span><span class="p">:</span>
-                    <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                    <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
                     <span class="n">newshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp_ans</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># these steps remove</span>
                     <span class="k">del</span> <span class="n">newshape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># the padded 1 from</span>
                     <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">temp_ans</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">newshape</span><span class="p">))</span>  <span class="c1"># the shape of result</span>
-                    <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">temp_ans</span><span class="p">,</span> <span class="n">specialCase</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">temp_ans</span><span class="p">,</span> <span class="n">special_case</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">d2_case</span><span class="p">:</span>
-                    <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+                    <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
                     <span class="n">newshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">temp_ans</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># these steps remove</span>
                     <span class="k">del</span> <span class="n">newshape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># the padded 1 from</span>
                     <span class="n">temp_ans</span> <span class="o">=</span> <span class="n">temp_ans</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">newshape</span><span class="p">))</span>  <span class="c1"># the shape of result</span>
-                    <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">temp_ans</span><span class="p">,</span> <span class="n">specialCase</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">temp_ans</span><span class="p">,</span> <span class="n">special_case</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">),</span> <span class="n">specialCase</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">),</span> <span class="n">special_case</span><span class="p">)</span>
 
     <span class="c1">#   If both are scalar</span>
 
@@ -4739,7 +4739,7 @@
     <span class="c1">#   Finally if just one is scalar</span>
 
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">pda1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">pda2</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span><span class="p">,</span> <span class="n">specialCase</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">pda1</span> <span class="o">*</span> <span class="n">pda2</span><span class="p">,</span> <span class="n">special_case</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Inputs to ak.dot must be scalars or pdarrays.&quot;</span><span class="p">)</span>
@@ -5062,8 +5062,8 @@
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mink is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;mink&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">repMsg</span><span class="p">))</span></div>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;mink&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">rep_msg</span><span class="p">))</span></div>
 
 
 
@@ -5123,8 +5123,8 @@
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;maxk is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;maxk&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;maxk&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -5181,8 +5181,8 @@
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;argmink is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;mink&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;mink&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -5241,8 +5241,8 @@
     <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;argmaxk is only implemented for 1D arrays; got </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;maxk&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;maxk&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;rtnInd&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -5283,13 +5283,13 @@
 
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">popcount</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;popcount&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -5329,13 +5329,13 @@
         <span class="c1"># XOR the parity of the underlying uint array to get the parity of the bigint array</span>
         <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">^</span> <span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">parity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pda</span><span class="o">.</span><span class="n">bigint_to_uint_arrays</span><span class="p">()])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;parity&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -5413,13 +5413,13 @@
         <span class="k">return</span> <span class="n">lz</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;clz&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 
@@ -5499,13 +5499,13 @@
         <span class="k">return</span> <span class="n">tz</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ctz&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;pda&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 

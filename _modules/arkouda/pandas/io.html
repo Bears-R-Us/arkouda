@@ -1725,22 +1725,22 @@
     <span class="n">names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">convert_categoricals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="n">datasetNames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dataset_names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of names does not match number of columns&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">datasetNames</span> <span class="o">=</span> <span class="n">names</span>
+            <span class="n">dataset_names</span> <span class="o">=</span> <span class="n">names</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># init to avoid undefined errors</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">datasetNames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">columns</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">dataset_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">columns</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">pdarray</span><span class="p">],</span> <span class="n">columns</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">datasetNames</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">))]</span>
+            <span class="n">dataset_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">))]</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No data was found.&quot;</span><span class="p">)</span>
@@ -1752,7 +1752,7 @@
 
     <span class="n">col_objtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">objType</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">datasetNames</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">col_objtypes</span>
+    <span class="k">return</span> <span class="n">dataset_names</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">col_objtypes</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_delete_arkouda_files</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -1865,10 +1865,10 @@
     <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;truncate&quot;</span><span class="p">:</span>
         <span class="n">_delete_arkouda_files</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">)</span>
 
-    <span class="n">datasetNames</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">col_objtypes</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">convert_categoricals</span><span class="p">)</span>
+    <span class="n">dataset_names</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">col_objtypes</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">convert_categoricals</span><span class="p">)</span>
     <span class="c1"># append or single column use the old logic</span>
     <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;append&quot;</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">arr</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">datasetNames</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">arr</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">dataset_names</span><span class="p">)):</span>
             <span class="n">arr</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">prefix_path</span><span class="o">=</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">cast</span><span class="p">(</span>
@@ -1877,7 +1877,7 @@
                 <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;toParquet_multi&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
-                    <span class="s2">&quot;col_names&quot;</span><span class="p">:</span> <span class="n">datasetNames</span><span class="p">,</span>
+                    <span class="s2">&quot;col_names&quot;</span><span class="p">:</span> <span class="n">dataset_names</span><span class="p">,</span>
                     <span class="s2">&quot;col_objtypes&quot;</span><span class="p">:</span> <span class="n">col_objtypes</span><span class="p">,</span>
                     <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
                     <span class="s2">&quot;num_cols&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
@@ -1957,9 +1957,9 @@
     <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;append&quot;</span><span class="p">,</span> <span class="s2">&quot;truncate&quot;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Allowed modes are &#39;truncate&#39; and &#39;append&#39;&quot;</span><span class="p">)</span>
 
-    <span class="n">datasetNames</span><span class="p">,</span> <span class="n">pdarrays</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+    <span class="n">dataset_names</span><span class="p">,</span> <span class="n">pdarrays</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">arr</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pdarrays</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">datasetNames</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">arr</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pdarrays</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">dataset_names</span><span class="p">)):</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span>
             <span class="n">prefix_path</span><span class="o">=</span><span class="n">prefix_path</span><span class="p">,</span>
             <span class="n">dataset</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
@@ -2050,9 +2050,9 @@
 <span class="sd">      creating a copy of the file for each dataset</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">datasetNames</span><span class="p">,</span> <span class="n">pdarrays</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+    <span class="n">dataset_names</span><span class="p">,</span> <span class="n">pdarrays</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">arr</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pdarrays</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">datasetNames</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">arr</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pdarrays</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">dataset_names</span><span class="p">)):</span>
         <span class="c1"># overwrite the data without repacking. Repack done once at end if set</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">update_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">repack</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -2122,14 +2122,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
-    <span class="n">datasetNames</span><span class="p">,</span> <span class="n">pdarrays</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">dataset_names</span><span class="p">,</span> <span class="n">pdarrays</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_bulk_write_prep</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">pdarrays</span><span class="p">]</span>
 
     <span class="n">generic_msg</span><span class="p">(</span>
         <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;writecsv&quot;</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="n">pdarrays</span><span class="p">,</span>
-            <span class="s2">&quot;col_names&quot;</span><span class="p">:</span> <span class="n">datasetNames</span><span class="p">,</span>
+            <span class="s2">&quot;col_names&quot;</span><span class="p">:</span> <span class="n">dataset_names</span><span class="p">,</span>
             <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">prefix_path</span><span class="p">,</span>
             <span class="s2">&quot;num_dsets&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdarrays</span><span class="p">),</span>
             <span class="s2">&quot;col_delim&quot;</span><span class="p">:</span> <span class="n">col_delim</span><span class="p">,</span>
