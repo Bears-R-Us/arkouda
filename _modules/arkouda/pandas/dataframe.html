@@ -2852,43 +2852,56 @@
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span> <span class="k">as</span> <span class="n">GroupBy_class</span>
 
-<div class="viewcode-block" id="DataFrame.GroupBy">
-<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.GroupBy">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">GroupBy</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_groupby</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataFrameGroupBy</span><span class="p">,</span> <span class="n">GroupBy_class</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Group the dataframe by a column or a list of columns.</span>
+<span class="sd">        Construct a GroupBy object for grouping the DataFrame by one or more columns.</span>
+
+<span class="sd">        This is an internal helper used by ``DataFrame.groupby`` to create either a</span>
+<span class="sd">        low-level ``GroupBy`` object or a pandas-compatible ``DataFrameGroupBy``</span>
+<span class="sd">        wrapper.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        keys : str or list of str</span>
-<span class="sd">            An (ordered) list of column names or a single string to group by.</span>
-<span class="sd">        use_series : bool, default=False</span>
-<span class="sd">            If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.</span>
-<span class="sd">            Otherwise an arkouda.pandas.groupbyclass.GroupBy object.</span>
-<span class="sd">        as_index: bool, default=True</span>
-<span class="sd">            If True, groupby columns will be set as index</span>
-<span class="sd">            otherwise, the groupby columns will be treated as DataFrame columns.</span>
-<span class="sd">        dropna : bool, default=True</span>
-<span class="sd">            If True, and the groupby keys contain NaN values,</span>
-<span class="sd">            the NaN values together with the corresponding row will be dropped.</span>
-<span class="sd">            Otherwise, the rows corresponding to NaN values will be kept.</span>
+<span class="sd">        keys : str or sequence of str</span>
+<span class="sd">            Column name or ordered sequence of column names to group by.</span>
+<span class="sd">        use_series : bool, default False</span>
+<span class="sd">            If True, return a pandas-compatible</span>
+<span class="sd">            ``arkouda.pandas.dataframe.DataFrameGroupBy`` object.</span>
+<span class="sd">            If False, return a lower-level</span>
+<span class="sd">            ``arkouda.pandas.groupbyclass.GroupBy`` object.</span>
+<span class="sd">        as_index : bool, default True</span>
+<span class="sd">            Only relevant when ``use_series=True``.</span>
+<span class="sd">            If True, the groupby keys become the index of the result.</span>
+<span class="sd">            If False, the groupby keys are returned as DataFrame columns.</span>
+<span class="sd">        dropna : bool, default True</span>
+<span class="sd">            Whether to drop rows containing NaN values in the groupby keys.</span>
+<span class="sd">            If True, rows with NaN keys are excluded from the grouping.</span>
+<span class="sd">            If False, NaN keys are retained as their own group.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.pandas.groupbyclass.GroupBy</span>
-<span class="sd">            If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.</span>
-<span class="sd">            Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.</span>
+<span class="sd">            A groupby object configured according to ``use_series`` and ``as_index``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If ``keys`` is not a string or a sequence of strings.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        arkouda.GroupBy</span>
+<span class="sd">        DataFrame.groupby</span>
+<span class="sd">        arkouda.groupbyclass.GroupBy</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&#39;col1&#39;: [1.0, 1.0, 2.0, np.nan], &#39;col2&#39;: [4, 5, 6, 7]})</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame(</span>
+<span class="sd">        ...     {&quot;col1&quot;: [1.0, 1.0, 2.0, np.nan], &quot;col2&quot;: [4, 5, 6, 7]}</span>
+<span class="sd">        ... )</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
 <span class="sd">           col1  col2</span>
 <span class="sd">        0   1.0     4</span>
@@ -2896,21 +2909,25 @@
 <span class="sd">        2   2.0     6</span>
 <span class="sd">        3   NaN     7 (4 rows x 2 columns)</span>
 
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;) # doctest: +SKIP</span>
-<span class="sd">        &lt;arkouda.groupbyclass.GroupBy object at 0x7dbc23462510&gt;</span>
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;).size()</span>
-<span class="sd">        (array([1.00000000000000000 2.00000000000000000]), array([2 1]))</span>
+<span class="sd">        Low-level GroupBy object:</span>
 
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;,use_series=True).size()</span>
+<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;)  # doctest: +SKIP</span>
+<span class="sd">        &lt;arkouda.groupbyclass.GroupBy object at ...&gt;</span>
+<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;).size()</span>
+<span class="sd">        (array([1., 2.]), array([2, 1]))</span>
+
+<span class="sd">        pandas-compatible GroupBy:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;, use_series=True).size()</span>
 <span class="sd">        col1</span>
 <span class="sd">        1.0    2</span>
 <span class="sd">        2.0    1</span>
 <span class="sd">        dtype: int64</span>
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;,use_series=True, as_index = False).size()</span>
+
+<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;, use_series=True, as_index=False).size()</span>
 <span class="sd">           col1  size</span>
 <span class="sd">        0   1.0     2</span>
 <span class="sd">        1   2.0     1 (2 rows x 2 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -2927,8 +2944,7 @@
         <span class="n">gb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataFrameGroupBy</span><span class="p">,</span> <span class="n">GroupBy_class</span><span class="p">]</span> <span class="o">=</span> <span class="n">GroupBy_class</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="n">dropna</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">use_series</span><span class="p">:</span>
             <span class="n">gb</span> <span class="o">=</span> <span class="n">DataFrameGroupBy</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gb_key_names</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="n">as_index</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">gb</span></div>
-
+        <span class="k">return</span> <span class="n">gb</span>
 
 <div class="viewcode-block" id="DataFrame.memory_usage">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame.memory_usage">[docs]</a>
@@ -4071,7 +4087,7 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span>
-        <span class="n">gb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">gb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_groupby</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">vals</span><span class="p">,</span> <span class="n">cts</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">high</span><span class="p">:</span>
             <span class="n">positions</span> <span class="o">=</span> <span class="n">where</span><span class="p">(</span><span class="n">cts</span> <span class="o">&gt;=</span> <span class="n">low</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -4210,7 +4226,7 @@
 <span class="sd">        1   2.0     1 (2 rows x 2 columns)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="n">as_index</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="n">dropna</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_groupby</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">use_series</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="n">as_index</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="n">dropna</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataFrame.isin">

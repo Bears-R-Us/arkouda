@@ -384,7 +384,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.infoclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">information</span><span class="p">,</span> <span class="n">pretty_print_information</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">getArkoudaLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_arkouda_logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">NUMBER_FORMAT_STRINGS</span><span class="p">,</span>
     <span class="n">DTypes</span><span class="p">,</span>
@@ -394,9 +394,9 @@
     <span class="n">get_byteorder</span><span class="p">,</span>
     <span class="n">get_server_byteorder</span><span class="p">,</span>
     <span class="n">int_scalars</span><span class="p">,</span>
-    <span class="n">isSupportedBool</span><span class="p">,</span>
-    <span class="n">isSupportedInt</span><span class="p">,</span>
-    <span class="n">isSupportedNumber</span><span class="p">,</span>
+    <span class="n">is_supported_bool</span><span class="p">,</span>
+    <span class="n">is_supported_int</span><span class="p">,</span>
+    <span class="n">is_supported_number</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
     <span class="n">numpy_scalars</span><span class="p">,</span>
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
@@ -573,7 +573,7 @@
     <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
     <span class="s2">&quot;create_pdarray&quot;</span><span class="p">,</span>
 <span class="p">]</span>
-<span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarrayclass&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;pdarrayclass&quot;</span><span class="p">)</span>
 
 <span class="n">SUPPORTED_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;any&quot;</span><span class="p">,</span>
@@ -1256,7 +1256,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">&quot;bigint&quot;</span> <span class="ow">and</span> <span class="n">ak_can_cast</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span>
 
-        <span class="k">if</span> <span class="n">isSupportedBool</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_supported_bool</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="s2">&quot;bool&quot;</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -1307,7 +1307,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="s2">&quot;bigint&quot;</span> <span class="ow">and</span> <span class="n">ak_can_cast</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span>
 
-        <span class="k">if</span> <span class="n">isSupportedBool</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_supported_bool</span><span class="p">(</span><span class="n">other</span><span class="p">):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="s2">&quot;bool&quot;</span>
 
         <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
@@ -4670,7 +4670,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span><span class="p">,</span> <span class="n">get_array_ranks</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">_matmul2D</span> <span class="k">as</span> <span class="n">akmatmul2D</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">_matmul2d</span> <span class="k">as</span> <span class="n">akmatmul2d</span>
 
     <span class="n">special_case</span> <span class="o">=</span> <span class="n">int_uint_case</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">)</span>  <span class="c1"># used to handle the (int,uint)-&gt;(float) case</span>
 
@@ -4691,7 +4691,7 @@
         <span class="c1">#   Second case is two 2D arrays.</span>
 
         <span class="k">elif</span> <span class="n">pda1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">pda2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># matmul2D will do the shape check</span>
-            <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">akmatmul2D</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">special_case</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="k">return</span> <span class="n">ship</span><span class="p">(</span><span class="n">akmatmul2d</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="n">pda2</span><span class="p">),</span> <span class="n">special_case</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
         <span class="c1">#   Third and fourth cases involve left or right argument of N-dimensions, and right</span>
         <span class="c1">#   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,</span>
@@ -5542,11 +5542,11 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]:</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;&lt;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">rot</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;&lt;&lt;&lt;&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span></div>
@@ -5586,11 +5586,11 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">]:</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">,</span> <span class="n">bigint</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">rot</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">_binop</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">isSupportedInt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">rot</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">rot</span><span class="o">.</span><span class="n">_r_binop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;&gt;&gt;&gt;&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Rotations only supported on integers&quot;</span><span class="p">)</span></div>
@@ -5833,13 +5833,13 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
-        <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">]</span>
+        <span class="n">is_supported_number</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">]</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
             <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isSupportedNumber</span><span class="p">(</span><span class="n">divisor</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_supported_number</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_supported_number</span><span class="p">(</span><span class="n">divisor</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
             <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
@@ -5860,7 +5860,7 @@
         <span class="n">scalar_dtype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">divisor</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">scalar_dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
             <span class="n">acmd</span> <span class="o">=</span> <span class="s2">&quot;fmod2vs_&quot;</span> <span class="o">+</span> <span class="n">scalar_dtype</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the is_supported_number check</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar divisor type </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dividend</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">scalar_dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -5873,7 +5873,7 @@
         <span class="n">scalar_dtype</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">dividend</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">scalar_dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
             <span class="n">acmd</span> <span class="o">=</span> <span class="s2">&quot;fmod2sv_&quot;</span> <span class="o">+</span> <span class="n">scalar_dtype</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the isSupportedNumber check</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># this condition *should* be impossible because of the is_supported_number check</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scalar dividend type </span><span class="si">{</span><span class="n">scalar_dtype</span><span class="si">}</span><span class="s2"> not allowed in fmod&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="n">divisor</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">scalar_dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>

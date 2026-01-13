@@ -397,16 +397,16 @@
 
 <span class="sd">Functions</span>
 <span class="sd">---------</span>
-<span class="sd">getArkoudaLogger(name, handlers=None, log_format=None, log_level=None)</span>
+<span class="sd">get_arkouda_logger(name, handlers=None, log_format=None, log_level=None)</span>
 <span class="sd">    Instantiate a logger with customizable format and log level.</span>
 
-<span class="sd">getArkoudaClientLogger(name)</span>
+<span class="sd">get_arkouda_client_logger(name)</span>
 <span class="sd">    Instantiate a logger for client-facing output (no formatting, INFO level default).</span>
 
-<span class="sd">enableVerbose()</span>
+<span class="sd">enable_verbose()</span>
 <span class="sd">    Globally set all ArkoudaLoggers to DEBUG level.</span>
 
-<span class="sd">disableVerbose(log_level=LogLevel.INFO)</span>
+<span class="sd">disable_verbose(log_level=LogLevel.INFO)</span>
 <span class="sd">    Globally disable DEBUG output by setting all loggers to the specified level.</span>
 
 <span class="sd">write_log(log_msg, tag=&quot;ClientGeneratedLog&quot;, log_lvl=LogLevel.INFO)</span>
@@ -414,10 +414,10 @@
 
 <span class="sd">Usage Example</span>
 <span class="sd">-------------</span>
-<span class="sd">&gt;&gt;&gt; from arkouda.logger import getArkoudaLogger, LogLevel</span>
-<span class="sd">&gt;&gt;&gt; logger = getArkoudaLogger(&quot;myLogger&quot;)</span>
+<span class="sd">&gt;&gt;&gt; from arkouda.logger import get_arkouda_logger, LogLevel</span>
+<span class="sd">&gt;&gt;&gt; logger = get_arkouda_logger(&quot;myLogger&quot;)</span>
 <span class="sd">&gt;&gt;&gt; logger.info(&quot;This is an info message.&quot;)</span>
-<span class="sd">&gt;&gt;&gt; logger.enableVerbose()</span>
+<span class="sd">&gt;&gt;&gt; logger.enable_verbose()</span>
 <span class="sd">&gt;&gt;&gt; logger.debug(&quot;Now showing debug messages.&quot;)</span>
 
 <span class="sd">See Also</span>
@@ -443,12 +443,19 @@
     <span class="n">Logger</span><span class="p">,</span>
     <span class="n">StreamHandler</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Final</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typeguard</span><span class="w"> </span><span class="kn">import</span> <span class="n">typechecked</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LogLevel&quot;</span><span class="p">,</span> <span class="s2">&quot;enableVerbose&quot;</span><span class="p">,</span> <span class="s2">&quot;disableVerbose&quot;</span><span class="p">,</span> <span class="s2">&quot;write_log&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;LogLevel&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;enable_verbose&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disable_verbose&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_log&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;enableVerbose&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;disableVerbose&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 <span class="n">loggers</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -635,7 +642,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">changeLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span><span class="p">,</span> <span class="n">handlerNames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span><span class="p">,</span> <span class="n">handlerNames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dynamically changes the logging level for ArkoudaLogger and 1..n of configured Handlers.</span>
 
@@ -671,12 +678,69 @@
                 <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">handler</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">new_level</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">enableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">changeLogLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deprecated alias for :meth:`change_log_level`.</span>
+
+<span class="sd">        This method exists for backward compatibility only. Use</span>
+<span class="sd">        :meth:`change_log_level` instead.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        *args : tuple</span>
+<span class="sd">            Positional arguments forwarded to :meth:`change_log_level`.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Keyword arguments forwarded to :meth:`change_log_level`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        change_log_level : Preferred replacement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;changeLogLevel is deprecated; use change_log_level&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_log_level</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">enable_verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable verbose output by setting the log level for all handlers to DEBUG.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">changeLogLevel</span><span class="p">(</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_log_level</span><span class="p">(</span><span class="n">LogLevel</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">enableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deprecated alias for :meth:`enable_verbose`.</span>
+
+<span class="sd">        This method exists for backward compatibility only. Use</span>
+<span class="sd">        :meth:`enable_verbose` instead.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        DeprecationWarning</span>
+<span class="sd">            Always raised. ``enableVerbose`` is deprecated and will be removed</span>
+<span class="sd">            in a future release.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        enable_verbose : Preferred replacement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;enableVerbose is deprecated; use enable_verbose&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enable_verbose</span><span class="p">()</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">|</span> <span class="n">_Unset</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disable_verbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">|</span> <span class="n">_Unset</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disables verbose output.</span>
 
@@ -712,10 +776,45 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_level must be a LogLevel&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">changeLogLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_log_level</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deprecated alias for :meth:`disable_verbose`.</span>
+
+<span class="sd">        This method exists for backward compatibility only. Use</span>
+<span class="sd">        :meth:`disable_verbose` instead.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        logLevel : LogLevel, default LogLevel.INFO</span>
+<span class="sd">            The log level to set for all handlers, disabling verbose</span>
+<span class="sd">            (DEBUG-level) output.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        DeprecationWarning</span>
+<span class="sd">            Always raised. ``disableVerbose`` is deprecated and will be removed</span>
+<span class="sd">            in a future release.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        disable_verbose : Preferred replacement.</span>
+<span class="sd">        enable_verbose : Enable verbose (DEBUG-level) output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;disableVerbose is deprecated; use disable_verbose&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_verbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">)</span>
 
     <span class="nd">@typechecked</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">getHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Handler</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Handler</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve the Handler object corresponding to the name.</span>
 
@@ -742,9 +841,50 @@
                 <span class="k">return</span> <span class="n">handler</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not match any handler&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">getHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deprecated alias for :meth:`get_handler`.</span>
+
+<span class="sd">        This method exists for backward compatibility only. Use</span>
+<span class="sd">        :meth:`get_handler` instead.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of the handler to retrieve.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Handler</span>
+<span class="sd">            The handler with the matching ``Handler.name``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            Raised if ``name`` is not a string.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            Raised if no configured handler matches ``name``.</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        DeprecationWarning</span>
+<span class="sd">            Always raised. ``getHandler`` is deprecated and will be removed</span>
+<span class="sd">            in a future release.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        get_handler : Preferred replacement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;getHandler is deprecated; use get_handler&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_handler</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
 
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">getArkoudaLogger</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_arkouda_logger</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">handlers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Handler</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">log_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># &lt;-- key change</span>
@@ -802,8 +942,60 @@
     <span class="k">return</span> <span class="n">logger</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">getArkoudaLogger</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">handlers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Handler</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">logFormat</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">DEFAULT_LOG_FORMAT</span><span class="p">,</span>
+    <span class="n">logLevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LogLevel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deprecated alias for :func:`get_arkouda_logger`.</span>
+
+<span class="sd">    This function exists for backward compatibility only. Use</span>
+<span class="sd">    :func:`get_arkouda_logger` instead.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the ArkoudaLogger.</span>
+<span class="sd">    handlers : list of logging.Handler, optional</span>
+<span class="sd">        A list of handlers to attach to the logger.</span>
+<span class="sd">    logFormat : str, optional</span>
+<span class="sd">        The log message format string.</span>
+<span class="sd">    logLevel : LogLevel, optional</span>
+<span class="sd">        The logging level to use. If not provided, the value is</span>
+<span class="sd">        read from the ``ARKOUDA_LOG_LEVEL`` environment variable.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ArkoudaLogger</span>
+<span class="sd">        The configured ArkoudaLogger instance.</span>
+
+<span class="sd">    Warns</span>
+<span class="sd">    -----</span>
+<span class="sd">    DeprecationWarning</span>
+<span class="sd">        Always raised. ``getArkoudaLogger`` is deprecated and will be removed</span>
+<span class="sd">        in a future release.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    get_arkouda_logger : Preferred replacement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;getArkoudaLogger is deprecated; use get_arkouda_logger&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">get_arkouda_logger</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">handlers</span><span class="o">=</span><span class="n">handlers</span><span class="p">,</span>
+        <span class="n">logFormat</span><span class="o">=</span><span class="n">logFormat</span><span class="p">,</span>
+        <span class="n">logLevel</span><span class="o">=</span><span class="n">logLevel</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">getArkoudaClientLogger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaLogger</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_arkouda_client_logger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaLogger</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Instantiate an ArkoudaLogger that retrieves the logging level from ARKOUDA_LOG_LEVEL env variable.</span>
 
@@ -832,43 +1024,148 @@
 <span class="sd">    confirmation of successful login or pdarray creation</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">log_format</span><span class="o">=</span><span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">CLIENT_LOG_FORMAT</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">log_format</span><span class="o">=</span><span class="n">ArkoudaLogger</span><span class="o">.</span><span class="n">CLIENT_LOG_FORMAT</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getArkoudaClientLogger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deprecated alias for :func:`get_arkouda_client_logger`.</span>
+
+<span class="sd">    This function exists for backward compatibility only. Use</span>
+<span class="sd">    :func:`get_arkouda_client_logger` instead.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the ArkoudaLogger.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ArkoudaLogger</span>
+<span class="sd">        A logger configured to emit unformatted messages to stdout.</span>
+
+<span class="sd">    Warns</span>
+<span class="sd">    -----</span>
+<span class="sd">    DeprecationWarning</span>
+<span class="sd">        Always raised. ``getArkoudaClientLogger`` is deprecated and will be</span>
+<span class="sd">        removed in a future release.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    get_arkouda_client_logger : Preferred replacement.</span>
+<span class="sd">    get_arkouda_logger : Base logger factory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;getArkoudaClientLogger is deprecated; use get_arkouda_client_logger&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">get_arkouda_client_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="enable_verbose">
+<a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.enable_verbose">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">enable_verbose</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">enable_verbose</span><span class="p">()</span></div>
+
 
 
 <div class="viewcode-block" id="enableVerbose">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.enableVerbose">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">enableVerbose</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">enableVerbose</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deprecated alias for :func:`enable_verbose`.</span>
+
+<span class="sd">    This function exists for backward compatibility only. Use</span>
+<span class="sd">    :func:`enable_verbose` instead.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Warns</span>
+<span class="sd">    -----</span>
+<span class="sd">    DeprecationWarning</span>
+<span class="sd">        Always raised. ``enableVerbose`` is deprecated and will be removed</span>
+<span class="sd">        in a future release.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    enable_verbose : Enable verbose (DEBUG-level) logging for all loggers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;enableVerbose is deprecated; use enable_verbose&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">enable_verbose</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="disable_verbose">
+<a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.disable_verbose">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">disable_verbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Disables verbose logging.</span>
+
+<span class="sd">    Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting</span>
+<span class="sd">    the log level for each to the logLevel parameter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    logLevel : LogLevel</span>
+<span class="sd">        The new log level, defaultts to LogLevel.INFO</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if logLevel is not a LogLevel enum</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">enableVerbose</span><span class="p">()</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">disable_verbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="disableVerbose">
 <a class="viewcode-back" href="../../autoapi/arkouda/logger/index.html#arkouda.disableVerbose">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="n">log_level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">LogLevel</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">]</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="s2">&quot;logLevel&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Pass only one of &#39;logLevel&#39; or &#39;log_level&#39;&quot;</span><span class="p">)</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;&#39;logLevel&#39; is deprecated; use &#39;log_level&#39; instead&quot;</span><span class="p">,</span>
-            <span class="ne">DeprecationWarning</span><span class="p">,</span>
-            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">log_level</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;logLevel&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">_Unset</span><span class="p">):</span>
-        <span class="n">log_level</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">disableVerbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">LogLevel</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deprecated alias for :func:`disable_verbose`.</span>
 
-    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected keyword argument(s): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    This function exists for backward compatibility only. Use</span>
+<span class="sd">    :func:`disable_verbose` instead.</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">LogLevel</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;log_level must be a LogLevel&quot;</span><span class="p">)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    logLevel : LogLevel, default LogLevel.INFO</span>
+<span class="sd">        The log level to apply to all ArkoudaLoggers, disabling</span>
+<span class="sd">        verbose (DEBUG-level) output.</span>
 
-    <span class="n">log_level</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">,</span> <span class="n">log_level</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">loggers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">disableVerbose</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span></div>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Warns</span>
+<span class="sd">    -----</span>
+<span class="sd">    DeprecationWarning</span>
+<span class="sd">        Always raised. ``disableVerbose`` is deprecated and will be removed</span>
+<span class="sd">        in a future release.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    disable_verbose : Disable verbose logging for all loggers.</span>
+<span class="sd">    enable_verbose : Enable verbose logging for all loggers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;disableVerbose is deprecated; use disable_verbose&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">disable_verbose</span><span class="p">(</span><span class="n">logLevel</span><span class="p">)</span></div>
 
 
 

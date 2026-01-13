@@ -406,13 +406,13 @@ log formatting, and runtime handler reconfiguration.</p>
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
 <dl class="simple">
-<dt>getArkoudaLogger(name, handlers=None, log_format=None, log_level=None)</dt><dd><p>Instantiate a logger with customizable format and log level.</p>
+<dt>get_arkouda_logger(name, handlers=None, log_format=None, log_level=None)</dt><dd><p>Instantiate a logger with customizable format and log level.</p>
 </dd>
-<dt>getArkoudaClientLogger(name)</dt><dd><p>Instantiate a logger for client-facing output (no formatting, INFO level default).</p>
+<dt>get_arkouda_client_logger(name)</dt><dd><p>Instantiate a logger for client-facing output (no formatting, INFO level default).</p>
 </dd>
-<dt>enableVerbose()</dt><dd><p>Globally set all ArkoudaLoggers to DEBUG level.</p>
+<dt>enable_verbose()</dt><dd><p>Globally set all ArkoudaLoggers to DEBUG level.</p>
 </dd>
-<dt>disableVerbose(log_level=LogLevel.INFO)</dt><dd><p>Globally disable DEBUG output by setting all loggers to the specified level.</p>
+<dt>disable_verbose(log_level=LogLevel.INFO)</dt><dd><p>Globally disable DEBUG output by setting all loggers to the specified level.</p>
 </dd>
 <dt>write_log(log_msg, tag=”ClientGeneratedLog”, log_lvl=LogLevel.INFO)</dt><dd><p>Submit a custom log message to the Arkouda server’s logging system.</p>
 </dd>
@@ -420,10 +420,10 @@ log formatting, and runtime handler reconfiguration.</p>
 </section>
 <section id="usage-example">
 <h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">getArkoudaLogger</span><span class="p">,</span> <span class="n">LogLevel</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span> <span class="o">=</span> <span class="n">getArkoudaLogger</span><span class="p">(</span><span class="s2">&quot;myLogger&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_arkouda_logger</span><span class="p">,</span> <span class="n">LogLevel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_arkouda_logger</span><span class="p">(</span><span class="s2">&quot;myLogger&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This is an info message.&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">enableVerbose</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">enable_verbose</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Now showing debug messages.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -449,10 +449,16 @@ log formatting, and runtime handler reconfiguration.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logger.disableVerbose" title="arkouda.logger.disableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disableVerbose</span></code></a>(→ None)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logger.disableVerbose" title="arkouda.logger.disableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disableVerbose</span></code></a>([logLevel])</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.logger.disable_verbose" title="arkouda.logger.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.logger.enableVerbose" title="arkouda.logger.enableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enableVerbose</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.logger.disable_verbose" title="arkouda.logger.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a>(→ None)</p></td>
+<td><p>Disables verbose logging.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logger.enableVerbose" title="arkouda.logger.enableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enableVerbose</span></code></a>()</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.logger.enable_verbose" title="arkouda.logger.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.logger.enable_verbose" title="arkouda.logger.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a>(→ None)</p></td>
 <td><p>Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logger.write_log" title="arkouda.logger.write_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_log</span></code></a>(log_msg[, tag, log_lvl])</p></td>
@@ -516,12 +522,77 @@ instances. These are mapped internally to the standard Python <cite>logging</cit
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.logger.disableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><span class="pre">LogLevel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_Unset</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_UNSET</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.disableVerbose" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.disableVerbose" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.logger.disable_verbose" title="arkouda.logger.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.logger.disable_verbose" title="arkouda.logger.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a> instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logLevel</strong> (<a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><em>LogLevel</em></a><em>, </em><em>default LogLevel.INFO</em>) – The log level to apply to all ArkoudaLoggers, disabling
+verbose (DEBUG-level) output.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Warns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">disableVerbose</span></code> is deprecated and will be removed
+in a future release.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.logger.disable_verbose" title="arkouda.logger.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a></dt><dd><p>Disable verbose logging for all loggers.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.logger.enable_verbose" title="arkouda.logger.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose logging for all loggers.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.logger.disable_verbose">
+<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">disable_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/logger.html#disable_verbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.disable_verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Disables verbose logging.</p>
+<p>Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
+the log level for each to the logLevel parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logLevel</strong> (<a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><em>LogLevel</em></a>) – The new log level, defaultts to LogLevel.INFO</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if logLevel is not a LogLevel enum</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.logger.enableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">enableVerbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/logger.html#enableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.enableVerbose" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">enableVerbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/logger.html#enableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.enableVerbose" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.logger.enable_verbose" title="arkouda.logger.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.logger.enable_verbose" title="arkouda.logger.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a> instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Warns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">enableVerbose</span></code> is deprecated and will be removed
+in a future release.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.logger.enable_verbose" title="arkouda.logger.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose (DEBUG-level) logging for all loggers.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.logger.enable_verbose">
+<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">enable_verbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/arkouda/logger.html#enable_verbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.enable_verbose" title="Link to this definition">¶</a></dt>
 <dd><p>Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.</p>
 </dd></dl>
 
@@ -622,7 +693,9 @@ Defaults to LogLevel.INFO</p></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.logger.disableVerbose"><code class="docutils literal notranslate"><span class="pre">disableVerbose()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.logger.disable_verbose"><code class="docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.logger.enableVerbose"><code class="docutils literal notranslate"><span class="pre">enableVerbose()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.logger.enable_verbose"><code class="docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.logger.write_log"><code class="docutils literal notranslate"><span class="pre">write_log()</span></code></a></li>
 </ul>
 </li>

@@ -1095,19 +1095,25 @@ to Python users.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.diff" title="arkouda.diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diff</span></code></a>(→ pdarray)</p></td>
 <td><p>Calculate the n-th discrete difference along the given axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.disableVerbose" title="arkouda.disableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disableVerbose</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.disableVerbose" title="arkouda.disableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disableVerbose</span></code></a>([logLevel])</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a>(→ None)</p></td>
+<td><p>Disables verbose logging.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.divmod" title="arkouda.divmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divmod</span></code></a>(→ Tuple[pdarray, pdarray])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.divmod" title="arkouda.divmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divmod</span></code></a>(→ Tuple[pdarray, pdarray])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dot" title="arkouda.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dot</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dot" title="arkouda.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dot</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
 <td><p>Computes dot product of two arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtype" title="arkouda.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(x)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtype" title="arkouda.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a>(x)</p></td>
 <td><p>Normalize a dtype-like input into an Arkouda dtype sentinel or a NumPy dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.enableVerbose" title="arkouda.enableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enableVerbose</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.enableVerbose" title="arkouda.enableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enableVerbose</span></code></a>()</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a>(→ None)</p></td>
 <td><p>Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.errstate" title="arkouda.errstate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">errstate</span></code></a>(→ Iterator[None])</p></td>
@@ -1203,20 +1209,20 @@ to Python users.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.interval_lookup" title="arkouda.interval_lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_lookup</span></code></a>(keys, values, arguments[, fillvalue, ...])</p></td>
 <td><p>Apply a function defined over intervals to an array of arguments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isSupportedBool" title="arkouda.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(→ TypeGuard[bool_scalars])</p></td>
-<td><p>Whether a scalar is an arkouda supported boolean dtype.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isSupportedBool" title="arkouda.isSupportedBool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedBool</span></code></a>(num)</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_bool" title="arkouda.is_supported_bool"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_bool()</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isSupportedDType" title="arkouda.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(→ bool)</p></td>
-<td><p>Whether a scalar is an arkouda supported dtype.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isSupportedDType" title="arkouda.isSupportedDType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedDType</span></code></a>(num)</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_dtype" title="arkouda.is_supported_dtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_dtype()</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isSupportedFloat" title="arkouda.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(→ TypeGuard[float_scalars])</p></td>
-<td><p>Whether a scalar is an arkouda supported float dtype.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isSupportedFloat" title="arkouda.isSupportedFloat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedFloat</span></code></a>(num)</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_float" title="arkouda.is_supported_float"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_float()</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isSupportedInt" title="arkouda.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(→ TypeGuard[int_scalars])</p></td>
-<td><p>Whether a scalar is an arkouda supported integer dtype.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isSupportedInt" title="arkouda.isSupportedInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedInt</span></code></a>(num)</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_int" title="arkouda.is_supported_int"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_int()</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isSupportedNumber" title="arkouda.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(→ TypeGuard[numeric_scalars])</p></td>
-<td><p>Whether a scalar is an arkouda supported numeric dtype.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isSupportedNumber" title="arkouda.isSupportedNumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isSupportedNumber</span></code></a>(num)</p></td>
+<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_number" title="arkouda.is_supported_number"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_number()</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.is_cosorted" title="arkouda.is_cosorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cosorted</span></code></a>(arrays)</p></td>
 <td><p>Return True iff the arrays are cosorted.</p></td>
@@ -1224,283 +1230,298 @@ to Python users.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.is_registered" title="arkouda.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>(→ bool)</p></td>
 <td><p>Determine if the provided name is associated with a registered Arkouda object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isfinite" title="arkouda.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isfinite</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.is_supported_bool" title="arkouda.is_supported_bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_bool</span></code></a>(→ TypeGuard[bool_scalars])</p></td>
+<td><p>Whether a scalar is an arkouda supported boolean dtype.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.is_supported_dtype" title="arkouda.is_supported_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_dtype</span></code></a>(→ bool)</p></td>
+<td><p>Whether a scalar is an arkouda supported dtype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.is_supported_float" title="arkouda.is_supported_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_float</span></code></a>(→ TypeGuard[float_scalars])</p></td>
+<td><p>Whether a scalar is an arkouda supported float dtype.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.is_supported_int" title="arkouda.is_supported_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_int</span></code></a>(→ TypeGuard[int_scalars])</p></td>
+<td><p>Whether a scalar is an arkouda supported integer dtype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.is_supported_number" title="arkouda.is_supported_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_number</span></code></a>(→ TypeGuard[numeric_scalars])</p></td>
+<td><p>Whether a scalar is an arkouda supported numeric dtype.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isfinite" title="arkouda.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isfinite</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise isfinite check applied to the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isinf" title="arkouda.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isinf</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isinf" title="arkouda.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isinf</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise isinf check applied to the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isnan" title="arkouda.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isnan" title="arkouda.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise isnan check applied to the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isnumeric" title="arkouda.isnumeric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnumeric</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isnumeric" title="arkouda.isnumeric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnumeric</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a boolean pdarray where index i indicates whether string i of the</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.isscalar" title="arkouda.isscalar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isscalar</span></code></a>(element)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.isscalar" title="arkouda.isscalar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isscalar</span></code></a>(element)</p></td>
 <td><p>Returns True if the type of <cite>element</cite> is a scalar type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.issubdtype" title="arkouda.issubdtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issubdtype</span></code></a>(arg1, arg2)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.issubdtype" title="arkouda.issubdtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issubdtype</span></code></a>(arg1, arg2)</p></td>
 <td><p>Returns True if first argument is a typecode lower/equal in type hierarchy.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.join_on_eq_with_dt" title="arkouda.join_on_eq_with_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_on_eq_with_dt</span></code></a>(...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.join_on_eq_with_dt" title="arkouda.join_on_eq_with_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_on_eq_with_dt</span></code></a>(...)</p></td>
 <td><p>Inner-join on equality between two integer arrays where the time-window predicate is also true.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.left_align" title="arkouda.left_align"><code class="xref py py-obj docutils literal notranslate"><span class="pre">left_align</span></code></a>(left, right)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.left_align" title="arkouda.left_align"><code class="xref py py-obj docutils literal notranslate"><span class="pre">left_align</span></code></a>(left, right)</p></td>
 <td><p>Map two arrays of sparse identifiers to the 0-up index.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.linspace" title="arkouda.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.linspace" title="arkouda.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return evenly spaced numbers over a specified interval.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>([detailed])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>([detailed])</p></td>
 <td><p>Return a list containing the names of all registered objects.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.list_symbol_table" title="arkouda.list_symbol_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_symbol_table</span></code></a>(→ List[str])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.list_symbol_table" title="arkouda.list_symbol_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_symbol_table</span></code></a>(→ List[str])</p></td>
 <td><p>Return a list containing the names of all objects in the symbol table.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.log" title="arkouda.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.log" title="arkouda.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise natural log of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.log10" title="arkouda.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log10</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.log10" title="arkouda.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log10</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise base 10 log of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.log1p" title="arkouda.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.log1p" title="arkouda.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise natural log of one plus the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.log2" title="arkouda.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.log2" title="arkouda.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise base 2 log of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.logical_not" title="arkouda.logical_not"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logical_not</span></code></a>(…)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logical_not" title="arkouda.logical_not"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logical_not</span></code></a>(…)</p></td>
 <td><p>Compute the truth value of NOT <em>x</em> element-wise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.logspace" title="arkouda.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.logspace" title="arkouda.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logspace</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray of numbers evenly spaced on a log scale.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.lookup" title="arkouda.lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lookup</span></code></a>(keys, values, arguments[, fillvalue])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.lookup" title="arkouda.lookup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lookup</span></code></a>(keys, values, arguments[, fillvalue])</p></td>
 <td><p>Apply the function defined by the mapping keys --&gt; values to arguments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.matmul" title="arkouda.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.matmul" title="arkouda.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matmul</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the product of two matrices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.maximum" title="arkouda.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.maximum" title="arkouda.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.maxk" title="arkouda.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.maxk" title="arkouda.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> maximum values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.may_share_memory" title="arkouda.may_share_memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">may_share_memory</span></code></a>(a, b)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.may_share_memory" title="arkouda.may_share_memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">may_share_memory</span></code></a>(a, b)</p></td>
 <td><p>Conservative version akin to numpy.may_share_memory.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.median" title="arkouda.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(→ numpy.float64)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.median" title="arkouda.median"><code class="xref py py-obj docutils literal notranslate"><span class="pre">median</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Compute the median of a given array.  1d case only, for now.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.minimum" title="arkouda.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.minimum" title="arkouda.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.mink" title="arkouda.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.mink" title="arkouda.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the <cite>k</cite> minimum values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.mod" title="arkouda.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.mod" title="arkouda.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a>(→ pdarray)</p></td>
 <td><p>Returns the element-wise remainder of division.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.nextafter" title="arkouda.nextafter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nextafter</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.nextafter" title="arkouda.nextafter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nextafter</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return the next floating-point value after <cite>x1</cite> towards <cite>x2</cite>, element-wise.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones" title="arkouda.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones" title="arkouda.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with ones.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones_like" title="arkouda.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.ones_like" title="arkouda.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ones_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a one-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.parity" title="arkouda.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.parity" title="arkouda.parity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parity</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the bit parity (XOR of all bits) for each integer in an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.percentile" title="arkouda.percentile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">percentile</span></code></a>(...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.percentile" title="arkouda.percentile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">percentile</span></code></a>(...)</p></td>
 <td><p>Compute the q-th percentile of the data along the specified axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.plot_dist" title="arkouda.plot_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dist</span></code></a>(→ Tuple[matplotlib.figure.Figure, numpy.ndarray])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.plot_dist" title="arkouda.plot_dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dist</span></code></a>(→ Tuple[matplotlib.figure.Figure, numpy.ndarray])</p></td>
 <td><p>Plot the distribution and cumulative distribution of histogram data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.popcount" title="arkouda.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.popcount" title="arkouda.popcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popcount</span></code></a>(→ pdarray)</p></td>
 <td><p>Find the population (number of bits set) for each integer in an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.power" title="arkouda.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.power" title="arkouda.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a>(→ pdarray)</p></td>
 <td><p>Raises an array to a power. If where is given, the operation will only take place in the positions</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.power_divergence" title="arkouda.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_divergence</span></code></a>(f_obs[, f_exp, ddof, lambda_])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.power_divergence" title="arkouda.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_divergence</span></code></a>(f_obs[, f_exp, ddof, lambda_])</p></td>
 <td><p>Computes the power divergence statistic and p-value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pretty_print_information" title="arkouda.pretty_print_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pretty_print_information</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pretty_print_information" title="arkouda.pretty_print_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pretty_print_information</span></code></a>(→ None)</p></td>
 <td><p>Print verbose information for each object in names in a human readable format.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.promote_to_common_dtype" title="arkouda.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.promote_to_common_dtype" title="arkouda.promote_to_common_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">promote_to_common_dtype</span></code></a>(→ Tuple[Any, ...)</p></td>
 <td><p>Promote a list of pdarrays to a common dtype.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.putmask" title="arkouda.putmask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">putmask</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.putmask" title="arkouda.putmask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">putmask</span></code></a>(→ None)</p></td>
 <td><p>Overwrite elements of A with elements from B based upon a mask array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.quantile" title="arkouda.quantile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantile</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.quantile" title="arkouda.quantile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quantile</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
 <td><p>Compute the q-th quantile of the data along the specified axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.rad2deg" title="arkouda.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.rad2deg" title="arkouda.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Converts angles element-wise from radians to degrees.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.randint" title="arkouda.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.randint" title="arkouda.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Generate a pdarray of randomized int, float, or bool values in a</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.random_strings_lognormal" title="arkouda.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random_strings_lognormal" title="arkouda.random_strings_lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_lognormal</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
 <td><p>Generate random strings with log-normally distributed lengths and</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.random_strings_uniform" title="arkouda.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.random_strings_uniform" title="arkouda.random_strings_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_strings_uniform</span></code></a>(→ arkouda.numpy.strings.Strings)</p></td>
 <td><p>Generate random strings with lengths uniformly distributed between</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.register_all" title="arkouda.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.register_all" title="arkouda.register_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_all</span></code></a>(data)</p></td>
 <td><p>Register all objects in the provided dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.repeat" title="arkouda.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.repeat" title="arkouda.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Repeat each element of an array after themselves.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.resolve_scalar_dtype" title="arkouda.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.resolve_scalar_dtype" title="arkouda.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(→ str)</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.result_type" title="arkouda.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(*args)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.result_type" title="arkouda.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a>(*args)</p></td>
 <td><p>Determine the result dtype from one or more inputs, following NumPy’s</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.right_align" title="arkouda.right_align"><code class="xref py py-obj docutils literal notranslate"><span class="pre">right_align</span></code></a>(left, right)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.right_align" title="arkouda.right_align"><code class="xref py py-obj docutils literal notranslate"><span class="pre">right_align</span></code></a>(left, right)</p></td>
 <td><p>Map two arrays of sparse values to the 0-up index.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.rotl" title="arkouda.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.rotl" title="arkouda.rotl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotl</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.rotr" title="arkouda.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.rotr" title="arkouda.rotr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotr</span></code></a>(→ pdarray)</p></td>
 <td><p>Rotate bits of &lt;x&gt; to the left by &lt;rot&gt;.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.round" title="arkouda.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.round" title="arkouda.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise rounding of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.scalar_array" title="arkouda.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.scalar_array" title="arkouda.scalar_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar_array</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray from a single scalar value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.search_intervals" title="arkouda.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals[, tiebreak, hierarchical])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.search_intervals" title="arkouda.search_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">search_intervals</span></code></a>(vals, intervals[, tiebreak, hierarchical])</p></td>
 <td><p>Return the index of the best interval containing each query value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.searchsorted" title="arkouda.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(→ Union[int, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.searchsorted" title="arkouda.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(→ Union[int, ...)</p></td>
 <td><p>Find indices where elements should be inserted to maintain order.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setdiff1d" title="arkouda.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setdiff1d" title="arkouda.setdiff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setdiff1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set difference of two arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.seterr" title="arkouda.seterr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterr</span></code></a>(→ Dict[str, _ErrorMode])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.seterr" title="arkouda.seterr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterr</span></code></a>(→ Dict[str, _ErrorMode])</p></td>
 <td><p>Set how Arkouda handles floating-point errors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.seterrcall" title="arkouda.seterrcall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterrcall</span></code></a>(→ Optional[Callable[[str, str], None]])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.seterrcall" title="arkouda.seterrcall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seterrcall</span></code></a>(→ Optional[Callable[[str, str], None]])</p></td>
 <td><p>Set the callable invoked when an error category is set to 'call'.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setxor1d" title="arkouda.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.setxor1d" title="arkouda.setxor1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setxor1d</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Find the set exclusive-or (symmetric difference) of two arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.shape" title="arkouda.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>(→ Tuple)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.shape" title="arkouda.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>(→ Tuple)</p></td>
 <td><p>Return the shape of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.shares_memory" title="arkouda.shares_memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shares_memory</span></code></a>(a, b)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.shares_memory" title="arkouda.shares_memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shares_memory</span></code></a>(a, b)</p></td>
 <td><p>Return True if <cite>a</cite> and <cite>b</cite> share any Arkouda server-side buffers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sign" title="arkouda.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sign" title="arkouda.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise sign of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.sin" title="arkouda.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.sin" title="arkouda.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise sine of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sinh" title="arkouda.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sinh" title="arkouda.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic sine of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sort" title="arkouda.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sort" title="arkouda.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a sorted copy of the array. Only sorts numeric arrays;</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.sqrt" title="arkouda.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.sqrt" title="arkouda.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a>(→ pdarray)</p></td>
 <td><p>Takes the square root of array. If where is given, the operation will only take place in</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.square" title="arkouda.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.square" title="arkouda.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise square of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.squeeze" title="arkouda.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.squeeze" title="arkouda.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Remove degenerate (size one) dimensions from an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.standard_normal" title="arkouda.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.standard_normal" title="arkouda.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Draw real numbers from the standard normal distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.string_operators" title="arkouda.string_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_operators</span></code></a>(cls)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.string_operators" title="arkouda.string_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_operators</span></code></a>(cls)</p></td>
 <td><p>Add common string operation methods to a StringAccessor class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.take" title="arkouda.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.take" title="arkouda.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Take elements from an array along an axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tan" title="arkouda.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tan" title="arkouda.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise tangent of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tanh" title="arkouda.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tanh" title="arkouda.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise hyperbolic tangent of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tile" title="arkouda.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tile" title="arkouda.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Construct an array by repeating A the number of times given by reps.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.timedelta_range" title="arkouda.timedelta_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timedelta_range</span></code></a>([start, end, periods, freq, name, closed])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.timedelta_range" title="arkouda.timedelta_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timedelta_range</span></code></a>([start, end, periods, freq, name, closed])</p></td>
 <td><p>Return a fixed frequency TimedeltaIndex, with day as the default</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.transpose" title="arkouda.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.transpose" title="arkouda.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Compute the transpose of a matrix.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.tril" title="arkouda.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.tril" title="arkouda.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tril</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the upper triangle zeroed out.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.triu" title="arkouda.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.triu" title="arkouda.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triu</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return a copy of the pda with the lower triangle zeroed out.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.trunc" title="arkouda.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.trunc" title="arkouda.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Return the element-wise truncation of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.typename" title="arkouda.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.typename" title="arkouda.typename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typename</span></code></a>(char)</p></td>
 <td><p>Return a description for the given data type code.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.uniform" title="arkouda.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.uniform" title="arkouda.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(, high, seed, ...)</p></td>
 <td><p>Generate a pdarray with uniformly distributed random float values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.union1d" title="arkouda.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ arkouda.pandas.groupbyclass.groupable)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/setops.html#arkouda.union1d" title="arkouda.union1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></a>(→ arkouda.pandas.groupbyclass.groupable)</p></td>
 <td><p>Find the union of two arrays/List of Arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unregister" title="arkouda.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>(→ str)</p></td>
 <td><p>Unregister an Arkouda object by its name.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unregister_all" title="arkouda.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.unregister_all" title="arkouda.unregister_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_all</span></code></a>(names)</p></td>
 <td><p>Unregister all Arkouda objects associated with the provided names.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.unsqueeze" title="arkouda.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unsqueeze" title="arkouda.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
 <td><p>Ensure that the input is returned as a list.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/histogram.html#arkouda.value_counts" title="arkouda.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/histogram.html#arkouda.value_counts" title="arkouda.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.vecdot" title="arkouda.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.vecdot" title="arkouda.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
 <td><p>Computes the numpy-style vecdot product of two matrices.  This differs from the</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.vstack" title="arkouda.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vstack</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.vstack" title="arkouda.vstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vstack</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Stack arrays in sequence vertically (row wise).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.where" title="arkouda.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/arithmetic.html#arkouda.where" title="arkouda.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Return an array with elements chosen from A and B based upon a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.write_log" title="arkouda.write_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_log</span></code></a>(log_msg[, tag, log_lvl])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.write_log" title="arkouda.write_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_log</span></code></a>(log_msg[, tag, log_lvl])</p></td>
 <td><p>Allow the user to write custom logs.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.xlogy" title="arkouda.xlogy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xlogy</span></code></a>(x, y)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.xlogy" title="arkouda.xlogy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xlogy</span></code></a>(x, y)</p></td>
 <td><p>Computes x * log(y).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.zero_up" title="arkouda.zero_up"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_up</span></code></a>(vals)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.zero_up" title="arkouda.zero_up"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_up</span></code></a>(vals)</p></td>
 <td><p>Map an array of sparse values to 0-up indices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros" title="arkouda.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros" title="arkouda.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a pdarray filled with zeros.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros_like" title="arkouda.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../usage/creation.html#arkouda.zeros_like" title="arkouda.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros_like</span></code></a>(→ arkouda.numpy.pdarrayclass.pdarray)</p></td>
 <td><p>Create a zero-filled pdarray of the same size and dtype as an existing</p></td>
 </tr>
 </tbody>
@@ -12483,8 +12504,49 @@ integer type first:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.disableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><span class="pre">LogLevel</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_Unset</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_UNSET</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.disableVerbose" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.disableVerbose" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a> instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logLevel</strong> (<a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><em>LogLevel</em></a><em>, </em><em>default LogLevel.INFO</em>) – The log level to apply to all ArkoudaLoggers, disabling
+verbose (DEBUG-level) output.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Warns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">disableVerbose</span></code> is deprecated and will be removed
+in a future release.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a></dt><dd><p>Disable verbose logging for all loggers.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose logging for all loggers.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.disable_verbose">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">disable_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/logger.html#disable_verbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.disable_verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Disables verbose logging.</p>
+<p>Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
+the log level for each to the logLevel parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logLevel</strong> (<a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><em>LogLevel</em></a>) – The new log level, defaultts to LogLevel.INFO</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if logLevel is not a LogLevel enum</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.divmod">
@@ -12725,7 +12787,31 @@ dtype(‘int32’)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.enableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">enableVerbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/logger.html#enableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.enableVerbose" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">enableVerbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/logger.html#enableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.enableVerbose" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a> instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Warns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">enableVerbose</span></code> is deprecated and will be removed
+in a future release.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose (DEBUG-level) logging for all loggers.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.enable_verbose">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">enable_verbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/logger.html#enable_verbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.enable_verbose" title="Link to this definition">¶</a></dt>
 <dd><p>Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.</p>
 </dd></dl>
 
@@ -15111,126 +15197,136 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.isSupportedBool">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.bool_scalars" title="arkouda.bool_scalars"><span class="pre">bool_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedBool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedBool" title="Link to this definition">¶</a></dt>
-<dd><p>Whether a scalar is an arkouda supported boolean dtype.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedBool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedBool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedBool" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_bool" title="arkouda.is_supported_bool"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_bool()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.is_supported_bool" title="arkouda.is_supported_bool"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_bool()</span></code></a> instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar value to test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if scalar is an instance of an arkouda supported boolean dtype, else False.</p>
+<dd class="field-even"><p>True if <code class="docutils literal notranslate"><span class="pre">num</span></code> is an arkouda-supported boolean dtype,
+otherwise False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedBool</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedBool</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.is_supported_bool" title="arkouda.is_supported_bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_bool</span></code></a></dt><dd><p>Preferred replacement.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.isSupportedDType">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedDType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedDType" title="Link to this definition">¶</a></dt>
-<dd><p>Whether a scalar is an arkouda supported dtype.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedDType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedDType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedDType" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_dtype" title="arkouda.is_supported_dtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_dtype()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.is_supported_dtype" title="arkouda.is_supported_dtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_dtype()</span></code></a> instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scalar</strong> (<em>object</em>)</p>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar value to test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if scalar is an instance of an arkouda supported dtype, else False.</p>
+<dd class="field-even"><p>True if <code class="docutils literal notranslate"><span class="pre">num</span></code> is an arkouda-supported dtype,
+otherwise False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>builtins.bool</p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedDType</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedDType</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="n">j</span><span class="p">))</span>
-<span class="go">False</span>
-</pre></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.is_supported_dtype" title="arkouda.is_supported_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_dtype</span></code></a></dt><dd><p>Preferred replacement.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.isSupportedFloat">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.float_scalars" title="arkouda.float_scalars"><span class="pre">float_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedFloat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedFloat" title="Link to this definition">¶</a></dt>
-<dd><p>Whether a scalar is an arkouda supported float dtype.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedFloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedFloat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedFloat" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_float" title="arkouda.is_supported_float"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_float()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.is_supported_float" title="arkouda.is_supported_float"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_float()</span></code></a> instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar value to test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if scalar is an instance of an arkouda supported float dtype, else False.</p>
+<dd class="field-even"><p>True if <code class="docutils literal notranslate"><span class="pre">num</span></code> is an arkouda-supported float dtype,
+otherwise False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedFloat</span><span class="p">(</span><span class="mi">56</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedFloat</span><span class="p">(</span><span class="mf">56.7</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.is_supported_float" title="arkouda.is_supported_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_float</span></code></a></dt><dd><p>Preferred replacement.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.isSupportedInt">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.int_scalars" title="arkouda.int_scalars"><span class="pre">int_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedInt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedInt" title="Link to this definition">¶</a></dt>
-<dd><p>Whether a scalar is an arkouda supported integer dtype.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedInt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedInt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedInt" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_int" title="arkouda.is_supported_int"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_int()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.is_supported_int" title="arkouda.is_supported_int"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_int()</span></code></a> instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar value to test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if scalar is an instance of an arkouda supported integer dtype, else False.</p>
+<dd class="field-even"><p>True if <code class="docutils literal notranslate"><span class="pre">num</span></code> is an arkouda-supported integer dtype,
+otherwise False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedInt</span><span class="p">(</span><span class="mi">79</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedInt</span><span class="p">(</span><span class="mf">54.9</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.is_supported_int" title="arkouda.is_supported_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_int</span></code></a></dt><dd><p>Preferred replacement.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.isSupportedNumber">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><span class="pre">numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedNumber" title="Link to this definition">¶</a></dt>
-<dd><p>Whether a scalar is an arkouda supported numeric dtype.</p>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">isSupportedNumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#isSupportedNumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.isSupportedNumber" title="Link to this definition">¶</a></dt>
+<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.is_supported_number" title="arkouda.is_supported_number"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_number()</span></code></a>.</p>
+<p>This function exists for backward compatibility only. Use
+<a class="reference internal" href="#arkouda.is_supported_number" title="arkouda.is_supported_number"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_supported_number()</span></code></a> instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar value to test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if scalar is an instance of an arkouda supported numeric dtype, else False.</p>
+<dd class="field-even"><p>True if <code class="docutils literal notranslate"><span class="pre">num</span></code> is an arkouda-supported numeric dtype,
+otherwise False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedNumber</span><span class="p">(</span><span class="mf">45.9</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">isSupportedNumber</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.is_supported_number" title="arkouda.is_supported_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_supported_number</span></code></a></dt><dd><p>Preferred replacement.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
@@ -15298,6 +15394,131 @@ True
 &gt;&gt;&gt; result = ak.is_registered(“my_component”, as_component=True)
 &gt;&gt;&gt; print(result)
 False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.is_supported_bool">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">is_supported_bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.bool_scalars" title="arkouda.bool_scalars"><span class="pre">bool_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#is_supported_bool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.is_supported_bool" title="Link to this definition">¶</a></dt>
+<dd><p>Whether a scalar is an arkouda supported boolean dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported boolean dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_bool</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_bool</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.is_supported_dtype">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">is_supported_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#is_supported_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.is_supported_dtype" title="Link to this definition">¶</a></dt>
+<dd><p>Whether a scalar is an arkouda supported dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar</strong> (<em>object</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>builtins.bool</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_dtype</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="n">j</span><span class="p">))</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.is_supported_float">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">is_supported_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.float_scalars" title="arkouda.float_scalars"><span class="pre">float_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#is_supported_float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.is_supported_float" title="Link to this definition">¶</a></dt>
+<dd><p>Whether a scalar is an arkouda supported float dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported float dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_float</span><span class="p">(</span><span class="mi">56</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_float</span><span class="p">(</span><span class="mf">56.7</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.is_supported_int">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">is_supported_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.int_scalars" title="arkouda.int_scalars"><span class="pre">int_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#is_supported_int"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.is_supported_int" title="Link to this definition">¶</a></dt>
+<dd><p>Whether a scalar is an arkouda supported integer dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported integer dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_int</span><span class="p">(</span><span class="mi">79</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_int</span><span class="p">(</span><span class="mf">54.9</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.is_supported_number">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">is_supported_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.TypeGuard" title="arkouda.numpy.dtypes.TypeGuard"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><span class="pre">numeric_scalars</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/dtypes.html#is_supported_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.is_supported_number" title="Link to this definition">¶</a></dt>
+<dd><p>Whether a scalar is an arkouda supported numeric dtype.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num</strong> (<em>object</em>) – A scalar.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if scalar is an instance of an arkouda supported numeric dtype, else False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.bool" title="arkouda.bool">bool</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_number</span><span class="p">(</span><span class="mf">45.9</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">is_supported_number</span><span class="p">(</span><span class="s2">&quot;string&quot;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -22725,6 +22946,7 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.delete"><code class="docutils literal notranslate"><span class="pre">delete()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.diff"><code class="docutils literal notranslate"><span class="pre">diff()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.disableVerbose"><code class="docutils literal notranslate"><span class="pre">disableVerbose()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.disable_verbose"><code class="docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.divmod"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.dot"><code class="docutils literal notranslate"><span class="pre">dot()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.double"><code class="docutils literal notranslate"><span class="pre">double</span></code></a><ul>
@@ -22737,6 +22959,7 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.dtype"><code class="docutils literal notranslate"><span class="pre">dtype()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.enableVerbose"><code class="docutils literal notranslate"><span class="pre">enableVerbose()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.enable_verbose"><code class="docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.errstate"><code class="docutils literal notranslate"><span class="pre">errstate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.euler_gamma"><code class="docutils literal notranslate"><span class="pre">euler_gamma</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.exp"><code class="docutils literal notranslate"><span class="pre">exp()</span></code></a></li>
@@ -22877,6 +23100,11 @@ pdarray.</p>
 <li><a class="reference internal" href="#arkouda.isSupportedNumber"><code class="docutils literal notranslate"><span class="pre">isSupportedNumber()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.is_cosorted"><code class="docutils literal notranslate"><span class="pre">is_cosorted()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.is_registered"><code class="docutils literal notranslate"><span class="pre">is_registered()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.is_supported_bool"><code class="docutils literal notranslate"><span class="pre">is_supported_bool()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.is_supported_dtype"><code class="docutils literal notranslate"><span class="pre">is_supported_dtype()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.is_supported_float"><code class="docutils literal notranslate"><span class="pre">is_supported_float()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.is_supported_int"><code class="docutils literal notranslate"><span class="pre">is_supported_int()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.is_supported_number"><code class="docutils literal notranslate"><span class="pre">is_supported_number()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.isfinite"><code class="docutils literal notranslate"><span class="pre">isfinite()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.isinf"><code class="docutils literal notranslate"><span class="pre">isinf()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.isnan"><code class="docutils literal notranslate"><span class="pre">isnan()</span></code></a></li>

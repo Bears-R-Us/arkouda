@@ -549,14 +549,14 @@
     <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">DTypes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">isSupportedFloat</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_supported_float</span>
 
     <span class="c1"># Legacy NumPy randint semantics:</span>
     <span class="c1"># - For integer/boolean output, floats in low/high are truncated toward zero</span>
     <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">akint64</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">isSupportedFloat</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_supported_float</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
             <span class="n">low</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">low</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">isSupportedFloat</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_supported_float</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
             <span class="n">high</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span>
 
     <span class="c1"># NumPy-style validation/error messages</span>
@@ -726,7 +726,7 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">globalGeneratorExists</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">global_generator_exists</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used to determine is a generator has already been created.</span>
 
@@ -739,9 +739,9 @@
     <span class="k">return</span> <span class="n">theGenerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">getGlobalGenerator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_global_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to simplify the boilerplate code for each function.&quot;&quot;&quot;</span>
-    <span class="n">seed</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">globalGeneratorExists</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">seed</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">global_generator_exists</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">theGenerator</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">theGenerator</span>
@@ -770,7 +770,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">theGenerator</span>
 
-    <span class="k">if</span> <span class="n">globalGeneratorExists</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">global_generator_exists</span><span class="p">():</span>
         <span class="n">theGenerator</span><span class="o">.</span><span class="n">destructor</span><span class="p">()</span>
 
     <span class="n">theGenerator</span> <span class="o">=</span> <span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span></div>
@@ -826,7 +826,7 @@
 <span class="sd">    array([5 9 7 7 9 9 7 7 8 6])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span></div>
 
 
 
@@ -864,7 +864,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.random.choice(ak.arange(10),size=5,replace=True)</span>
 <span class="sd">    array([6 5 1 6 3])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
 
 
 
@@ -908,7 +908,7 @@
 <span class="sd">    array([0.35023958744297734 1.3308542074773211 1.819197246298274])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
 
 
 
@@ -941,7 +941,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.random.standard_exponential(size=3,method=&quot;zig&quot;)</span>
 <span class="sd">    array([0.0036288331189547511 0.12747464978660919 2.4564938704378503])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">standard_exponential</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">standard_exponential</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
 
 
 
@@ -995,7 +995,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.random.logistic(3, 2.5, 3)</span>
 <span class="sd">    array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">logistic</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">logistic</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
 
@@ -1056,7 +1056,7 @@
 <span class="sd">    array([75.587346973566639 9.4194790331678568 1.0996120079897966])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
 
 
 
@@ -1109,7 +1109,7 @@
 <span class="sd">    array([4.3252889011033728 2.2427797827243081 0.09495739757471533])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
 
 
 
@@ -1151,7 +1151,7 @@
 <span class="sd">    array([0.30447083571882388 0.89653821715718895 0.34737575437149532])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span></div>
 
 
 
@@ -1194,7 +1194,7 @@
 <span class="sd">    array([0.85277675774402018 3.1253116338237561 0.95808096440750634])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: W605</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">standard_gamma</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
 
@@ -1281,7 +1281,7 @@
     <span class="c1"># it does not return a value.  The elements of x are shuffled in place.  That&#39;s</span>
     <span class="c1"># why this function has no return statement.</span>
 
-    <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
+    <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">feistel_rounds</span><span class="o">=</span><span class="n">feistel_rounds</span><span class="p">,</span> <span class="n">feistel_key</span><span class="o">=</span><span class="n">feistel_key</span>
     <span class="p">)</span></div>
 
@@ -1323,7 +1323,7 @@
 <span class="sd">    &gt;&gt;&gt; ak.random.permutation(ak.arange(10))</span>
 <span class="sd">    array([4 7 0 2 5 3 6 1 8 9])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span></div>
 
 
 
@@ -1367,7 +1367,7 @@
 <span class="sd">    array([3 4 3 3 5])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">getGlobalGenerator</span><span class="p">()</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">get_global_generator</span><span class="p">()</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 </pre></div>
         </article>

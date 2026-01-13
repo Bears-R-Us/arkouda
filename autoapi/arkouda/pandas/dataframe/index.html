@@ -554,65 +554,6 @@ array([111 222 111 333 222 111])</p>
 </pre></div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.dataframe.DataFrame.GroupBy">
-<span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrameGroupBy" title="arkouda.pandas.dataframe.DataFrameGroupBy"><span class="pre">DataFrameGroupBy</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../groupbyclass/index.html#arkouda.pandas.groupbyclass.GroupBy" title="arkouda.pandas.groupbyclass.GroupBy"><span class="pre">arkouda.pandas.groupbyclass.GroupBy</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/dataframe.html#DataFrame.GroupBy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.dataframe.DataFrame.GroupBy" title="Link to this definition">¶</a></dt>
-<dd><p>Group the dataframe by a column or a list of columns.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – An (ordered) list of column names or a single string to group by.</p></li>
-<li><p><strong>use_series</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-Otherwise an arkouda.pandas.groupbyclass.GroupBy object.</p></li>
-<li><p><strong>as_index</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
-otherwise, the groupby columns will be treated as DataFrame columns.</p></li>
-<li><p><strong>dropna</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, and the groupby keys contain NaN values,
-the NaN values together with the corresponding row will be dropped.
-Otherwise, the rows corresponding to NaN values will be kept.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrameGroupBy" title="arkouda.pandas.dataframe.DataFrameGroupBy">arkouda.pandas.dataframe.DataFrameGroupBy</a> or <a class="reference internal" href="../groupbyclass/index.html#arkouda.pandas.groupbyclass.GroupBy" title="arkouda.pandas.groupbyclass.GroupBy">arkouda.pandas.groupbyclass.GroupBy</a></p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.GroupBy</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0   1.0     4</span>
-<span class="go">1   1.0     5</span>
-<span class="go">2   2.0     6</span>
-<span class="go">3   NaN     7 (4 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span>
-<span class="go">&lt;arkouda.groupbyclass.GroupBy object at 0x7dbc23462510&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-<span class="go">(array([1.00000000000000000 2.00000000000000000]), array([2 1]))</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span><span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-<span class="go">col1</span>
-<span class="go">1.0    2</span>
-<span class="go">2.0    1</span>
-<span class="go">dtype: int64</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span><span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-<span class="go">   col1  size</span>
-<span class="go">0   1.0     2</span>
-<span class="go">1   2.0     1 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.dataframe.DataFrame.all">
 <span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">arkouda.pandas.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/dataframe.html#DataFrame.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.dataframe.DataFrame.all" title="Link to this definition">¶</a></dt>
 <dd><p>Return whether all elements are True, potentially over an axis.</p>
@@ -3661,7 +3602,6 @@ Otherwise, the DataFrame is not sorted.</p></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrame"><code class="docutils literal notranslate"><span class="pre">DataFrame</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrame.GroupBy"><code class="docutils literal notranslate"><span class="pre">DataFrame.GroupBy()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrame.all"><code class="docutils literal notranslate"><span class="pre">DataFrame.all()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrame.any"><code class="docutils literal notranslate"><span class="pre">DataFrame.any()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrame.append"><code class="docutils literal notranslate"><span class="pre">DataFrame.append()</span></code></a></li>

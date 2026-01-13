@@ -296,10 +296,12 @@ Functions
    arkouda.delete
    arkouda.diff
    arkouda.disableVerbose
+   arkouda.disable_verbose
    arkouda.divmod
    arkouda.dot
    arkouda.dtype
    arkouda.enableVerbose
+   arkouda.enable_verbose
    arkouda.errstate
    arkouda.exp
    arkouda.expm1
@@ -338,6 +340,11 @@ Functions
    arkouda.isSupportedNumber
    arkouda.is_cosorted
    arkouda.is_registered
+   arkouda.is_supported_bool
+   arkouda.is_supported_dtype
+   arkouda.is_supported_float
+   arkouda.is_supported_int
+   arkouda.is_supported_number
    arkouda.isfinite
    arkouda.isinf
    arkouda.isnan
@@ -9776,7 +9783,43 @@ Package Contents
    array([array([-1 2 0 -2])])
 
 
-.. py:function:: disableVerbose(log_level: Union[LogLevel, _Unset] = _UNSET, **kwargs) -> None
+.. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO)
+
+   Deprecated alias for :func:`disable_verbose`.
+
+   This function exists for backward compatibility only. Use
+   :func:`disable_verbose` instead.
+
+   :param logLevel: The log level to apply to all ArkoudaLoggers, disabling
+                    verbose (DEBUG-level) output.
+   :type logLevel: LogLevel, default LogLevel.INFO
+
+   :rtype: None
+
+   :Warns: **DeprecationWarning** -- Always raised. ``disableVerbose`` is deprecated and will be removed
+           in a future release.
+
+   .. seealso::
+
+      :py:obj:`disable_verbose`
+          Disable verbose logging for all loggers.
+
+      :py:obj:`enable_verbose`
+          Enable verbose logging for all loggers.
+
+
+.. py:function:: disable_verbose(logLevel: LogLevel = LogLevel.INFO) -> None
+
+   Disables verbose logging.
+
+   Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
+   the log level for each to the logLevel parameter.
+
+   :param logLevel: The new log level, defaultts to LogLevel.INFO
+   :type logLevel: LogLevel
+
+   :raises TypeError: Raised if logLevel is not a LogLevel enum
+
 
 .. py:function:: divmod(x: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], y: Union[arkouda.numpy.dtypes.numeric_scalars, pdarray], where: Union[arkouda.numpy.dtypes.bool_scalars, pdarray] = True) -> Tuple[pdarray, pdarray]
 
@@ -9992,7 +10035,25 @@ Package Contents
 .. py:data:: e
    :type:  float
 
-.. py:function:: enableVerbose() -> None
+.. py:function:: enableVerbose()
+
+   Deprecated alias for :func:`enable_verbose`.
+
+   This function exists for backward compatibility only. Use
+   :func:`enable_verbose` instead.
+
+   :rtype: None
+
+   :Warns: **DeprecationWarning** -- Always raised. ``enableVerbose`` is deprecated and will be removed
+           in a future release.
+
+   .. seealso::
+
+      :py:obj:`enable_verbose`
+          Enable verbose (DEBUG-level) logging for all loggers.
+
+
+.. py:function:: enable_verbose() -> None
 
    Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.
 
@@ -11924,99 +11985,104 @@ Package Contents
 
 
 
-.. py:function:: isSupportedBool(num) -> TypeGuard[bool_scalars]
+.. py:function:: isSupportedBool(num)
 
-   Whether a scalar is an arkouda supported boolean dtype.
+   Deprecated alias for :func:`is_supported_bool`.
 
-   :param num: A scalar.
+   This function exists for backward compatibility only. Use
+   :func:`is_supported_bool` instead.
+
+   :param num: A scalar value to test.
    :type num: object
 
-   :returns: True if scalar is an instance of an arkouda supported boolean dtype, else False.
+   :returns: True if ``num`` is an arkouda-supported boolean dtype,
+             otherwise False.
    :rtype: bool
 
-   .. rubric:: Examples
+   .. seealso::
 
-   >>> import arkouda as ak
-   >>> ak.isSupportedBool("True")
-   False
-   >>> ak.isSupportedBool(True)
-   True
+      :py:obj:`is_supported_bool`
+          Preferred replacement.
 
 
-.. py:function:: isSupportedDType(scalar: object) -> bool
+.. py:function:: isSupportedDType(num)
 
-   Whether a scalar is an arkouda supported dtype.
+   Deprecated alias for :func:`is_supported_dtype`.
 
-   :param scalar:
-   :type scalar: object
+   This function exists for backward compatibility only. Use
+   :func:`is_supported_dtype` instead.
 
-   :returns: True if scalar is an instance of an arkouda supported dtype, else False.
-   :rtype: builtins.bool
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> ak.isSupportedDType(ak.int64(64))
-   True
-   >>> ak.isSupportedDType(np.complex128(1+2j))
-   False
-
-
-.. py:function:: isSupportedFloat(num) -> TypeGuard[float_scalars]
-
-   Whether a scalar is an arkouda supported float dtype.
-
-   :param num: A scalar.
+   :param num: A scalar value to test.
    :type num: object
 
-   :returns: True if scalar is an instance of an arkouda supported float dtype, else False.
+   :returns: True if ``num`` is an arkouda-supported dtype,
+             otherwise False.
    :rtype: bool
 
-   .. rubric:: Examples
+   .. seealso::
 
-   >>> import arkouda as ak
-   >>> ak.isSupportedFloat(56)
-   False
-   >>> ak.isSupportedFloat(56.7)
-   True
+      :py:obj:`is_supported_dtype`
+          Preferred replacement.
 
 
-.. py:function:: isSupportedInt(num) -> TypeGuard[int_scalars]
+.. py:function:: isSupportedFloat(num)
 
-   Whether a scalar is an arkouda supported integer dtype.
+   Deprecated alias for :func:`is_supported_float`.
 
-   :param num: A scalar.
+   This function exists for backward compatibility only. Use
+   :func:`is_supported_float` instead.
+
+   :param num: A scalar value to test.
    :type num: object
 
-   :returns: True if scalar is an instance of an arkouda supported integer dtype, else False.
+   :returns: True if ``num`` is an arkouda-supported float dtype,
+             otherwise False.
    :rtype: bool
 
-   .. rubric:: Examples
+   .. seealso::
 
-   >>> import arkouda as ak
-   >>> ak.isSupportedInt(79)
-   True
-   >>> ak.isSupportedInt(54.9)
-   False
+      :py:obj:`is_supported_float`
+          Preferred replacement.
 
 
-.. py:function:: isSupportedNumber(num) -> TypeGuard[numeric_scalars]
+.. py:function:: isSupportedInt(num)
 
-   Whether a scalar is an arkouda supported numeric dtype.
+   Deprecated alias for :func:`is_supported_int`.
 
-   :param num: A scalar.
+   This function exists for backward compatibility only. Use
+   :func:`is_supported_int` instead.
+
+   :param num: A scalar value to test.
    :type num: object
 
-   :returns: True if scalar is an instance of an arkouda supported numeric dtype, else False.
+   :returns: True if ``num`` is an arkouda-supported integer dtype,
+             otherwise False.
    :rtype: bool
 
-   .. rubric:: Examples
+   .. seealso::
 
-   >>> import arkouda as ak
-   >>> ak.isSupportedNumber(45.9)
-   True
-   >>> ak.isSupportedNumber("string")
-   False
+      :py:obj:`is_supported_int`
+          Preferred replacement.
+
+
+.. py:function:: isSupportedNumber(num)
+
+   Deprecated alias for :func:`is_supported_number`.
+
+   This function exists for backward compatibility only. Use
+   :func:`is_supported_number` instead.
+
+   :param num: A scalar value to test.
+   :type num: object
+
+   :returns: True if ``num`` is an arkouda-supported numeric dtype,
+             otherwise False.
+   :rtype: bool
+
+   .. seealso::
+
+      :py:obj:`is_supported_number`
+          Preferred replacement.
 
 
 .. py:function:: is_cosorted(arrays)
@@ -12069,6 +12135,101 @@ Package Contents
    Check if a name is registered as a component
    >>> result = ak.is_registered("my_component", as_component=True)
    >>> print(result)
+   False
+
+
+.. py:function:: is_supported_bool(num) -> TypeGuard[bool_scalars]
+
+   Whether a scalar is an arkouda supported boolean dtype.
+
+   :param num: A scalar.
+   :type num: object
+
+   :returns: True if scalar is an instance of an arkouda supported boolean dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.is_supported_bool("True")
+   False
+   >>> ak.is_supported_bool(True)
+   True
+
+
+.. py:function:: is_supported_dtype(scalar: object) -> bool
+
+   Whether a scalar is an arkouda supported dtype.
+
+   :param scalar:
+   :type scalar: object
+
+   :returns: True if scalar is an instance of an arkouda supported dtype, else False.
+   :rtype: builtins.bool
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.is_supported_dtype(ak.int64(64))
+   True
+   >>> ak.is_supported_dtype(np.complex128(1+2j))
+   False
+
+
+.. py:function:: is_supported_float(num) -> TypeGuard[float_scalars]
+
+   Whether a scalar is an arkouda supported float dtype.
+
+   :param num: A scalar.
+   :type num: object
+
+   :returns: True if scalar is an instance of an arkouda supported float dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.is_supported_float(56)
+   False
+   >>> ak.is_supported_float(56.7)
+   True
+
+
+.. py:function:: is_supported_int(num) -> TypeGuard[int_scalars]
+
+   Whether a scalar is an arkouda supported integer dtype.
+
+   :param num: A scalar.
+   :type num: object
+
+   :returns: True if scalar is an instance of an arkouda supported integer dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.is_supported_int(79)
+   True
+   >>> ak.is_supported_int(54.9)
+   False
+
+
+.. py:function:: is_supported_number(num) -> TypeGuard[numeric_scalars]
+
+   Whether a scalar is an arkouda supported numeric dtype.
+
+   :param num: A scalar.
+   :type num: object
+
+   :returns: True if scalar is an instance of an arkouda supported numeric dtype, else False.
+   :rtype: bool
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.is_supported_number(45.9)
+   True
+   >>> ak.is_supported_number("string")
    False
 
 

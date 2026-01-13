@@ -390,7 +390,7 @@ domain-specific data while preserving Arkouda’s performance model and distribu
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><cite>BitVectorizer</cite>: Creates a partially applied BitVector constructor.</p></li>
+<li><p><cite>bit_vectorizer</cite>: Creates a partially applied BitVector constructor.</p></li>
 <li><p><cite>ip_address</cite>: Converts various formats to an Arkouda IPv4 object.</p></li>
 <li><p><cite>is_ipv4</cite>: Returns a boolean array indicating IPv4 addresses.</p></li>
 <li><p><cite>is_ipv6</cite>: Returns a boolean array indicating IPv6 addresses.</p></li>
@@ -454,7 +454,7 @@ IPv4([192.168.0.1,</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client_dtypes.BitVectorizer" title="arkouda.client_dtypes.BitVectorizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BitVectorizer</span></code></a>([width, reverse])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client_dtypes.bit_vectorizer" title="arkouda.client_dtypes.bit_vectorizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bit_vectorizer</span></code></a>([width, reverse])</p></td>
 <td><p>Make a callback (i.e. function) that can be called on an array to create a BitVector.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client_dtypes.ip_address" title="arkouda.client_dtypes.ip_address"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ip_address</span></code></a>(values)</p></td>
@@ -611,28 +611,6 @@ they are unregistered.</p>
 <span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="headerlink" href="#arkouda.client_dtypes.BitVector.width" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.client_dtypes.BitVectorizer">
-<span class="sig-prename descclassname"><span class="pre">arkouda.client_dtypes.</span></span><span class="sig-name descname"><span class="pre">BitVectorizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#BitVectorizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.BitVectorizer" title="Link to this definition">¶</a></dt>
-<dd><p>Make a callback (i.e. function) that can be called on an array to create a BitVector.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>width</strong> (<em>int</em>) – The number of bit fields in the vector</p></li>
-<li><p><strong>reverse</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, display bits from least significant (left) to most
-significant (right). By default, the most significant bit
-is the left-most bit.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>bitvectorizer</strong> – A function that takes an array and returns a BitVector instance</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>callable</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py class">
@@ -867,6 +845,28 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="arkouda.client_dtypes.bit_vectorizer">
+<span class="sig-prename descclassname"><span class="pre">arkouda.client_dtypes.</span></span><span class="sig-name descname"><span class="pre">bit_vectorizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#bit_vectorizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.bit_vectorizer" title="Link to this definition">¶</a></dt>
+<dd><p>Make a callback (i.e. function) that can be called on an array to create a BitVector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<em>int</em>) – The number of bit fields in the vector</p></li>
+<li><p><strong>reverse</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, display bits from least significant (left) to most
+significant (right). By default, the most significant bit
+is the left-most bit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bitvectorizer</strong> – A function that takes an array and returns a BitVector instance</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.ip_address">
 <span class="sig-prename descclassname"><span class="pre">arkouda.client_dtypes.</span></span><span class="sig-name descname"><span class="pre">ip_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#ip_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.ip_address" title="Link to this definition">¶</a></dt>
 <dd><p>Convert values to an Arkouda array of IP addresses.</p>
@@ -1008,7 +1008,6 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <li><a class="reference internal" href="#arkouda.client_dtypes.BitVector.width"><code class="docutils literal notranslate"><span class="pre">BitVector.width</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#arkouda.client_dtypes.BitVectorizer"><code class="docutils literal notranslate"><span class="pre">BitVectorizer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields"><code class="docutils literal notranslate"><span class="pre">Fields</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields.MSB_left"><code class="docutils literal notranslate"><span class="pre">Fields.MSB_left</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.Fields.format"><code class="docutils literal notranslate"><span class="pre">Fields.format()</span></code></a></li>
@@ -1036,6 +1035,7 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <li><a class="reference internal" href="#arkouda.client_dtypes.IPv4.values"><code class="docutils literal notranslate"><span class="pre">IPv4.values</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#arkouda.client_dtypes.bit_vectorizer"><code class="docutils literal notranslate"><span class="pre">bit_vectorizer()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.ip_address"><code class="docutils literal notranslate"><span class="pre">ip_address()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.is_ipv4"><code class="docutils literal notranslate"><span class="pre">is_ipv4()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.client_dtypes.is_ipv6"><code class="docutils literal notranslate"><span class="pre">is_ipv6()</span></code></a></li>

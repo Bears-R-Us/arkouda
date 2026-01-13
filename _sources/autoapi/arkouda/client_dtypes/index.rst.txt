@@ -19,7 +19,7 @@ arkouda.client_dtypes
 
    Functions
    ---------
-   - `BitVectorizer`: Creates a partially applied BitVector constructor.
+   - `bit_vectorizer`: Creates a partially applied BitVector constructor.
    - `ip_address`: Converts various formats to an Arkouda IPv4 object.
    - `is_ipv4`: Returns a boolean array indicating IPv4 addresses.
    - `is_ipv6`: Returns a boolean array indicating IPv6 addresses.
@@ -70,7 +70,7 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.client_dtypes.BitVectorizer
+   arkouda.client_dtypes.bit_vectorizer
    arkouda.client_dtypes.ip_address
    arkouda.client_dtypes.is_ipv4
    arkouda.client_dtypes.is_ipv6
@@ -200,21 +200,6 @@ Module Contents
    .. py:attribute:: width
       :value: 64
 
-
-
-.. py:function:: BitVectorizer(width=64, reverse=False)
-
-   Make a callback (i.e. function) that can be called on an array to create a BitVector.
-
-   :param width: The number of bit fields in the vector
-   :type width: int
-   :param reverse: If True, display bits from least significant (left) to most
-                   significant (right). By default, the most significant bit
-                   is the left-most bit.
-   :type reverse: bool
-
-   :returns: **bitvectorizer** -- A function that takes an array and returns a BitVector instance
-   :rtype: callable
 
 
 .. py:class:: Fields(values, names, MSB_left=True, pad='-', separator='', show_int=True)
@@ -422,6 +407,21 @@ Module Contents
    .. py:attribute:: values
       :value: None
 
+
+
+.. py:function:: bit_vectorizer(width=64, reverse=False)
+
+   Make a callback (i.e. function) that can be called on an array to create a BitVector.
+
+   :param width: The number of bit fields in the vector
+   :type width: int
+   :param reverse: If True, display bits from least significant (left) to most
+                   significant (right). By default, the most significant bit
+                   is the left-most bit.
+   :type reverse: bool
+
+   :returns: **bitvectorizer** -- A function that takes an array and returns a BitVector instance
+   :rtype: callable
 
 
 .. py:function:: ip_address(values)
