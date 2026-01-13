@@ -18,7 +18,7 @@ module BinOp
   const omLogger = new Logger(logLevel, logChannel);
 
   proc splitType(type dtype) param : int {
-    // 0 -> bool, 1 -> uint, 2 -> int, 3 -> real
+    // 0 -> bool, 1 -> uint, 2 -> int, 3 -> real, 4 -> bigint
 
     if dtype == bool then return 0;
     else if dtype == uint(8) then return 1;
@@ -37,6 +37,8 @@ module BinOp
   }
 
   proc mySafeCast(type dtype1, type dtype2) type {
+    // Since splitType can wind up with 4, just cautiously guarding numBits(bigint)
+    if dtype1==bigint || dtype2==bigint then return bigint;
     param typeKind1 = splitType(dtype1);
     param bitSize1 = if dtype1 == bool then 8 else numBits(dtype1);
     param typeKind2 = splitType(dtype2);

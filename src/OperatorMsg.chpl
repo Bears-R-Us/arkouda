@@ -538,18 +538,51 @@ module OperatorMsg
 
           } else if isBitInplaceOp(op) {
 
+            if kL == 4 {
+
+              if op == ">>=" || op == "<<=" {
+
+                // If RHS isn't already bigint (possible in vv), cast to bigint *only if allowed by gate*.
+                // But in practice, the gate should only let through integral-ish RHS for shifts.
+                const rb = (r.a: bigint);
+
+                // Validate shift counts: non-negative and fits in int
+                const maxShift = max(int): bigint;
+
+                // Fast reject with reductions so you don't partially mutate la
+                if || reduce (rb < 0: bigint) {
+                  return new MsgTuple("ValueError: negative shift count", MsgType.ERROR);
+                }
+                if || reduce (rb > maxShift) {
+                  return new MsgTuple("ValueError: shift count too large", MsgType.ERROR);
+                }
+
+                // Apply shift (elementwise)
+                if op == ">>=" {
+                  forall (li, ri) in zip(la, rb) {
+                    li >>= (ri:int);
+                  }
+                } else {
+                  forall (li, ri) in zip(la, rb) {
+                    li <<= (ri:int);
+                  }
+                }
+
+              } else {
+                select op {
+                  when "&="  { la &=  (ra: binop_dtype_a); }
+                  when "|="  { la |=  (ra: binop_dtype_a); }
+                  when "^="  { la ^=  (ra: binop_dtype_a); }
+                  otherwise { handled = false; }
+                }
+              }
+            }
+
             // Bitwise + shifts must NOT compile for real LHS
-            if (kL == 0 || kL == 1 || kL == 2) {
+            else if (kL == 0 || kL == 1 || kL == 2) {
               select op {
                 when ">>=" { la >>= (ra: binop_dtype_a); }
                 when "<<=" { la <<= (ra: binop_dtype_a); }
-                when "&="  { la &=  (ra: binop_dtype_a); }
-                when "|="  { la |=  (ra: binop_dtype_a); }
-                when "^="  { la ^=  (ra: binop_dtype_a); }
-                otherwise { handled = false; }
-              }
-            } else if (kL == 0 || kL == 1 || kL == 2 || kL == 4) {
-              select op {
                 when "&="  { la &=  (ra: binop_dtype_a); }
                 when "|="  { la |=  (ra: binop_dtype_a); }
                 when "^="  { la ^=  (ra: binop_dtype_a); }
@@ -565,7 +598,7 @@ module OperatorMsg
           }
 
           if !handled then return MsgTuple.error(nie);
-            if kL == 4 {
+            if kL == 4 && l.max_bits != -1 {
               const mask = (1: bigint << l.max_bits) - 1;
               la &= mask;
             }
@@ -725,7 +758,6 @@ module OperatorMsg
                 [li in la] li = floorDivisionHelper(li, val: real(64));
               } else {
                 // int/uint/bigint style, preserve div-by-zero->0 behavior
-                // (including your bigint behavior; mask handled afterward)
                 if val != 0 {
                   la /= val;
                 } else {
@@ -739,7 +771,7 @@ module OperatorMsg
                 // NumPy-like float modulo
                 [li in la] li = modHelper(li, val: real(64));
               } else if kL == 4 {
-                // Bigint modulo: avoid li %= val (can go negative). Match your old behavior.
+                // Bigint modulo: avoid li %= val (can go negative).
                 forall li in la with (var local_val = val: bigint) {
                   if local_val != 0 {
                     mod(li, li, local_val);
@@ -770,14 +802,42 @@ module OperatorMsg
               return new MsgTuple("TypeError", MsgType.ERROR);
             }
 
-            // bool handled above; here we are int/uint/bigint
-            select op {
-              when ">>=" { la >>= val; }
-              when "<<=" { la <<= val; }
-              when "&="  { la &=  val; }
-              when "|="  { la |=  val; }
-              when "^="  { la ^=  val; }
-              otherwise  { handled = false; }
+            if kL == 4 && (op == ">>=" || op == "<<=") {
+              // Convert bigint -> int shift count (reject negative / too large)
+              if val < 0: bigint then
+                return new MsgTuple("ValueError: negative shift count", MsgType.ERROR);
+
+              // pick a bound you consider safe; at minimum, must fit in int
+              const maxShift = max(int): bigint;
+              if val > maxShift then
+                return new MsgTuple("ValueError: shift count too large", MsgType.ERROR);
+
+              const sh = val:int;
+
+              if op == ">>=" then la >>= sh;
+              else               la <<= sh;
+
+            } else if kL == 4 {
+
+              select op {
+                when "&="  { la &=  val; }
+                when "|="  { la |=  val; }
+                when "^="  { la ^=  val; }
+                otherwise  { handled = false; }
+              }
+
+            } else {
+
+              // bool/bigint handled above; here we are int/uint
+              select op {
+                when ">>=" { la >>= val; }
+                when "<<=" { la <<= val; }
+                when "&="  { la &=  val; }
+                when "|="  { la |=  val; }
+                when "^="  { la ^=  val; }
+                otherwise  { handled = false; }
+              }
+
             }
 
           } else {
