@@ -45,7 +45,7 @@ from os.path import isdir
 from pathlib import Path
 from typing import Any, Dict, Mapping
 
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 
 
 __all__ = [
@@ -56,7 +56,7 @@ __all__ = [
     "write_line_to_file",
 ]
 
-logger = getArkoudaLogger("io_util Logger")
+logger = get_arkouda_logger("io_util Logger")
 
 
 def get_directory(path: str) -> Path:

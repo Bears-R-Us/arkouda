@@ -45,7 +45,7 @@ import re
 from typing import cast
 
 from arkouda.infoclass import list_symbol_table
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pandas.match import Match, MatchType
@@ -109,7 +109,7 @@ class Matcher:
         self.full_match_bool: pdarray
         self.full_match_ind: pdarray
         self.populated = False
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type:ignore
+        self.logger = get_arkouda_logger(name=__class__.__name__)  # type:ignore
 
     def find_locations(self) -> None:
         """Populate Matcher object by finding the positions of matches."""
@@ -119,7 +119,7 @@ class Matcher:
         if not self.populated or any(
             [getattr(self, pda).name not in sym_tab for pda in self.LocationsInfo]
         ):
-            repMsg = cast(
+            rep_msg = cast(
                 str,
                 generic_msg(
                     cmd="segmentedFindLoc",
@@ -131,7 +131,7 @@ class Matcher:
                     },
                 ),
             )
-            created_map = json.loads(repMsg)
+            created_map = json.loads(rep_msg)
             self.num_matches = create_pdarray(created_map["NumMatches"])
             self.starts = create_pdarray(created_map["Starts"])
             self.lengths = create_pdarray(created_map["Lens"])
@@ -183,7 +183,7 @@ class Matcher:
         if re.search(self.pattern, ""):
             raise ValueError("Cannot split or flatten with a pattern that matches the empty string")
         cmd = "segmentedSplit"
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd=cmd,
@@ -197,10 +197,10 @@ class Matcher:
             ),
         )
         if return_segments:
-            arrays = repMsg.split("+", maxsplit=2)
+            arrays = rep_msg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
 
     def findall(self, return_match_origins: bool = False):
         """Return all non-overlapping matches of pattern in Strings as a new Strings object."""
@@ -208,7 +208,7 @@ class Matcher:
         from arkouda.numpy.strings import Strings
 
         self.find_locations()
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedFindAll",
@@ -224,10 +224,10 @@ class Matcher:
             ),
         )
         if return_match_origins:
-            arrays = repMsg.split("+", maxsplit=2)
+            arrays = rep_msg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
 
     def sub(self, repl: str, count: int = 0, return_num_subs: bool = False):
         """
@@ -240,7 +240,7 @@ class Matcher:
         from arkouda.client import generic_msg
         from arkouda.numpy.strings import Strings
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedSub",
@@ -255,7 +255,7 @@ class Matcher:
             ),
         )
         if return_num_subs:
-            arrays = repMsg.split("+", maxsplit=2)
+            arrays = rep_msg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
