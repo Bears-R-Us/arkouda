@@ -1254,7 +1254,7 @@ class DataFrame(UserDict):
             else:
                 msg_list.append(f"pdarray+{col}+{self[col].name}")
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="dataframe_idx",
@@ -1265,10 +1265,10 @@ class DataFrame(UserDict):
                 },
             ),
         )
-        msgList = json.loads(repMsg)
+        msg_list = json.loads(rep_msg)
 
         df_dict = {}
-        for m in msgList:
+        for m in msg_list:
             # Split to [datatype, column, create]
             msg = m.split("+", 2)
             t = msg[0]
@@ -1368,7 +1368,7 @@ class DataFrame(UserDict):
             else:
                 msg_list.append(f"pdarray+{col}+{self[col].name}")
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="sendDataframe",
@@ -1381,7 +1381,7 @@ class DataFrame(UserDict):
                 },
             ),
         )
-        return repMsg
+        return rep_msg
 
     def _shape_str(self):
         return f"{self._nrows} rows x {self._ncols()} columns"
@@ -2419,41 +2419,56 @@ class DataFrame(UserDict):
 
     from arkouda.pandas.groupbyclass import GroupBy as GroupBy_class
 
-    def GroupBy(
+    def _build_groupby(
         self, keys, use_series=False, as_index=True, dropna=True
     ) -> Union[DataFrameGroupBy, GroupBy_class]:
         """
-        Group the dataframe by a column or a list of columns.
+        Construct a GroupBy object for grouping the DataFrame by one or more columns.
+
+        This is an internal helper used by ``DataFrame.groupby`` to create either a
+        low-level ``GroupBy`` object or a pandas-compatible ``DataFrameGroupBy``
+        wrapper.
 
         Parameters
         ----------
-        keys : str or list of str
-            An (ordered) list of column names or a single string to group by.
-        use_series : bool, default=False
-            If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise an arkouda.pandas.groupbyclass.GroupBy object.
-        as_index: bool, default=True
-            If True, groupby columns will be set as index
-            otherwise, the groupby columns will be treated as DataFrame columns.
-        dropna : bool, default=True
-            If True, and the groupby keys contain NaN values,
-            the NaN values together with the corresponding row will be dropped.
-            Otherwise, the rows corresponding to NaN values will be kept.
+        keys : str or sequence of str
+            Column name or ordered sequence of column names to group by.
+        use_series : bool, default False
+            If True, return a pandas-compatible
+            ``arkouda.pandas.dataframe.DataFrameGroupBy`` object.
+            If False, return a lower-level
+            ``arkouda.pandas.groupbyclass.GroupBy`` object.
+        as_index : bool, default True
+            Only relevant when ``use_series=True``.
+            If True, the groupby keys become the index of the result.
+            If False, the groupby keys are returned as DataFrame columns.
+        dropna : bool, default True
+            Whether to drop rows containing NaN values in the groupby keys.
+            If True, rows with NaN keys are excluded from the grouping.
+            If False, NaN keys are retained as their own group.
 
         Returns
         -------
         arkouda.pandas.dataframe.DataFrameGroupBy or arkouda.pandas.groupbyclass.GroupBy
-            If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-            Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.
+            A groupby object configured according to ``use_series`` and ``as_index``.
+
+        Raises
+        ------
+        TypeError
+            If ``keys`` is not a string or a sequence of strings.
 
         See Also
         --------
-        arkouda.GroupBy
+        DataFrame.groupby
+        arkouda.groupbyclass.GroupBy
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({'col1': [1.0, 1.0, 2.0, np.nan], 'col2': [4, 5, 6, 7]})
+        >>> import numpy as np
+        >>> df = ak.DataFrame(
+        ...     {"col1": [1.0, 1.0, 2.0, np.nan], "col2": [4, 5, 6, 7]}
+        ... )
         >>> df
            col1  col2
         0   1.0     4
@@ -2461,21 +2476,25 @@ class DataFrame(UserDict):
         2   2.0     6
         3   NaN     7 (4 rows x 2 columns)
 
-        >>> df.GroupBy("col1") # doctest: +SKIP
-        <arkouda.groupbyclass.GroupBy object at 0x7dbc23462510>
-        >>> df.GroupBy("col1").size()
-        (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
+        Low-level GroupBy object:
 
-        >>> df.GroupBy("col1",use_series=True).size()
+        >>> df.GroupBy("col1")  # doctest: +SKIP
+        <arkouda.groupbyclass.GroupBy object at ...>
+        >>> df.GroupBy("col1").size()
+        (array([1., 2.]), array([2, 1]))
+
+        pandas-compatible GroupBy:
+
+        >>> df.GroupBy("col1", use_series=True).size()
         col1
         1.0    2
         2.0    1
         dtype: int64
-        >>> df.GroupBy("col1",use_series=True, as_index = False).size()
+
+        >>> df.GroupBy("col1", use_series=True, as_index=False).size()
            col1  size
         0   1.0     2
         1   2.0     1 (2 rows x 2 columns)
-
         """
         self.update_nrows()
         if isinstance(keys, str):
@@ -2666,25 +2685,25 @@ class DataFrame(UserDict):
                 nbytes += val.codes.nbytes
                 nbytes += val.categories.nbytes
 
-        KB = 1024
-        MB = KB * KB
-        GB = MB * KB
+        kb = 1024
+        mb = kb * kb
+        gb = mb * kb
 
         # Get units that make the most sense.
         msg = ""
-        if nbytes < KB:
+        if nbytes < kb:
             msg = "{:,} B".format(nbytes)
-        elif nbytes < MB:
-            msg = "{:,} KB".format(int(nbytes / KB))
-        elif nbytes < GB:
-            msg = "{:,} MB".format(int(nbytes / MB))
+        elif nbytes < mb:
+            msg = "{:,} KB".format(int(nbytes / kb))
+        elif nbytes < gb:
+            msg = "{:,} MB".format(int(nbytes / mb))
             sys.stdout.write(f"This transfer will use {msg} .")
         else:
-            msg = "{:,} GB".format(int(nbytes / GB))
+            msg = "{:,} GB".format(int(nbytes / gb))
             sys.stdout.write(f"This will transfer {msg} from arkouda to pandas.")
         # If the total memory transfer requires more than `datalimit` per
         # column, we will warn the user and return.
-        if nbytes > (datalimit * len(self._columns) * MB):
+        if nbytes > (datalimit * len(self._columns) * mb):
             msg = f"This operation would transfer more than {datalimit} bytes."
             warn(msg, UserWarning)
             return None
@@ -2904,7 +2923,7 @@ class DataFrame(UserDict):
             str(obj.categories.dtype) if isinstance(obj, Categorical_) else str(obj.dtype)
             for obj in self.values()
         ]
-        col_objTypes = [
+        col_obj_types = [
             obj.special_objType if hasattr(obj, "special_objType") else obj.objType
             for obj in self.values()
         ]
@@ -2920,7 +2939,7 @@ class DataFrame(UserDict):
                     "objType": self.objType,
                     "num_cols": len(self.columns.values),
                     "column_names": self.columns.values,
-                    "column_objTypes": col_objTypes,
+                    "column_objTypes": col_obj_types,
                     "column_dtypes": dtypes,
                     "columns": column_data,
                     "index": self.index.values.name,
@@ -3588,7 +3607,7 @@ class DataFrame(UserDict):
 
         if isinstance(keys, str):
             keys = [keys]
-        gb = self.GroupBy(keys, use_series=False)
+        gb = self._build_groupby(keys, use_series=False)
         vals, cts = gb.size()
         if not high:
             positions = where(cts >= low, 1, 0)
@@ -3721,7 +3740,7 @@ class DataFrame(UserDict):
         1   2.0     1 (2 rows x 2 columns)
 
         """
-        return self.GroupBy(keys, use_series, as_index=as_index, dropna=dropna)
+        return self._build_groupby(keys, use_series, as_index=as_index, dropna=dropna)
 
     @typechecked
     def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:
@@ -4643,7 +4662,7 @@ class DataFrame(UserDict):
             for obj in self.values()
         ]
 
-        col_objTypes = [
+        col_obj_types = [
             obj.special_objType if hasattr(obj, "special_objType") else obj.objType
             for obj in self.values()
         ]
@@ -4657,7 +4676,7 @@ class DataFrame(UserDict):
                 "num_cols": len(self.columns.values),
                 "column_names": self.columns.values,
                 "columns": column_data,
-                "col_objTypes": col_objTypes,
+                "col_objTypes": col_obj_types,
             },
         )
         self.registered_name = user_defined_name
@@ -4780,18 +4799,18 @@ class DataFrame(UserDict):
             (columnName, columnType)
 
         """
-        nameParts = entryName.split(" ")
-        regName = nameParts[1] if len(nameParts) > 1 else nameParts[0]
-        colParts = regName.split("_")
-        colType = colParts[2]
+        name_parts = entryName.split(" ")
+        reg_name = name_parts[1] if len(name_parts) > 1 else name_parts[0]
+        col_parts = reg_name.split("_")
+        col_type = col_parts[2]
 
         # Case of '_' in the column or dataframe name
-        if len(colParts) > 5:
-            nameInd = regName.rindex(dfName) - 1
-            startInd = len(colType) + 9
-            return regName[startInd:nameInd], colType
+        if len(col_parts) > 5:
+            name_ind = reg_name.rindex(dfName) - 1
+            start_ind = len(col_type) + 9
+            return reg_name[start_ind:name_ind], col_type
         else:
-            return colParts[3], colType
+            return col_parts[3], col_type
 
     @classmethod
     def from_return_msg(cls, rep_msg):
