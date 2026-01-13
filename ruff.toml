@@ -70,6 +70,30 @@ ignore = [
 "UP038","UP024","UP032","UP045","UP007","UP006","UP035","UP031","UP015","UP037","UP034","UP018"
 ]
 
+[lint.pep8-naming]
+#   These functions are allowed to be camelCase:
+ignore-names = [
+    #   These are kept to align with NumPy/Pandas:
+    "mT","XOR","AND","OR","T",
+    #   These are deprecated and will be eventually removed:
+  "isSupportedDtype",
+  "isSupportedDType",
+  "isSupportedInt",
+  "isSupportedFloat",
+  "isSupportedNumber",
+  "isSupportedBool",
+  "getArkoudaLogger",
+  "getArkoudaClientLogger",
+  "enableVerbose",
+  "disableVerbose",
+  "BitVectorizer",
+  "globalGeneratorExists",
+  "getGlobalGenerator",
+  "changeLogLevel",
+  "getHandler",]
+
+
+
 
 [lint.isort]
 known-first-party = ["arkouda"]

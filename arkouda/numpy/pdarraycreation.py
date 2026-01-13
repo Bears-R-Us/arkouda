@@ -31,8 +31,8 @@ from arkouda.numpy.dtypes import (
     get_byteorder,
     get_server_byteorder,
     int_scalars,
-    isSupportedInt,
-    isSupportedNumber,
+    is_supported_int,
+    is_supported_number,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
@@ -258,7 +258,7 @@ def array(
                 # if the user specified dtype, use that dtype
                 a = np.array(a, dtype=dtype)
             elif (
-                all(isSupportedInt(i) for i in a)
+                all(is_supported_int(i) for i in a)
                 and all(i >= 0 for i in a)
                 and any(2**64 > i >= 2**63 for i in a)
             ):
@@ -1199,7 +1199,7 @@ def arange(
     if (start == stop) | ((np.sign(stop - start) * np.sign(step)) <= 0):
         return type_cast(Union[pdarray], akcast(array([], dtype=akint64), dt=aktype))
 
-    if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(step):
+    if is_supported_int(start) and is_supported_int(stop) and is_supported_int(step):
         arg_dtypes = [resolve_scalar_dtype(arg) for arg in (start, stop, step)]
         akmax_bits = -1 if max_bits is None else max_bits
         arg_dtype = "int64"
@@ -1777,7 +1777,7 @@ def random_strings_lognormal(
     """
     from arkouda.client import generic_msg
 
-    if not isSupportedNumber(logmean) or not isSupportedNumber(logstd):
+    if not is_supported_number(logmean) or not is_supported_number(logstd):
         raise TypeError("both logmean and logstd must be an int, np.int64, float, or np.float64")
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")

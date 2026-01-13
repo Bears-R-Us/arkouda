@@ -9,12 +9,12 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import NumericDTypes, dtype, int_scalars
 from arkouda.numpy.pdarrayclass import create_pdarrays, pdarray
 
 
-logger = getArkoudaLogger(name="sparrayclass")
+logger = get_arkouda_logger(name="sparrayclass")
 
 __all__ = [
     "sparray",
