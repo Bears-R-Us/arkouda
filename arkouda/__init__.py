@@ -219,11 +219,11 @@ from arkouda.numpy import (
     intersect1d,
     intp,
     isnumeric,
-    isSupportedBool,
-    isSupportedDType,
-    isSupportedFloat,
-    isSupportedInt,
-    isSupportedNumber,
+    is_supported_bool,
+    is_supported_dtype,
+    is_supported_float,
+    is_supported_int,
+    is_supported_number,
     is_registered,
     is_sorted,
     isfinite,
@@ -358,6 +358,11 @@ from arkouda.numpy import (
     where,
     zeros,
     zeros_like,
+    isSupportedInt,
+    isSupportedNumber,
+    isSupportedBool,
+    isSupportedFloat,
+    isSupportedDType,
 )
 from arkouda.pandas import (
     Row,
@@ -396,10 +401,10 @@ from arkouda.client import (
     ruok,
     shutdown,
 )
-from arkouda.client_dtypes import BitVector, BitVectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
+from arkouda.client_dtypes import BitVector, bit_vectorizer, BitVectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, broadcast, groupable, unique
 from arkouda.categorical import Categorical
-from arkouda.logger import LogLevel, disableVerbose, enableVerbose, write_log
+from arkouda.logger import LogLevel, disableVerbose, enableVerbose, disable_verbose, enable_verbose, write_log
 from arkouda.infoclass import (
     AllSymbols,
     RegisteredSymbols,

@@ -62,7 +62,7 @@ import warnings
 
 from typing import Callable, Dict, Iterator, Literal, Optional
 
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 
 
 __all__ = [
@@ -88,7 +88,7 @@ _ak_errstate: Dict[str, _ErrorMode] = dict(_default_errstate)
 _ak_errcall: Optional[Callable[[str, str], None]] = None  # (errtype, message) -> None
 
 
-_logger = getArkoudaLogger("arkouda.err")
+_logger = get_arkouda_logger("arkouda.err")
 
 
 def _dispatch(kind: str, message: str) -> None:

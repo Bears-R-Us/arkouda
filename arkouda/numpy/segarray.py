@@ -6,10 +6,10 @@ from typing import Literal, Optional, Sequence, Tuple
 
 import numpy as np
 
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
+from arkouda.numpy.dtypes import int_scalars, is_supported_int, str_
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import (
     RegistrationError,
@@ -62,7 +62,7 @@ class SegArray:
     objType = "SegArray"
 
     def __init__(self, segments, values, lengths=None, grouping=None):
-        self.logger = getArkoudaLogger(name=__class__.__name__)
+        self.logger = get_arkouda_logger(name=__class__.__name__)
         self.registered_name: Optional[str] = None
 
         # validate inputs
@@ -195,7 +195,7 @@ class SegArray:
             return concatenate((self.segments[1:], array([self.valsize]))) - self.segments
 
     def __getitem__(self, i):
-        if isSupportedInt(i):
+        if is_supported_int(i):
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
             return self.values[start:end]
@@ -438,7 +438,7 @@ class SegArray:
             return ngrams
 
     def _normalize_index(self, j):
-        if not isSupportedInt(j):
+        if not is_supported_int(j):
             raise TypeError(f"index must be integer, not {type(j)}")
         if j >= 0:
             longenough = self.lengths > j
@@ -822,7 +822,7 @@ class SegArray:
         """
         from arkouda.client import generic_msg
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedHash",
             args={
                 "objType": self.objType,
@@ -831,7 +831,7 @@ class SegArray:
                 "valObjType": self.values.objType,
             },
         )
-        h1, h2 = repMsg.split("+")
+        h1, h2 = rep_msg.split("+")
         return create_pdarray(h1), create_pdarray(h2)
 
     def to_hdf(

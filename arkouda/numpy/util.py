@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union
 
 from typeguard import typechecked
 
-from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
+from arkouda.client_dtypes import BitVector, IPv4, bit_vectorizer
 from arkouda.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
@@ -82,7 +82,7 @@ def get_callback(x):
     elif hasattr(x, "_cast"):
         return x._cast
     elif isinstance(x, BitVector):
-        return BitVectorizer(width=x.width, reverse=x.reverse)
+        return bit_vectorizer(width=x.width, reverse=x.reverse)
     else:
         return identity
 
@@ -561,7 +561,7 @@ def sparse_sum_help(
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="sparseSumHelp",
         args={
             "idx1": idx1,
@@ -572,7 +572,7 @@ def sparse_sum_help(
             "percent_transfer_limit": percent_transfer_limit,
         },
     )
-    inds, vals = cast(str, repMsg).split("+", maxsplit=1)
+    inds, vals = cast(str, rep_msg).split("+", maxsplit=1)
     return create_pdarray(inds), create_pdarray(vals)
 
 
@@ -649,8 +649,8 @@ def broadcast_arrays(*arrays: pdarray) -> List[pdarray]:
 
     """
     shapes = [a.shape for a in arrays]
-    bcShape = broadcast_shapes(*shapes)
-    return [broadcast_to(a, shape=bcShape) for a in arrays]
+    bc_shape = broadcast_shapes(*shapes)
+    return [broadcast_to(a, shape=bc_shape) for a in arrays]
 
 
 @typechecked
@@ -761,31 +761,31 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     >>> broadcast_dims((4,), (3, 1))
     (3, 4)
     """
-    Na = len(sa)
-    Nb = len(sb)
-    N = max(Na, Nb)
-    shapeOut = [0 for i in range(N)]
+    n_a = len(sa)
+    n_b = len(sb)
+    n = max(n_a, n_b)
+    shape_out = [0 for i in range(n)]
 
-    i = N - 1
+    i = n - 1
     while i >= 0:
-        n1 = Na - N + i
-        n2 = Nb - N + i
+        n1 = n_a - n + i
+        n2 = n_b - n + i
 
         d1 = sa[n1] if n1 >= 0 else 1
         d2 = sb[n2] if n2 >= 0 else 1
 
         if d1 == 1:
-            shapeOut[i] = d2
+            shape_out[i] = d2
         elif d2 == 1:
-            shapeOut[i] = d1
+            shape_out[i] = d1
         elif d1 == d2:
-            shapeOut[i] = d1
+            shape_out[i] = d1
         else:
             raise ValueError("Incompatible dimensions for broadcasting")
 
         i -= 1
 
-    return tuple(shapeOut)
+    return tuple(shape_out)
 
 
 def convert_bytes(nbytes: int_scalars, unit: Literal["B", "KB", "MB", "GB"] = "B") -> numeric_scalars:

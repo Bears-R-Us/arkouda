@@ -271,14 +271,14 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
             n = len(x)
             g1 = skew(x)
         except ValueError:
-            GB_df = GroupBy(ak_df[col])
-            if not isinstance(GB_df.unique_keys, (Strings, Categorical, pdarray)):
+            gb_df = GroupBy(ak_df[col])
+            if not isinstance(gb_df.unique_keys, (Strings, Categorical, pdarray)):
                 raise TypeError(
                     f"expected one of (Strings, Categorical, pdarray), "
-                    f"got {type(GB_df.unique_keys).__name__!r}"
+                    f"got {type(gb_df.unique_keys).__name__!r}"
                 )
-            new_labels = arange(GB_df.unique_keys.size)
-            newcol = GB_df.broadcast(new_labels)
+            new_labels = arange(gb_df.unique_keys.size)
+            newcol = gb_df.broadcast(new_labels)
             x = newcol[: ak_df.size]
             if x.dtype == "float64":
                 x = x[~isnan(x)]
