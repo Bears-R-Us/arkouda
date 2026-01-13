@@ -680,7 +680,7 @@ class Index:
         from numpy import flip as np_flip
         from numpy import isnan as np_isnan
 
-        from arkouda.numpy.dtypes import isSupportedNumber
+        from arkouda.numpy.dtypes import is_supported_number
         from arkouda.numpy.numeric import isnan as ak_isnan
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraysetops import concatenate
@@ -701,7 +701,7 @@ class Index:
             if not ascending:
                 perm = type_cast(list[int], np_flip(perm).tolist())
 
-            if all(isSupportedNumber(x) for x in self.values):
+            if all(is_supported_number(x) for x in self.values):
                 is_nan = np_isnan(self.values)[perm]
                 perm_array = np.array(perm)
                 if na_position == "last":
