@@ -74,7 +74,7 @@ from typing import Dict, List, Literal, Mapping, Optional, Tuple, Union, cast, o
 import zmq  # for typechecking
 
 from arkouda import __version__, security
-from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
+from arkouda.logger import ArkoudaLogger, LogLevel, get_arkouda_logger
 from arkouda.message import (
     MessageFormat,
     MessageType,
@@ -172,8 +172,8 @@ def _mem_get_factor(unit: str) -> int:
         )
 
 
-logger = getArkoudaLogger(name="Arkouda Client", logLevel=LogLevel.INFO)
-clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message)s")
+logger = get_arkouda_logger(name="Arkouda Client", log_level=LogLevel.INFO)
+clientLogger = get_arkouda_logger(name="Arkouda User Logger", log_format="%(message)s")
 
 
 class ClientMode(Enum):
@@ -348,7 +348,7 @@ class Channel:
         self._set_url(server, port, connect_url)
         self.user = user
         self._set_access_token(server, port, token)
-        self.logger = getArkoudaLogger(name="Arkouda Client")
+        self.logger = get_arkouda_logger(name="Arkouda Client")
 
     def _set_url(self, server: str, port: int, connect_url: Optional[str] = None) -> None:
         """
@@ -1452,8 +1452,8 @@ def get_server_commands() -> Mapping[str, str]:
 
 def print_server_commands():
     """Print the list of available server commands."""
-    cmdMap = get_server_commands()
-    cmds = [k for k in sorted(cmdMap.keys())]
+    cmd_map = get_server_commands()
+    cmds = [k for k in sorted(cmd_map.keys())]
     sys.stdout.write(f"Total available server commands: {len(cmds)}")
     for cmd in cmds:
         sys.stdout.write(f"\t{cmd}")

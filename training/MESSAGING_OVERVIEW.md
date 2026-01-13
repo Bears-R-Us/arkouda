@@ -29,7 +29,7 @@ At the root level there is a `ServerModules.cfg` file that lists all the active 
 
 In general, a server request will look something like this:
 
-`repMsg = cast(str, generic_msg(cmd="serverFunction", args={"arg1": arg1, "arg2": arg2}))`
+`rep_msg = cast(str, generic_msg(cmd="serverFunction", args={"arg1": arg1, "arg2": arg2}))`
 
 To break this request down, `cmd` is the string name that maps to the function you want to use in Chapel. In most cases the string name will be almost identical to the Chapel function name to keep things easy to maintain. `args` is a JSON of all the arguments being passed to the server for processing.
 
@@ -110,8 +110,8 @@ from arkouda.client import generic_msg
 def example(arg="First Argument"):
   arg1 = arg
   arg2 = 10
-  repMsg = cast(str, generic_msg(cmd="serverFunction", args={"arg1": arg1, "arg2": arg2}))
-  left, right = repMsg.split("+")
+  rep_msg = cast(str, generic_msg(cmd="serverFunction", args={"arg1": arg1, "arg2": arg2}))
+  left, right = rep_msg.split("+")
   return left, right
 ```
 
@@ -132,14 +132,14 @@ module ExampleModule {
     
     proc exampleFunction(cmd: string, msgArgs: borrowed MessageArgs,
                                     st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string; // response message
+        var rep_msg: string; // response message
 
         var arg1 = msgArgs.getValueOf("arg1");
         var arg2 = msgArgs.getIntValue("arg2");
         
-        repMsg = "arg1: %s + arg2: %s".format(arg1, arg2);
+        rep_msg = "arg1: %s + arg2: %s".format(arg1, arg2);
         
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        return new MsgTuple(rep_msg, MsgType.NORMAL);
     }
     
     use CommandMap;
@@ -181,7 +181,7 @@ HDF5MultiDim
 ExampleModule
 ```
 
-If we were to print the value of `repMsg` on the client after performing this request, the output would be: `'arg1: First Argument + arg2: 10'`
+If we were to print the value of `rep_msg` on the client after performing this request, the output would be: `'arg1: First Argument + arg2: 10'`
 
 The `return` from the client function would be:
 `"First Argument", 10`
@@ -198,14 +198,14 @@ Now it's your turn to use the information presented in this document to create y
 2. Create a new function which takes in as many arguments as you want
    - `def my_request(arg1, arg2, ...):`
 3. Send your arguments to the Server
-   - `repMsg = cast(str, generic_msg(cmd="myServerFunction", args={"arg1": arg1, "arg2": arg2, ...}))`
+   - `rep_msg = cast(str, generic_msg(cmd="myServerFunction", args={"arg1": arg1, "arg2": arg2, ...}))`
 4. Print your response from the server
-   - `print(repMsg)`
+   - `print(rep_msg)`
 5. Using the [example module](#exMod) above as a reference, create a new Chapel module within the root-level `src` directory
     - This module should include:
       - A `CommandMap` registered function that your request is being sent into
       - JSON parsing of your message and some form of manipulation of your arguments. Ex. addition, subtraction, string-reversal, string-concatenation
-      - The creation of a `repMsg` string
+      - The creation of a `rep_msg` string
       - The return of a `new MsgTuple` of `MsgType.NORMAL`
     - **Remember to add your Chapel file name to `ServerModules.cfg`**
 6. To test your new module, you'll first have to use the terminal to navigate to the root-level directory of Arkouda then run `make` to compile your new Chapel code.

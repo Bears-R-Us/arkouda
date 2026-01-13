@@ -135,11 +135,11 @@ from arkouda.numpy.dtypes import (
     int8,
     intTypes,
     int_scalars,
-    isSupportedBool,
-    isSupportedDType,
-    isSupportedFloat,
-    isSupportedInt,
-    isSupportedNumber,
+    is_supported_bool,
+    is_supported_dtype,
+    is_supported_float,
+    is_supported_int,
+    is_supported_number,
     numeric_and_bool_scalars,
     numeric_scalars,
     numpy_scalars,
@@ -151,6 +151,11 @@ from arkouda.numpy.dtypes import (
     uint32,
     uint64,
     uint8,
+    isSupportedDType,
+    isSupportedFloat,
+    isSupportedInt,
+    isSupportedNumber,
+    isSupportedBool
 )
 from arkouda.numpy.exceptions import RankWarning, TooHardError
 from arkouda.numpy.lib import add_docstring, add_newdoc, emath
@@ -274,7 +279,6 @@ from arkouda.numpy.pdarraycreation import (
     arange,
     array,
     bigint_from_uint_arrays,
-    from_series,
     full,
     full_like,
     linspace,

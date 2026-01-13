@@ -13,7 +13,7 @@ import numpy as np
 from typeguard import typechecked
 
 from arkouda.infoclass import information, pretty_print_information
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -23,9 +23,9 @@ from arkouda.numpy.dtypes import (
     get_byteorder,
     get_server_byteorder,
     int_scalars,
-    isSupportedBool,
-    isSupportedInt,
-    isSupportedNumber,
+    is_supported_bool,
+    is_supported_int,
+    is_supported_number,
     numeric_scalars,
     numpy_scalars,
     resolve_scalar_dtype,
@@ -202,7 +202,7 @@ __all__ = [
     "diff",
     "create_pdarray",
 ]
-logger = getArkoudaLogger(name="pdarrayclass")
+logger = get_arkouda_logger(name="pdarrayclass")
 
 SUPPORTED_REDUCTION_OPS = [
     "any",
@@ -851,7 +851,7 @@ class pdarray:
                 x1, x2, tmp_x1, tmp_x2 = broadcast_if_needed(self, other)
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>",
                 args={"op": op, "a": x1, "b": x2},
             )
@@ -859,7 +859,7 @@ class pdarray:
                 del x1
             if tmp_x2:
                 del x2
-            return create_pdarray(repMsg)
+            return create_pdarray(rep_msg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
@@ -871,14 +871,14 @@ class pdarray:
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
-        if isSupportedBool(other):
+        if is_supported_bool(other):
             dt = "bool"
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"binopvs<{self.dtype},{dt},{self.ndim}>",
             args={"op": op, "a": self, "value": other},
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
@@ -922,14 +922,14 @@ class pdarray:
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
-        if isSupportedBool(other):
+        if is_supported_bool(other):
             dt = "bool"
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"binopsv<{self.dtype},{dt},{self.ndim}>",
             args={"op": op, "a": self, "value": other},
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
     def transfer(self, hostname: str, port: int_scalars):
         """
@@ -1247,20 +1247,20 @@ class pdarray:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
-                repMsg = generic_msg(
+                rep_msg = generic_msg(
                     cmd=f"[int]<{self.dtype},1>",
                     args={
                         "array": self,
                         "idx": key,
                     },
                 )
-                return parse_single_value(repMsg)
+                return parse_single_value(rep_msg)
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
 
         if self.ndim == 1 and isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"[slice]<{self.dtype},1>",
                 args={
                     "array": self,
@@ -1270,7 +1270,7 @@ class pdarray:
                     "max_bits": self.max_bits if self.max_bits is not None else 0,
                 },
             )
-            return create_pdarray(repMsg)
+            return create_pdarray(rep_msg)
 
         if isinstance(key, tuple):
             # handle None and Ellipsis in the key tuple
@@ -1283,14 +1283,14 @@ class pdarray:
 
             if len(scalar_axes) == len(clean_key):
                 # all scalars: use simpler indexing (and return a scalar)
-                repMsg = generic_msg(
+                rep_msg = generic_msg(
                     cmd=f"[int]<{self.dtype},{self.ndim}>",
                     args={
                         "array": self,
                         "idx": clean_key,
                     },
                 )
-                ret_array = parse_single_value(repMsg)
+                ret_array = parse_single_value(rep_msg)
 
             elif len(pdarray_axes) > 0:
                 if len(pdarray_axes) == len(clean_key):
@@ -1375,14 +1375,14 @@ class pdarray:
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             if key.dtype == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd="[pdarray]",
                 args={
                     "array": self,
                     "idx": key,
                 },
             )
-            return create_pdarray(repMsg)
+            return create_pdarray(rep_msg)
 
         import numpy as np
 
@@ -1722,7 +1722,7 @@ class pdarray:
             return coargsort(self.bigint_to_uint_arrays(), algorithm, ascending=ascending)
 
         cmd = f"argsort<{self.dtype.name},{self.ndim}>"
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=cmd,
             args={
                 "name": self.name,
@@ -1732,7 +1732,7 @@ class pdarray:
             },
         )
 
-        sorted_array = create_pdarray(cast(str, repMsg))
+        sorted_array = create_pdarray(cast(str, rep_msg))
 
         if ascending:
             return sorted_array
@@ -3398,14 +3398,14 @@ class pdarray:
 #       all values have been checked by python module and...
 #       server has created pdarray already before this is called
 @typechecked
-def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
+def create_pdarray(rep_msg: Union[str, memoryview], max_bits=None) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
 
     Parameters
     ----------
-    repMsg : str
+    rep_msg : str
         space-delimited string containing the pdarray name, datatype, size
         dimension, shape,and itemsize
 
@@ -3417,17 +3417,17 @@ def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
     Raises
     ------
     ValueError
-        If there's an error in parsing the repMsg parameter into the six
+        If there's an error in parsing the rep_msg parameter into the six
         values needed to create the pdarray instance
     RuntimeError
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
-    if isinstance(repMsg, memoryview):
-        repMsg = repMsg.tobytes().decode()
+    if isinstance(rep_msg, memoryview):
+        rep_msg = rep_msg.tobytes().decode()
 
     try:
-        fields = repMsg.split()
+        fields = rep_msg.split()
         name = fields[1]
         mydtype = fields[2]
         size = int(fields[3])
@@ -3450,14 +3450,14 @@ def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
 
 
 @typechecked
-def create_pdarrays(repMsg: str) -> List[pdarray]:
+def create_pdarrays(rep_msg: str) -> List[pdarray]:
     """
     Return a list of pdarray instances pointing to arrays created by the
     arkouda server.
 
     Parameters
     ----------
-    repMsg : str
+    rep_msg : str
         A JSON list of space delimited strings, each containing the pdarray
         name, datatype, size,
 
@@ -3469,7 +3469,7 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
     Raises
     ------
     ValueError
-        If there's an error in parsing the repMsg parameter into the six
+        If there's an error in parsing the rep_msg parameter into the six
         values needed to create the pdarray instance
     RuntimeError
         Raised if a server-side error is thrown in the process of creating
@@ -3477,8 +3477,8 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
     """
     # TODO: maybe add more robust json parsing here
     try:
-        repMsg = repMsg.strip("[]")
-        responses = [r.strip().strip('"') for r in repMsg.split('",')]
+        rep_msg = rep_msg.strip("[]")
+        responses = [r.strip().strip('"') for r in rep_msg.split('",')]
         return [create_pdarray(response) for response in responses]
     except Exception as e:
         raise ValueError(e)
@@ -4132,9 +4132,9 @@ def dot(
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy.numeric import _matmul2D as akmatmul2D
+    from arkouda.numpy.numeric import _matmul2d as akmatmul2d
 
-    specialCase = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
+    special_case = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
 
     def ship(result, flag):  # "ship" converts to float for the (int,uint) case
         return akcast(result, akfloat64) if flag else result  # else leaves type alone
@@ -4146,14 +4146,14 @@ def dot(
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.ndim == 1 and pda2.ndim == 1:
             if pda1.dtype != akbool or pda2.dtype != akbool:
-                return sum(ship(pda1 * pda2, specialCase))  # type: ignore
+                return sum(ship(pda1 * pda2, special_case))  # type: ignore
             else:
                 return (pda1 & pda2).any()  # type: ignore
 
         #   Second case is two 2D arrays.
 
         elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul2D will do the shape check
-            return ship(akmatmul2D(pda1, pda2), specialCase)  # type: ignore
+            return ship(akmatmul2d(pda1, pda2), special_case)  # type: ignore
 
         #   Third and fourth cases involve left or right argument of N-dimensions, and right
         #   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,
@@ -4170,7 +4170,7 @@ def dot(
                 d2_case = pda1.ndim == 1
                 temp_pda2 = pda2.reshape(pda2.size, 1) if d1_case else pda2  # type: ignore
                 temp_pda1 = pda1.reshape(1, pda1.size) if d2_case else pda1
-                repMsg = generic_msg(
+                rep_msg = generic_msg(
                     cmd=f"dot<{pda1.dtype},{temp_pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
                     args={
                         "a": temp_pda1,
@@ -4179,19 +4179,19 @@ def dot(
                 )
 
                 if d1_case:
-                    temp_ans = create_pdarray(repMsg)
+                    temp_ans = create_pdarray(rep_msg)
                     newshape = list(temp_ans.shape)  # these steps remove
                     del newshape[-1]  # the padded 1 from
                     temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
-                    return ship(temp_ans, specialCase)
+                    return ship(temp_ans, special_case)
                 elif d2_case:
-                    temp_ans = create_pdarray(repMsg)
+                    temp_ans = create_pdarray(rep_msg)
                     newshape = list(temp_ans.shape)  # these steps remove
                     del newshape[0]  # the padded 1 from
                     temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
-                    return ship(temp_ans, specialCase)
+                    return ship(temp_ans, special_case)
                 else:
-                    return ship(create_pdarray(repMsg), specialCase)
+                    return ship(create_pdarray(rep_msg), special_case)
 
     #   If both are scalar
 
@@ -4201,7 +4201,7 @@ def dot(
     #   Finally if just one is scalar
 
     elif np.isscalar(pda1) or np.isscalar(pda2):
-        return ship(pda1 * pda2, specialCase)  # type: ignore
+        return ship(pda1 * pda2, special_case)  # type: ignore
 
     else:
         raise TypeError("Inputs to ak.dot must be scalars or pdarrays.")
@@ -4509,8 +4509,8 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"mink is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": False})
-    return create_pdarray(cast(str, repMsg))
+    rep_msg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": False})
+    return create_pdarray(cast(str, rep_msg))
 
 
 @typechecked
@@ -4567,8 +4567,8 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"maxk is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": False})
-    return create_pdarray(repMsg)
+    rep_msg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": False})
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -4622,8 +4622,8 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"argmink is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": True})
-    return create_pdarray(repMsg)
+    rep_msg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": True})
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -4679,8 +4679,8 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"argmaxk is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": True})
-    return create_pdarray(repMsg)
+    rep_msg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": True})
+    return create_pdarray(rep_msg)
 
 
 def popcount(pda: pdarray) -> pdarray:
@@ -4718,13 +4718,13 @@ def popcount(pda: pdarray) -> pdarray:
 
         return sum(popcount(a) for a in pda.bigint_to_uint_arrays())  # type: ignore
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"popcount<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def parity(pda: pdarray) -> pdarray:
@@ -4761,13 +4761,13 @@ def parity(pda: pdarray) -> pdarray:
         # XOR the parity of the underlying uint array to get the parity of the bigint array
         return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"parity<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def clz(pda: pdarray) -> pdarray:
@@ -4842,13 +4842,13 @@ def clz(pda: pdarray) -> pdarray:
         return lz
 
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"clz<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def ctz(pda: pdarray) -> pdarray:
@@ -4925,13 +4925,13 @@ def ctz(pda: pdarray) -> pdarray:
         return tz
 
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"ctz<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def rotl(x, rot) -> pdarray:
@@ -4965,11 +4965,11 @@ def rotl(x, rot) -> pdarray:
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (
             isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
-        ) or isSupportedInt(rot):
+        ) or is_supported_int(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
+    elif is_supported_int(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, "<<<")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -5006,11 +5006,11 @@ def rotr(x, rot) -> pdarray:
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
         if (
             isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
-        ) or isSupportedInt(rot):
+        ) or is_supported_int(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
+    elif is_supported_int(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -5241,13 +5241,13 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     from arkouda.client import generic_msg
 
     if not builtins.all(
-        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
+        is_supported_number(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
     ):
         raise TypeError(
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    if isSupportedNumber(dividend) and isSupportedNumber(divisor):
+    if is_supported_number(dividend) and is_supported_number(divisor):
         raise TypeError(
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -5268,7 +5268,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         scalar_dtype = resolve_scalar_dtype(divisor)
         if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
             acmd = "fmod2vs_" + scalar_dtype
-        else:  # this condition *should* be impossible because of the isSupportedNumber check
+        else:  # this condition *should* be impossible because of the is_supported_number check
             raise TypeError(f"Scalar divisor type {scalar_dtype} not allowed in fmod")
         if not (dividend.dtype.name == "float64" or scalar_dtype == "float64"):
             raise TypeError(
@@ -5281,7 +5281,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         scalar_dtype = resolve_scalar_dtype(dividend)
         if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
             acmd = "fmod2sv_" + scalar_dtype
-        else:  # this condition *should* be impossible because of the isSupportedNumber check
+        else:  # this condition *should* be impossible because of the is_supported_number check
             raise TypeError(f"Scalar dividend type {scalar_dtype} not allowed in fmod")
         if not (
             divisor.dtype.name == "float64" or scalar_dtype == "float64"  # type: ignore[union-attr]
