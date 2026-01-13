@@ -12,7 +12,7 @@ prototype module efuncTest
         var st = new owned SymTab();
 
         var reqMsg: string;
-        var repMsg: string;
+        var rep_msg: string;
 
         var cmd = "create";
         var len = 5;
@@ -20,42 +20,42 @@ prototype module efuncTest
         reqMsg = try! "%s %i".format(dtype2str(dtype), len);
         var d: Diags;
         d.start();
-        repMsg = createMsg(cmd=cmd, payload=reqMsg, st).msg;
+        rep_msg = createMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("createMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
         cmd = "set";
-        var name = parseName(repMsg);
+        var name = parseName(rep_msg);
         dtype = DType.Int64;
         var v2= 2;
         reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
         d.start();
-        repMsg = setMsg(cmd=cmd, payload=reqMsg, st).msg;
+        rep_msg = setMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("setMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
-        var aname = parseName(repMsg);
+        var aname = parseName(rep_msg);
 
         cmd = "create";
         len = 5;
         dtype = DType.Int64;
         reqMsg = try! "%s %i".format(dtype2str(dtype), len);
         d.start();
-        repMsg = createMsg(cmd=cmd, payload=reqMsg, st).msg;
+        rep_msg = createMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("createMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
         cmd = "set";
-        name = parseName(repMsg);
+        name = parseName(rep_msg);
         dtype = DType.Int64;
         v2= -2;
         reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
         d.start();
-        repMsg = setMsg(cmd=cmd, payload=reqMsg, st).msg;
+        rep_msg = setMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("setMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
         
-        var bname = parseName(repMsg);
+        var bname = parseName(rep_msg);
 
         cmd = "opeqvv";
         var op = "**=";
@@ -64,8 +64,8 @@ prototype module efuncTest
         var value=-1;
         reqMsg = try! "%s %s %s".format(op, aname,bname);
         d.start();
-        repMsg = opeqvvMsg(cmd=cmd, payload=reqMsg, st).msg;
+        rep_msg = opeqvvMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("opeqvvMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
     }
 }

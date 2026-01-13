@@ -119,7 +119,7 @@ proc nameForRandintMsg(len: int, dtype:DType, aMin: int, aMax: int, st: borrowed
   use RandMsg;
   const payload = try! "%i %s %i %i None".format(len, dtype2str(dtype), aMin, aMax);
   writeReq(payload);
-  const repMsg = randintMsg(cmd='randint', payload=payload, st).msg;
-  writeRep(repMsg);
-  return parseName(repMsg);
+  const rep_msg = randintMsg(cmd='randint', payload=payload, st).msg;
+  writeRep(rep_msg);
+  return parseName(rep_msg);
 }

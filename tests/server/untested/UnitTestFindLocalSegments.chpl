@@ -26,7 +26,7 @@ prototype module UnitTestFindSegments
         var st = new owned SymTab();
 
         var reqMsg: string;
-        var repMsg: string;
+        var rep_msg: string;
 
         // create an array filled with random int64 returned in symbol table
         var aname = nameForRandintMsg(LEN, DType.Int64, 0, NVALS, st);
@@ -38,21 +38,21 @@ prototype module UnitTestFindSegments
         reqMsg = try! "%s".format(aname);
         var d: Diags;
         d.start();
-        repMsg = localArgsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        rep_msg = localArgsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("localArgsortMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
         // Get back the iv and apply to return locally sorted keys
-        var ivname = parseName(repMsg); // get name from argsort reply msg
+        var ivname = parseName(rep_msg); // get name from argsort reply msg
         var iv = toSymEntry(st.lookup(ivname), int);
         writeIntArray(iv.a, filename+".permutation");
         cmd = "[pdarray]";
         var payloadMsg = try! "%s %s".format(aname, ivname);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=payloadMsg.encode(), st);
+        rep_msg = pdarrayIndexMsg(cmd=cmd, payload=payloadMsg.encode(), st);
         d.stop("pdarrayIndexMsg");
-        writeRep(repMsg);
-        var sortedname = parseName(repMsg);
+        writeRep(rep_msg);
+        var sortedname = parseName(rep_msg);
         var sorted = toSymEntry(st.lookup(sortedname), int);
         writeIntArray(sorted.a, filename+".permuted");
 
@@ -61,12 +61,12 @@ prototype module UnitTestFindSegments
         reqMsg = try! "%s".format(aname);
         
         d.start();
-        repMsg = findLocalSegmentsMsg(cmd=cmd, payload=aname.encode(), st);
+        rep_msg = findLocalSegmentsMsg(cmd=cmd, payload=aname.encode(), st);
         d.stop("findLocalSegmentsMsg");
-        writeRep(repMsg);
+        writeRep(rep_msg);
 
         // check for correct local segmentation of result
-        var (segname, ukeysname) = parseTwoNames(repMsg);
+        var (segname, ukeysname) = parseTwoNames(rep_msg);
         var segs = toSymEntry(st.lookup(segname), int);
         var ukeys = toSymEntry(st.lookup(ukeysname), int);
         writeIntArray(segs.a, filename+".segments");
