@@ -7,7 +7,7 @@ import pytest
 import arkouda as ak
 
 from arkouda import logger
-from arkouda.logger import LogLevel, getArkoudaClientLogger, getArkoudaLogger
+from arkouda.logger import LogLevel, get_arkouda_client_logger, get_arkouda_logger
 from arkouda.pandas import io_util
 
 
@@ -37,26 +37,26 @@ class TestLogger:
     def test_arkouda_logger(self):
         handler = StreamHandler()
         handler.name = "streaming"
-        logger = getArkoudaLogger(name=self.__class__.__name__, handlers=[handler])
+        logger = get_arkouda_logger(name=self.__class__.__name__, handlers=[handler])
         assert DEBUG == logger.level
         assert "TestLogger" == logger.name
-        assert logger.getHandler("streaming") is not None
+        assert logger.get_handler("streaming") is not None
         logger.debug("debug message")
 
     def test_arkouda_client_logger(self):
-        logger = getArkoudaClientLogger(name="ClientLogger")
+        logger = get_arkouda_client_logger(name="ClientLogger")
         assert DEBUG == logger.level
         assert "ClientLogger" == logger.name
         logger.debug("debug message")
-        assert logger.getHandler("console-handler") is not None
+        assert logger.get_handler("console-handler") is not None
         with pytest.raises(ValueError):
-            logger.getHandler("console-handlers")
+            logger.get_handler("console-handlers")
 
     def test_update_arkouda_logger_log_level(self):
-        logger = getArkoudaLogger(name="UpdateLogger")
+        logger = get_arkouda_logger(name="UpdateLogger")
         assert DEBUG == logger.level
         logger.debug("debug before level change")
-        logger.changeLogLevel(LogLevel.WARN)
+        logger.change_log_level(LogLevel.WARN)
         assert WARN == logger.handlers[0].level
         logger.debug("debug after level change")
 
@@ -69,40 +69,38 @@ class TestLogger:
             handler_two = FileHandler(filename=file_name)
             handler_two.name = "handler-two"
             handler_two.setLevel(INFO)
-            logger = getArkoudaLogger(name="UpdateLogger", handlers=[handler_one, handler_two])
-            logger.changeLogLevel(level=LogLevel.WARN, handlerNames=["handler-one"])
+            logger = get_arkouda_logger(name="UpdateLogger", handlers=[handler_one, handler_two])
+            logger.change_log_level(level=LogLevel.WARN, handlerNames=["handler-one"])
             assert WARN == handler_one.level
             assert INFO == handler_two.level
 
     def test_verbosity_controls(self):
-        logger = getArkoudaLogger(name="VerboseLogger", logLevel=LogLevel("INFO"))
-
-        assert INFO == logger.getHandler("console-handler").level
+        logger = get_arkouda_logger(name="VerboseLogger", log_level=LogLevel("INFO"))
+        assert INFO == logger.get_handler("console-handler").level
         logger.debug("non-working debug message")
-        logger.enableVerbose()
-        assert DEBUG == logger.getHandler("console-handler").level
+        logger.enable_verbose()
+        assert DEBUG == logger.get_handler("console-handler").level
         logger.debug("working debug message")
-        logger.disableVerbose()
-        assert INFO == logger.getHandler("console-handler").level
+        logger.disable_verbose()
+        assert INFO == logger.get_handler("console-handler").level
         logger.debug("next non-working debug message")
 
     def test_enable_disable_verbose(self):
-        logger_one = getArkoudaLogger(name="logger_one", logLevel=LogLevel.INFO)
-        logger_two = getArkoudaLogger(name="logger_two", logLevel=LogLevel.INFO)
-
-        logger_one.debug("logger_one before enableVerbose")
-        logger_two.debug("logger_two before enableVerbose")
-        ak.enableVerbose()
-        logger_one.debug("logger_one after enableVerbose")
-        logger_two.debug("logger_two after enableVerbose")
-        ak.disableVerbose()
-        logger_one.debug("logger_one after disableVerbose")
-        logger_two.debug("logger_two after disableVerbose")
+        logger_one = get_arkouda_logger(name="logger_one", log_level=LogLevel.INFO)
+        logger_two = get_arkouda_logger(name="logger_two", log_level=LogLevel.INFO)
+        logger_one.debug("logger_one before enable_verbose")
+        logger_two.debug("logger_two before enable_verbose")
+        ak.enable_verbose()
+        logger_one.debug("logger_one after enable_verbose")
+        logger_two.debug("logger_two after enable_verbose")
+        ak.disable_verbose()
+        logger_one.debug("logger_one after disable_verbose")
+        logger_two.debug("logger_two after disable_verbose")
 
     def test_error_handling(self):
-        logger = getArkoudaLogger(name="VerboseLogger", logLevel=LogLevel("INFO"))
+        logger = get_arkouda_logger(name="VerboseLogger", log_level=LogLevel("INFO"))
         with pytest.raises(ValueError):
-            logger.getHandler("not-a-handler")
+            logger.get_handler("not-a-handler")
 
         with pytest.raises(TypeError):
-            logger.disableVerbose(logLevel="INFO")
+            logger.disable_verbose(log_level="INFO")

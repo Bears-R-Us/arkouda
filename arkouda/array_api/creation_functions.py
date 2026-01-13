@@ -218,7 +218,7 @@ def eye(
         raise ValueError(f"Unsupported device {device!r}")
 
     if M is None:
-        M = N
+        M = N  # noqa: N806
 
     from arkouda import dtype as akdtype
 
