@@ -124,8 +124,8 @@ def zero_up(vals):
     """
     g = GroupBy(vals)
     unique_size = g.unique_keys.size if not isinstance(vals, Sequence) else g.unique_keys[0].size
-    uniqueInds = arange(unique_size)
-    idinds = g.broadcast(uniqueInds, permute=True)
+    unique_inds = arange(unique_size)
+    idinds = g.broadcast(unique_inds, permute=True)
     return idinds
 
 
@@ -326,7 +326,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
 
     # since we reuse (i < spacesize)[g.permutation] later, we call sum aggregation manually
     less_than = (i < spacesize)[g.permutation]
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="segmentedReduction",
         args={
             "values": less_than,
@@ -337,7 +337,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
         },
     )
 
-    space_multiplicity = create_pdarray(repMsg)
+    space_multiplicity = create_pdarray(rep_msg)
     has_duplicates = (space_multiplicity > 1).any()
     # handle duplicate terms in space
     if has_duplicates:
@@ -427,7 +427,7 @@ def lookup(keys, values, arguments, fillvalue=-1):
     """
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
-        return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
+        return Categorical.from_codes(codes, values.categories, na_value=values.na_value)
     # Find arguments in keys array
     idx = find(arguments, keys)
     # Initialize return values with fillvalue for missing values
@@ -840,7 +840,7 @@ def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierar
     """
     if isinstance(values, Categorical):
         codes = interval_lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
-        return Categorical.from_codes(codes, values.categories, NAvalue=values.NAvalue)
+        return Categorical.from_codes(codes, values.categories, na_value=values.na_value)
     idx = search_intervals(arguments, keys, tiebreak=tiebreak, hierarchical=hierarchical)
     arguments_size = arguments.size if isinstance(arguments, pdarray) else arguments[0].size
     res = zeros(arguments_size, dtype=values.dtype)

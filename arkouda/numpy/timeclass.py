@@ -12,7 +12,7 @@ from pandas import date_range as pd_date_range
 from pandas import timedelta_range as pd_timedelta_range
 from pandas import to_datetime, to_timedelta
 
-from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
+from arkouda.numpy.dtypes import int64, int_scalars, intTypes, is_supported_int
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 
 
@@ -316,7 +316,7 @@ class _AbstractBaseTime(pdarray):
                 otherdata = _Timescalar(other).value
             else:
                 otherdata = other.values
-        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(other):
+        elif (isinstance(other, pdarray) and other.dtype in intTypes) or is_supported_int(other):
             if op not in self.supported_with_pdarray:
                 raise TypeError(f"{op} not supported between {self.__class__.__name__} and integer")
             otherclass = "pdarray"
@@ -355,7 +355,7 @@ class _AbstractBaseTime(pdarray):
                 )
             otherclass = "Timedelta"
             otherdata = _Timescalar(other).value
-        elif isSupportedInt(other):
+        elif is_supported_int(other):
             if op not in self.supported_with_r_pdarray:
                 raise TypeError(f"{op} not supported between int64 and {self.__class__.__name__}")
             otherclass = "pdarray"
@@ -401,7 +401,7 @@ class _AbstractBaseTime(pdarray):
         return key
 
     def __getitem__(self, key):
-        if isSupportedInt(key):
+        if is_supported_int(key):
             # Single integer index will return a pandas scalar
             return self._scalar_callback(self.values[key])
         else:

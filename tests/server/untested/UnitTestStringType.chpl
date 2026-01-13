@@ -28,12 +28,12 @@ proc main() {
   var cmd = "readhdf";
   var reqMsg = "%s %i %jt".format(dsetName, 1, [filename]);
   writeln(">>> ", reqMsg);
-  var repMsg = readhdfMsg(cmd=cmd, payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  if repMsg.startsWith("Error") {
+  var rep_msg = readhdfMsg(cmd=cmd, payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  if rep_msg.startsWith("Error") {
     halt();
   }
-  var (segName, valName) = parseNames(repMsg);
+  var (segName, valName) = parseNames(rep_msg);
   /* var gs = st.lookup(segName); */
   /* var segs = toSymEntry(gs, int); */
   /* var vs = st.lookup(valName); */
@@ -50,16 +50,16 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %i".format("intIndex", "str", segName, valName, testIndex);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
+  rep_msg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
 
   // strings[slice]
   writeln();
   reqMsg = "%s %s %s %s %i %i %i".format("sliceIndex", "str", segName, valName, testStart, testStop, 1);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  var (sliceSegName, sliceValName) = parseNames(repMsg);
+  rep_msg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  var (sliceSegName, sliceValName) = parseNames(rep_msg);
   var strSlice = new owned SegString(sliceSegName, sliceValName, st);
   printAry("strSlice offsets: ", strSlice.offsets.a);
   printAry("strSlice raw bytes: ", strSlice.values.a);
@@ -76,9 +76,9 @@ proc main() {
   countdown.a = [4, 3, 2, 1, 0];
   reqMsg = "%s %s %s %s %s".format("pdarrayIndex", "str", segName, valName, cname);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  var (a, b) = parseNames(repMsg);
+  rep_msg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  var (a, b) = parseNames(rep_msg);
   var strCountdown = new owned SegString(a, b, st);
   printAry("strCountdown offsets: ", strCountdown.offsets.a);
   printAry("strCountdown raw bytes: ", strCountdown.values.a);
@@ -90,9 +90,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s %s".format("==", "str", segName, valName, "str", testString);
   writeln(">>> ", reqMsg);
-  repMsg = segBinopvsMsg(cmd="segBinopvs", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  var aname = parseName(repMsg);
+  rep_msg = segBinopvsMsg(cmd="segBinopvs", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  var aname = parseName(rep_msg);
   var giv = st.lookup(aname);
   var iv = toSymEntry(giv, bool);
   var steps = + scan iv.a;
@@ -112,9 +112,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s %s".format("!=", "str", segName, valName, "str", testString);
   writeln(">>> ", reqMsg);
-  repMsg = segBinopvsMsg(cmd="segBinopvs", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  aname = parseName(repMsg);
+  rep_msg = segBinopvsMsg(cmd="segBinopvs", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  aname = parseName(rep_msg);
   var giv2 = st.lookup(aname);
   var iv2 = toSymEntry(giv2, bool);
   printAry("strings != %s: ".format(testString), iv2.a);
@@ -125,9 +125,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s".format("str", segName, valName);
   writeln(">>> ", reqMsg);
-  repMsg = segGroupMsg(cmd="segGroup", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  var permname = parseName(repMsg);
+  rep_msg = segGroupMsg(cmd="segGroup", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  var permname = parseName(rep_msg);
   var gperm = st.lookup(permname);
   var perm = toSymEntry(gperm, int);
 
@@ -135,9 +135,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s".format("pdarrayIndex", "str", segName, valName, permname);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  var (permSegName, permValName) = parseNames(repMsg);
+  rep_msg = segmentedIndexMsg(cmd="segmentedIndex", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  var (permSegName, permValName) = parseNames(rep_msg);
   var permStrings = new owned SegString(permSegName, permValName, st);
   writeln("grouped strings:");
   for i in 0..#5 {
@@ -158,9 +158,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s %s".format("==", "str", permSegName, permValName, "str", testString);
   writeln(">>> ", reqMsg);
-  repMsg = segBinopvsMsg(cmd="segBinopvs", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  aname = parseName(repMsg);
+  rep_msg = segBinopvsMsg(cmd="segBinopvs", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  aname = parseName(rep_msg);
   giv = st.lookup(aname);
   iv = toSymEntry(giv, bool);
   steps = + scan iv.a;
@@ -182,9 +182,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s".format("pdarrayIndex", "str", permSegName, permValName, aname);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedIndexMsg(cmd="segmentedIndexMsg", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  (a, b) = parseNames(repMsg);
+  rep_msg = segmentedIndexMsg(cmd="segmentedIndexMsg", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  (a, b) = parseNames(rep_msg);
   var strMatches = new owned SegString(a, b, st);
   printAry("strMatches offsets: ", strMatches.offsets.a);
   printAry("strMatches raw bytes: ", strMatches.values.a);
@@ -196,9 +196,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s".format("str", "+".join([permSegName, permValName]), "True");
   writeln(">>> ", reqMsg);
-  repMsg = uniqueMsg(cmd="unique", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  var (myA, myB, myC) = parseNames(repMsg, 3);
+  rep_msg = uniqueMsg(cmd="unique", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  var (myA, myB, myC) = parseNames(rep_msg, 3);
   var uniqueStr = new owned SegString(myA, myB, st);
   var gcounts = st.lookup(myC);
   var counts = toSymEntry(gcounts, int);
@@ -212,9 +212,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s %s %s".format("str", segName, valName, "str", sliceSegName, sliceValName, "False");
   writeln(">>> ", reqMsg);
-  repMsg = segIn1dMsg(cmd="segIn1d", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  aname = parseName(repMsg);
+  rep_msg = segIn1dMsg(cmd="segIn1d", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  aname = parseName(rep_msg);
   giv = st.lookup(aname);
   iv = toSymEntry(giv, bool);
   pop = + reduce iv.a;
@@ -224,9 +224,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s %s".format("contains", "str", segName, valName, "str", testSubstr);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedEfuncMsg(cmd="segEfunc", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  aname = parseName(repMsg);
+  rep_msg = segmentedEfuncMsg(cmd="segEfunc", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  aname = parseName(rep_msg);
   giv = st.lookup(aname);
   iv = toSymEntry(giv, bool);
   pop = + reduce iv.a;
@@ -236,9 +236,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s %s".format("startswith", "str", segName, valName, "str", testSubstr);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedEfuncMsg(cmd="segEfunc", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  aname = parseName(repMsg);
+  rep_msg = segmentedEfuncMsg(cmd="segEfunc", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  aname = parseName(rep_msg);
   giv = st.lookup(aname);
   iv = toSymEntry(giv, bool);
   pop = + reduce iv.a;
@@ -248,9 +248,9 @@ proc main() {
   writeln();
   reqMsg = "%s %s %s %s %s %s".format("endswith", "str", segName, valName, "str", testSubstr);
   writeln(">>> ", reqMsg);
-  repMsg = segmentedEfuncMsg(cmd="segEfunc", payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
-  aname = parseName(repMsg);
+  rep_msg = segmentedEfuncMsg(cmd="segEfunc", payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
+  aname = parseName(rep_msg);
   giv = st.lookup(aname);
   iv = toSymEntry(giv, bool);
   pop = + reduce iv.a;

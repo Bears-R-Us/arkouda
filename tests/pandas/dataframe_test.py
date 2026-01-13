@@ -604,13 +604,13 @@ class TestDataFrame:
 
     def test_groupby_standard(self):
         df = self.build_ak_df()
-        gb = df.GroupBy("userName")
+        gb = df._build_groupby("userName")
         keys, count = gb.size()
         assert keys.tolist() == ["Bob", "Alice", "Carol"]
         assert count.tolist() == [2, 3, 1]
         assert gb.permutation.tolist() == [1, 4, 0, 2, 5, 3]
 
-        gb = df.GroupBy(["userName", "userID"])
+        gb = df._build_groupby(["userName", "userID"])
         keys, count = gb.size()
         assert len(keys) == 2
         assert keys[0].tolist() == ["Bob", "Alice", "Carol"]
@@ -639,7 +639,7 @@ class TestDataFrame:
     def test_gb_series(self):
         df = self.build_ak_df()
 
-        gb = df.GroupBy("userName", use_series=True)
+        gb = df._build_groupby("userName", use_series=True)
 
         c = gb.size(as_series=True)
         assert isinstance(c, ak.Series)
@@ -1281,7 +1281,7 @@ class TestDataFrame:
                 if isinstance(ak_merge[col], ak.pdarray):
                     assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
                 elif isinstance(ak_merge[col], ak.Categorical):
-                    na = ak_merge[col].NAvalue
+                    na = ak_merge[col].na_value
                     from_ak = np.where(from_ak == na, "nan", from_ak)
                     from_ak = np.sort(from_ak)
                     from_pd = np.sort(from_pd.astype(str))
