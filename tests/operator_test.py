@@ -1041,11 +1041,11 @@ class TestOperator:
         args.extend(edge_cases)
 
         def type_helper(x):
-            return ak.resolve_scalar_dtype(x) if ak.isSupportedNumber(x) else x.dtype.name
+            return ak.resolve_scalar_dtype(x) if ak.is_supported_number(x) else x.dtype.name
 
         # take the product of args (i.e. every possible combination)
         for a, b in product(args, args):
-            if all(ak.isSupportedNumber(arg) for arg in [a, b]):
+            if all(ak.is_supported_number(arg) for arg in [a, b]):
                 # we don't support scalar scalar
                 continue
             if not any(type_helper(arg) == "float64" for arg in [a, b]):
@@ -1053,8 +1053,8 @@ class TestOperator:
                 continue
 
             # convert ndarrays to pdarray and leave scalars as is
-            ak_a = a if ak.isSupportedNumber(a) else ak.array(a)
-            ak_b = b if ak.isSupportedNumber(b) else ak.array(b)
+            ak_a = a if ak.is_supported_number(a) else ak.array(a)
+            ak_b = b if ak.is_supported_number(b) else ak.array(b)
 
             # verify mod and fmod match numpy
             assert np.allclose(ak.mod(ak_a, ak_b).to_ndarray(), np.mod(a, b), equal_nan=True)

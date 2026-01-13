@@ -52,7 +52,7 @@ prototype module UnitTestGroupby
     var st = new owned SymTab();
     
     var reqMsg: string;
-    var repMsg: string;
+    var rep_msg: string;
     
     // create random keys array
     var kname = nameForRandintMsg(LEN, DType.Int64, 0, NKEYS, st);
@@ -90,10 +90,10 @@ prototype module UnitTestGroupby
       cmd = "findSegments";
       reqMsg = try! "%s %i %s %s".format(ivname, 1, kname, "pdarray");
       d.start();
-      repMsg = findSegmentsMsg(cmd=cmd, payload=reqMsg, st).msg;
+      rep_msg = findSegmentsMsg(cmd=cmd, payload=reqMsg, st).msg;
       d.stop("findSegmentsMsg");
     }
-    var (segname, ukiname) = parseTwoNames(repMsg);
+    var (segname, ukiname) = parseTwoNames(rep_msg);
     var segg = toGenSymEntry(st.lookup(segname));
     var segs = toSymEntry(segg, int);
     var ukig = toGenSymEntry(st.lookup(ukiname));
@@ -103,10 +103,10 @@ prototype module UnitTestGroupby
     cmd = "[pdarray]";
     reqMsg = try! "%s %s".format(kname, ukiname);
     d.start();
-    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
+    rep_msg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
     d.stop("pdarrayIndexMsg");
-    writeRep(repMsg);
-    var ukname = parseName(repMsg);
+    writeRep(rep_msg);
+    var ukname = parseName(rep_msg);
     var ukg = toGenSymEntry(st.lookup(ukname));
     var ukeys = toSymEntry(ukg, int);
 
@@ -118,10 +118,10 @@ prototype module UnitTestGroupby
     cmd = "[pdarray]";
     reqMsg = try! "%s %s".format(vname, ivname);
     d.start();
-    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
+    rep_msg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
     d.stop("pdarrayIndexMsg");
-    writeRep(repMsg);
-    var svname = parseName(repMsg);
+    writeRep(rep_msg);
+    var svname = parseName(rep_msg);
     var svg = toGenSymEntry(st.lookup(svname));
     var svals = toSymEntry(svg, int);
 
@@ -136,11 +136,11 @@ prototype module UnitTestGroupby
       reqMsg = try! "%s %s %s %s".format(svname, segname, OPERATOR, skip_nan);
       //writeReq(reqMsg);
       d.start();
-      repMsg = segmentedReductionMsg(cmd=cmd, payload=reqMsg, st).msg;
+      rep_msg = segmentedReductionMsg(cmd=cmd, payload=reqMsg, st).msg;
       d.stop("segmentedReductionMsg");
     } 
-    writeRep(repMsg);
-    var redname = parseName(repMsg);
+    writeRep(rep_msg);
+    var redname = parseName(rep_msg);
     var redg = toGenSymEntry(st.lookup(redname));
     var red = toSymEntry(redg, int);
 

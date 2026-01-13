@@ -8,11 +8,13 @@ valid for inputs that match the given type annotations.
 
 from __future__ import annotations
 
-from typing import Any, Literal, Protocol, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Literal, Protocol, TypeAlias, TypeVar, Union
 
-from numpy import dtype, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64
+import numpy as np
 
-from .array_object import Array
+
+if TYPE_CHECKING:
+    from .array_object import Array
 
 
 __all__ = [
@@ -37,19 +39,20 @@ class NestedSequence(Protocol[_T_co]):
 Device = Literal["cpu"]
 
 
-Dtype = dtype[
-    Union[
-        int8,
-        int16,
-        int32,
-        int64,
-        uint8,
-        uint16,
-        uint32,
-        uint64,
-        float32,
-        float64,
-    ]
+Dtype: TypeAlias = Union[
+    np.dtype[np.int8],
+    np.dtype[np.int16],
+    np.dtype[np.int32],
+    np.dtype[np.int64],
+    np.dtype[np.uint8],
+    np.dtype[np.uint16],
+    np.dtype[np.uint32],
+    np.dtype[np.uint64],
+    np.dtype[np.float32],
+    np.dtype[np.float64],
+    np.dtype[np.complex64],
+    np.dtype[np.complex128],
+    np.dtype[np.bool_],
 ]
 
 

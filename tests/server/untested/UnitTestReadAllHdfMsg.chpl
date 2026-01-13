@@ -15,10 +15,10 @@ proc main() {
      ['start','duration', 'srcIP', 'dstIP', 'proto', 'srcPort', 'dstPort', 'srcPkts', 'dstPkts', 'srcBytes', 'dstBytes'],
      [filename2,filename3,filename4]);
   writeln(">>> ", reqMsg);
-  var repMsg = readAllHdfMsg(cmd=cmd, payload=reqMsg.encode(), st);
-  writeln("<<< ", repMsg);
+  var rep_msg = readAllHdfMsg(cmd=cmd, payload=reqMsg.encode(), st);
+  writeln("<<< ", rep_msg);
 
-  if repMsg.startsWith("Error") {
+  if rep_msg.startsWith("Error") {
     halt();
   }
 }

@@ -41,8 +41,8 @@ def times2(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
     if isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd=f"times2<{pda.dtype},{pda.ndim}>", args={"arg1" : pda})
-        return create_pdarray(repMsg)
+        rep_msg = generic_msg(cmd=f"times2<{pda.dtype},{pda.ndim}>", args={"arg1" : pda})
+        return create_pdarray(rep_msg)
     else:
         raise TypeError("times2 only supports pdarrays.")
 ```

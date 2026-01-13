@@ -35,7 +35,7 @@ import re
 # Aggregate operations explicitly defined
 import arkouda as ak
 
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 
 
 GRAPH_INFRA_DIR = "benchmark_v2/graph_infra"
@@ -349,7 +349,7 @@ def add_aggregate_ops(field_lookup_map):
 
 
 def main():
-    logger = getArkoudaLogger(name="generate field lookup map")
+    logger = get_arkouda_logger(name="generate field lookup map")
 
     field_lookup_map = build_field_lookup_map()
     field_lookup_map = add_default_mappings(field_lookup_map)
