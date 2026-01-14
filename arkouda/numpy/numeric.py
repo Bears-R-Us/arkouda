@@ -1489,7 +1489,11 @@ def arctan2(
 
     if np.isscalar(x1) and np.isscalar(x2):
         if out is None:
-            return nparctan2(x1, x2) if where is None or where is True else np.float64(1.0)
+            if where is None or where is True :
+                return nparctan2(x1, x2)
+            else :
+                raise ValueError ("arctan2 can't return meaningful value with scalars, out=None, where=False.")
+            # return nparctan2(x1, x2) if where is None or where is True else np.float64(1.0)
 
         if out is not None:
             if not isinstance(out, pdarray):
@@ -1622,6 +1626,7 @@ def _arctan2_(
     from arkouda.client import generic_msg
 
     if isinstance(x1, pdarray) or isinstance(x2, pdarray):
+
         # These four ifs look awkward, since one of x1, x2  MUST be a pdarray, but since mypy
         # doesn't know that, this is how we set ndim and handle bools without causing a mypy error.
 
@@ -1630,7 +1635,7 @@ def _arctan2_(
                 x1 = int(x1)
         if np.isscalar(x2):
             if isinstance(x2, (bool, np.bool_)):
-                x1 = int(x2)
+                x2 = int(x2)
 
         if isinstance(x1, pdarray):
             ndim = x1.ndim

@@ -155,14 +155,6 @@ class TestDatetime:
                 ret = eval(f"fcvec {op} scvec")
                 assert isinstance(ret, return_type)
                 metrics["ak_supported"] += 1
-                # try:
-                #     compare_flag = True
-                #     ret = eval(f"fcvec {op} scvec")
-                #     assert isinstance(ret, return_type)
-                #     metrics["ak_supported"] += 1
-                # except RuntimeWarning:
-                #     continue  # this test can cause divide-by-zero, which would
-                #     # also cause a following test to fail, so skip it
                 try:
                     pdret = eval(f"pdfcvec {op} pdscvec")
                 except TypeError:
