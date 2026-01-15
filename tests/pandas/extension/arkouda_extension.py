@@ -680,6 +680,9 @@ class TestArkoudaExtensionArrayArithmatic:
             (operator.add, 5, np.array([6, 7, 8])),
             (operator.sub, 1, np.array([0, 1, 2])),
             (operator.mul, 2, np.array([2, 4, 6])),
+            (operator.add, 5.0, np.array([6.0, 7.0, 8.0])),
+            (operator.sub, 1.0, np.array([0.0, 1.0, 2.0])),
+            (operator.mul, 2.0, np.array([2.0, 4.0, 6.0])),
         ],
     )
     def test_arith_method_with_scalar_operand(self, op, scalar, expected):
@@ -688,6 +691,7 @@ class TestArkoudaExtensionArrayArithmatic:
         out = x._arith_method(scalar, op)
 
         assert type(out) is type(x)
+        assert out.to_numpy().dtype == expected.dtype
         np.testing.assert_array_equal(out.to_numpy(), expected)
 
     def test_arith_method_returns_notimplemented_for_unsupported_other(self):

@@ -47,7 +47,7 @@ array([ 1, 99,  3])
 from __future__ import annotations
 
 from types import NotImplementedType
-from typing import TYPE_CHECKING, Any, Callable, Optional, Tuple, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Optional, Tuple, TypeVar, Union
 
 import numpy as np
 
@@ -59,9 +59,6 @@ from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraysetops import concatenate as ak_concat
 from arkouda.pandas.categorical import Categorical
 
-
-# Self-type for correct return typing
-EA = TypeVar("EA", bound="ExtensionArray")
 
 if TYPE_CHECKING:
     from arkouda.numpy.strings import Strings
@@ -149,15 +146,23 @@ class ArkoudaExtensionArray(ExtensionArray):
         * Type coercion / promotion behavior is determined by the underlying Arkouda
           implementation of ``op``.
         """
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
         if isinstance(other, ExtensionArray) and hasattr(other, "_data"):
             other = other._data
+            if isinstance(other, (np.ndarray, Iterable, pdarray, Strings)):
+                other = ak_array(other, copy=False)
+            elif isinstance(other, Categorical):
+                other = other.to_strings()
+            else:
+                return NotImplemented
         elif np.isscalar(other):
             pass
         else:
             return NotImplemented
 
         result = op(self._data, other)
-        return type(self)(result)
+        return self._from_data(result)
 
     def copy(self, deep: bool = True):
         """
