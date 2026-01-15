@@ -624,22 +624,22 @@ class TestRandom:
         assert_almost_equivalent(known, given)
 
     def test_legacy_randint(self):
-        testArray = ak.random.randint(0, 10, 5)
-        assert isinstance(testArray, ak.pdarray)
-        assert 5 == len(testArray)
-        assert ak.int64 == testArray.dtype
+        test_array = ak.random.randint(0, 10, 5)
+        assert isinstance(test_array, ak.pdarray)
+        assert 5 == len(test_array)
+        assert ak.int64 == test_array.dtype
 
-        testArray = ak.random.randint(np.int64(0), np.int64(10), np.int64(5))
-        assert isinstance(testArray, ak.pdarray)
-        assert 5 == len(testArray)
-        assert ak.int64 == testArray.dtype
+        test_array = ak.random.randint(np.int64(0), np.int64(10), np.int64(5))
+        assert isinstance(test_array, ak.pdarray)
+        assert 5 == len(test_array)
+        assert ak.int64 == test_array.dtype
 
-        testArray = ak.random.randint(np.float64(0), np.float64(10), np.int64(5))
-        assert isinstance(testArray, ak.pdarray)
-        assert 5 == len(testArray)
-        assert ak.int64 == testArray.dtype
+        test_array = ak.random.randint(np.float64(0), np.float64(10), np.int64(5))
+        assert isinstance(test_array, ak.pdarray)
+        assert 5 == len(test_array)
+        assert ak.int64 == test_array.dtype
 
-        test_ndarray = testArray.to_ndarray()
+        test_ndarray = test_array.to_ndarray()
 
         for value in test_ndarray:
             assert 0 <= value <= 10
@@ -752,28 +752,30 @@ class TestRandom:
         ak.random.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
 
     def test_legacy_uniform(self):
-        testArray = ak.random.uniform(3)
-        assert isinstance(testArray, ak.pdarray)
-        assert 3 == len(testArray)
-        assert ak.float64 == testArray.dtype
+        test_array = ak.random.uniform(3)
+        assert isinstance(test_array, ak.pdarray)
+        assert 3 == len(test_array)
+        assert ak.float64 == test_array.dtype
 
-        testArray = ak.random.uniform(np.int64(3))
-        assert isinstance(testArray, ak.pdarray)
-        assert 3 == len(testArray)
-        assert ak.float64 == testArray.dtype
+        test_array = ak.random.uniform(np.int64(3))
+        assert isinstance(test_array, ak.pdarray)
+        assert 3 == len(test_array)
+        assert ak.float64 == test_array.dtype
 
         #  The next two tests also retain the non pytest.seed, because they assert specific values.
 
-        uArray = ak.random.uniform(size=3, low=0, high=5, seed=0)
+        u_array = ak.random.uniform(size=3, low=0, high=5, seed=0)
         assert np.allclose(
             [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
-            uArray.tolist(),
+            u_array.tolist(),
         )
 
-        uArray = ak.random.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
+        u_array = ak.random.uniform(
+            size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0)
+        )
         assert np.allclose(
             [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
-            uArray.tolist(),
+            u_array.tolist(),
         )
 
         with pytest.raises(TypeError):
