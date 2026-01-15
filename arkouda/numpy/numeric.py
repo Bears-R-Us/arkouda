@@ -30,8 +30,11 @@ from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_INTS,
     _datatype_check,
     bigint,
+    bool_scalars,
     int_scalars,
+    is_supported_bool,
     is_supported_number,
+    numeric_and_bool_scalars,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
@@ -52,7 +55,7 @@ from arkouda.numpy.pdarrayclass import (
 )
 from arkouda.numpy.pdarrayclass import all as ak_all
 from arkouda.numpy.pdarrayclass import any as ak_any
-from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
+from arkouda.numpy.pdarraycreation import array, linspace
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
 
@@ -154,13 +157,22 @@ class ErrorMode(Enum):
 
 # TODO: standardize error checking in python interface
 
-# merge_where comes in handy in arctan2 and some other functions.
+# merge_where comes in handy in arctan2 various functions.
 
 
 def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
+
+
+# _normalize_scalar is needed in arctan2 to handle broadcasts of np.bool_ scalars
+
+
+def _normalize_scalar(x):
+    if isinstance(x, np.generic):
+        return x.item()
+    return x
 
 
 @overload
@@ -1397,10 +1409,13 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 @typechecked
 def arctan2(
-    num: Union[pdarray, numeric_scalars],
-    denom: Union[pdarray, numeric_scalars],
-    where: Union[bool, pdarray] = True,
-) -> pdarray:
+    x1: Union[pdarray, numeric_and_bool_scalars],
+    x2: Union[pdarray, numeric_and_bool_scalars],
+    /,
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Union[bool_scalars, pdarray]] = None,
+) -> Union[pdarray, numeric_scalars]:
     """
     Return the element-wise inverse tangent of the array pair. The result chosen is the
     signed angle in radians between the ray ending at the origin and passing through the
@@ -1409,11 +1424,13 @@ def arctan2(
 
     Parameters
     ----------
-    num : pdarray or numeric_scalars
+    x1 : pdarray or numeric_scalars
         Numerator of the arctan2 argument.
-    denom : pdarray or numeric_scalars
+    x2 : pdarray or numeric_scalars
         Denominator of the arctan2 argument.
-    where : bool or pdarray, default=True
+    out : Optional, pdarray
+        A pdarray in which to store the result, or to use as a source when where is False.
+    where : Optional, bool_scalars or pdarray, default=None
         This condition is broadcast over the input. At locations where the condition is True,
         the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
         its original value. Default set to True.
@@ -1432,6 +1449,8 @@ def arctan2(
         | Raised if any element of pdarrays num and denom is not a supported type
         | Raised if both num and denom are scalars
         | Raised if where is neither boolean nor a pdarray of boolean
+    ValueError
+        Raised if broadcasting of the given parameters isn't possible.
 
     Examples
     --------
@@ -1441,72 +1460,216 @@ def arctan2(
     >>> ak.arctan2(y,x)
     array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])
     """
-    from arkouda.client import generic_msg
+    #  The line below is needed in order to enable use of arkouda's "where" function without
+    #  a name conflict, since "where" is also a parameter name.
 
-    if not all(is_supported_number(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
-        raise TypeError(
-            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
-        )
-    if is_supported_number(num) and is_supported_number(denom):
-        raise TypeError(
-            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
-        )
-    # TODO: handle shape broadcasting for multidimensional arrays
+    from arkouda.numpy.numeric import where as ak_where
 
-    if where is True:
-        pass
-    elif where is False:
-        return num / denom  # type: ignore
-    elif where.dtype != bool:
+    #  And we may need these imports for broadcasting.
+    from arkouda.numpy.util import broadcast_shapes as bcast_shapes
+    from arkouda.numpy.util import broadcast_to as bcast_to
+
+    def _is_supported(arg):
+        return is_supported_number(arg) or is_supported_bool(arg)
+
+    def _bool_case(x1, x2):
+        return type(x1) in (bool, np.bool_) and type(x2) in (bool, np.bool)
+
+    #   The function below is needed for the boolean scalar case.
+
+    #   np.arctan2 returns float16 if x1 and x2 are both bool.  This helper converts it to float64
+    #   because subsequent functions such as where can't accomodate float16.
+
+    def nparctan2(x1, x2):
+        return np.float64(np.arctan2(x1, x2)) if _bool_case(x1, x2) else np.arctan2(x1, x2)
+
+    #  Begin with various checks.
+
+    #  First the scalar case.
+
+    if np.isscalar(x1) and np.isscalar(x2):
+        if out is None:
+            if where is None or where is True:
+                return nparctan2(x1, x2)
+            else:
+                raise ValueError(
+                    "arctan2 can't return meaningful value with scalars, out=None, where=False."
+                )
+            # return nparctan2(x1, x2) if where is None or where is True else np.float64(1.0)
+
+        if out is not None:
+            if not isinstance(out, pdarray):
+                raise TypeError("return arrays must be of type pdarray")  # matches numpy's error
+            else:
+                if where is None or where is True:
+                    out[:] = nparctan2(x1, x2)
+                    return out
+                else:
+                    try:
+                        _where = where if isinstance(where, pdarray) else _normalize_scalar(where)
+                        new_where = bcast_to(_where, out.shape)
+                        out[:] = ak_where(new_where, nparctan2(x1, x2), out)
+                        return out
+                    except Exception as e:
+                        raise ValueError("Cannot broadcast inputs to common shape in arctan2.") from e
+
+    #  That covers the scalar case.  From here onward, at least one of x1, x2 is a pdarray.
+
+    if out is None and where is not None:
+        raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
+
+    if out is not None and out.dtype != ak_float64:
+        raise TypeError(f"Cannot return arctan2 result as type {out.dtype}")
+
+    if where is False:
+        if out is not None:
+            return out  # This is the one instance where you can get away with "where" but not "out"
+        else:
+            raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
+
+    if isinstance(where, pdarray) and where.dtype != bool:
         raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
 
-    if isinstance(num, pdarray) or isinstance(denom, pdarray):
-        ndim = num.ndim if isinstance(num, pdarray) else denom.ndim  # type: ignore[union-attr]
+    if np.isscalar(where) and type(where) is not bool:
+        raise TypeError(f"where must have dtype bool, got {type(where)} instead")
 
-        #   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based
-        #   on a and b.
+    #  At this point, we know we have both out and where.  Check for valid types.
 
-        if isinstance(num, pdarray) and isinstance(denom, pdarray):
-            cmdstring = f"arctan2vv<{num.dtype},{ndim},{denom.dtype}>"
-            if where is True:
-                argdict = {
-                    "a": num,
-                    "b": denom,
-                }
-            elif where is False:
-                return num / denom  # type: ignore
-            else:
-                argdict = {
-                    "a": num[where],
-                    "b": denom[where],
-                }
-        elif not isinstance(denom, pdarray):
-            ts = resolve_scalar_dtype(denom)
+    if not all(_is_supported(arg) or isinstance(arg, pdarray) for arg in [x1, x2]):
+        raise TypeError(
+            f"Unsupported types {type(x1)} and/or {type(x2)}. Supported "
+            "types are numeric scalars and pdarrays."
+        )
+    if _is_supported(x1) and _is_supported(x2):
+        raise TypeError(
+            f"Unsupported types {type(x1)} and/or {type(x2)}. Supported "
+            "types are numeric scalars and pdarrays."
+        )
+
+    #  Now broadcast as needed.  Because each of (x1, x2, where) may be a
+    #  scalar or pdarray, we use assign some temporary variables below so
+    #  that the broadcast will work in any allowed case.
+    #  Note that (1,) is sort of a "dummy shape," broadcastable to anything.
+
+    ws = where.shape if isinstance(where, pdarray) else (1,)
+    x1s = x1.shape if isinstance(x1, pdarray) else (1,)
+    x2s = x2.shape if isinstance(x2, pdarray) else (1,)
+
+    #  the "normalize scalar" call is needed since we support np.bool_,
+    #  which unlike bool, can't be broadcast.
+
+    _where = where if isinstance(where, pdarray) else _normalize_scalar(where)
+    _x1 = x1 if isinstance(x1, pdarray) else _normalize_scalar(x1)
+    _x2 = x2 if isinstance(x2, pdarray) else _normalize_scalar(x2)
+
+    #  If there is no out parameter, we try to find a common shape.
+
+    common_shape = ()
+
+    if out is None:
+        if where is None:
+            try:
+                common_shape = bcast_shapes(x1s, x2s)
+                _x1 = bcast_to(_x1, common_shape)
+                _x2 = bcast_to(_x2, common_shape)
+            except Exception as e:
+                raise ValueError("Cannot broadcast inputs to common shape in arctan2.") from e
+        if where is not None:
+            try:
+                common_shape = bcast_shapes(x1s, x2s, ws)
+                _x1 = bcast_to(_x1, common_shape)
+                _x2 = bcast_to(_x2, common_shape)
+                _where = bcast_to(where, common_shape)
+            except Exception as e:
+                raise ValueError("Cannot broadcast inputs to common shape in arctan2.") from e
+
+    #  But if there is an out parameter, we use its shape as the output shape.
+
+    if out is not None:
+        common_shape = out.shape
+        try:
+            _x1 = bcast_to(_x1, common_shape)
+            _x2 = bcast_to(_x2, common_shape)
+            if where is not None:
+                _where = bcast_to(where, common_shape)
+        except Exception as e:
+            raise ValueError(f"bcast_to(x2) failed: {type(e).__name__}: {e}") from e
+
+    #  Do the computation.  I'm keeping this in a separate function for readability.
+
+    tmp = _arctan2_(_x1, _x2)
+
+    #  Now handle the "where" parameter as needed.
+
+    if _where is None or _where is True:
+        if out is not None:
+            out[:] = tmp
+        return tmp
+    else:
+        if out is None:
+            raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
+
+    out[:] = ak_where(_where, tmp, out)
+    return out
+
+
+def handle_bools(x):
+    if x.dtype in (bool, np.bool_, ak_bool):
+        return x.astype(ak_float64)
+    else:
+        return x
+
+
+@typechecked
+def _arctan2_(
+    x1: Union[pdarray, numeric_and_bool_scalars],
+    x2: Union[pdarray, numeric_and_bool_scalars],
+) -> pdarray:
+    from arkouda.client import generic_msg
+
+    if isinstance(x1, pdarray) or isinstance(x2, pdarray):
+        # These four ifs look awkward, since one of x1, x2  MUST be a pdarray, but since mypy
+        # doesn't know that, this is how we set ndim and handle bools without causing a mypy error.
+
+        if np.isscalar(x1):
+            if isinstance(x1, (bool, np.bool_)):
+                x1 = int(x1)
+        if np.isscalar(x2):
+            if isinstance(x2, (bool, np.bool_)):
+                x2 = int(x2)
+
+        if isinstance(x1, pdarray):
+            ndim = x1.ndim
+            x1 = handle_bools(x1)
+        if isinstance(x2, pdarray):
+            ndim = x2.ndim
+            x2 = handle_bools(x2)
+
+        #   The code below will create the command string for arctan2vv, arctan2vs
+        #   or arctan2sv, based on x1 and x2.
+
+        argdict = {"a": x1, "b": x2}
+        if isinstance(x1, pdarray) and isinstance(x2, pdarray):
+            cmdstring = f"arctan2vv<{x1.dtype},{ndim},{x2.dtype}>"
+
+        elif isinstance(x1, pdarray) and not isinstance(x2, pdarray):
+            ts = resolve_scalar_dtype(x2)
             if ts in ["float64", "int64", "uint64", "bool"]:
-                cmdstring = "arctan2vs_" + ts + f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
+                cmdstring = "arctan2vs_" + ts + f"<{x1.dtype},{ndim}>"
             else:
-                raise TypeError(f"{ts} is not an allowed denom type for arctan2")
-            argdict = {"a": num if where is True else num[where], "b": denom}  # type: ignore
-        elif not isinstance(num, pdarray):
-            ts = resolve_scalar_dtype(num)
+                raise TypeError(f"{ts} is not an allowed x2 type for arctan2")
+
+        elif isinstance(x2, pdarray) and not isinstance(x1, pdarray):
+            ts = resolve_scalar_dtype(x1)
             if ts in ["float64", "int64", "uint64", "bool"]:
-                cmdstring = "arctan2sv_" + ts + f"<{denom.dtype},{ndim}>"
+                cmdstring = "arctan2sv_" + ts + f"<{x2.dtype},{ndim}>"
             else:
-                raise TypeError(f"{ts} is not an allowed num type for arctan2")
-            argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
+                raise TypeError(f"{ts} is not an allowed x1 type for arctan2")
 
         rep_msg = generic_msg(cmd=cmdstring, args=argdict)
-        ret = create_pdarray(rep_msg)
-        if where is True:
-            return ret
-        else:
-            new_pda = num / denom  # type : ignore
-            return _merge_where(new_pda, where, ret)
+        return create_pdarray(rep_msg)
 
-    else:
-        return scalar_array(arctan2(num, denom) if where else num / denom)
+    raise TypeError("_arctan2_ helper function called with no pdarray arguments.")
 
 
 @typechecked
