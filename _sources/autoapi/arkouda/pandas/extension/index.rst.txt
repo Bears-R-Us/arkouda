@@ -191,7 +191,7 @@ Package Contents
 
 
 
-   .. py:method:: isna() -> pandas.api.extensions.ExtensionArray | numpy.ndarray[Any, Any]
+   .. py:method:: isna() -> numpy.typing.NDArray[numpy.bool_]
 
       A 1-D array indicating if each value is missing.
 
