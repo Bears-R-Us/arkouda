@@ -1,8 +1,9 @@
+import functools
 import math
 import operator
 
 import pytest
-import functools
+
 import arkouda as ak
 
 from benchmark_v2.benchmark_utils import calc_num_bytes
