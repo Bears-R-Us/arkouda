@@ -361,7 +361,7 @@ class TestArkoudaExtensionArray:
         assert out[-1] == 1499
 
     def assert_indices(self, perm: np.ndarray, expected_py_indices):
-        """Compare returned indices to expected Python list, staying server-side where possible."""
+        """Compare returned indices to expected NumPy array, staying server-side where possible."""
         assert isinstance(perm, np.ndarray)
         # Arkouda uses int64 for indices; accept any int dtype but verify it's integer
         assert np.issubdtype(perm.dtype, np.integer)
@@ -519,7 +519,7 @@ class TestArkoudaExtensionArray:
 
         # order of first-appearance: ["red", "blue", "green"]
         assert_equal(uniques._data, ak.Categorical(ak.array(["red", "blue", "green"])))
-        # remapped codes according to sorted order:
+        # remapped codes according to order of first-appearance:
         # red->2, blue->0, green->1
         np_assert_equal(codes, np.array([0, 1, 0, 2]))
 

@@ -427,7 +427,7 @@ class ArkoudaExtensionArray(ExtensionArray):
             sent = -1 if use_na_sentinel else 0
             from arkouda.numpy.pdarraycreation import full as ak_full
 
-            return ak_full(n, sent, dtype=int64).to_ndarray(), type(self)(
+            return ak_full(n, sent, dtype=int64).to_ndarray().astype(np.intp, copy=False), type(self)(
                 ak_array([], dtype=self.to_numpy().dtype)
             )
 
@@ -612,7 +612,7 @@ class ArkoudaExtensionArray(ExtensionArray):
         else:
             raise TypeError(f"Unsupported argsort dtype: {type(self._data)}")
 
-        return perm.to_ndarray()
+        return perm.to_ndarray().astype(np.intp, copy=False)
 
     def broadcast_arrays(self, *arrays):
         raise NotImplementedError(
