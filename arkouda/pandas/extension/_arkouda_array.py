@@ -242,8 +242,15 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             Whether to ignore missing values. Accepted for pandas compatibility.
             Default is True.
 
-            Arkouda-backed arrays currently do not maintain a separate missing-value mask;
-            behavior for NaN values is determined by the underlying Arkouda operation.
+            NOTE
+            ----
+            ``skipna`` semantics are **not fully supported** for Arkouda-backed arrays.
+            Except where explicitly implemented (e.g., ``count`` for float64),
+            reductions are delegated directly to Arkouda operations, which typically
+            propagate ``NaN`` values rather than skipping them.
+
+            As a result, reductions such as ``sum``, ``mean``, ``min``, and ``max`` on
+            float arrays may return ``NaN`` even when ``skipna=True``.
         **kwargs : Any
             Additional keyword arguments forwarded by pandas. Currently unused unless
             explicitly supported.
@@ -261,6 +268,8 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         """
         from arkouda.numpy import isnan
 
+        ddof = int(kwargs.get("ddof", 1))
+
         op = name.lower()
         data = self._data
 
@@ -276,6 +285,12 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
                 raise ValueError("Reduction 'first' requires at least one element")
             return data[0]
 
+        def _var() -> Any:
+            return data.var(ddof=ddof)
+
+        def _std() -> Any:
+            return data.std(ddof=ddof)
+
         # All listed reductions are guaranteed to exist on pdarray for all dtypes
         scalar_fns: dict[str, Callable[[], Any]] = {
             "sum": data.sum,
@@ -284,8 +299,8 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             "min": data.min,
             "max": data.max,
             "mean": data.mean,
-            "var": data.var,
-            "std": data.std,
+            "var": _var,
+            "std": _std,
             "argmin": data.argmin,
             "argmax": data.argmax,
             "first": _first,

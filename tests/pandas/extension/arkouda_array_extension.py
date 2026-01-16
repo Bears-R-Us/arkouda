@@ -726,37 +726,31 @@ class TestArkoudaArrayOr:
 
 class TestArkoudaArrayReduce:
     @pytest.mark.parametrize(
-        "name, np_func",
-        [
-            ("sum", np.sum),
-            ("prod", np.prod),
-            ("min", np.min),
-            ("max", np.max),
-            ("mean", np.mean),
-            ("var", np.var),
-            ("std", np.std),
-        ],
+        "name",
+        ["sum", "prod", "min", "max", "mean", "var", "std"],
     )
-    def test_reduce_numeric_matches_numpy(self, name, np_func):
+    def test_reduce_numeric_matches_pandas(self, name):
         data = np.array([1, 2, 3, 2], dtype=np.float64)
         arr = ArkoudaArray(ak.array(data))
 
         got = arr._reduce(name)
-        exp = np_func(data)
 
-        # Arkouda returns python / numpy scalar types
+        s = pd.Series(data)
+        # pandas methods; ddof=1 for var/std by default
+        exp = getattr(s, name)()
+
         assert np.isfinite(got)
         assert got == pytest.approx(exp)
 
     @pytest.mark.parametrize(
-        "data, exp_count, exp_nunique",
+        "data, exp_count",
         [
-            ([1, 2, 3, 2], 4, 3),
-            ([10], 1, 1),
-            ([5, 5, 5], 3, 1),
+            ([1, 2, 3, 2], 4),
+            ([10], 1),
+            ([5, 5, 5], 3),
         ],
     )
-    def test_reduce_count(self, data, exp_count, exp_nunique):
+    def test_reduce_count(self, data, exp_count):
         arr = ArkoudaArray(ak.array(data))
         assert arr._reduce("count") == exp_count
 
