@@ -303,8 +303,8 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             elif key and isinstance(key[0], (int, np.integer)):
                 key = ak_array(np.array(key, dtype=np.int64))
 
-        if isinstance(key, Sequence) and not isinstance(key, (str, bytes)):
-            #   Cannot set empty index, nothing to do
+        if _is_empty_indexer(key):
+            # Setting nothing is a no-op, consistent with numpy/pandas
             return
 
         # Normalize the value into something the underlying pdarray understands
@@ -604,3 +604,27 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         boolean-reduction calls.
         """
         return bool(self._data.any())
+
+
+def _is_empty_indexer(key) -> bool:
+    # Python containers
+    if isinstance(key, (list, tuple)):
+        return len(key) == 0
+
+    # NumPy arrays
+    if isinstance(key, np.ndarray):
+        return key.size == 0
+
+    # Arkouda arrays
+    if isinstance(key, pdarray):
+        return key.size == 0
+
+    # Pandas Index/Series often implement __len__ and are safe here,
+    # but we keep it conservative (optional):
+    if isinstance(key, Sequence) and not isinstance(key, (str, bytes)):
+        try:
+            return len(key) == 0
+        except TypeError:
+            return False
+
+    return False
