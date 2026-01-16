@@ -1755,31 +1755,37 @@ corresponding to the first occurrence is returned.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'quicksort'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'last'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'quicksort'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.intp" title="arkouda.numpy.intp"><span class="pre">numpy.intp</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
 <dd><p>Return the indices that would sort the array.</p>
-<p>This method computes the permutation indices that would sort the
-underlying Arkouda data. It aligns with the pandas <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code>
-contract, returning a 1-D <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of integer indices suitable for
-reordering the array via <code class="docutils literal notranslate"><span class="pre">take</span></code> or <code class="docutils literal notranslate"><span class="pre">iloc</span></code>. NaN values are placed
-either at the beginning or end of the result depending on
-<code class="docutils literal notranslate"><span class="pre">na_position</span></code>.</p>
+<p>This method computes the permutation indices that would sort the underlying
+Arkouda data and returns them as a NumPy array, in accordance with the
+pandas <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code> contract. The indices can be used to reorder the
+array via <code class="docutils literal notranslate"><span class="pre">take</span></code> or <code class="docutils literal notranslate"><span class="pre">iloc</span></code>.</p>
+<p>For floating-point data, <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values are handled according to the
+<code class="docutils literal notranslate"><span class="pre">na_position</span></code> keyword argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ascending</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If True, sort values in ascending order. If False, sort in
-descending order.</p></li>
-<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>default &quot;quicksort&quot;</em>) – Sorting algorithm. Present for API compatibility with NumPy and
-pandas but currently ignored.</p></li>
-<li><p><strong>na_position</strong> (<em>{&quot;first&quot;</em><em>, </em><em>&quot;last&quot;}</em><em>, </em><em>default &quot;last&quot;</em>) – Where to place NaN values in the sorted result.  Currently only implemented for pdarray.
-For Strings and Categorical will have no effect.</p></li>
-<li><p><strong>**kwargs</strong> (<em>Any</em>) – Additional keyword arguments for compatibility; ignored.</p></li>
+<li><p><strong>ascending</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If True, sort values in ascending order. If False, sort in descending
+order.</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>default &quot;quicksort&quot;</em>) – Sorting algorithm. Present for API compatibility with NumPy and pandas
+but currently ignored.</p></li>
+<li><p><strong>**kwargs</strong> – <p>Additional keyword arguments for compatibility. Supported keyword:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">na_position</span></code> : {“first”, “last”}, default “last”
+Where to place <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values in the sorted result. This option is
+currently only applied for floating-point <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data; for
+<code class="docutils literal notranslate"><span class="pre">Strings</span></code> and <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> data it has no effect.</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Integer indices (<code class="docutils literal notranslate"><span class="pre">int64</span></code>) that would sort the array.</p>
+<dd class="field-even"><p>A 1D NumPy array of dtype <code class="docutils literal notranslate"><span class="pre">np.intp</span></code> containing the indices that would
+sort the array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1791,19 +1797,20 @@ For Strings and Categorical will have no effect.</p></li>
 <p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>Supports Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, and <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> data.</p></li>
-<li><p>Floating-point arrays have NaNs repositioned according to
+<li><p>For floating-point arrays, <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values are repositioned according to
 <code class="docutils literal notranslate"><span class="pre">na_position</span></code>.</p></li>
-<li><p>This method does not move data to the client; the computation
-occurs on the Arkouda server.</p></li>
+<li><p>The sorting computation occurs on the Arkouda server, but the resulting
+permutation indices are materialized on the client as a NumPy array, as
+required by pandas internals.</p></li>
 </ul>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span> <span class="c1"># NA last by default</span>
-<span class="go">array([2 0 1])</span>
+<span class="go">array([2, 0, 1])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">na_position</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)</span>
-<span class="go">array([1 2 0])</span>
+<span class="go">array([1, 2, 0])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1924,46 +1931,45 @@ deep copy or a shared reference to the underlying data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id10">
-<span class="sig-name descname"><span class="pre">factorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_na_sentinel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><span class="pre">ArkoudaExtensionArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><span class="pre">ArkoudaExtensionArray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.factorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Link to this definition">¶</a></dt>
-<dd><p>Encode the values of this array as integer codes and uniques,
-similar to <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.factorize()</span></code>, but implemented with Arkouda.</p>
+<span class="sig-name descname"><span class="pre">factorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_na_sentinel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.intp" title="arkouda.numpy.intp"><span class="pre">numpy.intp</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><span class="pre">ArkoudaExtensionArray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.factorize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id10" title="Link to this definition">¶</a></dt>
+<dd><p>Encode the values of this array as integer codes and unique values.</p>
+<p>This is similar to <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.factorize()</span></code>, but the grouping/factorization
+work is performed in Arkouda. The returned <code class="docutils literal notranslate"><span class="pre">codes</span></code> are a NumPy array for
+pandas compatibility, while <code class="docutils literal notranslate"><span class="pre">uniques</span></code> are returned as an ExtensionArray
+of the same type as <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
 <p>Each distinct non-missing value is assigned a unique integer code.
-Missing values (NaN in floating dtypes) are encoded as -1 by default.</p>
+For floating dtypes, <code class="docutils literal notranslate"><span class="pre">NaN</span></code> is treated as missing; for all other dtypes,
+no values are considered missing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>use_na_sentinel</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If True, missing values are encoded as -1 in the codes array.
-If False, missing values are assigned a valid code equal to
-<code class="docutils literal notranslate"><span class="pre">len(uniques)</span></code>.</p></li>
-<li><p><strong>sort</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default False</em>) – Whether to sort the unique values. If False, the unique values
-appear in the order of first appearance in the array. If True,
-the unique values are sorted, and codes are assigned accordingly.</p></li>
-<li><p><strong>**kwargs</strong> – Ignored for compatibility.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>use_na_sentinel</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If True, missing values are encoded as <code class="docutils literal notranslate"><span class="pre">-1</span></code> in the returned codes.
+If False, missing values are assigned the code <code class="docutils literal notranslate"><span class="pre">len(uniques)</span></code>.
+(Missingness is only detected for floating dtypes via <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>A pair <code class="docutils literal notranslate"><span class="pre">(codes,</span> <span class="pre">uniques)</span></code> where:
-- <code class="docutils literal notranslate"><span class="pre">codes</span></code> is a NumPy <code class="docutils literal notranslate"><span class="pre">int64</span></code> array of factor labels, one per element.</p>
-<blockquote>
-<div><p>Missing values are <code class="docutils literal notranslate"><span class="pre">-1</span></code> if <code class="docutils literal notranslate"><span class="pre">use_na_sentinel=True</span></code>; otherwise they
-receive the code <code class="docutils literal notranslate"><span class="pre">len(uniques)</span></code>.</p>
-</div></blockquote>
+<dd class="field-even"><p><p>A pair <code class="docutils literal notranslate"><span class="pre">(codes,</span> <span class="pre">uniques)</span></code> where:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">uniques</span></code> is a NumPy array of the unique values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">codes</span></code> is a 1D NumPy array of dtype <code class="docutils literal notranslate"><span class="pre">np.intp</span></code> with the same length
+as this array, containing the factor codes for each element.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uniques</span></code> is an ExtensionArray containing the unique (non-missing)
+values, with the same extension type as <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p></li>
 </ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">use_na_sentinel=True</span></code>, missing values in <code class="docutils literal notranslate"><span class="pre">codes</span></code> are <code class="docutils literal notranslate"><span class="pre">-1</span></code>.
+Otherwise they receive the code <code class="docutils literal notranslate"><span class="pre">len(uniques)</span></code>.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray">ArkoudaExtensionArray</a>]</p>
+<dd class="field-odd"><p>(numpy.ndarray, ExtensionArray)</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>Only floating-point dtypes treat <code class="docutils literal notranslate"><span class="pre">NaN</span></code> as missing; for other dtypes,
-no values are considered missing.</p></li>
-<li><p>This method executes all grouping and factorization in Arkouda,
-returning results as NumPy arrays for compatibility with pandas.</p></li>
-<li><p>Unlike pandas, string/None/null handling is not yet unified.</p></li>
+all values are treated as non-missing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uniques</span></code> are constructed from Arkouda’s unique keys and returned as
+<code class="docutils literal notranslate"><span class="pre">type(self)(uniques_ak)</span></code> so that pandas internals (e.g. <code class="docutils literal notranslate"><span class="pre">groupby</span></code>)
+can treat them as an ExtensionArray.</p></li>
+<li><p>String/None/null missing-value behavior is not yet unified with pandas.</p></li>
 </ul>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -1971,7 +1977,7 @@ returning results as NumPy arrays for compatibility with pandas.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">codes</span><span class="p">,</span> <span class="n">uniques</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">factorize</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">codes</span>
-<span class="go">ArkoudaArray([0 1 0 2])</span>
+<span class="go">array([0, 1, 0, 2])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">uniques</span>
 <span class="go">ArkoudaArray([1 2 3])</span>
 </pre></div>

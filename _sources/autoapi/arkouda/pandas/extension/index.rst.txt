@@ -1167,42 +1167,46 @@ Package Contents
 
 
 
-   .. py:method:: argsort(*, ascending: bool = True, kind='quicksort', na_position: str = 'last', **kwargs) -> arkouda.numpy.pdarrayclass.pdarray
+   .. py:method:: argsort(*, ascending: bool = True, kind: str = 'quicksort', **kwargs: object) -> numpy.typing.NDArray[numpy.intp]
 
       Return the indices that would sort the array.
 
-      This method computes the permutation indices that would sort the
-      underlying Arkouda data. It aligns with the pandas ``ExtensionArray``
-      contract, returning a 1-D ``pdarray`` of integer indices suitable for
-      reordering the array via ``take`` or ``iloc``. NaN values are placed
-      either at the beginning or end of the result depending on
-      ``na_position``.
+      This method computes the permutation indices that would sort the underlying
+      Arkouda data and returns them as a NumPy array, in accordance with the
+      pandas ``ExtensionArray`` contract. The indices can be used to reorder the
+      array via ``take`` or ``iloc``.
 
-      :param ascending: If True, sort values in ascending order. If False, sort in
-                        descending order.
+      For floating-point data, ``NaN`` values are handled according to the
+      ``na_position`` keyword argument.
+
+      :param ascending: If True, sort values in ascending order. If False, sort in descending
+                        order.
       :type ascending: bool, default True
-      :param kind: Sorting algorithm. Present for API compatibility with NumPy and
-                   pandas but currently ignored.
+      :param kind: Sorting algorithm. Present for API compatibility with NumPy and pandas
+                   but currently ignored.
       :type kind: str, default "quicksort"
-      :param na_position: Where to place NaN values in the sorted result.  Currently only implemented for pdarray.
-                          For Strings and Categorical will have no effect.
-      :type na_position: {"first", "last"}, default "last"
-      :param \*\*kwargs: Additional keyword arguments for compatibility; ignored.
-      :type \*\*kwargs: Any
+      :param \*\*kwargs: Additional keyword arguments for compatibility. Supported keyword:
 
-      :returns: Integer indices (``int64``) that would sort the array.
-      :rtype: pdarray
+                         * ``na_position`` : {"first", "last"}, default "last"
+                           Where to place ``NaN`` values in the sorted result. This option is
+                           currently only applied for floating-point ``pdarray`` data; for
+                           ``Strings`` and ``Categorical`` data it has no effect.
+
+      :returns: A 1D NumPy array of dtype ``np.intp`` containing the indices that would
+                sort the array.
+      :rtype: numpy.ndarray
 
       :raises ValueError: If ``na_position`` is not "first" or "last".
       :raises TypeError: If the underlying data type does not support sorting.
 
       .. rubric:: Notes
 
-      - Supports Arkouda ``pdarray``, ``Strings``, and ``Categorical`` data.
-      - Floating-point arrays have NaNs repositioned according to
+      * Supports Arkouda ``pdarray``, ``Strings``, and ``Categorical`` data.
+      * For floating-point arrays, ``NaN`` values are repositioned according to
         ``na_position``.
-      - This method does not move data to the client; the computation
-        occurs on the Arkouda server.
+      * The sorting computation occurs on the Arkouda server, but the resulting
+        permutation indices are materialized on the client as a NumPy array, as
+        required by pandas internals.
 
       .. rubric:: Examples
 
@@ -1210,9 +1214,9 @@ Package Contents
       >>> from arkouda.pandas.extension import ArkoudaArray
       >>> a = ArkoudaArray(ak.array([3.0, float("nan"), 1.0]))
       >>> a.argsort() # NA last by default
-      array([2 0 1])
+      array([2, 0, 1])
       >>> a.argsort(na_position="first")
-      array([1 2 0])
+      array([1, 2, 0])
 
 
 
@@ -1318,38 +1322,43 @@ Package Contents
 
 
 
-   .. py:method:: factorize(use_na_sentinel=True, sort=False, **kwargs) -> Tuple[ArkoudaExtensionArray, ArkoudaExtensionArray]
+   .. py:method:: factorize(use_na_sentinel=True) -> Tuple[numpy.typing.NDArray[numpy.intp], ArkoudaExtensionArray]
 
-      Encode the values of this array as integer codes and uniques,
-      similar to :func:`pandas.factorize`, but implemented with Arkouda.
+      Encode the values of this array as integer codes and unique values.
+
+      This is similar to :func:`pandas.factorize`, but the grouping/factorization
+      work is performed in Arkouda. The returned ``codes`` are a NumPy array for
+      pandas compatibility, while ``uniques`` are returned as an ExtensionArray
+      of the same type as ``self``.
 
       Each distinct non-missing value is assigned a unique integer code.
-      Missing values (NaN in floating dtypes) are encoded as -1 by default.
+      For floating dtypes, ``NaN`` is treated as missing; for all other dtypes,
+      no values are considered missing.
 
-      :param use_na_sentinel: If True, missing values are encoded as -1 in the codes array.
-                              If False, missing values are assigned a valid code equal to
-                              ``len(uniques)``.
+      :param use_na_sentinel: If True, missing values are encoded as ``-1`` in the returned codes.
+                              If False, missing values are assigned the code ``len(uniques)``.
+                              (Missingness is only detected for floating dtypes via ``NaN``.)
       :type use_na_sentinel: bool, default True
-      :param sort: Whether to sort the unique values. If False, the unique values
-                   appear in the order of first appearance in the array. If True,
-                   the unique values are sorted, and codes are assigned accordingly.
-      :type sort: bool, default False
-      :param \*\*kwargs: Ignored for compatibility.
 
       :returns: A pair ``(codes, uniques)`` where:
-                - ``codes`` is a NumPy ``int64`` array of factor labels, one per element.
-                  Missing values are ``-1`` if ``use_na_sentinel=True``; otherwise they
-                  receive the code ``len(uniques)``.
-                - ``uniques`` is a NumPy array of the unique values.
-      :rtype: Tuple[pdarray, ArkoudaExtensionArray]
+
+                * ``codes`` is a 1D NumPy array of dtype ``np.intp`` with the same length
+                  as this array, containing the factor codes for each element.
+                * ``uniques`` is an ExtensionArray containing the unique (non-missing)
+                  values, with the same extension type as ``self``.
+
+                If ``use_na_sentinel=True``, missing values in ``codes`` are ``-1``.
+                Otherwise they receive the code ``len(uniques)``.
+      :rtype: (numpy.ndarray, ExtensionArray)
 
       .. rubric:: Notes
 
       * Only floating-point dtypes treat ``NaN`` as missing; for other dtypes,
-        no values are considered missing.
-      * This method executes all grouping and factorization in Arkouda,
-        returning results as NumPy arrays for compatibility with pandas.
-      * Unlike pandas, string/None/null handling is not yet unified.
+        all values are treated as non-missing.
+      * ``uniques`` are constructed from Arkouda's unique keys and returned as
+        ``type(self)(uniques_ak)`` so that pandas internals (e.g. ``groupby``)
+        can treat them as an ExtensionArray.
+      * String/None/null missing-value behavior is not yet unified with pandas.
 
       .. rubric:: Examples
 
@@ -1358,7 +1367,7 @@ Package Contents
       >>> arr = ArkoudaArray(ak.array([1, 2, 1, 3]))
       >>> codes, uniques = arr.factorize()
       >>> codes
-      ArkoudaArray([0 1 0 2])
+      array([0, 1, 0, 2])
       >>> uniques
       ArkoudaArray([1 2 3])
 
