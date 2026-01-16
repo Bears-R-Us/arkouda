@@ -861,4 +861,11 @@ class TestIndex:
         assert mask.dtype == ak.bool_
 
         # Expect exactly the first row to match
-        assert mask.to_ndarray().tolist() == [True, False, False, False]
+        assert mask.tolist() == [True, False, False, False]
+
+        assert midx.lookup(([ak.array([1, 2]), ak.array(["blue", "red"])])).tolist() == [
+            False,
+            True,
+            True,
+            False,
+        ]
