@@ -166,18 +166,6 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
         result = op(self._data, other)
         return self._from_data(result)
 
-    def _normalize_setitem_key(self, key):
-        import numpy as np
-
-        from arkouda.numpy.dtypes import is_supported_int
-        from arkouda.numpy.pdarraycreation import array as ak_array
-
-        if isinstance(key, np.ndarray) and key.dtype == bool:
-            return ak_array(key)
-        if isinstance(key, np.ndarray) and is_supported_int(key.dtype):
-            return ak_array(key)
-        return key
-
     def copy(self, deep: bool = True):
         """
         Return a copy of the array.

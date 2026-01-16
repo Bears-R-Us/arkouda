@@ -607,6 +607,8 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
 
 def _is_empty_indexer(key) -> bool:
+    from arkouda.numpy.pdarrayclass import pdarray
+
     # Python containers
     if isinstance(key, (list, tuple)):
         return len(key) == 0
