@@ -290,9 +290,9 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
             return int(value)
     if mydtype == akbool:
         if value == "True" or value == "true":
-            return mydtype.type(True)
+            return True
         elif value == "False" or value == "false":
-            return mydtype.type(False)
+            return False
         else:
             raise ValueError(f"unsupported value from server {mydtype.name} {value}")
     try:
@@ -4316,12 +4316,10 @@ def allclose(
         raise TypeError("a and b must be pdarray instances")
     if (a.dtype in [bigint]) or (b.dtype in [bigint]):
         raise TypeError("bigint is not supported for allclose")
-    return bool(
-        parse_single_value(
-            generic_msg(
-                cmd=f"allclose<{a.dtype},{a.ndim},{b.dtype},{b.ndim}>",
-                args={"a": a, "b": b, "rtol": rtol, "atol": atol, "equal_nan": equal_nan},
-            )
+    return parse_single_value(
+        generic_msg(
+            cmd=f"allclose<{a.dtype},{a.ndim},{b.dtype},{b.ndim}>",
+            args={"a": a, "b": b, "rtol": rtol, "atol": atol, "equal_nan": equal_nan},
         )
     )
 
