@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.pandas.series - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -1613,12 +1613,14 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 
+        <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">]</span>
+
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
         <span class="n">val_comps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+|+&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">val_comps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">Categorical</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">val_comps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">Strings</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">Strings</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">val_comps</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
@@ -2253,8 +2255,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

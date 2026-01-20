@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="SegArrays in Arkouda" href="segarray.html"><link rel="prev" title="Categoricals" href="categorical.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Random in Arkouda - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -383,7 +383,7 @@ If a <code class="docutils literal notranslate"><span class="pre">Generator</spa
 by a new <code class="docutils literal notranslate"><span class="pre">Generator</span></code> with the same seed. This reproducibility is not guaranteed across releases.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.random.Generator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/random/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/random/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">Generator</span></code> exposes a number of methods for generating random
 numbers drawn from a variety of probability distributions. In addition to
 the distribution-specific arguments, each method takes a keyword argument
@@ -466,7 +466,7 @@ of the exponential distribution.</p>
 <li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The scale parameter, <span class="math notranslate nohighlight">\(\beta = 1/\lambda\)</span>. Must be
 non-negative. An array must have the same size as the size argument.</p></li>
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
+<li><p><strong>method</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
 </dd>
@@ -484,7 +484,7 @@ non-negative. An array must have the same size as the size argument.</p></li>
 <h3>integers<a class="headerlink" href="#integers" title="Link to this heading">¶</a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.random.Generator.integers">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">integers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.int64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.integers" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">integers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.integers" title="Link to this definition">¶</a></dt>
 <dd><p>Return random integers from low (inclusive) to high (exclusive),
 or if endpoint=True, low (inclusive) to high (inclusive).</p>
 <p>Return random integers from the “discrete uniform” distribution of the specified dtype.
@@ -497,7 +497,7 @@ in which case this parameter is 0 and this value is used for high).</p></li>
 <li><p><strong>high</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – If provided, one above the largest (signed) integer to be drawn from the distribution
 (see above for behavior if high=None)</p></li>
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Output shape. Default is None, in which case a single value is returned.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – Desired dtype of the result. The default value is ak.int64.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/array_api/array_object/index.html#arkouda.array_api.array_object.Array.dtype" title="arkouda.array_api.array_object.Array.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – Desired dtype of the result. The default value is ak.int64.</p></li>
 <li><p><strong>endpoint</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If true, sample from the interval [low, high] instead of the default [low, high).
 Defaults to False</p></li>
 </ul>
@@ -586,7 +586,7 @@ but of the underlying normal distribution it is derived from.</p>
 <li><p><strong>mean</strong> (<em>float</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
 <li><p><strong>sigma</strong> (<em>float</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
+<li><p><strong>method</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
 </dd>
@@ -637,7 +637,7 @@ the sum of a large number of independent, identically-distributed variables.</p>
 <li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
 <li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
+<li><p><strong>method</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
 </dd>
@@ -871,7 +871,7 @@ with a scale parameter of 1.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
+<li><p><strong>method</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
 </dd>
@@ -895,7 +895,7 @@ with a scale parameter of 1.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>size</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
+<li><p><strong>method</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
 </dd>
@@ -1095,10 +1095,10 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script async="async" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script defer="defer" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     </body>
 </html>

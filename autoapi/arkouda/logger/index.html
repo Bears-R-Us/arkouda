@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="arkouda.numpy" href="../numpy/index.html"><link rel="prev" title="arkouda.infoclass" href="../infoclass/index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.logger - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -472,7 +472,7 @@ log formatting, and runtime handler reconfiguration.</p>
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/logger.html#LogLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.LogLevel" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">LogLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/logger.html#LogLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.LogLevel" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>Enum for defining valid log levels used by ArkoudaLogger.</p>
 <section id="members">
@@ -494,27 +494,27 @@ log formatting, and runtime handler reconfiguration.</p>
 instances. These are mapped internally to the standard Python <cite>logging</cite> levels.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel.CRITICAL">
-<span class="sig-name descname"><span class="pre">CRITICAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CRITICAL'</span></em><a class="headerlink" href="#arkouda.logger.LogLevel.CRITICAL" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">CRITICAL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CRITICAL'</span></span><a class="headerlink" href="#arkouda.logger.LogLevel.CRITICAL" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel.DEBUG">
-<span class="sig-name descname"><span class="pre">DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DEBUG'</span></em><a class="headerlink" href="#arkouda.logger.LogLevel.DEBUG" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">DEBUG</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DEBUG'</span></span><a class="headerlink" href="#arkouda.logger.LogLevel.DEBUG" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ERROR'</span></em><a class="headerlink" href="#arkouda.logger.LogLevel.ERROR" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ERROR</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ERROR'</span></span><a class="headerlink" href="#arkouda.logger.LogLevel.ERROR" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel.INFO">
-<span class="sig-name descname"><span class="pre">INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'INFO'</span></em><a class="headerlink" href="#arkouda.logger.LogLevel.INFO" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">INFO</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'INFO'</span></span><a class="headerlink" href="#arkouda.logger.LogLevel.INFO" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.logger.LogLevel.WARN">
-<span class="sig-name descname"><span class="pre">WARN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'WARN'</span></em><a class="headerlink" href="#arkouda.logger.LogLevel.WARN" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">WARN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'WARN'</span></span><a class="headerlink" href="#arkouda.logger.LogLevel.WARN" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -598,13 +598,13 @@ in a future release.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.logger.write_log">
-<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ClientGeneratedLog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_lvl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/logger.html#write_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.write_log" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.logger.</span></span><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ClientGeneratedLog'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_lvl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/logger.html#write_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.logger.write_log" title="Link to this definition">¶</a></dt>
 <dd><p>Allow the user to write custom logs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>log_msg</strong> (<em>str</em>) – The message to be added to the server log</p></li>
-<li><p><strong>tag</strong> (<em>str</em>) – The tag to use in the log. This takes the place of the server function name.
+<li><p><strong>log_msg</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The message to be added to the server log</p></li>
+<li><p><strong>tag</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The tag to use in the log. This takes the place of the server function name.
 Allows for easy identification of custom logs.
 Defaults to “ClientGeneratedLog”</p></li>
 <li><p><strong>log_lvl</strong> (<a class="reference internal" href="#arkouda.logger.LogLevel" title="arkouda.logger.LogLevel"><em>LogLevel</em></a>) – The type of log to be written
@@ -711,8 +711,8 @@ Defaults to LogLevel.INFO</p></li>
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

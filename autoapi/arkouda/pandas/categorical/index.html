@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.pandas.conversion" href="../conversion/index.html"><link rel="prev" title="arkouda.pandas" href="../index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.pandas.categorical - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -435,7 +435,7 @@ in Arkouda.</p>
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.categorical.</span></span><span class="sig-name descname"><span class="pre">Categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.categorical.</span></span><span class="sig-name descname"><span class="pre">Categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical" title="Link to this definition">¶</a></dt>
 <dd><p>Represents an array of values belonging to named categories.</p>
 <p>Converting a Strings object to Categorical often saves memory and speeds up operations,
 especially if there are many repeated values, at the cost of some one-time
@@ -543,7 +543,7 @@ work in initialization.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.NAvalue">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NAvalue</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.NAvalue" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NAvalue</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.NAvalue" title="Link to this definition">¶</a></dt>
 <dd><p>Deprecated alias for <cite>na_value</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -564,14 +564,14 @@ work in initialization.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.argsort">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.numpy.sorting.SortingAlgorithm</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SortingAlgorithm.RadixSortLSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.argsort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/sorting/index.html#arkouda.numpy.sorting.SortingAlgorithm" title="arkouda.numpy.sorting.SortingAlgorithm"><span class="pre">arkouda.numpy.sorting.SortingAlgorithm</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SortingAlgorithm.RadixSortLSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.argsort" title="Link to this definition">¶</a></dt>
 <dd><p>Return the permutation of indices that would sort the Categorical.</p>
 <p>Sorting is based on the order of the Categorical’s <cite>categories</cite>,
 not on the underlying codes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The sorting algorithm to use.</p></li>
+<li><p><strong>algorithm</strong> (<a class="reference internal" href="../../index.html#arkouda.SortingAlgorithm" title="arkouda.SortingAlgorithm"><em>SortingAlgorithm</em></a><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The sorting algorithm to use.</p></li>
 <li><p><strong>ascending</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to return indices that would sort the Categorical in ascending
 category order. If False, returns indices for descending order.</p></li>
 </ul>
@@ -604,12 +604,12 @@ Categorical([‘bird’, ‘cat’, ‘dog’, ‘dog’])</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">categories</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">categories</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">codes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></em><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">codes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -767,7 +767,7 @@ instead of the full array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.from_codes">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_codes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permutation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.from_codes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.from_codes" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_codes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">permutation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.from_codes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.from_codes" title="Link to this definition">¶</a></dt>
 <dd><p>Make a Categorical from codes and categories arrays.</p>
 <p>If codes and
 categories have already been pre-computed, this constructor saves
@@ -797,7 +797,7 @@ categories is not a Strings object</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.from_return_msg">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.from_return_msg" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.from_return_msg" title="Link to this definition">¶</a></dt>
 <dd><p>Create categorical from return message from server.</p>
 <p class="rubric">Notes</p>
 <p>This is currently only used when reading a Categorical from HDF5 files.</p>
@@ -896,20 +896,20 @@ faster and scales to arbitrarily large <code class="docutils literal notranslate
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.inferred_type">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.inferred_type" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">inferred_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.inferred_type" title="Link to this definition">¶</a></dt>
 <dd><p>Return a string of the type inferred from the values.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.info">
-<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.info" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.info" title="Link to this definition">¶</a></dt>
 <dd><p>Return a JSON formatted string containing information about all components of self.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>JSON string containing information about all components of self</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
+<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -951,7 +951,7 @@ they are unregistered.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.nbytes">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.nbytes" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.nbytes" title="Link to this definition">¶</a></dt>
 <dd><p>The size of the Categorical in bytes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -965,22 +965,22 @@ they are unregistered.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ndim</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">nlevels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nlevels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.objType">
-<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Categorical'</span></em><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.objType" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">objType</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Categorical'</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.objType" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">permutation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">permutation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -991,11 +991,11 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.register" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.register" title="Link to this definition">¶</a></dt>
 <dd><p>Register this Categorical object and underlying components with the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the Categorical is to be registered under,
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – user defined name the Categorical is to be registered under,
 this will be the root name for underlying components</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1025,7 +1025,7 @@ they are unregistered.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.registered_name">
-<span class="sig-name descname"><span class="pre">registered_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.registered_name" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">registered_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.registered_name" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1048,7 +1048,7 @@ other operations.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">segments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">segments</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1075,12 +1075,12 @@ be assigned the NA value.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id6">
-<span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span></em><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span></span><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id7">
-<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1099,7 +1099,7 @@ be assigned the NA value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.standardize_categories">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">standardize_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'N/A'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.standardize_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.standardize_categories" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">standardize_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'N/A'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.standardize_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.standardize_categories" title="Link to this definition">¶</a></dt>
 <dd><p>Standardize an array of Categoricals so that they share the same categories.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1156,15 +1156,15 @@ labels instead of the full array.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.to_hdf">
-<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'truncate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'append'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'single'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'distribute'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.to_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.to_hdf" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'truncate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'append'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'single'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'distribute'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.to_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.to_hdf" title="Link to this definition">¶</a></dt>
 <dd><p>Save the Categorical to HDF5.</p>
 <p>The result is a collection of HDF5 files, one file
 per locale of the arkouda server, where each filename starts with prefix_path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files will share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name prefix for saved data within the HDF5 file</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix that all output files will share</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Name prefix for saved data within the HDF5 file</p></li>
 <li><p><strong>mode</strong> (<em>{'truncate'</em><em>, </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, add data as a new column to existing files.</p></li>
 <li><p><strong>file_type</strong> (<em>{&quot;single&quot;</em><em>, </em><em>&quot;distribute&quot;}</em>) – Default: “distribute”
@@ -1214,7 +1214,7 @@ value, but proceed with caution.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.to_parquet">
-<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.to_parquet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.to_parquet" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.to_parquet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.to_parquet" title="Link to this definition">¶</a></dt>
 <dd><p>[Not Yet Implemented] Save the Categorical to a Parquet dataset.</p>
 <p>!!! This method is currently not supported and will raise a RuntimeError. !!!
 Parquet support for Categorical is under development.</p>
@@ -1224,11 +1224,11 @@ using the <cite>prefix_path</cite> with locale-specific suffixes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – The directory and filename prefix shared by all output files.</p></li>
-<li><p><strong>dataset</strong> (<em>str</em><em>, </em><em>default=&quot;categorical_array&quot;</em>) – The dataset name to use to create the Parquet files.</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The directory and filename prefix shared by all output files.</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;categorical_array&quot;</em>) – The dataset name to use to create the Parquet files.</p></li>
 <li><p><strong>mode</strong> (<em>{'truncate'</em><em>, </em><em>'append'}</em><em>, </em><em>default='truncate'</em>) – Specifies write behavior. Use ‘truncate’ to overwrite existing files or
 ‘append’ to add to them. (Appending is not yet efficient.)</p></li>
-<li><p><strong>compression</strong> (<em>str</em><em>, </em><em>optional</em>) – Compression algorithm to use when writing the file.
+<li><p><strong>compression</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Compression algorithm to use when writing the file.
 Supported values include: ‘snappy’, ‘gzip’, ‘brotli’, ‘zstd’, ‘lz4’.
 Default is None (no compression).</p></li>
 </ul>
@@ -1237,7 +1237,7 @@ Default is None (no compression).</p></li>
 <dd class="field-even"><p>A message indicating the result of the operation.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>RuntimeError</strong> – Always raised. Parquet export for Categorical is not yet supported.</p>
@@ -1296,7 +1296,7 @@ this Categorical.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.tolist">
-<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.tolist" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.tolist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.tolist" title="Link to this definition">¶</a></dt>
 <dd><p>Convert the Categorical to a list.</p>
 <p>Convert the Categorical to a list, transferring data from
 the arkouda server to Python. This conversion discards category
@@ -1308,7 +1308,7 @@ exceeds a built-in size limit, a RuntimeError is raised.</p>
 this Categorical</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str]</p>
+<dd class="field-even"><p>List[<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -1323,12 +1323,12 @@ value, but proceed with caution.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.categorical.Categorical.transfer">
-<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.transfer" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/categorical.html#Categorical.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.categorical.Categorical.transfer" title="Link to this definition">¶</a></dt>
 <dd><p>Send a Categorical object to a different Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>hostname</strong> (<em>str</em>) – The hostname where the Arkouda server intended to
+<li><p><strong>hostname</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The hostname where the Arkouda server intended to
 receive the Categorical is running.</p></li>
 <li><p><strong>port</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
 open port (i.e., not one that the Arkouda server is
@@ -1398,8 +1398,8 @@ they are unregistered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Name of the dataset to create in files</p></li>
 <li><p><strong>repack</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default: True
 HDF5 does not release memory on delete. When True, the inaccessible
 data (that was overwritten) is removed. When False, the data remains, but is
@@ -1560,8 +1560,8 @@ automatic creation of a file without the inaccessible data.</p></li>
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

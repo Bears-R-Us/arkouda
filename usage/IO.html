@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Data I/O - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -398,7 +398,7 @@ transferring data to the Arkouda server.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>, </em><em>Iterable</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>]</em>) – The array-like input to convert. Supported types include Arkouda <cite>Strings</cite>, <cite>pdarray</cite>,
 NumPy <cite>ndarray</cite>, or Python iterables such as list, tuple, range, or deque.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><em>type</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The target dtype to cast values to. This may be a NumPy dtype object,
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>, </em><em>optional</em>) – The target dtype to cast values to. This may be a NumPy dtype object,
 a NumPy scalar type (e.g. <cite>np.int64</cite>), or a string (e.g. <cite>‘int64’</cite>, <cite>‘str’</cite>).</p></li>
 <li><p><strong>copy</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If True, a deep copy of the array is made. If False, no copy is made if the input
 is already a <cite>pdarray</cite>. <strong>Note</strong>: Arkouda does not currently support views or shallow copies.
@@ -553,8 +553,8 @@ value, but proceed with caution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<em>list</em><em> or </em><em>str</em>) – Either a list of filenames or shell expression</p></li>
-<li><p><strong>datasets</strong> (<em>list</em><em> or </em><em>str</em><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
+<li><p><strong>filenames</strong> (<em>list</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Either a list of filenames or shell expression</p></li>
+<li><p><strong>datasets</strong> (<em>list</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
 <li><p><strong>iterative</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Iterative (True) or Single (False) function call(s) to server</p></li>
 <li><p><strong>strictTypes</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
 same precision and sign. If False, allow dtypes of different
@@ -568,7 +568,7 @@ the total number of files skipped due to failure and up to 10 filenames.</p></li
 <li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
 offsets/segments array on the server versus loading them from HDF5 files.
 In the future this option may be set to True as the default.</p></li>
-<li><p><strong>column_delim</strong> (<em>str</em>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
+<li><p><strong>column_delim</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
 <li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
 Ignored if datasets is not None
@@ -630,17 +630,17 @@ Reads HDF5
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<em>str</em><em> or </em><em>List</em><em>[</em><em>str</em><em>]</em>) – Name of the file/s from which to return datasets</p></li>
+<li><p><strong>filenames</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>List</em><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – Name of the file/s from which to return datasets</p></li>
 <li><p><strong>allow_errors</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default: False
 Whether or not to allow errors while accessing datasets</p></li>
-<li><p><strong>column_delim</strong> (<em>str</em>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
+<li><p><strong>column_delim</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
 <li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
 Only used for Parquet Files.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[str] of names of the datasets</p>
+<dd class="field-even"><p>List[<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str">str</a>] of <a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.Fields.names" title="arkouda.client_dtypes.Fields.names">names</a> of the datasets</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – <ul class="simple">
@@ -687,8 +687,8 @@ a file formatted to be read by Arkouda.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>read_path</strong> (<em>str</em>) – path to file where pandas data is stored. This can be glob expression for parquet formats.</p></li>
-<li><p><strong>write_file</strong> (<em>str</em><em>, </em><em>optional</em>) – path to file to write arkouda formatted data to. Only write file if provided</p></li>
+<li><p><strong>read_path</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file where pandas data is stored. This can be glob expression for parquet formats.</p></li>
+<li><p><strong>write_file</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – path to file to write arkouda formatted data to. Only write file if provided</p></li>
 <li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True (default), return the Arkouda DataFrame object. If False, return None.</p></li>
 <li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, maintain the indexes loaded from the pandas file. Default is False.</p></li>
 </ul>
@@ -731,9 +731,9 @@ to Pandas object or file formatted to be readable by Pandas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>read_path</strong> (<em>str</em>) – path to file where arkouda data is stored.</p></li>
-<li><p><strong>dataset_name</strong> (<em>str</em>) – name to store dataset under</p></li>
-<li><p><strong>write_file</strong> (<em>str</em>) – path to file to write pandas formatted data to. Only write the file if this is set.
+<li><p><strong>read_path</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file where arkouda data is stored.</p></li>
+<li><p><strong>dataset_name</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – name to store dataset under</p></li>
+<li><p><strong>write_file</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file to write pandas formatted data to. Only write the file if this is set.
 Default is None.</p></li>
 <li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – When True (default) return the Pandas DataFrame object, otherwise return None.</p></li>
 <li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
@@ -838,8 +838,8 @@ the same file type, but formatted to be read by Pandas.</p></li>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>

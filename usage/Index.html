@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Indexs in Arkouda - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -380,14 +380,14 @@
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">Indexes</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.Index">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_list_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/index.html#Index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_list_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/index.html#Index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index" title="Link to this definition">¶</a></dt>
 <dd><p>Sequence used for indexing and alignment.</p>
 <p>The basic object storing axis labels for all DataFrame objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<em>List</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
+<li><p><strong>name</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
 <li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
 If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
 </ul>
@@ -657,8 +657,8 @@ or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.</p
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>

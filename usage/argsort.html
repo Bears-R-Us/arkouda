@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Array Set Operations" href="setops.html"><link rel="prev" title="Summarizing Data" href="histogram.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Sorting - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -385,7 +385,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to sort (supported: int64, uint64, float64 for pdarray).</p></li>
-<li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The algorithm to use for sorting.</p></li>
+<li><p><strong>algorithm</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SortingAlgorithm" title="arkouda.SortingAlgorithm"><em>SortingAlgorithm</em></a><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The algorithm to use for sorting.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>default 0</em>) – Axis to sort along. Negative values are normalized against the array rank.
 For 1D types (Strings, Categorical), must be 0.</p></li>
 <li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Sort order.</p></li>
@@ -439,7 +439,7 @@ columns, but not Strings or Categoricals — those are grouped, not ordered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arrays</strong> (<em>Sequence</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.</p></li>
-<li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default=SortingAlgorithm.RadixSortLSD</em>) – The algorithm to be used for sorting the arrays.</p></li>
+<li><p><strong>algorithm</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SortingAlgorithm" title="arkouda.SortingAlgorithm"><em>SortingAlgorithm</em></a><em>, </em><em>default=SortingAlgorithm.RadixSortLSD</em>) – The algorithm to be used for sorting the arrays.</p></li>
 <li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – Whether to sort in ascending order. Ignored when arrays have ndim &gt; 1.</p></li>
 </ul>
 </dd>
@@ -550,8 +550,8 @@ but not lexicographic order. For Categoricals, sorting is based on the internal 
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>

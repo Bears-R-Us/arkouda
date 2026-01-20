@@ -261,14 +261,21 @@ Module Contents
    ``cov = ((x - x.mean()) * (y - y.mean())).sum() / (x.size - 1)``.
 
 
-.. py:function:: create_pdarray(rep_msg: Union[str, memoryview], max_bits=None) -> pdarray
+.. py:function:: create_pdarray(rep_msg: str, max_bits: int | None = ...) -> pdarray
+                 create_pdarray(rep_msg: memoryview, max_bits: int | None = ...) -> pdarray
 
    Return a pdarray instance pointing to an array created by the arkouda server.
-   The user should not call this function directly.
+   This is intended for internal use only.  The user should not call this function
+   directly.
 
-   :param rep_msg: space-delimited string containing the pdarray name, datatype, size
-                   dimension, shape,and itemsize
-   :type rep_msg: str
+   :param rep_msg: a space-delimited response from the arkouda server describing a newly
+                   created array.  The message encodes, in order, the array name, dtype,
+                   total size, rank, shape, and itemsize.  If provided as a memoryview,
+                   it will be decoded to a UTF-8 string before parsing.
+   :type rep_msg: str, memoryview
+   :param max_bits: The maximum number of bits used to represent values in the array,
+                    used for bigint.
+   :type max_bits: int, optional
 
    :returns: A pdarray with the same attributes and data as the pdarray; on GPU
    :rtype: pdarray

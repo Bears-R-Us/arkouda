@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.pandas.join" href="../join/index.html"><link rel="prev" title="arkouda.pandas.io" href="../io/index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.pandas.io_util - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -438,11 +438,11 @@ from/to delimited text files, and appending lines to files.</p>
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pandas.io_util.delete_directory">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">delete_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#delete_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.delete_directory" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">delete_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#delete_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.delete_directory" title="Link to this definition">¶</a></dt>
 <dd><p>Delete the directory if it exists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dir</strong> (<em>str</em>) – The path to the directory</p>
+<dd class="field-odd"><p><strong>dir</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The path to the directory</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>OSError</strong> – Raised if there’s an error in deleting the directory.</p>
@@ -452,7 +452,7 @@ from/to delimited text files, and appending lines to files.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pandas.io_util.delimited_file_to_dict">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">delimited_file_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#delimited_file_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.delimited_file_to_dict" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">delimited_file_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#delimited_file_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.delimited_file_to_dict" title="Link to this definition">¶</a></dt>
 <dd><p>Return a dictionary populated by lines from a file.</p>
 <p>Return a dictionary populated by lines from a file where
 the first delimited element of each line is the key and
@@ -461,8 +461,8 @@ If the file does not exist, return an empty dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em>) – Path to the file</p></li>
-<li><p><strong>delimiter</strong> (<em>str</em>) – Delimiter separating key and value</p></li>
+<li><p><strong>path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Path to the file</p></li>
+<li><p><strong>delimiter</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Delimiter separating key and value</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -470,7 +470,7 @@ If the file does not exist, return an empty dictionary.</p>
 line of delimited strings</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Mapping[str,str]</p>
+<dd class="field-odd"><p>Mapping[<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a>,<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -483,7 +483,7 @@ line of delimited strings</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pandas.io_util.dict_to_delimited_file">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">dict_to_delimited_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#dict_to_delimited_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.dict_to_delimited_file" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">dict_to_delimited_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#dict_to_delimited_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.dict_to_delimited_file" title="Link to this definition">¶</a></dt>
 <dd><p>Write a dictionary to delimited lines in a file.</p>
 <p>Write a dictionary to delimited lines in a file where
 the first delimited element of each line is the dict key
@@ -492,8 +492,8 @@ file does not exist, it is created and then written to.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em>) – Path to the file</p></li>
-<li><p><strong>delimiter</strong> (<em>str</em>) – Delimiter separating key and value</p></li>
+<li><p><strong>path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Path to the file</p></li>
+<li><p><strong>delimiter</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Delimiter separating key and value</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -508,11 +508,11 @@ specified file</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pandas.io_util.get_directory">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">get_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#get_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.get_directory" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">get_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#get_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.get_directory" title="Link to this definition">¶</a></dt>
 <dd><p>Create the directory if it does not exist and returns the corresponding Path object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the directory</p>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The path to the directory</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Object corresponding to the directory</p>
@@ -529,7 +529,7 @@ existing directory or creating a new one</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.pandas.io_util.write_line_to_file">
-<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">write_line_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#write_line_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.write_line_to_file" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.io_util.</span></span><span class="sig-name descname"><span class="pre">write_line_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/io_util.html#write_line_to_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.io_util.write_line_to_file" title="Link to this definition">¶</a></dt>
 <dd><p>Write a line to the requested file.</p>
 <p>Note: if the file
 does not exist, the file is created first and then
@@ -537,8 +537,8 @@ the specified line is written to it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em>) – Path to the target file</p></li>
-<li><p><strong>line</strong> (<em>str</em>) – Line to be written to the file</p></li>
+<li><p><strong>path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Path to the target file</p></li>
+<li><p><strong>line</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Line to be written to the file</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -629,8 +629,8 @@ writing to the file</p>
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

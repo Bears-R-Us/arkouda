@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Creating Arrays" href="creation.html"><link rel="prev" title="Startup" href="startup.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>The pdarray class - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -380,7 +380,7 @@
 <p>Just as the backbone of NumPy is the <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, the backbone of arkouda is an array class called <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>. And just as the <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> object is a Python wrapper for C-style data with C and Fortran methods, the <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> object is a Python wrapper for distributed data with parallel methods written in Chapel. The API of <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> is similar, but not identical, to that of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.pdarray">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mydtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mydtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarrayclass.html#pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray" title="Link to this definition">¶</a></dt>
 <dd><p>The basic arkouda array class. This class contains only the
 attributes of the array; the data resides on the arkouda
 server. When a server operation results in a new array, arkouda
@@ -393,7 +393,7 @@ instances directly.</p>
 <dd><p>The server-side identifier for the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -404,7 +404,7 @@ instances directly.</p>
 <dd><p>The element dtype of the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type">type</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -541,8 +541,8 @@ value, but proceed with caution.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array of values to cast</p></li>
-<li><p><strong>dt</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, </em><em>str</em><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – The target dtype to cast values to</p></li>
-<li><p><strong>errors</strong> (<em>{strict</em><em>, </em><em>ignore</em><em>, </em><em>return_validity}</em><em>, </em><em>default=ErrorMode.strict</em>) – <p>Controls how errors are handled when casting strings to a numeric type
+<li><p><strong>dt</strong> (<em>np.dtype</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bigint" title="arkouda.bigint"><em>bigint</em></a>) – The target dtype to cast values to</p></li>
+<li><p><strong>errors</strong> (<em>{strict</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ErrorMode.ignore" title="arkouda.ErrorMode.ignore"><em>ignore</em></a><em>, </em><em>return_validity}</em><em>, </em><em>default=ErrorMode.strict</em>) – <p>Controls how errors are handled when casting strings to a numeric type
 (ignored for casts from numeric types).</p>
 <blockquote>
 <div><ul>
@@ -697,8 +697,8 @@ has the precision and capacity to hold the desired result.</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>

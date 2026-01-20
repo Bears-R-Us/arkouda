@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.numpy.util - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -681,8 +681,20 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
 
+    <span class="n">attachable</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span>
+        <span class="n">pdarray</span><span class="p">,</span>
+        <span class="n">Strings</span><span class="p">,</span>
+        <span class="n">Datetime</span><span class="p">,</span>
+        <span class="n">Timedelta</span><span class="p">,</span>
+        <span class="n">IPv4</span><span class="p">,</span>
+        <span class="n">SegArray</span><span class="p">,</span>
+        <span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">GroupBy</span><span class="p">,</span>
+        <span class="n">Categorical</span><span class="p">,</span>
+    <span class="p">]</span>
+
     <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;attach&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})))</span>
-    <span class="n">rtn_obj</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">rtn_obj</span><span class="p">:</span> <span class="n">attachable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">pdarray</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
         <span class="n">rtn_obj</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;create&quot;</span><span class="p">])</span>
     <span class="k">elif</span> <span class="n">rep_msg</span><span class="p">[</span><span class="s2">&quot;objType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">Strings</span><span class="o">.</span><span class="n">objType</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
@@ -1820,8 +1832,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Arithmetic and Numeric Operations" href="arithmetic.html"><link rel="prev" title="The pdarray class" href="pdarray.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Creating Arrays - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -382,7 +382,7 @@
 <h2>Constant<a class="headerlink" href="#constant" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.zeros">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.zeros" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.zeros" title="Link to this definition">¶</a></dt>
 <dd><p>Create a pdarray filled with zeros.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -432,7 +432,7 @@ of the value of max_bits</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.ones">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#ones"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.ones" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#ones"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.ones" title="Link to this definition">¶</a></dt>
 <dd><p>Create a pdarray filled with ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -584,7 +584,7 @@ given, then the first arg is start, second is stop, third is step.</p>
 <li><p><strong>step</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>optional</em>) – if one of these three is supplied, it’s used as stop, and start = 0, step = 1
 if two of them are supplied, start = start, stop = stop, step = 1
 if all three are supplied, start = start, stop = stop, step = step</p></li>
-<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><em>type</em><em>, or </em><em>str</em>) – The target dtype to cast values to</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The target dtype to cast values to</p></li>
 <li><p><strong>max_bits</strong> (<em>int</em>) – Specifies the maximum number of bits; only used for bigint pdarrays</p></li>
 </ul>
 </dd>
@@ -632,7 +632,7 @@ the linspace method.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.linspace">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">linspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num=50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis=0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#linspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.linspace" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">linspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#linspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.linspace" title="Link to this definition">¶</a></dt>
 <dd><p>Return evenly spaced numbers over a specified interval.</p>
 <p>Returns <cite>num</cite> evenly spaced samples, calculated over the
 interval [<cite>start</cite>, <cite>stop</cite>].</p>
@@ -648,7 +648,7 @@ size changes when <cite>endpoint</cite> is False.</p></li>
 <li><p><strong>num</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of samples to generate. Default is 50. Must be non-negative.</p></li>
 <li><p><strong>endpoint</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, <cite>stop</cite> is the last sample. Otherwise, it is not included.
 Default is True.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – Allowed for compatibility with numpy linspace, but anything entered
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../autoapi/arkouda/array_api/array_object/index.html#arkouda.array_api.array_object.Array.dtype" title="arkouda.array_api.array_object.Array.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – Allowed for compatibility with numpy linspace, but anything entered
 is ignored.  The output is always ak.float64.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis in the result to store the samples.  Relevant only if start
 or stop are array-like.  By default (0), the samples will be along a
@@ -699,7 +699,7 @@ new axis inserted at the beginning. Use -1 to get an axis at the end.</p></li>
 <h2>Random<a class="headerlink" href="#random" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.randint">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">randint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.int64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#randint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.randint" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">randint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#randint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.randint" title="Link to this definition">¶</a></dt>
 <dd><p>Generate a pdarray of randomized int, float, or bool values in a
 specified range bounded by the low and high parameters.</p>
 <dl class="field-list simple">
@@ -893,8 +893,8 @@ the original order</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>

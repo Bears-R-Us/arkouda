@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.numpy.pdarrayclass - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -3922,6 +3922,16 @@
 
 <span class="c1"># end pdarray class def</span>
 
+<span class="c1"># overloads for create_pdarray</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">memoryview</span><span class="p">,</span> <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
 
 <span class="c1"># creates pdarray object</span>
 <span class="c1">#   only after:</span>
@@ -3933,13 +3943,20 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">],</span> <span class="n">max_bits</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a pdarray instance pointing to an array created by the arkouda server.</span>
-<span class="sd">    The user should not call this function directly.</span>
+<span class="sd">    This is intended for internal use only.  The user should not call this function</span>
+<span class="sd">    directly.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    rep_msg : str</span>
-<span class="sd">        space-delimited string containing the pdarray name, datatype, size</span>
-<span class="sd">        dimension, shape,and itemsize</span>
+<span class="sd">    rep_msg : str, memoryview</span>
+<span class="sd">        a space-delimited response from the arkouda server describing a newly</span>
+<span class="sd">        created array.  The message encodes, in order, the array name, dtype,</span>
+<span class="sd">        total size, rank, shape, and itemsize.  If provided as a memoryview,</span>
+<span class="sd">        it will be decoded to a UTF-8 string before parsing.</span>
+
+<span class="sd">    max_bits: int, optional</span>
+<span class="sd">        The maximum number of bits used to represent values in the array,</span>
+<span class="sd">        used for bigint.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -6067,8 +6084,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

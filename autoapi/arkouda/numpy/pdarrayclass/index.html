@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.numpy.pdarraycreation" href="../pdarraycreation/index.html"><link rel="prev" title="arkouda.numpy.numeric" href="../numeric/index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.numpy.pdarrayclass - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -427,7 +427,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.cov" title="arkouda.numpy.pdarrayclass.cov"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cov</span></code></a>(→ numpy.float64)</p></td>
 <td><p>Return the covariance of x and y.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.create_pdarray" title="arkouda.numpy.pdarrayclass.create_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_pdarray</span></code></a>(→ pdarray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.create_pdarray" title="arkouda.numpy.pdarrayclass.create_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_pdarray</span></code></a>(…)</p></td>
 <td><p>Return a pdarray instance pointing to an array created by the arkouda server.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.pdarrayclass.ctz" title="arkouda.numpy.pdarrayclass.ctz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ctz</span></code></a>(→ pdarray)</p></td>
@@ -483,7 +483,7 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.RegistrationError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">RegistrationError</span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#RegistrationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.RegistrationError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">RegistrationError</span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#RegistrationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.RegistrationError" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Error/Exception used when the Arkouda Server cannot register an object.</p>
 </dd></dl>
@@ -744,13 +744,22 @@ cov(x, y) / (x.std(ddof=1) * y.std(ddof=1))</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.create_pdarray">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">create_pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">memoryview</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#create_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.create_pdarray" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">create_pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">...</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#create_pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.create_pdarray" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">create_pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">memoryview</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">...</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span></dt>
 <dd><p>Return a pdarray instance pointing to an array created by the arkouda server.
-The user should not call this function directly.</p>
+This is intended for internal use only.  The user should not call this function
+directly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rep_msg</strong> (<em>str</em>) – space-delimited string containing the pdarray name, datatype, size
-dimension, shape,and itemsize</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rep_msg</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>memoryview</em>) – a space-delimited response from the arkouda server describing a newly
+created array.  The message encodes, in order, the array name, dtype,
+total size, rank, shape, and itemsize.  If provided as a memoryview,
+it will be decoded to a UTF-8 string before parsing.</p></li>
+<li><p><strong>max_bits</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of bits used to represent values in the array,
+used for bigint.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray with the same attributes and data as the pdarray; on GPU</p>
@@ -1166,7 +1175,7 @@ It is equivalent to np.mod, the remainder has the same sign as the divisor.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mydtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.numpy.pdarrayclass.</span></span><span class="sig-name descname"><span class="pre">pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mydtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray" title="Link to this definition">¶</a></dt>
 <dd><p>The basic arkouda array class. This class contains only the
 attributes of the array; the data resides on the arkouda
 server. When a server operation results in a new array, arkouda
@@ -1179,7 +1188,7 @@ instances directly.</p>
 <dd><p>The server-side identifier for the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1190,7 +1199,7 @@ instances directly.</p>
 <dd><p>The element dtype of the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type">type</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1435,12 +1444,12 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.argsort">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">arkouda.numpy.sorting.SortingAlgorithm</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SortingAlgorithm.RadixSortLSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.argsort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../sorting/index.html#arkouda.numpy.sorting.SortingAlgorithm" title="arkouda.numpy.sorting.SortingAlgorithm"><span class="pre">arkouda.numpy.sorting.SortingAlgorithm</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SortingAlgorithm.RadixSortLSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.argsort" title="Link to this definition">¶</a></dt>
 <dd><p>Return the permutation that sorts the pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>algorithm</strong> (<em>SortingAlgorithm</em><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The algorithm to use for sorting.</p></li>
+<li><p><strong>algorithm</strong> (<a class="reference internal" href="../../index.html#arkouda.SortingAlgorithm" title="arkouda.SortingAlgorithm"><em>SortingAlgorithm</em></a><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The algorithm to use for sorting.</p></li>
 <li><p><strong>axis</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a><em>, </em><em>default 0</em>) – The axis to sort along. Must be between -1 and the array rank.</p></li>
 <li><p><strong>ascending</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to sort in ascending order. If False, returns a reversed permutation.
 Note: ascending=False is only supported for 1D arrays.</p></li>
@@ -1472,7 +1481,7 @@ Note: ascending=False is only supported for 1D arrays.</p></li>
 <dd><p>Cast values of pdarray to provided dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dtype</strong> (<em>np.dtype</em><em> or </em><em>str</em>) – Dtype to cast to</p>
+<dd class="field-odd"><p><strong>dtype</strong> (<em>np.dtype</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Dtype to cast to</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1575,7 +1584,7 @@ bigint pdarray and the last item will be the lowest 64 bits.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dtype</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.dtype</span></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1640,7 +1649,7 @@ bigint pdarray and the last item will be the lowest 64 bits.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.format_other">
-<span class="sig-name descname"><span class="pre">format_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.format_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.format_other" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">format_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.format_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.format_other" title="Link to this definition">¶</a></dt>
 <dd><p>Attempt to cast scalar other to the element dtype of this pdarray,
 and print the resulting value to a string (e.g. for sending to a
 server command). The user should not call this function directly.</p>
@@ -1660,20 +1669,20 @@ Numpy dtype</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.inferred_type">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inferred_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.inferred_type" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">inferred_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.inferred_type" title="Link to this definition">¶</a></dt>
 <dd><p>Return a string of the type inferred from the values.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.info">
-<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.info" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.info" title="Link to this definition">¶</a></dt>
 <dd><p>Return a JSON formatted string containing information about all components of self.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>JSON string containing information about all components of self</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
+<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1742,7 +1751,7 @@ standalone function (e.g. ak.is_sorted(a))</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">itemsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">itemsize</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1820,7 +1829,7 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.max_bits">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_bits</span></span><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.max_bits" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_bits</span></span><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.max_bits" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1928,12 +1937,12 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.nbytes">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.nbytes" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.nbytes" title="Link to this definition">¶</a></dt>
 <dd><p>The size of the pdarray in bytes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1947,12 +1956,12 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">ndim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ndim</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.objType">
-<span class="sig-name descname"><span class="pre">objType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pdarray'</span></em><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.objType" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">objType</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pdarray'</span></span><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.objType" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2022,7 +2031,7 @@ pdarray if axis is supplied, in which case the operation is done along that axis
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.register" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.register" title="Link to this definition">¶</a></dt>
 <dd><p>Register this pdarray with a user defined name in the arkouda server
 so it can be attached to later using pdarray.attach().</p>
 <p>This is an in-place operation, registering a pdarray more than once will
@@ -2030,7 +2039,7 @@ update the name in the registry and remove the previously registered name.
 A name can only be registered to one pdarray at a time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name array is to be registered under</p>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – user defined name array is to be registered under</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The same pdarray which is now registered with the arkouda server and has an updated name.
@@ -2071,7 +2080,7 @@ until they are unregistered.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.registered_name">
-<span class="sig-name descname"><span class="pre">registered_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.registered_name" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">registered_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.registered_name" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2119,7 +2128,7 @@ a.reshape(compatibleShape) is valid, but ak.reshape(a,compatibleShape) is not.</
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id4">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
 <dd><p>Return the shape of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -2133,7 +2142,7 @@ a.reshape(compatibleShape) is valid, but ak.reshape(a,compatibleShape) is not.</
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></em><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2321,17 +2330,17 @@ A call such as <code class="docutils literal notranslate"><span class="pre">np.t
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.to_csv">
-<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_csv" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_delim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_csv" title="Link to this definition">¶</a></dt>
 <dd><p>Write pdarry to CSV file(s).  File will contain a single column
 with the pdarray data.  All CSV files written by Arkouda include
 a header denoting data types of the columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – filename prefix to be used for saving files.  Files will have
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – filename prefix to be used for saving files.  Files will have
 _LOCALE#### appended when they are written to disk.</p></li>
-<li><p><strong>dataset</strong> (<em>str</em><em>, </em><em>defaults to &quot;array&quot;</em>) – column name to save the pdarray under.</p></li>
-<li><p><strong>col_delim</strong> (<em>str</em><em>, </em><em>defaults to &quot;</em><em>,</em><em>&quot;</em>) – value to be used to separate columns within the file.  Please
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>defaults to &quot;array&quot;</em>) – column name to save the pdarray under.</p></li>
+<li><p><strong>col_delim</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>defaults to &quot;</em><em>,</em><em>&quot;</em>) – value to be used to separate columns within the file.  Please
 be sure that the value used DOES NOT appear in your dataset.</p></li>
 <li><p><strong>overwrite</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>defaults to False</em>) – If True, existing files matching the provided path will be overwritten.
 if False and existing files are found, an error will be returned.</p></li>
@@ -2341,7 +2350,7 @@ if False and existing files are found, an error will be returned.</p></li>
 <dd class="field-even"><p><strong>response message</strong></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -2410,14 +2419,14 @@ value, but proceed with caution.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.to_hdf">
-<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'truncate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'append'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'single'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'distribute'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_hdf" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'truncate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'append'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'single'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'distribute'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_hdf" title="Link to this definition">¶</a></dt>
 <dd><p>Save the pdarray to HDF5.
 The object can be saved to a collection of files or single file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files (must not already exist)</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Name of the dataset to create in files (must not already exist)</p></li>
 <li><p><strong>mode</strong> (<em>{'truncate'</em><em>, </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, attempt to create new dataset in existing files.</p></li>
 <li><p><strong>file_type</strong> (<em>{&quot;single&quot;</em><em>, </em><em>&quot;distribute&quot;}</em>) – Default: “distribute”
@@ -2509,7 +2518,7 @@ value, but proceed with caution.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.to_parquet">
-<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'truncate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'append'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_parquet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_parquet" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'truncate'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'append'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.to_parquet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.to_parquet" title="Link to this definition">¶</a></dt>
 <dd><p>Save the pdarray to Parquet. The result is a collection of files,
 one file per locale of the arkouda server, where each filename starts
 with prefix_path. Each locale saves its chunk of the array to its
@@ -2517,11 +2526,11 @@ corresponding file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files (must not already exist)</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Name of the dataset to create in files (must not already exist)</p></li>
 <li><p><strong>mode</strong> (<em>{'truncate'</em><em>, </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, attempt to create new dataset in existing files.</p></li>
-<li><p><strong>compression</strong> (<em>str</em><em> (</em><em>Optional</em><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
+<li><p><strong>compression</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> (</em><em>Optional</em><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
 Sets the compression type used with Parquet files</p></li>
 </ul>
 </dd>
@@ -2604,12 +2613,12 @@ value, but proceed with caution.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.transfer">
-<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.transfer" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><span class="pre">arkouda.numpy.dtypes.int_scalars</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.transfer" title="Link to this definition">¶</a></dt>
 <dd><p>Send a pdarray to a different Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>hostname</strong> (<em>str</em>) – The hostname where the Arkouda server intended to
+<li><p><strong>hostname</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The hostname where the Arkouda server intended to
 receive the pdarray is running.</p></li>
 <li><p><strong>port</strong> (<a class="reference internal" href="../../index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The port to send the array over. This needs to be an
 open port (i.e., not one that the Arkouda server is
@@ -2667,14 +2676,14 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.numpy.pdarrayclass.pdarray.update_hdf">
-<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.update_hdf" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.pdarrayclass.pdarray.update_hdf" title="Link to this definition">¶</a></dt>
 <dd><p>Overwrite the dataset with the name provided with this pdarray. If
 the dataset does not exist it is added.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in files</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Name of the dataset to create in files</p></li>
 <li><p><strong>repack</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default: True
 HDF5 does not release memory on delete. When True, the inaccessible
 data (that was overwritten) is removed. When False, the data remains, but is
@@ -3137,8 +3146,8 @@ subject to the boolean where condition.</p>
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

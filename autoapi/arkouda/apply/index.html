@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="arkouda.array_api" href="../array_api/index.html"><link rel="prev" title="arkouda.alignment" href="../alignment/index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.apply - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -448,7 +448,7 @@ is applied on the server side via embedded Python interpreters.</p>
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.apply.apply">
-<span class="sig-prename descclassname"><span class="pre">arkouda.apply.</span></span><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/apply.html#apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.apply.apply" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.apply.</span></span><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/apply.html#apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.apply.apply" title="Link to this definition">¶</a></dt>
 <dd><p>Apply a python function to a pdarray.</p>
 <p>The function should take one argument
 and return a new value. The function will then be called on each element in
@@ -460,12 +460,12 @@ Known limitations:
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arr</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray to which the function is applied</p></li>
-<li><p><strong>func</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>Callable</em><em>, </em><em>str</em><em>]</em>) – The function to apply to the array. This can be a callable function or
+<li><p><strong>func</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>Callable</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – The function to apply to the array. This can be a callable function or
 a string, but either way it should take a single argument and return a
 single value. If a string, it should be a lambda function that takes a
 single argument, e.g. “lambda x,: x+1”. Note the dangling comma after
 the argument, this is required for string functions.</p></li>
-<li><p><strong>result_dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><em>str</em><em>]</em><em>]</em>) – The dtype of the resulting pdarray. If None, the dtype of the resulting
+<li><p><strong>result_dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – The dtype of the resulting pdarray. If None, the dtype of the resulting
 pdarray will be the same as the input pdarray. If a string, it should be
 a valid numpy dtype string, e.g. “float64”. If a numpy dtype, it should
 be a valid numpy dtype object, e.g. np.float64. This is not supported
@@ -575,8 +575,8 @@ array([21.991148575128552 28.274333882308138 15.707963267948966 3.14159265358979
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

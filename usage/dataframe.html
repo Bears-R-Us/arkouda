@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>DataFrames in Arkouda - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -380,7 +380,7 @@
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">DataFrames</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.DataFrame">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/dataframe.html#DataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/dataframe.html#DataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame" title="Link to this definition">¶</a></dt>
 <dd><p>A DataFrame structure based on arkouda arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -555,8 +555,8 @@ to keep the index column, set this to True.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>str</em><em>, </em><em>int</em><em> or </em><em>list</em>) – The labels to be dropped on the given axis.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>str</em>) – The axis on which to drop from. 0/’index’ - drop rows, 1/’columns’ - drop columns.</p></li>
+<li><p><strong>keys</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>int</em><em> or </em><em>list</em>) – The labels to be dropped on the given axis.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The axis on which to drop from. 0/’index’ - drop rows, 1/’columns’ - drop columns.</p></li>
 <li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
 When False, return a new object.</p></li>
 </ul>
@@ -604,7 +604,7 @@ None when <cite>inplace=True</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – An (ordered) list of column names or a single string to group by.</p></li>
+<li><p><strong>keys</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>list</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – An (ordered) list of column names or a single string to group by.</p></li>
 <li><p><strong>use_series</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
 Otherwise an arkouda.pandas.groupbyclass.GroupBy object.</p></li>
 <li><p><strong>as_index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
@@ -764,7 +764,7 @@ is a permutation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – The key to sort on.</p></li>
+<li><p><strong>key</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The key to sort on.</p></li>
 <li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – If true, sort the key in ascending order.
 Otherwise, sort the key in descending order.</p></li>
 </ul>
@@ -819,7 +819,7 @@ Otherwise, sort the key in descending order.</p></li>
 <p>Note: Sorting using Strings may not yield correct sort order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>keys</strong> (<em>list</em><em> of </em><em>str</em>) – The keys to sort on.</p>
+<dd class="field-odd"><p><strong>keys</strong> (<em>list</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The keys to sort on.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The permutation array that sorts the data on <cite>keys</cite>.</p>
@@ -854,7 +854,7 @@ Otherwise, sort the key in descending order.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>by</strong> (<em>str</em><em> or </em><em>list/tuple</em><em> of </em><em>str</em><em>, </em><em>default = None</em>) – The name(s) of the column(s) to sort by.</p></li>
+<li><p><strong>by</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>list/tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default = None</em>) – The name(s) of the column(s) to sort by.</p></li>
 <li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – Sort values in ascending (default) or descending order.</p></li>
 </ul>
 </dd>
@@ -1025,7 +1025,7 @@ When this is set, axis is ignored.</p></li>
 new column names. Nonexistent names will not raise an
 error.
 When this is set, axis is ignored.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>default=0</em>) – Indicates which axis to perform the rename.
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=0</em>) – Indicates which axis to perform the rename.
 0/”index” - Indexes
 1/”column” - Columns</p></li>
 <li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
@@ -1300,8 +1300,8 @@ duplicated row will be returned (keep determines which row).</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>

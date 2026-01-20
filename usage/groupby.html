@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Strings in Arkouda" href="strings.html"><link rel="prev" title="Array Set Operations" href="setops.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>GroupBy - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -387,7 +387,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.GroupBy">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy" title="Link to this definition">¶</a></dt>
 <dd><p>Group an array or list of arrays by value.</p>
 <p>Usually in preparation
 for aggregating the within-group values of another array.</p>
@@ -610,7 +610,7 @@ will be used; otherwise, method 1 will be used.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>values</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to group and reduce</p></li>
-<li><p><strong>operator</strong> (<em>str</em>) – The name of the reduction operator to use</p></li>
+<li><p><strong>operator</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name of the reduction operator to use</p></li>
 <li><p><strong>skipna</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – boolean which determines if NANs should be skipped</p></li>
 <li><p><strong>ddof</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – “Delta Degrees of Freedom” used in calculating std</p></li>
 </ul>
@@ -625,7 +625,7 @@ will be used; otherwise, method 1 will be used.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, groupable]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -736,7 +736,7 @@ will be used; otherwise, method 1 will be used.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -786,7 +786,7 @@ not the permutation applied by the GroupBy instance.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -878,12 +878,12 @@ array([True False False True True False True True False True])</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.build_from_components">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.build_from_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.build_from_components" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">build_from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.build_from_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.build_from_components" title="Link to this definition">¶</a></dt>
 <dd><p>Build a new GroupBy object from component keys and permutation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>user_defined_name</strong> (<em>str</em><em> (</em><em>Optional</em><em>) </em><em>Passing a name will init the new GroupBy</em>) – and assign it the given name</p></li>
+<li><p><strong>user_defined_name</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> (</em><em>Optional</em><em>) </em><em>Passing a name will init the new GroupBy</em>) – and assign it the given name</p></li>
 <li><p><strong>kwargs</strong> (<em>dict Dictionary</em><em> of </em><em>components required for rebuilding the GroupBy.</em>) – Expected keys are “orig_keys”, “permutation”, “unique_keys”, and “segments”</p></li>
 </ul>
 </dd>
@@ -954,19 +954,19 @@ array([True False False True True False True True False True])</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, groupable_element_type]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, groupable_element_type]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.GroupBy.from_return_msg">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.from_return_msg" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.from_return_msg" title="Link to this definition">¶</a></dt>
 <dd><p>Reconstruct a GroupBy object from a server return message.</p>
 <p>This is used to deserialize a GroupBy object that was previously saved or transferred.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>rep_msg</strong> (<em>str</em>) – A JSON-formatted string containing GroupBy components returned by the Arkouda server.</p>
+<dd class="field-odd"><p><strong>rep_msg</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – A JSON-formatted string containing GroupBy components returned by the Arkouda server.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A reconstructed GroupBy object.</p>
@@ -1007,7 +1007,7 @@ O.W. the result are values.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, groupable_element_type]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, groupable_element_type]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1088,7 +1088,7 @@ they are unregistered.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1139,7 +1139,7 @@ they are unregistered.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1191,7 +1191,7 @@ they are unregistered.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1243,7 +1243,7 @@ they are unregistered.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1292,7 +1292,7 @@ modal value that occurs first.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, groupable]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1316,7 +1316,7 @@ modal value that occurs first.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1371,7 +1371,7 @@ Group (4) has values [4] -&gt; 1 unique value</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1408,7 +1408,7 @@ Group (4) has values [4] -&gt; 1 unique value</p>
 <dd><p>Register this GroupBy object and underlying components with the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the GroupBy is to be registered under,
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – user defined name the GroupBy is to be registered under,
 this will be the root name for underlying components</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1535,7 +1535,7 @@ Otherwise, return the sample values.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1597,7 +1597,7 @@ unbiased estimate of the standard deviation per se.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1653,7 +1653,7 @@ O.W. the result are values.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, groupable_element_type]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, groupable_element_type]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1697,8 +1697,8 @@ per locale of the arkouda server, where each filename starts with prefix_path.</
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files will share</p></li>
-<li><p><strong>dataset</strong> (<em>str</em>) – Name prefix for saved data within the HDF5 file</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Directory and filename prefix that all output files will share</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Name prefix for saved data within the HDF5 file</p></li>
 <li><p><strong>mode</strong> (<em>{'truncate'</em><em>, </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, add data as a new column to existing files.</p></li>
 <li><p><strong>file_type</strong> (<em>{&quot;single&quot;</em><em>, </em><em>&quot;distribute&quot;}</em>) – Default: “distribute”
@@ -1767,8 +1767,8 @@ they are unregistered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<em>str</em>) – Path prefix for the HDF5 files to update.</p></li>
-<li><p><strong>dataset</strong> (<em>str</em><em>, </em><em>default=&quot;groupby&quot;</em>) – Name of the dataset within the HDF5 file.</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Path prefix for the HDF5 files to update.</p></li>
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;groupby&quot;</em>) – Name of the dataset within the HDF5 file.</p></li>
 <li><p><strong>repack</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – Whether to repack the HDF5 file after updating.</p></li>
 </ul>
 </dd>
@@ -1801,7 +1801,7 @@ they are unregistered.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[groupable, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1953,8 +1953,8 @@ normally distributed variables.</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     </body>

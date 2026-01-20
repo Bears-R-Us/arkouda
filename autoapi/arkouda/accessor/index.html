@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="arkouda.alignment" href="../alignment/index.html"><link rel="prev" title="arkouda" href="../index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.accessor - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -462,7 +462,7 @@ Users should not instantiate accessors directly — use <cite>.str</cite> and <c
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.CachedAccessor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">CachedAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accessor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#CachedAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.CachedAccessor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">CachedAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">accessor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#CachedAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.CachedAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Descriptor for caching namespace-based accessors.</p>
 <p>This custom property-like object enables lazy initialization of accessors
 (e.g., <cite>.str</cite>, <cite>.dt</cite>) on Series-like objects, similar to pandas-style extension
@@ -470,8 +470,8 @@ accessors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the namespace to be accessed (e.g., <code class="docutils literal notranslate"><span class="pre">df.foo</span></code>).</p></li>
-<li><p><strong>accessor</strong> (<em>type</em>) – A class implementing the accessor logic.</p></li>
+<li><p><strong>name</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name of the namespace to be accessed (e.g., <code class="docutils literal notranslate"><span class="pre">df.foo</span></code>).</p></li>
+<li><p><strong>accessor</strong> (<a class="reference internal" href="../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a>) – A class implementing the accessor logic.</p></li>
 </ul>
 </dd>
 </dl>
@@ -482,7 +482,7 @@ argument, which should be one of <code class="docutils literal notranslate"><spa
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.DatetimeAccessor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">DatetimeAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#DatetimeAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.DatetimeAccessor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">DatetimeAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#DatetimeAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.DatetimeAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.accessor.Properties" title="arkouda.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
 <p>Accessor for datetime-like operations on Arkouda Series.</p>
 <p>Provides datetime methods such as <cite>.floor()</cite>, <cite>.ceil()</cite>, and <cite>.round()</cite>,
@@ -515,7 +515,7 @@ mirroring the <cite>.dt</cite> accessor in pandas.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.Properties">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">Properties</span></span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#Properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.Properties" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">Properties</span></span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#Properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.Properties" title="Link to this definition">¶</a></dt>
 <dd><p>Base class for accessor implementations in Arkouda.</p>
 <p>Provides the <cite>_make_op</cite> class method to dynamically generate accessor methods
 that wrap underlying <cite>Strings</cite> or <cite>Datetime</cite> operations and return new Series.</p>
@@ -529,7 +529,7 @@ a method that applies <cite>series.values.operation_name(…)</cite> and returns
 
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.accessor.StringAccessor">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">StringAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#StringAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.StringAccessor" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.accessor.</span></span><span class="sig-name descname"><span class="pre">StringAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/accessor.html#StringAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.accessor.StringAccessor" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#arkouda.accessor.Properties" title="arkouda.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
 <p>Accessor for string operations on Arkouda Series.</p>
 <p>Provides string-like methods such as <cite>.contains()</cite>, <cite>.startswith()</cite>, and
@@ -570,13 +570,13 @@ a method that applies <cite>series.values.operation_name(…)</cite> and returns
 <cite>ceil</cite>, <cite>round</cite>) to the given class using the <cite>_make_op</cite> helper.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> (<em>type</em>) – The accessor class to decorate.</p>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference internal" href="../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a>) – The accessor class to decorate.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The accessor class with datetime methods added.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type">type</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -591,13 +591,13 @@ a method that applies <cite>series.values.operation_name(…)</cite> and returns
 <cite>startswith</cite>, <cite>endswith</cite>) to the given class using the <cite>_make_op</cite> helper.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cls</strong> (<em>type</em>) – The accessor class to decorate.</p>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference internal" href="../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a>) – The accessor class to decorate.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The accessor class with string methods added.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type">type</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -694,8 +694,8 @@ a method that applies <cite>series.values.operation_name(…)</cite> and returns
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.numpy.utils" href="../utils/index.html"><link rel="prev" title="arkouda.numpy.timeclass" href="../timeclass/index.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.numpy.util - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
@@ -465,14 +465,14 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.util.attach">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.attach" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.attach" title="Link to this definition">¶</a></dt>
 <dd><p>Attach a previously created Arkouda object by its registered name.</p>
 <p>This function retrieves an Arkouda object (e.g., <cite>pdarray</cite>, <cite>DataFrame</cite>,
 <cite>Series</cite>, etc.) associated with a given <cite>name</cite>. It returns the corresponding
 object based on the type of object stored under that name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the object to attach.</p>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name of the object to attach.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The Arkouda object associated with the given <cite>name</cite>. The returned object
@@ -507,7 +507,7 @@ etc.</p>
 to the corresponding Arkouda object retrieved using <cite>attach</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><em>str</em>) – A list of names corresponding to registered Arkouda objects.</p>
+<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – A list of names corresponding to registered Arkouda objects.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary mapping each name to the attached Arkouda object.</p>
@@ -873,14 +873,14 @@ containing duplicates or missing values.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.util.is_registered">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.is_registered" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.is_registered" title="Link to this definition">¶</a></dt>
 <dd><p>Determine if the provided name is associated with a registered Arkouda object.</p>
 <p>This function checks if the <cite>name</cite> is found in the registry of objects,
 and optionally checks if it is registered as a component of a registered object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name to check for in the registry.</p></li>
+<li><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name to check for in the registry.</p></li>
 <li><p><strong>as_component</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, the function checks if the name is registered as a component
 of a registered object (rather than as a standalone object).</p></li>
 </ul>
@@ -971,7 +971,7 @@ of Arkouda.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> (<em>Arkouda object</em>) – The Arkouda object to register.</p></li>
-<li><p><strong>name</strong> (<em>str</em>) – The name to associate with the object.</p></li>
+<li><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name to associate with the object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1099,20 +1099,20 @@ is exceeded, a sort-based workflow is used instead.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.util.unregister">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.unregister" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.unregister" title="Link to this definition">¶</a></dt>
 <dd><p>Unregister an Arkouda object by its name.</p>
 <p>This function sends a request to unregister the Arkouda object associated
 with the specified <cite>name</cite>. It returns a response message indicating the
 success or failure of the operation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the object to unregister.</p>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name of the object to unregister.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A message indicating the result of the unregister operation.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>RuntimeError</strong> – If the object associated with the given <cite>name</cite> does not exist or cannot
@@ -1133,13 +1133,13 @@ Unregistered PDARRAY my_array</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.util.unregister_all">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#unregister_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.unregister_all" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#unregister_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.unregister_all" title="Link to this definition">¶</a></dt>
 <dd><p>Unregister all Arkouda objects associated with the provided names.</p>
 <p>This function iterates through the list of <cite>names</cite>, unregistering each
 corresponding object from the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><em>str</em>) – A list of registered names corresponding to Arkouda objects
+<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – A list of registered names corresponding to Arkouda objects
 that should be unregistered.</p>
 </dd>
 </dl>
@@ -1255,8 +1255,8 @@ in Arkouda, and can be accessed by their names.
     </aside>
   </div>
 </div><script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     </body>
