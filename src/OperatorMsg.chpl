@@ -50,20 +50,28 @@ module OperatorMsg
 
         const l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
               r = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-              op = msgArgs['op'].toScalar(string);
+              opStr = msgArgs['op'].toScalar(string);
+
+        const op = operatorFromString(opStr);
+        if op == Operator.Invalid {
+          const errorMsg = "Unrecognized operator: %s".format(opStr);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
 
         omLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), 
              "cmd: %? op: %? left pdarray: %? right pdarray: %?".format(
-                                          cmd,op,st.attrib(msgArgs['a'].val),
+                                          cmd,opStr,st.attrib(msgArgs['a'].val),
                                           st.attrib(msgArgs['b'].val)));
 
         // At this point it should handle almost every bigint case
 
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                 !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b) &&
-                op != '/'
+                op != Operator.Div
         {
-          if boolOps.contains(op) {
+          if isBoolOp(op) {
             return st.insert(new shared SymEntry(doBigIntBinOpvvBoolReturn(l, r, op)));
           }
           // call bigint specific func which returns dist bigint array
@@ -71,7 +79,7 @@ module OperatorMsg
           return st.insert(new shared SymEntry(tmp, max_bits));
         } else if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                     (isRealType(binop_dtype_a) || isRealType(binop_dtype_b)) &&
-                    boolOps.contains(op) {
+                    isBoolOp(op) {
           // call bigint specific func which returns distr bool array
           return st.insert(new shared SymEntry(doBigIntBinOpvvBoolReturnRealInput(l.a, r.a, op)));
         }
@@ -79,11 +87,11 @@ module OperatorMsg
           return st.insert(new shared SymEntry(doBigIntBinOpvvRealReturn(l, r, op)));
         }
 
-        if boolOps.contains(op) {
+        if isBoolOp(op) {
           return doBinOpvv(l, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
         }
 
-        if op == "/" {
+        if op == Operator.Div {
           if binop_dtype_a == real(32) && isSmallType(binop_dtype_b) {
             return doBinOpvv(l, r, binop_dtype_a, binop_dtype_b, real(32), op, pn, st);
           }
@@ -95,22 +103,22 @@ module OperatorMsg
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
-        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
+        if (!isRealOp(op)) && (returnType == real(32) || returnType == real(64)) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         if returnType == bool {
-          if op == "+" || op == "*" || (!realOps.contains(op)) {
+          if op == Operator.Add || op == Operator.Mul || (!isRealOp(op)) {
             return doBinOpvv(l, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
           }
-          if op == "-" {
+          if op == Operator.Sub {
             const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
-          if op == "//" || op == "%" || op == "**" {
+          if op == Operator.FloorDiv || op == Operator.Mod || op == Operator.Pow {
             return doBinOpvv(l, r, binop_dtype_a, binop_dtype_b, uint(8), op, pn, st);
           }
         }
@@ -142,11 +150,19 @@ module OperatorMsg
 
         const l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
               val = msgArgs['value'].toScalar(binop_dtype_b),
-              op = msgArgs['op'].toScalar(string);
+              opStr = msgArgs['op'].toScalar(string);
+
+        const op = operatorFromString(opStr);
+        if op == Operator.Invalid {
+          const errorMsg = "Unrecognized operator: %s".format(opStr);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
 
         omLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
              "cmd: %? op: %? left pdarray: %? scalar: %?".format(
-                                          cmd,op,st.attrib(msgArgs['a'].val), val));
+                                          cmd,opStr,st.attrib(msgArgs['a'].val), val));
 
         // This probably doesn't handle all normal bigint cases, but it handles a decent number.
         // This, at least, can be expanded when BinOp.chpl is cleaned up
@@ -155,7 +171,7 @@ module OperatorMsg
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                 !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
         {
-          if boolOps.contains(op) {
+          if isBoolOp(op) {
             // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpvsBoolReturn(l, val, op)));
           }
@@ -168,11 +184,11 @@ module OperatorMsg
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        if boolOps.contains(op) {
+        if isBoolOp(op) {
           return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
         }
 
-        if op == "/" {
+        if op == Operator.Div {
           if binop_dtype_a == real(32) && isSmallType(binop_dtype_b) {
             return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, real(32), op, pn, st);
           }
@@ -184,22 +200,22 @@ module OperatorMsg
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
-        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
+        if (!isRealOp(op)) && (returnType == real(32) || returnType == real(64)) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         if returnType == bool {
-          if op == "+" || op == "*" || (!realOps.contains(op)) {
+          if op == Operator.Add || op == Operator.Mul || (!isRealOp(op)) {
             return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
           }
-          if op == "-" {
+          if op == Operator.Sub {
             const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
-          if op == "//" || op == "%" || op == "**" {
+          if op == Operator.FloorDiv || op == Operator.Mod || op == Operator.Pow {
             return doBinOpvs(l, val, binop_dtype_a, binop_dtype_b, uint(8), op, pn, st);
           }
         }
@@ -230,11 +246,19 @@ module OperatorMsg
 
         const r = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd),
               val = msgArgs['value'].toScalar(binop_dtype_b),
-              op = msgArgs['op'].toScalar(string);
+              opStr = msgArgs['op'].toScalar(string);
+
+        const op = operatorFromString(opStr);
+        if op == Operator.Invalid {
+          const errorMsg = "Unrecognized operator: %s".format(opStr);
+          omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                  "cmd: %? op = %? scalar dtype = %? scalar = %? pdarray = %?".format(
-                                   cmd,op,type2str(binop_dtype_b),msgArgs['value'].val,st.attrib(msgArgs['a'].val)));
+                                   cmd,opStr,type2str(binop_dtype_b),msgArgs['value'].val,st.attrib(msgArgs['a'].val)));
 
         // This probably doesn't handle all normal bigint cases, but it handles a decent number.
         // This, at least, can be expanded when BinOp.chpl is cleaned up
@@ -243,7 +267,7 @@ module OperatorMsg
         if (binop_dtype_a == bigint || binop_dtype_b == bigint) &&
                 !isRealType(binop_dtype_a) && !isRealType(binop_dtype_b)
         {
-          if boolOps.contains(op) {
+          if isBoolOp(op) {
             // call bigint specific func which returns distr bool array
             return st.insert(new shared SymEntry(doBigIntBinOpsvBoolReturn(val, r, op)));
           }
@@ -256,11 +280,11 @@ module OperatorMsg
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        if boolOps.contains(op) {
+        if isBoolOp(op) {
           return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
         }
 
-        if op == "/" {
+        if op == Operator.Div {
           if binop_dtype_a == real(32) && isSmallType(binop_dtype_b) {
             return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, real(32), op, pn, st);
           }
@@ -272,22 +296,22 @@ module OperatorMsg
 
         type returnType = mySafeCast(binop_dtype_a, binop_dtype_b);
 
-        if (!realOps.contains(op)) && (returnType == real(32) || returnType == real(64)) {
+        if (!isRealOp(op)) && (returnType == real(32) || returnType == real(64)) {
           const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
           omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         if returnType == bool {
-          if op == "+" || op == "*" || (!realOps.contains(op)) {
+          if op == Operator.Add || op == Operator.Mul || (!isRealOp(op)) {
             return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, bool, op, pn, st);
           }
-          if op == "-" {
+          if op == Operator.Sub {
             const errorMsg = unrecognizedTypeError(pn, "("+type2str(binop_dtype_a)+","+type2str(binop_dtype_b)+")");
             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
           }
-          if op == "//" || op == "%" || op == "**" {
+          if op == Operator.FloorDiv || op == Operator.Mod || op == Operator.Pow {
             return doBinOpsv(val, r, binop_dtype_a, binop_dtype_b, uint(8), op, pn, st);
           }
         }
@@ -318,33 +342,35 @@ module OperatorMsg
 
         var l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd);
         const r = st[msgArgs['b']]: borrowed SymEntry(binop_dtype_b, array_nd),
-              op = msgArgs['op'].toScalar(string),
-              nie = notImplementedError(pn,type2str(binop_dtype_a),op,type2str(binop_dtype_b));
+              opStr = msgArgs['op'].toScalar(string),
+              nie = notImplementedError(pn,type2str(binop_dtype_a),opStr,type2str(binop_dtype_b));
+
+        const op = opeqFromString(opStr);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,
+                    "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,opStr,
                     st.attrib(msgArgs['a'].val),st.attrib(msgArgs['b'].val)));
 
         if binop_dtype_a == int && binop_dtype_b == int  {
             select op {
-                when "+=" { l.a += r.a; }
-                when "-=" { l.a -= r.a; }
-                when "*=" { l.a *= r.a; }
-                when ">>=" { l.a >>= r.a;}
-                when "<<=" { l.a <<= r.a;}
-                when "//=" {
+                when OpEq.Pe { l.a += r.a; }
+                when OpEq.Me { l.a -= r.a; }
+                when OpEq.Te { l.a *= r.a; }
+                when OpEq.Sre { l.a >>= r.a;}
+                when OpEq.Sle { l.a <<= r.a;}
+                when OpEq.Fde {
                     //l.a /= r.a;
                     ref la = l.a;
                     ref ra = r.a;
                     [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0;
                 }//floordiv
-                when "%=" {
+                when OpEq.Moe {
                     //l.a /= r.a;
                     ref la = l.a;
                     ref ra = r.a;
                     [(li,ri) in zip(la,ra)] li = if ri != 0 then li%ri else 0;
                 }
-                when "**=" {
+                when OpEq.Ee {
                     if || reduce (r.a<0){
                         var errorMsg =  "Attempt to exponentiate base of type Int64 to negative exponent";
                         return new MsgTuple(errorMsg, MsgType.ERROR);
@@ -356,64 +382,64 @@ module OperatorMsg
         }
         else if binop_dtype_a == int && binop_dtype_b == bool  {
             select op {
-                when "+=" {l.a += r.a:int;}
-                when "-=" {l.a -= r.a:int;}
-                when "*=" {l.a *= r.a:int;}
-                when ">>=" { l.a >>= r.a:int;}
-                when "<<=" { l.a <<= r.a:int;}
+                when OpEq.Pe {l.a += r.a:int;}
+                when OpEq.Me {l.a -= r.a:int;}
+                when OpEq.Te {l.a *= r.a:int;}
+                when OpEq.Sre { l.a >>= r.a:int;}
+                when OpEq.Sle { l.a <<= r.a:int;}
                 otherwise do return MsgTuple.error(nie);
             }
         }
         else if binop_dtype_a == uint && binop_dtype_b == uint  {
             select op {
-                when "+=" { l.a += r.a; }
-                when "-=" {
+                when OpEq.Pe { l.a += r.a; }
+                when OpEq.Me {
                     l.a -= r.a;
                 }
-                when "*=" { l.a *= r.a; }
-                when "//=" {
+                when OpEq.Te { l.a *= r.a; }
+                when OpEq.Fde {
                     //l.a /= r.a;
                     ref la = l.a;
                     ref ra = r.a;
                     [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0;
                 }//floordiv
-                when "%=" {
+                when OpEq.Moe {
                     //l.a /= r.a;
                     ref la = l.a;
                     ref ra = r.a;
                     [(li,ri) in zip(la,ra)] li = if ri != 0 then li%ri else 0;
                 }
-                when "**=" {
+                when OpEq.Ee {
                     l.a **= r.a;
                 }
-                when ">>=" { l.a >>= r.a;}
-                when "<<=" { l.a <<= r.a;}
+                when OpEq.Sre { l.a >>= r.a;}
+                when OpEq.Sle { l.a <<= r.a;}
                 otherwise do return MsgTuple.error(nie);
             }
         }
         else if binop_dtype_a == uint && binop_dtype_b == bool  {
             select op {
-                when "+=" {l.a += r.a:uint;}
-                when "-=" {l.a -= r.a:uint;}
-                when "*=" {l.a *= r.a:uint;}
-                when ">>=" { l.a >>= r.a:uint;}
-                when "<<=" { l.a <<= r.a:uint;}
+                when OpEq.Pe {l.a += r.a:uint;}
+                when OpEq.Me {l.a -= r.a:uint;}
+                when OpEq.Te {l.a *= r.a:uint;}
+                when OpEq.Sre { l.a >>= r.a:uint;}
+                when OpEq.Sle { l.a <<= r.a:uint;}
                 otherwise do return MsgTuple.error(nie);
             }
         }
         else if binop_dtype_a == real && binop_dtype_b == int  {
             select op {
-                when "+=" {l.a += r.a;}
-                when "-=" {l.a -= r.a;}
-                when "*=" {l.a *= r.a;}
-                when "/=" {l.a /= r.a:real;} //truediv
-                when "//=" { //floordiv
+                when OpEq.Pe {l.a += r.a;}
+                when OpEq.Me {l.a -= r.a;}
+                when OpEq.Te {l.a *= r.a;}
+                when OpEq.De {l.a /= r.a:real;} //truediv
+                when OpEq.Fde { //floordiv
                     ref la = l.a;
                     ref ra = r.a;
                     la = floorDivision(la, ra, real);
                 }
-                when "**=" { l.a **= r.a; }
-                when "%=" {
+                when OpEq.Ee { l.a **= r.a; }
+                when OpEq.Moe {
                     ref la = l.a;
                     ref ra = r.a;
                     [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
@@ -423,17 +449,17 @@ module OperatorMsg
         }
         else if binop_dtype_a == real && binop_dtype_b == uint  {
             select op {
-                when "+=" {l.a += r.a;}
-                when "-=" {l.a -= r.a;}
-                when "*=" {l.a *= r.a;}
-                when "/=" {l.a /= r.a:real;} //truediv
-                when "//=" { //floordiv
+                when OpEq.Pe {l.a += r.a;}
+                when OpEq.Me {l.a -= r.a;}
+                when OpEq.Te {l.a *= r.a;}
+                when OpEq.De {l.a /= r.a:real;} //truediv
+                when OpEq.Fde { //floordiv
                     ref la = l.a;
                     ref ra = r.a;
                     la = floorDivision(la, ra, real);
                 }
-                when "**=" { l.a **= r.a; }
-                when "%=" {
+                when OpEq.Ee { l.a **= r.a; }
+                when OpEq.Moe {
                     ref la = l.a;
                     ref ra = r.a;
                     [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
@@ -443,17 +469,17 @@ module OperatorMsg
         }
         else if binop_dtype_a == real && binop_dtype_b == real  {
             select op {
-                when "+=" {l.a += r.a;}
-                when "-=" {l.a -= r.a;}
-                when "*=" {l.a *= r.a;}
-                when "/=" {l.a /= r.a;}//truediv
-                when "//=" { //floordiv
+                when OpEq.Pe {l.a += r.a;}
+                when OpEq.Me {l.a -= r.a;}
+                when OpEq.Te {l.a *= r.a;}
+                when OpEq.De {l.a /= r.a;}//truediv
+                when OpEq.Fde { //floordiv
                     ref la = l.a;
                     ref ra = r.a;
                     la = floorDivision(la, ra, real);
                 }
-                when "**=" { l.a **= r.a; }
-                when "%=" {
+                when OpEq.Ee { l.a **= r.a; }
+                when OpEq.Moe {
                     ref la = l.a;
                     ref ra = r.a;
                     [(li,ri) in zip(la,ra)] li = modHelper(li, ri);
@@ -463,18 +489,18 @@ module OperatorMsg
         }
         else if binop_dtype_a == real && binop_dtype_b == bool  {
             select op {
-                when "+=" {l.a += r.a:real;}
-                when "-=" {l.a -= r.a:real;}
-                when "*=" {l.a *= r.a:real;}
+                when OpEq.Pe {l.a += r.a:real;}
+                when OpEq.Me {l.a -= r.a:real;}
+                when OpEq.Te {l.a *= r.a:real;}
                 otherwise do return MsgTuple.error(nie);
             }
         }
         else if binop_dtype_a == bool && binop_dtype_b == bool  {
             select op {
-                when "|=" {l.a |= r.a;}
-                when "&=" {l.a &= r.a;}
-                when "^=" {l.a ^= r.a;}
-                when "+=" {l.a |= r.a;}
+                when OpEq.Oe {l.a |= r.a;}
+                when OpEq.Ae {l.a &= r.a;}
+                when OpEq.Xe {l.a ^= r.a;}
+                when OpEq.Pe {l.a |= r.a;}
                 otherwise do return MsgTuple.error(nie);
             }
         }
@@ -489,7 +515,7 @@ module OperatorMsg
               max_size -= 1;
             }
             select op {
-              when "+=" {
+              when OpEq.Pe {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li += ri;
                   if has_max_bits {
@@ -497,7 +523,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "-=" {
+              when OpEq.Me {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li -= ri;
                   if has_max_bits {
@@ -505,7 +531,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "*=" {
+              when OpEq.Te {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li *= ri;
                   if has_max_bits {
@@ -513,7 +539,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "//=" {
+              when OpEq.Fde {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   if ri != 0 {
                     li /= ri;
@@ -526,7 +552,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "%=" {
+              when OpEq.Moe {
                 // we can't use li %= ri because this can result in negatives
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   if ri != 0 {
@@ -540,7 +566,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "**=" {
+              when OpEq.Ee {
                 if || reduce (ra<0) {
                   throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
                 }
@@ -569,7 +595,7 @@ module OperatorMsg
               max_size -= 1;
             }
             select op {
-              when "+=" {
+              when OpEq.Pe {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li += ri;
                   if has_max_bits {
@@ -577,7 +603,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "-=" {
+              when OpEq.Me {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li -= ri;
                   if has_max_bits {
@@ -585,7 +611,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "*=" {
+              when OpEq.Te {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li *= ri;
                   if has_max_bits {
@@ -593,7 +619,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "//=" {
+              when OpEq.Fde {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   if ri != 0 {
                     li /= ri;
@@ -606,7 +632,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "%=" {
+              when OpEq.Moe {
                 // we can't use li %= ri because this can result in negatives
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   if ri != 0 {
@@ -620,7 +646,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "**=" {
+              when OpEq.Ee {
                 if || reduce (ra<0) {
                   throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
                 }
@@ -649,7 +675,7 @@ module OperatorMsg
               max_size -= 1;
             }
             select op {
-              when "+=" {
+              when OpEq.Pe {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li += ri;
                   if has_max_bits {
@@ -657,7 +683,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "-=" {
+              when OpEq.Me {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li -= ri;
                   if has_max_bits {
@@ -665,7 +691,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "*=" {
+              when OpEq.Te {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li *= ri;
                   if has_max_bits {
@@ -687,7 +713,7 @@ module OperatorMsg
               max_size -= 1;
             }
             select op {
-              when "+=" {
+              when OpEq.Pe {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li += ri;
                   if has_max_bits {
@@ -695,7 +721,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "-=" {
+              when OpEq.Me {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li -= ri;
                   if has_max_bits {
@@ -703,7 +729,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "*=" {
+              when OpEq.Te {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   li *= ri;
                   if has_max_bits {
@@ -711,7 +737,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "//=" {
+              when OpEq.Fde {
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   if ri != 0 {
                     li /= ri;
@@ -724,7 +750,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "%=" {
+              when OpEq.Moe {
                 // we can't use li %= ri because this can result in negatives
                 forall (li, ri) in zip(la, ra) with (var local_max_size = max_size) {
                   if ri != 0 {
@@ -738,7 +764,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "**=" {
+              when OpEq.Ee {
                 if || reduce (ra<0) {
                   throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
                 }
@@ -790,26 +816,28 @@ module OperatorMsg
 
         var l = st[msgArgs['a']]: borrowed SymEntry(binop_dtype_a, array_nd);
         const val = msgArgs['value'].toScalar(binop_dtype_b),
-              op = msgArgs['op'].toScalar(string),
-              nie = notImplementedError(pn,type2str(binop_dtype_a),op,type2str(binop_dtype_b));
+              opStr = msgArgs['op'].toScalar(string),
+              nie = notImplementedError(pn,type2str(binop_dtype_a),opStr,type2str(binop_dtype_b));
+
+        const op = opeqFromString(opStr);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "op: %? pdarray: %? scalar: %?".format(op,st.attrib(msgArgs['a'].val),val));
+                         "op: %? pdarray: %? scalar: %?".format(opStr,st.attrib(msgArgs['a'].val),val));
 
         if binop_dtype_a == int && binop_dtype_b == int  {
             select op {
-                when "+=" { l.a += val; }
-                when "-=" { l.a -= val; }
-                when "*=" { l.a *= val; }
-                when ">>=" { l.a >>= val; }
-                when "<<=" { l.a <<= val; }
-                when "//=" {
+                when OpEq.Pe { l.a += val; }
+                when OpEq.Me { l.a -= val; }
+                when OpEq.Te { l.a *= val; }
+                when OpEq.Sre { l.a >>= val; }
+                when OpEq.Sle { l.a <<= val; }
+                when OpEq.Fde {
                     if val != 0 {l.a /= val;} else {l.a = 0;}
                 }//floordiv
-                when "%=" {
+                when OpEq.Moe {
                     if val != 0 {l.a %= val;} else {l.a = 0;}
                 }
-                when "**=" {
+                when OpEq.Ee {
                     if val<0 {
                         var errorMsg = "Attempt to exponentiate base of type int64 to negative exponent";
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
@@ -824,43 +852,43 @@ module OperatorMsg
         }
         else if binop_dtype_a == uint && binop_dtype_b == uint  {
             select op {
-                when "+=" { l.a += val; }
-                when "-=" {
+                when OpEq.Pe { l.a += val; }
+                when OpEq.Me {
                     l.a -= val;
                 }
-                when "*=" { l.a *= val; }
-                when "//=" {
+                when OpEq.Te { l.a *= val; }
+                when OpEq.Fde {
                     if val != 0 {l.a /= val;} else {l.a = 0;}
                 }//floordiv
-                when "%=" {
+                when OpEq.Moe {
                     if val != 0 {l.a %= val;} else {l.a = 0;}
                 }
-                when "**=" {
+                when OpEq.Ee {
                     l.a **= val;
                 }
-                when ">>=" { l.a >>= val; }
-                when "<<=" { l.a <<= val; }
+                when OpEq.Sre { l.a >>= val; }
+                when OpEq.Sle { l.a <<= val; }
                 otherwise do return MsgTuple.error(nie);
             }
         }
         else if binop_dtype_a == bool && binop_dtype_b == bool  {
             select op {
-                when "+=" {l.a |= val;}
+                when OpEq.Pe {l.a |= val;}
                 otherwise do return MsgTuple.error(nie);
             }
         }
         else if binop_dtype_a == real && binop_dtype_b == real  {
             select op {
-                when "+=" {l.a += val;}
-                when "-=" {l.a -= val;}
-                when "*=" {l.a *= val;}
-                when "/=" {l.a /= val;}//truediv
-                when "//=" { //floordiv
+                when OpEq.Pe {l.a += val;}
+                when OpEq.Me {l.a -= val;}
+                when OpEq.Te {l.a *= val;}
+                when OpEq.De {l.a /= val;}//truediv
+                when OpEq.Fde { //floordiv
                     ref la = l.a;
                     la = floorDivision(la, val, real);
                 }
-                when "**=" { l.a **= val; }
-                when "%=" {
+                when OpEq.Ee { l.a **= val; }
+                when OpEq.Moe {
                     ref la = l.a;
                     [li in la] li = modHelper(li, val);
                 }
@@ -877,7 +905,7 @@ module OperatorMsg
               max_size -= 1;
             }
             select op {
-              when "+=" {
+              when OpEq.Pe {
                 forall li in la with (var local_val = val, var local_max_size = max_size) {
                   li += local_val;
                   if has_max_bits {
@@ -885,7 +913,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "-=" {
+              when OpEq.Me {
                 forall li in la with (var local_val = val, var local_max_size = max_size) {
                   li -= local_val;
                   if has_max_bits {
@@ -893,7 +921,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "*=" {
+              when OpEq.Te {
                 forall li in la with (var local_val = val, var local_max_size = max_size) {
                   li *= local_val;
                   if has_max_bits {
@@ -901,7 +929,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "//=" {
+              when OpEq.Fde {
                 forall li in la with (var local_val = val, var local_max_size = max_size) {
                   if local_val != 0 {
                     li /= local_val;
@@ -914,7 +942,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "%=" {
+              when OpEq.Moe {
                 // we can't use li %= val because this can result in negatives
                 forall li in la with (var local_val = val, var local_max_size = max_size) {
                   if local_val != 0 {
@@ -928,7 +956,7 @@ module OperatorMsg
                   }
                 }
               }
-              when "**=" {
+              when OpEq.Ee {
                 if val<0 {
                   throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
                 }
