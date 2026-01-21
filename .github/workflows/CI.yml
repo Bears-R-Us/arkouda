@@ -177,7 +177,10 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install .[dev]
+        python3 -m pip install -c ci_constraints.txt .[dev]
+    - name: pip list
+      run: |
+        python3 -m pip list        
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -416,7 +419,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install .[dev]
+        python3 -m pip install -c ci_constraints.txt .[dev]
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -467,7 +470,7 @@ jobs:
         /usr/bin/time -v make ARRAY_ND_MAX=3 
     - name: Install Arkouda
       run: |
-        python3 -m pip install .[dev]
+        python3 -m pip install -c ci_constraints.txt .[dev]
     - name: Arkouda unit tests
       run: |
         make test-python size=100
@@ -525,7 +528,7 @@ jobs:
         echo "$PWD"
     - name: Install Arkouda
       run: |
-        python3 -m pip install .[dev]
+        python3 -m pip install -c ci_constraints.txt .[dev]
     - name: Run tests with coverage (fail if below threshold)
       run: |
         make coverage size=10
@@ -593,7 +596,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install .[dev]
+        python3 -m pip install -c ci_constraints.txt .[dev]
     - name: Arkouda make check
       run: |
         make check
