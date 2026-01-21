@@ -572,6 +572,21 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dd class="field-odd"><p>np.ndarray or pandas.api.extensions.ExtensionArray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.astype</span></code></dt><dd><p>Cast a Series to a different dtype.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.astype</span></code></dt><dd><p>Cast a DataFrame to a different dtype.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray</span></code></dt><dd><p>Base class for ExtensionArray objects.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.arrays.DatetimeArray._from_sequence</span></code></dt><dd><p>Create a DatetimeArray from a sequence.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.arrays.TimedeltaArray._from_sequence</span></code></dt><dd><p>Create a TimedeltaArray from a sequence.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span>
@@ -581,7 +596,7 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>Casting to another <code class="docutils literal notranslate"><span class="pre">ExtensionDtype</span></code> returns an <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;Float64&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;Float64&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span>
 <span class="go">&lt;FloatingArray&gt;</span>
 <span class="go">[1.0, 2.0, 3.0]</span>
@@ -591,7 +606,7 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>Otherwise, we will get a Numpy ndarray:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span>
 <span class="go">array([1., 2., 3.])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span><span class="o">.</span><span class="n">dtype</span>
@@ -609,6 +624,21 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dt class="sig sig-object py" id="arkouda.pandas.ArkoudaArray.dtype">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.pandas.ArkoudaArray.dtype" title="Link to this definition">¶</a></dt>
 <dd><p>An instance of ExtensionDtype.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionDtype</span></code></dt><dd><p>Base class for extension dtypes.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray</span></code></dt><dd><p>Base class for extension array types.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray.dtype</span></code></dt><dd><p>The dtype of an ExtensionArray.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.Series.dtype" title="arkouda.pandas.Series.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.dtype</span></code></a></dt><dd><p>The dtype of a Series.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.dtype</span></code></dt><dd><p>The dtype of a DataFrame.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">dtype</span>
 <span class="go">Int64Dtype()</span>
@@ -634,11 +664,28 @@ considered equal (in contrast with normal equality).</p>
 <dd class="field-odd"><p>boolean</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array_equal</span></code></dt><dd><p>Equivalent method for numpy array.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.equals</span></code></dt><dd><p>Equivalent method for Series.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.equals</span></code></dt><dd><p>Equivalent method for DataFrame.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">arr2</span><span class="p">)</span>
 <span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">arr2</span><span class="p">)</span>
+<span class="go">False</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -658,11 +705,21 @@ returned.</p>
 <dd class="field-even"><p>numpy.ndarray or pandas.api.extensions.ExtensionArray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.dropna</span></code></dt><dd><p>Return ExtensionArray without NA values.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.fillna</span></code></dt><dd><p>Fill NA/NaN values using the specified method.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Notes</p>
 <p>If returning an ExtensionArray, then</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">na_values._is_boolean</span></code> should be True</p></li>
-<li><p><cite>na_values</cite> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._reduce()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._reduce()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._accumulate()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">na_values.any</span></code> and <code class="docutils literal notranslate"><span class="pre">na_values.all</span></code> should be implemented</p></li>
 </ul>
 <p class="rubric">Examples</p>
@@ -677,6 +734,15 @@ returned.</p>
 <dt class="sig sig-object py" id="arkouda.pandas.ArkoudaArray.nbytes">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">nbytes</span></span><a class="headerlink" href="#arkouda.pandas.ArkoudaArray.nbytes" title="Link to this definition">¶</a></dt>
 <dd><p>The number of bytes needed to store this object in memory.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.shape</span></code></dt><dd><p>Return a tuple of the array dimensions.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.size</span></code></dt><dd><p>The number of elements in the array.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">nbytes</span>
 <span class="go">27</span>
@@ -899,6 +965,21 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dd class="field-odd"><p>np.ndarray or pandas.api.extensions.ExtensionArray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.astype</span></code></dt><dd><p>Cast a Series to a different dtype.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.astype</span></code></dt><dd><p>Cast a DataFrame to a different dtype.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray</span></code></dt><dd><p>Base class for ExtensionArray objects.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.arrays.DatetimeArray._from_sequence</span></code></dt><dd><p>Create a DatetimeArray from a sequence.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.arrays.TimedeltaArray._from_sequence</span></code></dt><dd><p>Create a TimedeltaArray from a sequence.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span>
@@ -908,7 +989,7 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>Casting to another <code class="docutils literal notranslate"><span class="pre">ExtensionDtype</span></code> returns an <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;Float64&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;Float64&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span>
 <span class="go">&lt;FloatingArray&gt;</span>
 <span class="go">[1.0, 2.0, 3.0]</span>
@@ -918,7 +999,7 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>Otherwise, we will get a Numpy ndarray:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span>
 <span class="go">array([1., 2., 3.])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span><span class="o">.</span><span class="n">dtype</span>
@@ -946,6 +1027,21 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dt class="sig sig-object py" id="arkouda.pandas.ArkoudaCategoricalArray.dtype">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.pandas.ArkoudaCategoricalArray.dtype" title="Link to this definition">¶</a></dt>
 <dd><p>An instance of ExtensionDtype.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionDtype</span></code></dt><dd><p>Base class for extension dtypes.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray</span></code></dt><dd><p>Base class for extension array types.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray.dtype</span></code></dt><dd><p>The dtype of an ExtensionArray.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.Series.dtype" title="arkouda.pandas.Series.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.dtype</span></code></a></dt><dd><p>The dtype of a Series.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.dtype</span></code></dt><dd><p>The dtype of a DataFrame.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">dtype</span>
 <span class="go">Int64Dtype()</span>
@@ -977,11 +1073,21 @@ returned.</p>
 <dd class="field-even"><p>numpy.ndarray or pandas.api.extensions.ExtensionArray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.dropna</span></code></dt><dd><p>Return ExtensionArray without NA values.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.fillna</span></code></dt><dd><p>Fill NA/NaN values using the specified method.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Notes</p>
 <p>If returning an ExtensionArray, then</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">na_values._is_boolean</span></code> should be True</p></li>
-<li><p><cite>na_values</cite> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._reduce()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._reduce()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._accumulate()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">na_values.any</span></code> and <code class="docutils literal notranslate"><span class="pre">na_values.all</span></code> should be implemented</p></li>
 </ul>
 <p class="rubric">Examples</p>
@@ -1070,7 +1176,42 @@ returned.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.ArkoudaCategoricalArray.value_counts">
 <span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.ArkoudaCategoricalArray.value_counts" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a Series containing counts of unique values.</p>
+<p>This method returns a Series with unique values as the index and their
+counts as the values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dropna</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Don’t include counts of NA values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series with unique values as index and counts as values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.pandas.Series" title="arkouda.pandas.Series">Series</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.pandas.Series.value_counts" title="arkouda.pandas.Series.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.value_counts</span></code></a></dt><dd><p>Equivalent method on Series.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.value_counts</span></code></dt><dd><p>Equivalent method on DataFrame.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index.value_counts</span></code></dt><dd><p>Equivalent method on Index.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.arrays</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegerArray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">IntegerArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="go">3    3</span>
+<span class="go">1    1</span>
+<span class="go">2    2</span>
+<span class="go">Name: count, dtype: Int64</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </dd></dl>
 
@@ -1374,6 +1515,21 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dd class="field-odd"><p>np.ndarray or pandas.api.extensions.ExtensionArray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.astype</span></code></dt><dd><p>Cast a Series to a different dtype.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.astype</span></code></dt><dd><p>Cast a DataFrame to a different dtype.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray</span></code></dt><dd><p>Base class for ExtensionArray objects.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.arrays.DatetimeArray._from_sequence</span></code></dt><dd><p>Create a DatetimeArray from a sequence.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.arrays.TimedeltaArray._from_sequence</span></code></dt><dd><p>Create a TimedeltaArray from a sequence.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span>
@@ -1383,7 +1539,7 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>Casting to another <code class="docutils literal notranslate"><span class="pre">ExtensionDtype</span></code> returns an <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;Float64&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;Float64&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr1</span>
 <span class="go">&lt;FloatingArray&gt;</span>
 <span class="go">[1.0, 2.0, 3.0]</span>
@@ -1393,7 +1549,7 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 </pre></div>
 </div>
 <p>Otherwise, we will get a Numpy ndarray:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span>
 <span class="go">array([1., 2., 3.])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span><span class="o">.</span><span class="n">dtype</span>
@@ -1461,6 +1617,21 @@ otherwise a Numpy ndarray with <code class="docutils literal notranslate"><span 
 <dt class="sig sig-object py" id="arkouda.pandas.ArkoudaStringArray.dtype">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.pandas.ArkoudaStringArray.dtype" title="Link to this definition">¶</a></dt>
 <dd><p>An instance of ExtensionDtype.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionDtype</span></code></dt><dd><p>Base class for extension dtypes.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray</span></code></dt><dd><p>Base class for extension array types.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray.dtype</span></code></dt><dd><p>The dtype of an ExtensionArray.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.Series.dtype" title="arkouda.pandas.Series.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.dtype</span></code></a></dt><dd><p>The dtype of a Series.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.dtype</span></code></dt><dd><p>The dtype of a DataFrame.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">dtype</span>
 <span class="go">Int64Dtype()</span>
@@ -1508,11 +1679,21 @@ returned.</p>
 <dd class="field-even"><p>numpy.ndarray or pandas.api.extensions.ExtensionArray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.dropna</span></code></dt><dd><p>Return ExtensionArray without NA values.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.fillna</span></code></dt><dd><p>Fill NA/NaN values using the specified method.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Notes</p>
 <p>If returning an ExtensionArray, then</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">na_values._is_boolean</span></code> should be True</p></li>
-<li><p><cite>na_values</cite> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._reduce()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._reduce()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._accumulate()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">na_values.any</span></code> and <code class="docutils literal notranslate"><span class="pre">na_values.all</span></code> should be implemented</p></li>
 </ul>
 <p class="rubric">Examples</p>

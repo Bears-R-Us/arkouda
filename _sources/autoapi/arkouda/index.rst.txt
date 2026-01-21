@@ -571,6 +571,23 @@ Package Contents
                 otherwise a Numpy ndarray with ``dtype`` for its dtype.
       :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
 
+      .. seealso::
+
+         :py:obj:`Series.astype`
+             Cast a Series to a different dtype.
+
+         :py:obj:`DataFrame.astype`
+             Cast a DataFrame to a different dtype.
+
+         :py:obj:`api.extensions.ExtensionArray`
+             Base class for ExtensionArray objects.
+
+         :py:obj:`core.arrays.DatetimeArray._from_sequence`
+             Create a DatetimeArray from a sequence.
+
+         :py:obj:`core.arrays.TimedeltaArray._from_sequence`
+             Create a TimedeltaArray from a sequence.
+
       .. rubric:: Examples
 
       >>> arr = pd.array([1, 2, 3])
@@ -581,7 +598,7 @@ Package Contents
 
       Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
 
-      >>> arr1 = arr.astype('Float64')
+      >>> arr1 = arr.astype("Float64")
       >>> arr1
       <FloatingArray>
       [1.0, 2.0, 3.0]
@@ -591,7 +608,7 @@ Package Contents
 
       Otherwise, we will get a Numpy ndarray:
 
-      >>> arr2 = arr.astype('float64')
+      >>> arr2 = arr.astype("float64")
       >>> arr2
       array([1., 2., 3.])
       >>> arr2.dtype
@@ -608,6 +625,23 @@ Package Contents
    .. py:property:: dtype
 
       An instance of ExtensionDtype.
+
+      .. seealso::
+
+         :py:obj:`api.extensions.ExtensionDtype`
+             Base class for extension dtypes.
+
+         :py:obj:`api.extensions.ExtensionArray`
+             Base class for extension array types.
+
+         :py:obj:`api.extensions.ExtensionArray.dtype`
+             The dtype of an ExtensionArray.
+
+         :py:obj:`Series.dtype`
+             The dtype of a Series.
+
+         :py:obj:`DataFrame.dtype`
+             The dtype of a DataFrame.
 
       .. rubric:: Examples
 
@@ -629,12 +663,28 @@ Package Contents
       :returns: Whether the arrays are equivalent.
       :rtype: boolean
 
+      .. seealso::
+
+         :py:obj:`numpy.array_equal`
+             Equivalent method for numpy array.
+
+         :py:obj:`Series.equals`
+             Equivalent method for Series.
+
+         :py:obj:`DataFrame.equals`
+             Equivalent method for DataFrame.
+
       .. rubric:: Examples
 
       >>> arr1 = pd.array([1, 2, np.nan])
       >>> arr2 = pd.array([1, 2, np.nan])
       >>> arr1.equals(arr2)
       True
+
+      >>> arr1 = pd.array([1, 3, np.nan])
+      >>> arr2 = pd.array([1, 2, np.nan])
+      >>> arr1.equals(arr2)
+      False
 
 
 
@@ -648,12 +698,21 @@ Package Contents
                 returned.
       :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
 
+      .. seealso::
+
+         :py:obj:`ExtensionArray.dropna`
+             Return ExtensionArray without NA values.
+
+         :py:obj:`ExtensionArray.fillna`
+             Fill NA/NaN values using the specified method.
+
       .. rubric:: Notes
 
       If returning an ExtensionArray, then
 
       * ``na_values._is_boolean`` should be True
-      * `na_values` should implement :func:`ExtensionArray._reduce`
+      * ``na_values`` should implement :func:`ExtensionArray._reduce`
+      * ``na_values`` should implement :func:`ExtensionArray._accumulate`
       * ``na_values.any`` and ``na_values.all`` should be implemented
 
       .. rubric:: Examples
@@ -667,6 +726,14 @@ Package Contents
    .. py:property:: nbytes
 
       The number of bytes needed to store this object in memory.
+
+      .. seealso::
+
+         :py:obj:`ExtensionArray.shape`
+             Return a tuple of the array dimensions.
+
+         :py:obj:`ExtensionArray.size`
+             The number of elements in the array.
 
       .. rubric:: Examples
 
@@ -874,6 +941,23 @@ Package Contents
                 otherwise a Numpy ndarray with ``dtype`` for its dtype.
       :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
 
+      .. seealso::
+
+         :py:obj:`Series.astype`
+             Cast a Series to a different dtype.
+
+         :py:obj:`DataFrame.astype`
+             Cast a DataFrame to a different dtype.
+
+         :py:obj:`api.extensions.ExtensionArray`
+             Base class for ExtensionArray objects.
+
+         :py:obj:`core.arrays.DatetimeArray._from_sequence`
+             Create a DatetimeArray from a sequence.
+
+         :py:obj:`core.arrays.TimedeltaArray._from_sequence`
+             Create a TimedeltaArray from a sequence.
+
       .. rubric:: Examples
 
       >>> arr = pd.array([1, 2, 3])
@@ -884,7 +968,7 @@ Package Contents
 
       Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
 
-      >>> arr1 = arr.astype('Float64')
+      >>> arr1 = arr.astype("Float64")
       >>> arr1
       <FloatingArray>
       [1.0, 2.0, 3.0]
@@ -894,7 +978,7 @@ Package Contents
 
       Otherwise, we will get a Numpy ndarray:
 
-      >>> arr2 = arr.astype('float64')
+      >>> arr2 = arr.astype("float64")
       >>> arr2
       array([1., 2., 3.])
       >>> arr2.dtype
@@ -917,6 +1001,23 @@ Package Contents
    .. py:property:: dtype
 
       An instance of ExtensionDtype.
+
+      .. seealso::
+
+         :py:obj:`api.extensions.ExtensionDtype`
+             Base class for extension dtypes.
+
+         :py:obj:`api.extensions.ExtensionArray`
+             Base class for extension array types.
+
+         :py:obj:`api.extensions.ExtensionArray.dtype`
+             The dtype of an ExtensionArray.
+
+         :py:obj:`Series.dtype`
+             The dtype of a Series.
+
+         :py:obj:`DataFrame.dtype`
+             The dtype of a DataFrame.
 
       .. rubric:: Examples
 
@@ -941,12 +1042,21 @@ Package Contents
                 returned.
       :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
 
+      .. seealso::
+
+         :py:obj:`ExtensionArray.dropna`
+             Return ExtensionArray without NA values.
+
+         :py:obj:`ExtensionArray.fillna`
+             Fill NA/NaN values using the specified method.
+
       .. rubric:: Notes
 
       If returning an ExtensionArray, then
 
       * ``na_values._is_boolean`` should be True
-      * `na_values` should implement :func:`ExtensionArray._reduce`
+      * ``na_values`` should implement :func:`ExtensionArray._reduce`
+      * ``na_values`` should implement :func:`ExtensionArray._accumulate`
       * ``na_values.any`` and ``na_values.all`` should be implemented
 
       .. rubric:: Examples
@@ -1003,6 +1113,39 @@ Package Contents
 
 
    .. py:method:: value_counts(*args, **kwargs)
+
+      Return a Series containing counts of unique values.
+
+      This method returns a Series with unique values as the index and their
+      counts as the values.
+
+      :param dropna: Don't include counts of NA values.
+      :type dropna: bool, default True
+
+      :returns: A Series with unique values as index and counts as values.
+      :rtype: Series
+
+      .. seealso::
+
+         :py:obj:`Series.value_counts`
+             Equivalent method on Series.
+
+         :py:obj:`DataFrame.value_counts`
+             Equivalent method on DataFrame.
+
+         :py:obj:`Index.value_counts`
+             Equivalent method on Index.
+
+      .. rubric:: Examples
+
+      >>> from pandas.core.arrays import IntegerArray
+      >>> arr = IntegerArray._from_sequence([3, 3, 3, 1, 2, 2])
+      >>> arr.value_counts()
+      3    3
+      1    1
+      2    2
+      Name: count, dtype: Int64
+
 
 
 .. py:class:: ArkoudaCategoricalDtype
@@ -1294,6 +1437,23 @@ Package Contents
                 otherwise a Numpy ndarray with ``dtype`` for its dtype.
       :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
 
+      .. seealso::
+
+         :py:obj:`Series.astype`
+             Cast a Series to a different dtype.
+
+         :py:obj:`DataFrame.astype`
+             Cast a DataFrame to a different dtype.
+
+         :py:obj:`api.extensions.ExtensionArray`
+             Base class for ExtensionArray objects.
+
+         :py:obj:`core.arrays.DatetimeArray._from_sequence`
+             Create a DatetimeArray from a sequence.
+
+         :py:obj:`core.arrays.TimedeltaArray._from_sequence`
+             Create a TimedeltaArray from a sequence.
+
       .. rubric:: Examples
 
       >>> arr = pd.array([1, 2, 3])
@@ -1304,7 +1464,7 @@ Package Contents
 
       Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
 
-      >>> arr1 = arr.astype('Float64')
+      >>> arr1 = arr.astype("Float64")
       >>> arr1
       <FloatingArray>
       [1.0, 2.0, 3.0]
@@ -1314,7 +1474,7 @@ Package Contents
 
       Otherwise, we will get a Numpy ndarray:
 
-      >>> arr2 = arr.astype('float64')
+      >>> arr2 = arr.astype("float64")
       >>> arr2
       array([1., 2., 3.])
       >>> arr2.dtype
@@ -1362,6 +1522,23 @@ Package Contents
 
       An instance of ExtensionDtype.
 
+      .. seealso::
+
+         :py:obj:`api.extensions.ExtensionDtype`
+             Base class for extension dtypes.
+
+         :py:obj:`api.extensions.ExtensionArray`
+             Base class for extension array types.
+
+         :py:obj:`api.extensions.ExtensionArray.dtype`
+             The dtype of an ExtensionArray.
+
+         :py:obj:`Series.dtype`
+             The dtype of a Series.
+
+         :py:obj:`DataFrame.dtype`
+             The dtype of a DataFrame.
+
       .. rubric:: Examples
 
       >>> pd.array([1, 2, 3]).dtype
@@ -1393,12 +1570,21 @@ Package Contents
                 returned.
       :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
 
+      .. seealso::
+
+         :py:obj:`ExtensionArray.dropna`
+             Return ExtensionArray without NA values.
+
+         :py:obj:`ExtensionArray.fillna`
+             Fill NA/NaN values using the specified method.
+
       .. rubric:: Notes
 
       If returning an ExtensionArray, then
 
       * ``na_values._is_boolean`` should be True
-      * `na_values` should implement :func:`ExtensionArray._reduce`
+      * ``na_values`` should implement :func:`ExtensionArray._reduce`
+      * ``na_values`` should implement :func:`ExtensionArray._accumulate`
       * ``na_values.any`` and ``na_values.all`` should be implemented
 
       .. rubric:: Examples
