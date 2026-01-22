@@ -42,7 +42,6 @@ class TestBigintDtype:
     def _get(self, attr, default=None):
         return getattr(ak, attr, default)
 
-    @pytest.mark.smoke
     def test_bigint_dtype_singleton_and_str(
         self,
     ):
@@ -72,7 +71,6 @@ class TestBigintDtype:
         # ensure we never fall back to object dtype for bigint-like inputs
         assert ak.dtype("bigint").kind != np.dtype("O").kind
 
-    @pytest.mark.smoke
     def test_bigint_scalar_construction_and_basics(
         self,
     ):

@@ -11,6 +11,7 @@ isort:
 format: ruff-format isort check-doc-examples
 	#   Run flake8
 	flake8 $(ARKOUDA_PROJECT_DIR)/arkouda
+	flake8 $(ARKOUDA_PROJECT_DIR)/tests
 	
 docstr-coverage:
 	#   Check coverage for doc strings:

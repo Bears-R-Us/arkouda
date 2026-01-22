@@ -4,7 +4,6 @@ import pytest
 
 import arkouda as ak
 
-from arkouda import numeric_and_bool_scalars
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.pandas.extension import ArkoudaCategoricalArray, ArkoudaStringArray
@@ -232,19 +231,6 @@ class TestArkoudaArrayExtension:
         perm = arr.argsort()
         sorted_vals = arr._data[perm]
         assert ak.is_sorted(sorted_vals)
-
-    @pytest.mark.parametrize("reduction", ["all", "any", "sum", "prod", "min", "max"])
-    def test_reduce_ops(self, reduction):
-        ak_data = ak.arange(10)
-        arr = ArkoudaArray(ak_data)
-        result = arr._reduce(reduction)
-        assert isinstance(result, numeric_and_bool_scalars)
-
-    def test_reduce_invalid(self):
-        ak_data = ak.arange(10)
-        arr = ArkoudaArray(ak_data)
-        with pytest.raises(TypeError):
-            arr._reduce("mean")
 
     def test_concat_same_type(self):
         a1 = ArkoudaArray(ak.array([1, 2]))
@@ -736,3 +722,96 @@ class TestArkoudaArrayOr:
         arr = ArkoudaArray(ak.array([True, False, True]))
         with pytest.raises(ValueError, match="Lengths must match"):
             _ = arr | [True, False]  # len 2, not 1 and not len(arr)
+
+
+class TestArkoudaArrayReduce:
+    @pytest.mark.parametrize(
+        "name",
+        ["sum", "prod", "min", "max", "mean", "var", "std"],
+    )
+    def test_reduce_numeric_matches_pandas(self, name):
+        data = np.array([1, 2, 3, 2], dtype=np.float64)
+        arr = ArkoudaArray(ak.array(data))
+
+        got = arr._reduce(name)
+
+        s = pd.Series(data)
+        # pandas methods; ddof=1 for var/std by default
+        exp = getattr(s, name)()
+
+        assert np.isfinite(got)
+        assert got == pytest.approx(exp)
+
+    @pytest.mark.parametrize(
+        "data, exp_count",
+        [
+            ([1, 2, 3, 2], 4),
+            ([10], 1),
+            ([5, 5, 5], 3),
+        ],
+    )
+    def test_reduce_count(self, data, exp_count):
+        arr = ArkoudaArray(ak.array(data))
+        assert arr._reduce("count") == exp_count
+
+    @pytest.mark.parametrize(
+        "vals, name, exp",
+        [
+            ([True, True], "all", True),
+            ([True, False], "all", False),
+            ([False, False], "any", False),
+            ([False, True], "any", True),
+        ],
+    )
+    def test_reduce_any_all_bool(self, vals, name, exp):
+        arr = ArkoudaArray(ak.array(vals))
+        assert bool(arr._reduce(name)) == exp
+
+    def test_reduce_or_and_bool(self):
+        arr = ArkoudaArray(ak.array([True, False, True]))
+        assert bool(arr._reduce("or")) is True
+        assert bool(arr._reduce("and")) is False
+
+    @pytest.mark.parametrize(
+        "vals, op, exp",
+        [
+            ([1, 2, 3], "all", True),
+            ([1, 0, 3], "all", False),
+            ([0, 0, 0], "any", False),
+            ([0, 2, 0], "any", True),
+            ([1, 2, 3], "and", True),  # alias for all
+            ([1, 0, 3], "and", False),
+            ([0, 0, 0], "or", False),  # alias for any
+            ([0, 2, 0], "or", True),
+        ],
+    )
+    def test_reduce_truthy_ops_on_int(self, vals, op, exp):
+        arr = ArkoudaArray(ak.array(vals, dtype=ak.int64))
+        assert bool(arr._reduce(op)) == exp
+
+    def test_reduce_argmin_argmax_matches_numpy_first_tie(self):
+        data = np.array([5, 1, 1, 9, 9], dtype=np.int64)
+        arr = ArkoudaArray(ak.array(data))
+
+        assert arr._reduce("argmin") == int(np.argmin(data))
+        assert arr._reduce("argmax") == int(np.argmax(data))
+
+    def test_reduce_first(self):
+        arr = ArkoudaArray(ak.array([10, 20, 30]))
+        assert arr._reduce("first") == 10
+
+    def test_reduce_first_empty_raises(self):
+        arr = ArkoudaArray(ak.array([], dtype=ak.int64))
+        with pytest.raises((IndexError, ValueError)):
+            _ = arr._reduce("first")
+
+    def test_reduce_unknown_name_raises_typeerror(self):
+        arr = ArkoudaArray(ak.arange(5))
+        with pytest.raises(TypeError):
+            arr._reduce("does_not_exist")
+
+    @pytest.mark.parametrize("skipna", [True, False])
+    def test_reduce_accepts_skipna_flag(self, skipna):
+        arr = ArkoudaArray(ak.array([1.0, np.nan, 2.0]))
+        # whichever semantics you currently implement, it should not error
+        _ = arr._reduce("sum", skipna=skipna)

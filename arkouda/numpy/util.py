@@ -287,8 +287,20 @@ def attach(name: str):
     from arkouda.pandas.index import Index, MultiIndex
     from arkouda.pandas.series import Series
 
+    attachable = Union[
+        pdarray,
+        Strings,
+        Datetime,
+        Timedelta,
+        IPv4,
+        SegArray,
+        DataFrame,
+        GroupBy,
+        Categorical,
+    ]
+
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
-    rtn_obj = None
+    rtn_obj: attachable | None = None
     if rep_msg["objType"].lower() == pdarray.objType.lower():
         rtn_obj = create_pdarray(rep_msg["create"])
     elif rep_msg["objType"].lower() == Strings.objType.lower():
