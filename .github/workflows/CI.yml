@@ -1,6 +1,12 @@
 name: CI
 
-on: [pull_request, merge_group, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
 
 env:
   ARKOUDA_QUICK_COMPILE: true
@@ -554,7 +560,7 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}   # not needed for public repos
         files: coverage.xml
-        flags: ${{ matrix.python-version }}
+        flags: python-coverage
         fail_ci_if_error: true
 
 
