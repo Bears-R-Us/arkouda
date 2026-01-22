@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar
 from typing import cast as type_cast
 
 import numpy as np
@@ -227,21 +227,95 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return False
         return self._data.equals(other._data)
 
-    def _reduce(self, name, skipna=True, **kwargs):
-        if name == "all":
-            return self._data.all()
-        elif name == "any":
-            return self._data.any()
-        elif name == "sum":
-            return self._data.sum()
-        elif name == "prod":
-            return self._data.prod()
-        elif name == "min":
-            return self._data.min()
-        elif name == "max":
-            return self._data.max()
+    def _reduce(self, name: str, skipna: bool = True, **kwargs: Any) -> Any:
+        """
+        Reduce the array to a single value (or a small array result) using a named reduction.
+
+        This implements the pandas ExtensionArray reduction protocol and is called by pandas
+        for operations like ``Series.sum()`` and ``Series.min()``.
+
+        Parameters
+        ----------
+        name : str
+            Name of the reduction to perform (e.g., ``"sum"``, ``"min"``, ``"std"``).
+        skipna : bool
+            Whether to ignore missing values. Accepted for pandas compatibility.
+            Default is True.
+
+            NOTE
+            ----
+            ``skipna`` semantics are **not fully supported** for Arkouda-backed arrays.
+            Except where explicitly implemented (e.g., ``count`` for float64),
+            reductions are delegated directly to Arkouda operations, which typically
+            propagate ``NaN`` values rather than skipping them.
+
+            As a result, reductions such as ``sum``, ``mean``, ``min``, and ``max`` on
+            float arrays may return ``NaN`` even when ``skipna=True``.
+        **kwargs : Any
+            Additional keyword arguments forwarded by pandas. Currently unused unless
+            explicitly supported.
+
+        Returns
+        -------
+        Any
+            A scalar result for scalar reductions (e.g., ``sum``, ``min``, ``mean``), or an
+            ``ArkoudaArray`` for array-returning reductions such as ``mode``.
+
+        Raises
+        ------
+        TypeError
+            If ``name`` is not a recognized reduction.
+        """
+        from arkouda.numpy import isnan
+
+        ddof = int(kwargs.get("ddof", 1))
+
+        op = name.lower()
+        data = self._data
+
+        def _count_nonmissing() -> int:
+            # Minimal NA handling: treat NaN as missing only for float64.
+            if data.dtype == "float64":
+                return int((~isnan(data)).sum())
+            return int(data.size)
+
+        def _first() -> Any:
+            if data.size == 0:
+                # Throw an error for now; pandas often raises or returns NA depending on context.
+                raise ValueError("Reduction 'first' requires at least one element")
+            return data[0]
+
+        def _var() -> Any:
+            return data.var(ddof=ddof)
+
+        def _std() -> Any:
+            return data.std(ddof=ddof)
+
+        # All listed reductions are guaranteed to exist on pdarray for all dtypes
+        scalar_fns: dict[str, Callable[[], Any]] = {
+            "sum": data.sum,
+            "count": _count_nonmissing,
+            "prod": data.prod,
+            "min": data.min,
+            "max": data.max,
+            "mean": data.mean,
+            "var": _var,
+            "std": _std,
+            "argmin": data.argmin,
+            "argmax": data.argmax,
+            "first": _first,
+            "any": data.any,
+            "or": data.any,  # "any" and "or" are the same op
+            "all": data.all,
+            "and": data.all,  # "all" and "and" are the same op
+        }
+
+        fn = scalar_fns.get(op)
+        if fn is not None:
+            return fn()
         else:
-            raise TypeError(f"'ArkoudaArray' with dtype arkouda does not support reduction '{name}'")
+            #   op was not in the keys of scalar_fns:
+            raise TypeError(f"Unknown reduction '{name}'")
 
     def __eq__(self, other):
         """
