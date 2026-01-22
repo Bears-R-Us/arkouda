@@ -41,7 +41,7 @@ from arkouda.logger import get_arkouda_logger
 
 BENCHMARK_DIR = os.path.dirname(__file__)
 GRAPH_INFRA_DIR = os.path.join(BENCHMARK_DIR, "graph_infra")
-OUTPUT_JSON =  os.path.join("configs", "field_lookup_map.json")
+OUTPUT_JSON = os.path.join("configs", "field_lookup_map.json")
 
 # Benchmarks that just need default Average rate/time keys
 DEFAULT_BENCHMARKS = [
@@ -361,7 +361,6 @@ def main():
     )
     args = parser.parse_args()
     OUTPUT_JSON = os.path.join(args.dat_dir, "configs", "field_lookup_map.json")
-
 
     field_lookup_map = build_field_lookup_map()
     field_lookup_map = add_default_mappings(field_lookup_map)
