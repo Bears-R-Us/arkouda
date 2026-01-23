@@ -550,10 +550,9 @@ def _bigint_from_numpy(
             # Match previous behavior: object array containing floats becomes float64
             # and uses the single-limb float path above.
             a = a.astype(np.float64, copy=False)
-            flat = a.ravel()
             if not np.any(a):
                 return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
-            ak_a = array(a.astype(np.float64, copy=False))
+            ak_a = array(a)
             return create_pdarray(
                 generic_msg(
                     cmd=f"big_int_creation_one_limb<{ak_a.dtype},{ak_a.ndim}>",
