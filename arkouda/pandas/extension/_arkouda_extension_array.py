@@ -733,3 +733,261 @@ class ArkoudaExtensionArray(ExtensionArray):
 
     def _quantile(self, q, interpolation="linear"):
         raise NotImplementedError("_quantile is not yet implemented for ArkoudaExtensionArray.")
+
+    def _empty(self, *args, **kwargs):
+        raise NotImplementedError("_empty is not yet implemented for ArkoudaExtensionArray.")
+
+    def _accumulate(self, name, *, skipna=True, **kwargs):
+        raise NotImplementedError("_accumulate is not yet implemented for ArkoudaExtensionArray.")
+
+    @classmethod
+    def _from_sequence_of_strings(cls, strings, *, dtype=None, copy=False):
+        raise NotImplementedError(
+            "_from_sequence_of_strings is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    def _values_for_json(self):
+        raise NotImplementedError("_values_for_json is not yet implemented for ArkoudaExtensionArray.")
+
+    def _where(self, mask, other):
+        raise NotImplementedError("_where is not yet implemented for ArkoudaExtensionArray.")
+
+    def interpolate(self, method="linear", *, limit=None, **kwargs):
+        raise NotImplementedError("interpolate is not yet implemented for ArkoudaExtensionArray.")
+
+    def view(self, dtype=None):
+        raise NotImplementedError("view is not yet implemented for ArkoudaExtensionArray.")
+
+    def _pad_or_backfill(self, method, limit=None, mask=None):
+        raise NotImplementedError("_pad_or_backfill is not yet implemented for ArkoudaExtensionArray.")
+
+    # ------------------------------------------------------------------
+    # Arithmetic / comparison / logical ops hooks
+    # ------------------------------------------------------------------
+
+    def _cmp_method(self, *args, **kwargs):
+        raise NotImplementedError("_cmp_method is not yet implemented for ArkoudaExtensionArray.")
+
+    def _logical_method(self, *args, **kwargs):
+        raise NotImplementedError("_logical_method is not yet implemented for ArkoudaExtensionArray.")
+
+    # ------------------------------------------------------------------
+    # NDArray-backed construction / wrapping
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def _from_backing_data(cls, *args, **kwargs):
+        raise NotImplementedError("_from_backing_data is not yet implemented for ArkoudaExtensionArray.")
+
+    @classmethod
+    def _simple_new(cls, *args, **kwargs):
+        raise NotImplementedError("_simple_new is not yet implemented for ArkoudaExtensionArray.")
+
+    def _box_func(self, *args, **kwargs):
+        raise NotImplementedError("_box_func is not yet implemented for ArkoudaExtensionArray.")
+
+    def _validate_scalar(self, *args, **kwargs):
+        raise NotImplementedError("_validate_scalar is not yet implemented for ArkoudaExtensionArray.")
+
+    def _validate_setitem_value(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_validate_setitem_value is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    def _wrap_ndarray_result(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_wrap_ndarray_result is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    def _wrap_reduction_result(self, *args, **kwargs):
+        raise NotImplementedError(
+            "_wrap_reduction_result is not yet implemented for ArkoudaExtensionArray."
+        )
+
+    # ------------------------------------------------------------------
+    # Reductions (currently delegated to arkouda-side implementations or unsupported)
+    # ------------------------------------------------------------------
+
+    def _reduction_not_implemented(self, name: str):
+        raise NotImplementedError(f"{name} is not yet implemented for ArkoudaExtensionArray.")
+
+    def kurt(self, *args, **kwargs):
+        self._reduction_not_implemented("kurt")
+
+    def median(self, *args, **kwargs):
+        self._reduction_not_implemented("median")
+
+    def sem(self, *args, **kwargs):
+        self._reduction_not_implemented("sem")
+
+    def skew(self, *args, **kwargs):
+        self._reduction_not_implemented("skew")
+
+    def swapaxes(self, *args, **kwargs):
+        self._reduction_not_implemented("swapaxes")
+
+    def value_counts(self, *args, **kwargs):
+        self._reduction_not_implemented("value_counts")
+
+    # ------------------------------------------------------------------
+    # String-like methods
+    # ------------------------------------------------------------------
+
+    def _string_not_supported(self, name: str):
+        raise NotImplementedError(f"{name} is not supported for ArkoudaExtensionArray.")
+
+    def _str_capitalize(self, *args, **kwargs):
+        self._string_not_supported("_str_capitalize")
+
+    def _str_casefold(self, *args, **kwargs):
+        self._string_not_supported("_str_casefold")
+
+    def _str_contains(self, *args, **kwargs):
+        self._string_not_supported("_str_contains")
+
+    def _str_count(self, *args, **kwargs):
+        self._string_not_supported("_str_count")
+
+    def _str_encode(self, *args, **kwargs):
+        self._string_not_supported("_str_encode")
+
+    def _str_endswith(self, *args, **kwargs):
+        self._string_not_supported("_str_endswith")
+
+    def _str_extract(self, *args, **kwargs):
+        self._string_not_supported("_str_extract")
+
+    def _str_find(self, *args, **kwargs):
+        self._string_not_supported("_str_find")
+
+    def _str_find_(self, *args, **kwargs):
+        self._string_not_supported("_str_find_")
+
+    def _str_findall(self, *args, **kwargs):
+        self._string_not_supported("_str_findall")
+
+    def _str_fullmatch(self, *args, **kwargs):
+        self._string_not_supported("_str_fullmatch")
+
+    def _str_get(self, *args, **kwargs):
+        self._string_not_supported("_str_get")
+
+    def _str_get_dummies(self, *args, **kwargs):
+        self._string_not_supported("_str_get_dummies")
+
+    def _str_getitem(self, *args, **kwargs):
+        self._string_not_supported("_str_getitem")
+
+    def _str_index(self, *args, **kwargs):
+        self._string_not_supported("_str_index")
+
+    def _str_isalnum(self, *args, **kwargs):
+        self._string_not_supported("_str_isalnum")
+
+    def _str_isalpha(self, *args, **kwargs):
+        self._string_not_supported("_str_isalpha")
+
+    def _str_isdecimal(self, *args, **kwargs):
+        self._string_not_supported("_str_isdecimal")
+
+    def _str_isdigit(self, *args, **kwargs):
+        self._string_not_supported("_str_isdigit")
+
+    def _str_islower(self, *args, **kwargs):
+        self._string_not_supported("_str_islower")
+
+    def _str_isnumeric(self, *args, **kwargs):
+        self._string_not_supported("_str_isnumeric")
+
+    def _str_isspace(self, *args, **kwargs):
+        self._string_not_supported("_str_isspace")
+
+    def _str_istitle(self, *args, **kwargs):
+        self._string_not_supported("_str_istitle")
+
+    def _str_isupper(self, *args, **kwargs):
+        self._string_not_supported("_str_isupper")
+
+    def _str_join(self, *args, **kwargs):
+        self._string_not_supported("_str_join")
+
+    def _str_len(self, *args, **kwargs):
+        self._string_not_supported("_str_len")
+
+    def _str_lower(self, *args, **kwargs):
+        self._string_not_supported("_str_lower")
+
+    def _str_lstrip(self, *args, **kwargs):
+        self._string_not_supported("_str_lstrip")
+
+    def _str_map(self, *args, **kwargs):
+        self._string_not_supported("_str_map")
+
+    def _str_match(self, *args, **kwargs):
+        self._string_not_supported("_str_match")
+
+    def _str_normalize(self, *args, **kwargs):
+        self._string_not_supported("_str_normalize")
+
+    def _str_pad(self, *args, **kwargs):
+        self._string_not_supported("_str_pad")
+
+    def _str_partition(self, *args, **kwargs):
+        self._string_not_supported("_str_partition")
+
+    def _str_removeprefix(self, *args, **kwargs):
+        self._string_not_supported("_str_removeprefix")
+
+    def _str_removesuffix(self, *args, **kwargs):
+        self._string_not_supported("_str_removesuffix")
+
+    def _str_repeat(self, *args, **kwargs):
+        self._string_not_supported("_str_repeat")
+
+    def _str_replace(self, *args, **kwargs):
+        self._string_not_supported("_str_replace")
+
+    def _str_rfind(self, *args, **kwargs):
+        self._string_not_supported("_str_rfind")
+
+    def _str_rindex(self, *args, **kwargs):
+        self._string_not_supported("_str_rindex")
+
+    def _str_rpartition(self, *args, **kwargs):
+        self._string_not_supported("_str_rpartition")
+
+    def _str_rsplit(self, *args, **kwargs):
+        self._string_not_supported("_str_rsplit")
+
+    def _str_rstrip(self, *args, **kwargs):
+        self._string_not_supported("_str_rstrip")
+
+    def _str_slice(self, *args, **kwargs):
+        self._string_not_supported("_str_slice")
+
+    def _str_slice_replace(self, *args, **kwargs):
+        self._string_not_supported("_str_slice_replace")
+
+    def _str_split(self, *args, **kwargs):
+        self._string_not_supported("_str_split")
+
+    def _str_startswith(self, *args, **kwargs):
+        self._string_not_supported("_str_startswith")
+
+    def _str_strip(self, *args, **kwargs):
+        self._string_not_supported("_str_strip")
+
+    def _str_swapcase(self, *args, **kwargs):
+        self._string_not_supported("_str_swapcase")
+
+    def _str_title(self, *args, **kwargs):
+        self._string_not_supported("_str_title")
+
+    def _str_translate(self, *args, **kwargs):
+        self._string_not_supported("_str_translate")
+
+    def _str_upper(self, *args, **kwargs):
+        self._string_not_supported("_str_upper")
+
+    def _str_wrap(self, *args, **kwargs):
+        self._string_not_supported("_str_wrap")

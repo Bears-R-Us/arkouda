@@ -131,72 +131,127 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
     def __repr__(self):
         return f"ArkoudaCategoricalArray({self._data})"
 
-    def _not_implemented(self, name: str):
-        raise NotImplementedError(f"`{name}` is not implemented for ArkoudaCategoricalArray yet.")
+    # ------------------------------------------------------------------
+    # pandas.Categorical-specific API that is not yet implemented
+    # ------------------------------------------------------------------
+
+    def _categorical_not_implemented(self, name: str):
+        raise NotImplementedError(f"{name} is not yet implemented for ArkoudaCategoricalArray.")
+
+    def _categories_match_up_to_permutation(self, *args, **kwargs):
+        self._categorical_not_implemented("_categories_match_up_to_permutation")
+
+    def _constructor(self, *args, **kwargs):
+        self._categorical_not_implemented("_constructor")
+
+    def _dir_additions(self, *args, **kwargs):
+        self._categorical_not_implemented("_dir_additions")
+
+    def _dir_deletions(self, *args, **kwargs):
+        self._categorical_not_implemented("_dir_deletions")
+
+    def _encode_with_my_categories(self, *args, **kwargs):
+        self._categorical_not_implemented("_encode_with_my_categories")
+
+    def _from_inferred_categories(self, *args, **kwargs):
+        self._categorical_not_implemented("_from_inferred_categories")
+
+    def _get_values_repr(self, *args, **kwargs):
+        self._categorical_not_implemented("_get_values_repr")
+
+    def _internal_get_values(self, *args, **kwargs):
+        self._categorical_not_implemented("_internal_get_values")
+
+    def _replace(self, *args, **kwargs):
+        self._categorical_not_implemented("_replace")
+
+    def _repr_categories(self, *args, **kwargs):
+        self._categorical_not_implemented("_repr_categories")
+
+    def _reset_cache(self, *args, **kwargs):
+        self._categorical_not_implemented("_reset_cache")
+
+    def _reverse_indexer(self, *args, **kwargs):
+        self._categorical_not_implemented("_reverse_indexer")
+
+    def _set_categories(self, *args, **kwargs):
+        self._categorical_not_implemented("_set_categories")
+
+    def _set_dtype(self, *args, **kwargs):
+        self._categorical_not_implemented("_set_dtype")
+
+    def _unbox_scalar(self, *args, **kwargs):
+        self._categorical_not_implemented("_unbox_scalar")
+
+    def _validate_codes_for_dtype(self, *args, **kwargs):
+        self._categorical_not_implemented("_validate_codes_for_dtype")
+
+    def _validate_listlike(self, *args, **kwargs):
+        self._categorical_not_implemented("_validate_listlike")
+
+    def _values_for_rank(self, *args, **kwargs):
+        self._categorical_not_implemented("_values_for_rank")
 
     def add_categories(self, *args, **kwargs):
-        self._not_implemented("add_categories")
+        self._categorical_not_implemented("add_categories")
 
     def as_ordered(self, *args, **kwargs):
-        self._not_implemented("as_ordered")
+        self._categorical_not_implemented("as_ordered")
 
     def as_unordered(self, *args, **kwargs):
-        self._not_implemented("as_unordered")
+        self._categorical_not_implemented("as_unordered")
 
     def check_for_ordered(self, *args, **kwargs):
-        self._not_implemented("check_for_ordered")
+        self._categorical_not_implemented("check_for_ordered")
 
     def describe(self, *args, **kwargs):
-        self._not_implemented("describe")
+        self._categorical_not_implemented("describe")
 
     @classmethod
     def from_codes(cls, *args, **kwargs):
-        raise NotImplementedError("`from_codes` is not implemented for ArkoudaCategoricalArray yet.")
+        raise NotImplementedError("from_codes is not yet implemented for ArkoudaCategoricalArray.")
 
     def isnull(self, *args, **kwargs):
-        self._not_implemented("isnull")
-
-    def max(self, *args, **kwargs):
-        self._not_implemented("max")
+        self._categorical_not_implemented("isnull")
 
     def memory_usage(self, *args, **kwargs):
-        self._not_implemented("memory_usage")
-
-    def min(self, *args, **kwargs):
-        self._not_implemented("min")
+        self._categorical_not_implemented("memory_usage")
 
     def notna(self, *args, **kwargs):
-        self._not_implemented("notna")
+        self._categorical_not_implemented("notna")
 
     def notnull(self, *args, **kwargs):
-        self._not_implemented("notnull")
+        self._categorical_not_implemented("notnull")
 
     def remove_categories(self, *args, **kwargs):
-        self._not_implemented("remove_categories")
+        self._categorical_not_implemented("remove_categories")
 
     def remove_unused_categories(self, *args, **kwargs):
-        self._not_implemented("remove_unused_categories")
+        self._categorical_not_implemented("remove_unused_categories")
 
     def rename_categories(self, *args, **kwargs):
-        self._not_implemented("rename_categories")
+        self._categorical_not_implemented("rename_categories")
 
     def reorder_categories(self, *args, **kwargs):
-        self._not_implemented("reorder_categories")
+        self._categorical_not_implemented("reorder_categories")
 
     def set_categories(self, *args, **kwargs):
-        self._not_implemented("set_categories")
+        self._categorical_not_implemented("set_categories")
 
     def set_ordered(self, *args, **kwargs):
-        self._not_implemented("set_ordered")
+        self._categorical_not_implemented("set_ordered")
 
     def sort_values(self, *args, **kwargs):
-        self._not_implemented("sort_values")
-
-    def swapaxes(self, *args, **kwargs):
-        self._not_implemented("swapaxes")
+        self._categorical_not_implemented("sort_values")
 
     def to_list(self, *args, **kwargs):
-        self._not_implemented("to_list")
+        self._categorical_not_implemented("to_list")
+
+    def max(self, *args, **kwargs):
+        self._categorical_not_implemented("max")
+
+    def min(self, *args, **kwargs):
+        self._categorical_not_implemented("min")
 
     def value_counts(self, *args, **kwargs):
-        self._not_implemented("value_counts")
+        self._categorical_not_implemented("value_counts")
