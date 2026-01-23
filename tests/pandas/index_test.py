@@ -846,3 +846,26 @@ class TestIndex:
         i1 = ak.Index(ak.Categorical(strings1))
         i2 = ak.Index(i1.to_pandas())
         assert_index_equal(i1, i2)
+
+    def test_multiindex_lookup_tuple_mixed_dtypes(self):
+        # Level 0: int
+        lvl0 = ak.array([1, 1, 2, 3])
+        # Level 1: strings
+        lvl1 = ak.array(["red", "blue", "red", "red"])
+
+        midx = ak.MultiIndex([lvl0, lvl1], names=["num", "color"])
+
+        # Tuple key mixes int + str and should NOT trigger castStringsTo<int64> on "red"
+        mask = midx.lookup((1, "red"))
+
+        assert mask.dtype == ak.bool_
+
+        # Expect exactly the first row to match
+        assert mask.tolist() == [True, False, False, False]
+
+        assert midx.lookup(([ak.array([1, 2]), ak.array(["blue", "red"])])).tolist() == [
+            False,
+            True,
+            True,
+            False,
+        ]

@@ -60,7 +60,18 @@ from __future__ import annotations
 import builtins
 import json
 
-from typing import TYPE_CHECKING, Hashable, Iterable, List, Literal, Optional, Tuple, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Hashable,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+)
 from typing import cast as type_cast
 
 import numpy as np
@@ -72,13 +83,12 @@ from typeguard import typechecked
 
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars
-from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.manipulation_functions import flip as ak_flip
 from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
 from arkouda.numpy.pdarraysetops import argsort, in1d
 from arkouda.numpy.sorting import coargsort
 from arkouda.numpy.util import convert_if_categorical, generic_concat, get_callback
-from arkouda.pandas.groupbyclass import GroupBy, unique
+from arkouda.pandas.groupbyclass import GroupBy, groupable, unique
 
 
 __all__ = [
@@ -1202,12 +1212,13 @@ class Index:
         Returns
         -------
         pdarray
-            A boolean array indicating which elements of `key` are present in the Index.
+            A boolean array of length ``len(self)``, indicating which entries of
+            the Index are present in `key`.
 
         Raises
         ------
         TypeError
-            If `key` is not a scalar or a pdarray.
+            If `key` cannot be converted to an arkouda array.
 
         """
         from arkouda.numpy.pdarrayclass import pdarray
@@ -2139,39 +2150,77 @@ class MultiIndex(Index):
         idx = [generic_concat([ix1, ix2], ordered=True) for ix1, ix2 in zip(self.index, other.index)]
         return MultiIndex(idx)
 
-    def lookup(self, key):
+    def lookup(self, key: list[Any] | tuple[Any, ...]) -> groupable:
         """
         Perform element-wise lookup on the MultiIndex.
 
         Parameters
         ----------
         key : list or tuple
-            A sequence of values, one for each level of the MultiIndex. Values may be scalars
-            or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.
+            A sequence of values, one for each level of the MultiIndex.
+
+            - If the elements are scalars (e.g., ``(1, "red")``), they are
+              treated as a single row key: the result is a boolean mask over
+              rows where all levels match the corresponding scalar.
+            - If the elements are arkouda arrays (e.g., list of pdarrays /
+              Strings), they must align one-to-one with the levels, and the
+              lookup is delegated to ``in1d(self.index, key)`` for multi-column
+              membership.
 
         Returns
         -------
-        pdarray
+        groupable
             A boolean array indicating which rows in the MultiIndex match the key.
 
         Raises
         ------
         TypeError
-            If `key` is not a list or tuple, or if its elements cannot be converted to pdarrays.
-
+            If `key` is not a list or tuple.
+        ValueError
+            If the length of `key` does not match the number of levels.
         """
-        from arkouda.numpy import cast as akcast
-        from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.pdarraycreation import array as ak_array
+        from arkouda.numpy.strings import Strings
 
-        if not isinstance(key, list) and not isinstance(key, tuple):
-            raise TypeError("MultiIndex lookup failure")
-        # if individual vals convert to pdarrays
-        if not isinstance(key[0], pdarray):
-            dt = self.levels[0].dtype if isinstance(self.levels[0], pdarray) else akint64
-            key = [akcast(array([x]), dt) for x in key]
+        if not isinstance(key, (list, tuple)):
+            types = [type(k).__name__ for k in key]
+            raise TypeError(
+                f"MultiIndex.lookup expects a list or tuple of keys, one per level. Received {types}."
+            )
 
-        return in1d(self.index, key)
+        if len(key) != self.nlevels:
+            raise ValueError(
+                f"MultiIndex.lookup key length {len(key)} must match number of levels {self.nlevels}"
+            )
+
+        # Case 1: user passed per-level arkouda arrays.
+        # We assume they are already the correct types and lengths.
+        is_array_mode = all(isinstance(k, (pdarray, Strings)) for k in key)
+        if is_array_mode:
+            return in1d(self.index, key)
+
+        # Don't allow mixed scalar/array keys.
+        is_any_array = any(isinstance(k, (pdarray, Strings)) for k in key)
+        if is_any_array and not is_array_mode:
+            raise TypeError(
+                "MultiIndex.lookup key must be all scalars (row key) or all arkouda arrays "
+                "(per-level membership). "
+                f"Received mixed types: {[type(k) for k in key]}"
+            )
+
+        # Case 2: user passed scalars (e.g., (1, "red")).
+        # Convert each scalar to a length-1 arkouda array, preserving per-level dtypes.
+        scalar_key_arrays = []
+        for i, v in enumerate(key):
+            lvl = self.levels[i]
+
+            # Determine the dtype for this level
+            dt = lvl.dtype
+
+            a = ak_array([v], dtype=dt)  # make length-1 array
+            scalar_key_arrays.append(a)
+
+        return in1d(self.index, scalar_key_arrays)
 
     def to_hdf(
         self,
