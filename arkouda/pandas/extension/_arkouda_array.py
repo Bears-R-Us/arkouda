@@ -6,7 +6,6 @@ from typing import cast as type_cast
 import numpy as np
 
 from numpy import ndarray
-from numpy.typing import NDArray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
@@ -414,18 +413,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # Fallback: local cast
         return self.to_ndarray().astype(npdt, copy=copy)
 
-    def isna(self) -> NDArray[np.bool_]:
-        from arkouda.numpy import isnan
-        from arkouda.numpy.pdarraycreation import full as ak_full
-        from arkouda.numpy.util import is_float
-
-        if not is_float(self._data):
-            return (
-                ak_full(self._data.size, False, dtype=bool).to_ndarray().astype(dtype=bool, copy=False)
-            )
-
-        return isnan(self._data).to_ndarray().astype(dtype=bool, copy=False)
-
     @property
     def dtype(self):
         if self._data.dtype == "int64":
@@ -671,6 +658,56 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         boolean-reduction calls.
         """
         return bool(self._data.any())
+
+    def isna(self) -> np.ndarray:
+        """
+        Return a boolean mask indicating missing values.
+
+        This method implements the pandas ExtensionArray.isna contract
+        and always returns a NumPy ndarray of dtype ``bool`` with the
+        same length as the array.
+
+        Returns
+        -------
+        np.ndarray
+            A boolean array where ``True`` indicates a missing value.
+
+        Raises
+        ------
+        TypeError
+            If the underlying data buffer does not support missing-value
+            detection or cannot produce a boolean mask.
+        """
+        from typing import cast
+
+        from arkouda.categorical import Categorical
+        from arkouda.numpy import isnan
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import full
+        from arkouda.numpy.segarray import SegArray
+
+        data = self._data
+
+        # SegArray
+        if isinstance(data, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed ArkoudaArray")
+
+        # Categorical
+        if isinstance(data, Categorical):
+            return cast(np.ndarray, ArkoudaArray(data.codes == -1))
+
+        # pdarray
+        if isinstance(data, pdarray):
+            if data.dtype in ("float64", "float32"):
+                return cast(np.ndarray, ArkoudaArray(isnan(data)))
+
+            return cast(np.ndarray, ArkoudaArray(full(data.size, False, dtype=bool)))
+
+        return cast(np.ndarray, NotImplemented)
+
+    def isnull(self):
+        """Alias for isna()."""
+        return self.isna()
 
 
 def _is_empty_indexer(key) -> bool:
