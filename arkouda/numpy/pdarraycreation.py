@@ -173,14 +173,6 @@ def array(
     copy: bool = False,
     max_bits: int = -1,
     *,
-    # Bigint fast-path controls:
-    #
-    # - unsafe=False (default): validate object arrays and infer bigint sizing safely.
-    # - unsafe=True: allow skipping validation and/or sizing inference when hints are provided.
-    #
-    # If you pass unsafe=True with dtype=bigint and provide both any_neg and num_bits,
-    # Arkouda will TRUST those values and skip the full-array Python scans that would
-    # otherwise be required for dtype=object inputs.
     unsafe: bool = False,
     any_neg: Optional[bool] = None,
     num_bits: Optional[int] = None,
@@ -188,6 +180,22 @@ def array(
     """
     Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
     transferring data to the Arkouda server.
+
+    Bigint fast path
+    ----------------
+    When `dtype` is `bigint` (or ``"bigint"``) and the input is a NumPy ``dtype=object`` array,
+    building the bigint representation may require Python-level passes over the data to infer
+    sign and required bit width.
+
+    Set ``unsafe=True`` to enable optional performance shortcuts for trusted inputs:
+
+    * If both ``any_neg`` and ``num_bits`` are provided, Arkouda will trust these hints and
+      skip inference passes, proceeding directly to limb extraction.
+    * If hints are not provided, Arkouda may still perform a single-pass inference step
+      for ``dtype=object`` inputs (implementation-dependent).
+
+    .. warning::
+       If ``unsafe=True`` and the provided hints are incorrect, results may be incorrect.
 
     Parameters
     ----------
