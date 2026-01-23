@@ -1,6 +1,8 @@
 import numpy as np
 import numpy.random as np_random
 
+from typeguard import typechecked
+
 from arkouda.client import get_registration_config
 from arkouda.numpy.dtypes import (
     _val_isinstance_of_union,
@@ -1059,6 +1061,7 @@ class Generator:
         self._state += full_size
         return create_pdarray(rep_msg)
 
+    @typechecked
     def _fill_with_stateless_u64_from_index(
         self, x: pdarray, seed: int_scalars, stream: int_scalars, start_idx: int_scalars = 0
     ) -> None:
@@ -1111,6 +1114,7 @@ class Generator:
             },
         )
 
+    @typechecked
     def _stateless_u64_from_index(
         self, n: int, seed: int_scalars, stream: int_scalars, start_idx: int_scalars = 0
     ) -> pdarray:
@@ -1154,6 +1158,7 @@ class Generator:
         self._fill_with_stateless_u64_from_index(x, seed, stream, start_idx)
         return x
 
+    @typechecked
     def _fill_stateless_uniform_01_from_index(
         self,
         x: pdarray,
@@ -1193,15 +1198,16 @@ class Generator:
         if x.ndim != 1:
             raise ValueError("Only 1 dimensional arrays supported.")
 
-        seed_u64 = uint64(int(seed))
-        stream_u64 = uint64(int(stream))
-        start_idx_u64 = uint64(int(start_idx))
+        seed_u64 = uint64(seed)
+        stream_u64 = uint64(stream)
+        start_idx_u64 = uint64(start_idx)
 
         generic_msg(
             cmd="fillUniform01<float64,1>",  # <-- MUST be the float64-uniform kernel
             args={"A": x, "seed": seed_u64, "stream": stream_u64, "startIdx": start_idx_u64},
         )
 
+    @typechecked
     def _stateless_uniform_01_from_index(
         self, n: int, seed: int_scalars, stream: int_scalars, start_idx: int_scalars = 0
     ) -> pdarray:
