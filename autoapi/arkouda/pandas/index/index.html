@@ -694,13 +694,14 @@ they are unregistered.</p>
 be converted to a one-element array.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A boolean array indicating which elements of <cite>key</cite> are present in the Index.</p>
+<dd class="field-even"><p>A boolean array of length <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>, indicating which entries of
+the Index are present in <cite>key</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – If <cite>key</cite> is not a scalar or a pdarray.</p>
+<dd class="field-even"><p><strong>TypeError</strong> – If <cite>key</cite> cannot be converted to an arkouda array.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1288,21 +1289,33 @@ False otherwise.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.index.MultiIndex.lookup">
-<span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#MultiIndex.lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.MultiIndex.lookup" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#MultiIndex.lookup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.MultiIndex.lookup" title="Link to this definition">¶</a></dt>
 <dd><p>Perform element-wise lookup on the MultiIndex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>list</em><em> or </em><em>tuple</em>) – A sequence of values, one for each level of the MultiIndex. Values may be scalars
-or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.</p>
+<dd class="field-odd"><p><strong>key</strong> (<em>list</em><em> or </em><em>tuple</em>) – <p>A sequence of values, one for each level of the MultiIndex.</p>
+<ul class="simple">
+<li><p>If the elements are scalars (e.g., <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">&quot;red&quot;)</span></code>), they are
+treated as a single row key: the result is a boolean mask over
+rows where all levels match the corresponding scalar.</p></li>
+<li><p>If the elements are arkouda arrays (e.g., list of pdarrays /
+Strings), they must align one-to-one with the levels, and the
+lookup is delegated to <code class="docutils literal notranslate"><span class="pre">in1d(self.index,</span> <span class="pre">key)</span></code> for multi-column
+membership.</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A boolean array indicating which rows in the MultiIndex match the key.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – If <cite>key</cite> is not a list or tuple, or if its elements cannot be converted to pdarrays.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If <cite>key</cite> is not a list or tuple.</p></li>
+<li><p><strong>ValueError</strong> – If the length of <cite>key</cite> does not match the number of levels.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

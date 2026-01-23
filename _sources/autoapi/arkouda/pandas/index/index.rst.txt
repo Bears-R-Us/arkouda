@@ -264,10 +264,11 @@ Module Contents
                   be converted to a one-element array.
       :type key: pdarray or scalar
 
-      :returns: A boolean array indicating which elements of `key` are present in the Index.
+      :returns: A boolean array of length ``len(self)``, indicating which entries of
+                the Index are present in `key`.
       :rtype: pdarray
 
-      :raises TypeError: If `key` is not a scalar or a pdarray.
+      :raises TypeError: If `key` cannot be converted to an arkouda array.
 
 
 
@@ -755,18 +756,26 @@ Module Contents
       :type:  list[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]]
 
 
-   .. py:method:: lookup(key)
+   .. py:method:: lookup(key: list[Any] | tuple[Any, Ellipsis]) -> arkouda.pandas.groupbyclass.groupable
 
       Perform element-wise lookup on the MultiIndex.
 
-      :param key: A sequence of values, one for each level of the MultiIndex. Values may be scalars
-                  or pdarrays. If scalars, they are cast to the appropriate Arkouda array type.
+      :param key: A sequence of values, one for each level of the MultiIndex.
+
+                  - If the elements are scalars (e.g., ``(1, "red")``), they are
+                    treated as a single row key: the result is a boolean mask over
+                    rows where all levels match the corresponding scalar.
+                  - If the elements are arkouda arrays (e.g., list of pdarrays /
+                    Strings), they must align one-to-one with the levels, and the
+                    lookup is delegated to ``in1d(self.index, key)`` for multi-column
+                    membership.
       :type key: list or tuple
 
       :returns: A boolean array indicating which rows in the MultiIndex match the key.
-      :rtype: pdarray
+      :rtype: groupable
 
-      :raises TypeError: If `key` is not a list or tuple, or if its elements cannot be converted to pdarrays.
+      :raises TypeError: If `key` is not a list or tuple.
+      :raises ValueError: If the length of `key` does not match the number of levels.
 
 
 

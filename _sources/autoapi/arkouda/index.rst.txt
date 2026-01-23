@@ -1106,9 +1106,6 @@ Package Contents
    .. py:method:: sort_values(*args, **kwargs)
 
 
-   .. py:method:: swapaxes(*args, **kwargs)
-
-
    .. py:method:: to_list(*args, **kwargs)
 
 
@@ -14248,7 +14245,10 @@ Package Contents
 
 
 
-   .. py:method:: reshape(*shape)
+   .. py:method:: reshape(shape: Sequence[arkouda.numpy.dtypes.int_scalars]) -> pdarray
+                  reshape(*shape: arkouda.numpy.dtypes.int_scalars) -> pdarray
+                  reshape(shape: pdarray) -> pdarray
+                  reshape(shape: numpy.ndarray) -> pdarray
 
       Gives a new shape to an array without changing its data.
 

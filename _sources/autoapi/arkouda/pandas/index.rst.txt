@@ -679,9 +679,6 @@ Package Contents
    .. py:method:: sort_values(*args, **kwargs)
 
 
-   .. py:method:: swapaxes(*args, **kwargs)
-
-
    .. py:method:: to_list(*args, **kwargs)
 
 

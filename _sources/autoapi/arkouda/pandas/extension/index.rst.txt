@@ -657,9 +657,6 @@ Package Contents
    .. py:method:: sort_values(*args, **kwargs)
 
 
-   .. py:method:: swapaxes(*args, **kwargs)
-
-
    .. py:method:: to_list(*args, **kwargs)
 
 
@@ -1536,6 +1533,109 @@ Package Contents
 
 
 
+   .. py:method:: interpolate(method='linear', *, limit=None, **kwargs)
+      :abstractmethod:
+
+
+      Fill NaN values using an interpolation method.
+
+      :param method: Interpolation technique to use. One of:
+                     * 'linear': Ignore the index and treat the values as equally spaced.
+                     This is the only method supported on MultiIndexes.
+                     * 'time': Works on daily and higher resolution data to interpolate
+                     given length of interval.
+                     * 'index', 'values': use the actual numerical values of the index.
+                     * 'nearest', 'zero', 'slinear', 'quadratic', 'cubic', 'barycentric',
+                     'polynomial': Passed to scipy.interpolate.interp1d, whereas 'spline'
+                     is passed to scipy.interpolate.UnivariateSpline. These methods use
+                     the numerical values of the index.
+                     Both 'polynomial' and 'spline' require that you also specify an
+                     order (int), e.g. arr.interpolate(method='polynomial', order=5).
+                     * 'krogh', 'piecewise_polynomial', 'spline', 'pchip', 'akima',
+                     'cubicspline': Wrappers around the SciPy interpolation methods
+                     of similar names. See Notes.
+                     * 'from_derivatives': Refers to scipy.interpolate.BPoly.from_derivatives.
+      :type method: str, default 'linear'
+      :param axis: Axis to interpolate along. For 1-dimensional data, use 0.
+      :type axis: int
+      :param index: Index to use for interpolation.
+      :type index: Index
+      :param limit: Maximum number of consecutive NaNs to fill. Must be greater than 0.
+      :type limit: int or None
+      :param limit_direction: Consecutive NaNs will be filled in this direction.
+      :type limit_direction: {'forward', 'backward', 'both'}
+      :param limit_area: If limit is specified, consecutive NaNs will be filled with this
+                         restriction.
+                         * None: No fill restriction.
+                         * 'inside': Only fill NaNs surrounded by valid values (interpolate).
+                         * 'outside': Only fill NaNs outside valid values (extrapolate).
+      :type limit_area: {'inside', 'outside'} or None
+      :param copy: If True, a copy of the object is returned with interpolated values.
+      :type copy: bool
+      :param \*\*kwargs: Keyword arguments to pass on to the interpolating function.
+      :type \*\*kwargs: optional
+
+      :returns: An ExtensionArray with interpolated values.
+      :rtype: ExtensionArray
+
+      .. seealso::
+
+         :py:obj:`Series.interpolate`
+             Interpolate values in a Series.
+
+         :py:obj:`DataFrame.interpolate`
+             Interpolate values in a DataFrame.
+
+      .. rubric:: Notes
+
+      - All parameters must be specified as keyword arguments.
+      - The 'krogh', 'piecewise_polynomial', 'spline', 'pchip' and 'akima'
+        methods are wrappers around the respective SciPy implementations of
+        similar names. These use the actual numerical values of the index.
+
+      .. rubric:: Examples
+
+      Interpolating values in a NumPy array:
+
+      >>> arr = pd.arrays.NumpyExtensionArray(np.array([0, 1, np.nan, 3]))
+      >>> arr.interpolate(
+      ...     method="linear",
+      ...     limit=3,
+      ...     limit_direction="forward",
+      ...     index=pd.Index(range(len(arr))),
+      ...     fill_value=1,
+      ...     copy=False,
+      ...     axis=0,
+      ...     limit_area="inside",
+      ... )
+      <NumpyExtensionArray>
+      [0.0, 1.0, 2.0, 3.0]
+      Length: 4, dtype: float64
+
+      Interpolating values in a FloatingArray:
+
+      >>> arr = pd.array([1.0, pd.NA, 3.0, 4.0, pd.NA, 6.0], dtype="Float64")
+      >>> arr.interpolate(
+      ...     method="linear",
+      ...     axis=0,
+      ...     index=pd.Index(range(len(arr))),
+      ...     limit=None,
+      ...     limit_direction="both",
+      ...     limit_area=None,
+      ...     copy=True,
+      ... )
+      <FloatingArray>
+      [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+      Length: 6, dtype: Float64
+
+
+
+   .. py:method:: kurt(*args, **kwargs)
+
+
+   .. py:method:: median(*args, **kwargs)
+
+
    .. py:method:: permute_dims(x, /, axes)
       :abstractmethod:
 
@@ -1544,6 +1644,12 @@ Package Contents
    .. py:method:: reshape(x, /, shape)
       :abstractmethod:
 
+
+
+   .. py:method:: sem(*args, **kwargs)
+
+
+   .. py:method:: skew(*args, **kwargs)
 
 
    .. py:method:: split(x, indices_or_sections, /, *, axis=0)
@@ -1559,6 +1665,9 @@ Package Contents
    .. py:method:: stack(arrays, /, *, axis=0)
       :abstractmethod:
 
+
+
+   .. py:method:: swapaxes(*args, **kwargs)
 
 
    .. py:method:: take(indexer, fill_value=None, allow_fill=False)
@@ -1605,6 +1714,81 @@ Package Contents
 
       :returns: NumPy array representation of the data.
       :rtype: numpy.ndarray
+
+
+
+   .. py:method:: value_counts(*args, **kwargs)
+
+      Return a Series containing counts of unique values.
+
+      This method returns a Series with unique values as the index and their
+      counts as the values.
+
+      :param dropna: Don't include counts of NA values.
+      :type dropna: bool, default True
+
+      :returns: A Series with unique values as index and counts as values.
+      :rtype: Series
+
+      .. seealso::
+
+         :py:obj:`Series.value_counts`
+             Equivalent method on Series.
+
+         :py:obj:`DataFrame.value_counts`
+             Equivalent method on DataFrame.
+
+         :py:obj:`Index.value_counts`
+             Equivalent method on Index.
+
+      .. rubric:: Examples
+
+      >>> from pandas.core.arrays import IntegerArray
+      >>> arr = IntegerArray._from_sequence([3, 3, 3, 1, 2, 2])
+      >>> arr.value_counts()
+      3    3
+      1    1
+      2    2
+      Name: count, dtype: Int64
+
+
+
+   .. py:method:: view(dtype=None)
+      :abstractmethod:
+
+
+      Return a view on the array.
+
+      :param dtype: Default None.
+      :type dtype: str, np.dtype, or ExtensionDtype, optional
+
+      :returns: A view on the :class:`ExtensionArray`'s data.
+      :rtype: ExtensionArray or np.ndarray
+
+      .. seealso::
+
+         :py:obj:`api.extensions.ExtensionArray.ravel`
+             Return a flattened view on input array.
+
+         :py:obj:`Index.view`
+             Equivalent function for Index.
+
+         :py:obj:`ndarray.view`
+             New view of array with the same data.
+
+      .. rubric:: Examples
+
+      This gives view on the underlying data of an ``ExtensionArray`` and is not a
+      copy. Modifications on either the view or the original ``ExtensionArray``
+      will be reflected on the underlying data:
+
+      >>> arr = pd.array([1, 2, 3])
+      >>> arr2 = arr.view()
+      >>> arr[0] = 2
+      >>> arr2
+      <IntegerArray>
+      [2, 2, 3]
+      Length: 3, dtype: Int64
 
 
 
