@@ -1473,7 +1473,7 @@ def arctan2(
         return is_supported_number(arg) or is_supported_bool(arg)
 
     def _bool_case(x1, x2):
-        return type(x1) in (bool, np.bool_) and type(x2) in (bool, np.bool)
+        return type(x1) in (bool, np.bool_) and type(x2) in (bool, np.bool_)
 
     #   The function below is needed for the boolean scalar case.
 
@@ -1604,7 +1604,7 @@ def arctan2(
     if _where is None or _where is True:
         if out is not None:
             out[:] = tmp
-        return tmp
+        return out 
     else:
         if out is None:
             raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
