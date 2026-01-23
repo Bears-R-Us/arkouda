@@ -940,9 +940,6 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
     def swapaxes(self, *args, **kwargs):
         self._reduction_not_implemented("swapaxes")
 
-    def value_counts(self, *args, **kwargs):
-        self._reduction_not_implemented("value_counts")
-
     # ------------------------------------------------------------------
     # String-like methods
     # ------------------------------------------------------------------

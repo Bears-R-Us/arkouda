@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar, Union, overl
 from typing import cast as type_cast
 
 import numpy as np
+import pandas as pd
 
 from numpy import ndarray
 from numpy.typing import NDArray
@@ -792,6 +793,76 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     def isnull(self):
         """Alias for isna()."""
         return self.isna()
+
+    def value_counts(self, dropna: bool = True) -> pd.Series:
+        """
+        Return counts of unique values as a pandas Series.
+
+        This method computes the frequency of each distinct value in the
+        underlying Arkouda array and returns the result as a pandas
+        ``Series``, with the unique values as the index and their counts
+        as the data.
+
+        Parameters
+        ----------
+        dropna : bool
+            Whether to exclude missing values. Currently, missing-value
+            handling is supported only for floating-point data, where
+            ``NaN`` values are treated as missing. Default is True.
+
+        Returns
+        -------
+        pd.Series
+            A Series containing the counts of unique values.
+            The index is an ``ArkoudaArray`` of unique values, and the
+            values are an ``ArkoudaArray`` of counts.
+
+        Notes
+        -----
+        - Only ``dropna=True`` is supported.
+        - The following pandas options are not yet implemented:
+          ``normalize``, ``sort``, and ``bins``.
+        - Counting is performed server-side in Arkouda; only the small
+          result (unique values and counts) is materialized on the client.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>>
+        >>> a = ArkoudaArray(ak.array([1, 2, 1, 3, 2, 1]))
+        >>> a.value_counts()
+        1    3
+        2    2
+        3    1
+        dtype: int64
+
+        Floating-point data with NaN values:
+
+        >>> b = ArkoudaArray(ak.array([1.0, 2.0, float("nan"), 1.0]))
+        >>> b.value_counts()
+        1.0    2
+        2.0    1
+        dtype: int64
+        """
+        from arkouda.numpy.numeric import isnan as ak_isnan
+
+        data = self._data
+
+        # Handle NA only for floats (pandas-compatible)
+        if dropna and data.dtype == "float64":
+            mask = ~ak_isnan(data)
+            data = data[mask]
+
+        if data.size == 0:
+            return pd.Series(dtype="int64")
+
+        keys, counts = data.value_counts()
+
+        return_index = ArkoudaArray._from_sequence(keys)
+        return_values = ArkoudaArray._from_sequence(counts)
+
+        return pd.Series(return_values, index=return_index)
 
 
 def _is_empty_indexer(key) -> bool:
