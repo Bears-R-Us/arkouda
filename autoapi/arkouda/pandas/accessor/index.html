@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.pandas.matcher" href="../matcher/index.html"><link rel="prev" title="arkouda.pandas.join" href="../join/index.html">
+<link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="arkouda.pandas.categorical" href="../categorical/index.html"><link rel="prev" title="arkouda.pandas" href="../index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>arkouda.pandas.match - arkouda documentation</title>
+        <title>arkouda.pandas.accessor - arkouda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
@@ -295,7 +295,7 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../accessor/index.html">arkouda.pandas.accessor</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">arkouda.pandas.accessor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../categorical/index.html">arkouda.pandas.categorical</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../conversion/index.html">arkouda.pandas.conversion</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dataframe/index.html">arkouda.pandas.dataframe</a></li>
@@ -305,7 +305,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../io/index.html">arkouda.pandas.io</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../io_util/index.html">arkouda.pandas.io_util</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../join/index.html">arkouda.pandas.join</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../match/index.html">arkouda.pandas.match</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../matcher/index.html">arkouda.pandas.matcher</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../row/index.html">arkouda.pandas.row</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../series/index.html">arkouda.pandas.series</a></li>
@@ -358,7 +358,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../../_sources/autoapi/arkouda/pandas/match/index.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../../_sources/autoapi/arkouda/pandas/accessor/index.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -376,49 +376,84 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-arkouda.pandas.match">
-<span id="arkouda-pandas-match"></span><h1>arkouda.pandas.match<a class="headerlink" href="#module-arkouda.pandas.match" title="Link to this heading">¶</a></h1>
-<p>Regular expression match results for segmented string arrays in Arkouda.</p>
-<p>The <cite>arkouda.match</cite> module defines the <cite>Match</cite> class, which encapsulates results from
-regex-based operations such as <cite>search</cite>, <cite>match</cite>, and <cite>fullmatch</cite> on Arkouda <cite>Strings</cite> arrays.</p>
-<p>This class provides methods to retrieve:
-- Match booleans (<cite>matched</cite>)
-- Start and end positions of matches
-- Capture groups
-- Matched substrings
-- Origin indices of matched elements (optional)</p>
-<p>These operations enable powerful pattern recognition and substring extraction
-on large-scale segmented string arrays, implemented efficiently in the Arkouda server.</p>
-<p class="rubric">Examples</p>
+          <section id="module-arkouda.pandas.accessor">
+<span id="arkouda-pandas-accessor"></span><h1>arkouda.pandas.accessor<a class="headerlink" href="#module-arkouda.pandas.accessor" title="Link to this heading">¶</a></h1>
+<p>Accessor utilities for Arkouda Series-like objects.</p>
+<p>This module defines infrastructure for namespace-based accessors (e.g., <cite>.str</cite>, <cite>.dt</cite>)
+on Arkouda Series, mimicking the behavior of pandas-style accessors. It supports
+extension methods for string and datetime-like values, enabling operations to be
+performed in a clean, grouped syntax.</p>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><a class="reference internal" href="#arkouda.pandas.accessor.CachedAccessor" title="arkouda.pandas.accessor.CachedAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CachedAccessor</span></code></a></dt><dd><p>Descriptor that lazily initializes and caches accessor objects, such as <cite>.str</cite> or <cite>.dt</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.accessor.DatetimeAccessor" title="arkouda.pandas.accessor.DatetimeAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DatetimeAccessor</span></code></a></dt><dd><p>Implements datetime-like operations (e.g., floor, ceil, round) via the <cite>.dt</cite> accessor.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.accessor.StringAccessor" title="arkouda.pandas.accessor.StringAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">StringAccessor</span></code></a></dt><dd><p>Implements string-like operations (e.g., contains, startswith, endswith) via the <cite>.str</cite> accessor.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.accessor.Properties" title="arkouda.pandas.accessor.Properties"><code class="xref py py-class docutils literal notranslate"><span class="pre">Properties</span></code></a></dt><dd><p>Base class that provides <cite>_make_op</cite> for dynamically attaching operations to accessors.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.accessor.date_operators" title="arkouda.pandas.accessor.date_operators"><code class="xref py py-func docutils literal notranslate"><span class="pre">date_operators()</span></code></a></dt><dd><p>Class decorator that adds datetime operations to <cite>DatetimeAccessor</cite>.</p>
+</dd>
+<dt><a class="reference internal" href="#arkouda.pandas.accessor.string_operators" title="arkouda.pandas.accessor.string_operators"><code class="xref py py-func docutils literal notranslate"><span class="pre">string_operators()</span></code></a></dt><dd><p>Class decorator that adds string operations to <cite>StringAccessor</cite>.</p>
+</dd>
+</dl>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;Isaac Newton&quot;</span><span class="p">,</span> <span class="s2">&quot;Ada Lovelace&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;(</span><span class="se">\\</span><span class="s2">w+) (</span><span class="se">\\</span><span class="s2">w+)&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">matched</span><span class="p">()</span>
-<span class="go">array([True True False])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([&#39;Isaac&#39;, &#39;Ada&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">return_group_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">(array([&#39;Newton&#39;, &#39;Lovelace&#39;]), array([0 1]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;apricot&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="go">0     True</span>
+<span class="go">1    False</span>
+<span class="go">2     True</span>
+<span class="go">dtype: bool</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">Datetime</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1_000_000_000_000</span><span class="p">])))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+<span class="go">0   1970-01-01</span>
+<span class="go">dtype: datetime64[ns]</span>
 </pre></div>
 </div>
 <p class="rubric">Notes</p>
-<ul class="simple">
-<li><p><cite>group(0)</cite> returns the full match by default.</p></li>
-<li><p>If <cite>regexMaxCaptures</cite> is exceeded, the server must be recompiled with a higher limit.</p></li>
-<li><p><cite>Match</cite> objects are typically obtained via <cite>Strings.search()</cite>, /</p></li>
-</ul>
-<p><cite>Strings.match()</cite>, or <cite>Strings.fullmatch()</cite>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.strings.Strings</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.client.regexMaxCaptures</span></code></p>
-</div>
+<p>These accessors are automatically attached to compatible Series objects.
+Users should not instantiate accessors directly — use <cite>.str</cite> and <cite>.dt</cite> instead.</p>
+</section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.match.Match" title="arkouda.pandas.match.Match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Match</span></code></a></p></td>
-<td><p>Encapsulates regular expression match results on Arkouda segmented string arrays.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.accessor.CachedAccessor" title="arkouda.pandas.accessor.CachedAccessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CachedAccessor</span></code></a></p></td>
+<td><p>Descriptor for caching namespace-based accessors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.accessor.DatetimeAccessor" title="arkouda.pandas.accessor.DatetimeAccessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DatetimeAccessor</span></code></a></p></td>
+<td><p>Accessor for datetime-like operations on Arkouda Series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.accessor.Properties" title="arkouda.pandas.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p></td>
+<td><p>Base class for accessor implementations in Arkouda.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.accessor.StringAccessor" title="arkouda.pandas.accessor.StringAccessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StringAccessor</span></code></a></p></td>
+<td><p>Accessor for string operations on Arkouda Series.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.accessor.date_operators" title="arkouda.pandas.accessor.date_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">date_operators</span></code></a>(cls)</p></td>
+<td><p>Add common datetime operation methods to a DatetimeAccessor class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pandas.accessor.string_operators" title="arkouda.pandas.accessor.string_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_operators</span></code></a>(cls)</p></td>
+<td><p>Add common string operation methods to a StringAccessor class.</p></td>
 </tr>
 </tbody>
 </table>
@@ -427,198 +462,147 @@ on large-scale segmented string arrays, implemented efficiently in the Arkouda s
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.match.</span></span><span class="sig-name descname"><span class="pre">Match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matched</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">starts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_entry_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MatchType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/match.html#Match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.match.Match" title="Link to this definition">¶</a></dt>
-<dd><p>Encapsulates regular expression match results on Arkouda segmented string arrays.</p>
-<p>Created by calling <cite>search()</cite>, <cite>match()</cite>, or <cite>fullmatch()</cite> on a <cite>Strings</cite> object. Provides access
-to match booleans, span information, capture groups, and origin indices of matches.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match.re">
-<span class="sig-name descname"><span class="pre">re</span></span><a class="headerlink" href="#arkouda.pandas.match.Match.re" title="Link to this definition">¶</a></dt>
-<dd><p>Regex pattern used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
-<span class="go">&lt;ak.Match object: matched=True, span=(1, 2); matched=True, span=(0, 4);</span>
-<span class="go">matched=False; matched=True, span=(0, 2); matched=False&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-<span class="go">&lt;class &#39;arkouda.pandas.match.Match&#39;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">matched</span><span class="p">()</span>
-<span class="go">array([True True False True False])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-<span class="go">array([1 0 0])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
-<span class="go">array([2 4 2])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">match_type</span><span class="p">()</span>
-<span class="go">&#39;SEARCH&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">re</span>
-<span class="go">&#39;_+&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="go">&#39;matched=True, span=(0, 4)&#39;</span>
-</pre></div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match.end">
-<span class="sig-name descname"><span class="pre">end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/match.html#Match.end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.match.Match.end" title="Link to this definition">¶</a></dt>
-<dd><p>Return the ends of matches.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The end positions of matches</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
-<span class="go">array([2 4 2])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match.find_matches">
-<span class="sig-name descname"><span class="pre">find_matches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_match_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/match.html#Match.find_matches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.match.Match.find_matches" title="Link to this definition">¶</a></dt>
-<dd><p>Return all matches as a new Strings object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>return_match_origins</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, return a pdarray containing the index of the original string each pattern
-match is from</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>Strings</em> – Strings object containing only matches</p></li>
-<li><p><em>pdarray, int64 (optional)</em> – The index of the original string each pattern match is from</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_matches</span><span class="p">(</span><span class="n">return_match_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">(array([&#39;_&#39;, &#39;____&#39;, &#39;__&#39;]), array([0 1 3]))</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match.group">
-<span class="sig-name descname"><span class="pre">group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_group_origins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/match.html#Match.group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.match.Match.group" title="Link to this definition">¶</a></dt>
-<dd><p>Return a new Strings containing the capture group corresponding to group_num.</p>
-<p>For the default, group_num=0, return the full match.</p>
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.CachedAccessor">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.accessor.</span></span><span class="sig-name descname"><span class="pre">CachedAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">accessor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/accessor.html#CachedAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.accessor.CachedAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Descriptor for caching namespace-based accessors.</p>
+<p>This custom property-like object enables lazy initialization of accessors
+(e.g., <cite>.str</cite>, <cite>.dt</cite>) on Series-like objects, similar to pandas-style extension
+accessors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>group_num</strong> (<em>int</em>) – The index of the capture group to be returned</p></li>
-<li><p><strong>return_group_origins</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, return a pdarray containing the index of the original string each
-capture group is from</p></li>
+<li><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name of the namespace to be accessed (e.g., <code class="docutils literal notranslate"><span class="pre">df.foo</span></code>).</p></li>
+<li><p><strong>accessor</strong> (<a class="reference internal" href="../../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a>) – A class implementing the accessor logic.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>Strings</em> – Strings object containing only the capture groups corresponding to group_num</p></li>
-<li><p><em>pdarray, int64 (optional)</em> – The index of the original string each group is from</p></li>
-</ul>
-</p>
-</dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;Isaac Newton, physics&quot;</span><span class="p">,</span> <span class="s1">&#39;&lt;-calculus-&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;Gottfried Leibniz, math&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;(</span><span class="se">\\</span><span class="s2">w+) (</span><span class="se">\\</span><span class="s2">w+)&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
-<span class="go">array([&#39;Isaac Newton&#39;, &#39;Gottfried Leibniz&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([&#39;Isaac&#39;, &#39;Gottfried&#39;])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">return_group_origins</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">(array([&#39;Newton&#39;, &#39;Leibniz&#39;]), array([0 2]))</span>
-</pre></div>
-</div>
+<p class="rubric">Notes</p>
+<p>The <cite>accessor</cite> class’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method must accept a single positional
+argument, which should be one of <code class="docutils literal notranslate"><span class="pre">Series</span></code>, <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, or <code class="docutils literal notranslate"><span class="pre">Index</span></code>.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match.match_type">
-<span class="sig-name descname"><span class="pre">match_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/match.html#Match.match_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.match.Match.match_type" title="Link to this definition">¶</a></dt>
-<dd><p>Return the type of the Match object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.DatetimeAccessor">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.accessor.</span></span><span class="sig-name descname"><span class="pre">DatetimeAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/accessor.html#DatetimeAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.accessor.DatetimeAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arkouda.pandas.accessor.Properties" title="arkouda.pandas.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
+<p>Accessor for datetime-like operations on Arkouda Series.</p>
+<p>Provides datetime methods such as <cite>.floor()</cite>, <cite>.ceil()</cite>, and <cite>.round()</cite>,
+mirroring the <cite>.dt</cite> accessor in pandas.</p>
+<p>This accessor is automatically attached to Series objects that wrap
+<cite>arkouda.Datetime</cite> values. It should not be instantiated directly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>MatchType of the Match object</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>series</strong> (<a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><em>arkouda.pandas.Series</em></a>) – The Series object containing <cite>Datetime</cite> values.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str">str</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">match_type</span><span class="p">()</span>
-<span class="go">&#39;SEARCH&#39;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match.matched">
-<span class="sig-name descname"><span class="pre">matched</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/match.html#Match.matched"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.match.Match.matched" title="Link to this definition">¶</a></dt>
-<dd><p>Return a boolean array indiciating whether each element matched.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True for elements that match, False otherwise</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – If the underlying Series values are not of type <cite>arkouda.Datetime</cite>.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">matched</span><span class="p">()</span>
-<span class="go">array([True True False True False])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Series</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">Datetime</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1_000_000_000_000</span><span class="p">])))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">)</span>
+<span class="go">0   1970-01-01</span>
+<span class="go">dtype: datetime64[ns]</span>
 </pre></div>
 </div>
-</dd></dl>
-
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">re</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.DatetimeAccessor.series">
+<span class="sig-name descname"><span class="pre">series</span></span><a class="headerlink" href="#arkouda.pandas.accessor.DatetimeAccessor.series" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.match.Match.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/match.html#Match.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.match.Match.start" title="Link to this definition">¶</a></dt>
-<dd><p>Return the starts of matches.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.Properties">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.accessor.</span></span><span class="sig-name descname"><span class="pre">Properties</span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/accessor.html#Properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.accessor.Properties" title="Link to this definition">¶</a></dt>
+<dd><p>Base class for accessor implementations in Arkouda.</p>
+<p>Provides the <cite>_make_op</cite> class method to dynamically generate accessor methods
+that wrap underlying <cite>Strings</cite> or <cite>Datetime</cite> operations and return new Series.</p>
+<p class="rubric">Notes</p>
+<p>This class is subclassed by <cite>StringAccessor</cite> and <cite>DatetimeAccessor</cite>, and is not
+intended to be used directly.</p>
+<p class="rubric">Examples</p>
+<p>Subclasses should define <cite>_make_op(“operation_name”)</cite>, which will generate
+a method that applies <cite>series.values.operation_name(…)</cite> and returns a new Series.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.StringAccessor">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.accessor.</span></span><span class="sig-name descname"><span class="pre">StringAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/accessor.html#StringAccessor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.accessor.StringAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arkouda.pandas.accessor.Properties" title="arkouda.pandas.accessor.Properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Properties</span></code></a></p>
+<p>Accessor for string operations on Arkouda Series.</p>
+<p>Provides string-like methods such as <cite>.contains()</cite>, <cite>.startswith()</cite>, and
+<cite>.endswith()</cite> via the <cite>.str</cite> accessor, similar to pandas.</p>
+<p>This accessor is automatically attached to Series objects that wrap
+<cite>arkouda.Strings</cite> or <cite>arkouda.Categorical</cite> values. It should not be instantiated directly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The start positions of matches</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>series</strong> (<a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><em>arkouda.pandas.Series</em></a>) – The Series object containing <cite>Strings</cite> or <cite>Categorical</cite> values.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – If the underlying Series values are not <cite>Strings</cite> or <cite>Categorical</cite>.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;1_2___&#39;</span><span class="p">,</span> <span class="s1">&#39;____&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;__4___5____6___7&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-<span class="go">array([1 0 0])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;apricot&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="go">0     True</span>
+<span class="go">1    False</span>
+<span class="go">2     True</span>
+<span class="go">dtype: bool</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.StringAccessor.series">
+<span class="sig-name descname"><span class="pre">series</span></span><a class="headerlink" href="#arkouda.pandas.accessor.StringAccessor.series" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.date_operators">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.accessor.</span></span><span class="sig-name descname"><span class="pre">date_operators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/accessor.html#date_operators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.accessor.date_operators" title="Link to this definition">¶</a></dt>
+<dd><p>Add common datetime operation methods to a DatetimeAccessor class.</p>
+<p>This class decorator dynamically attaches datetime operations (<cite>floor</cite>,
+<cite>ceil</cite>, <cite>round</cite>) to the given class using the <cite>_make_op</cite> helper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference internal" href="../../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a>) – The accessor class to decorate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The accessor class with datetime methods added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type">type</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Used internally to implement the <cite>.dt</cite> accessor API.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pandas.accessor.string_operators">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.accessor.</span></span><span class="sig-name descname"><span class="pre">string_operators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/accessor.html#string_operators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.accessor.string_operators" title="Link to this definition">¶</a></dt>
+<dd><p>Add common string operation methods to a StringAccessor class.</p>
+<p>This class decorator dynamically attaches string operations (<cite>contains</cite>,
+<cite>startswith</cite>, <cite>endswith</cite>) to the given class using the <cite>_make_op</cite> helper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cls</strong> (<a class="reference internal" href="../../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a>) – The accessor class to decorate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The accessor class with string methods added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type">type</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Used internally to implement the <cite>.str</cite> accessor API.</p>
 </dd></dl>
 
 </section>
@@ -629,23 +613,23 @@ capture group is from</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../matcher/index.html">
+          <a class="next-page" href="../categorical/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">arkouda.pandas.matcher</div>
+                <div class="title">arkouda.pandas.categorical</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../join/index.html">
+          <a class="prev-page" href="../index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">arkouda.pandas.join</div>
+                <div class="title">arkouda.pandas</div>
                 
               </div>
             </a>
@@ -679,20 +663,24 @@ capture group is from</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">arkouda.pandas.match</a><ul>
+<li><a class="reference internal" href="#">arkouda.pandas.accessor</a><ul>
+<li><a class="reference internal" href="#components">Components</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match"><code class="docutils literal notranslate"><span class="pre">Match</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match.re"><code class="docutils literal notranslate"><span class="pre">Match.re</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match.end"><code class="docutils literal notranslate"><span class="pre">Match.end()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match.find_matches"><code class="docutils literal notranslate"><span class="pre">Match.find_matches()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match.group"><code class="docutils literal notranslate"><span class="pre">Match.group()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match.match_type"><code class="docutils literal notranslate"><span class="pre">Match.match_type()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match.matched"><code class="docutils literal notranslate"><span class="pre">Match.matched()</span></code></a></li>
-<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Match.re</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.match.Match.start"><code class="docutils literal notranslate"><span class="pre">Match.start()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.CachedAccessor"><code class="docutils literal notranslate"><span class="pre">CachedAccessor</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.DatetimeAccessor"><code class="docutils literal notranslate"><span class="pre">DatetimeAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.DatetimeAccessor.series"><code class="docutils literal notranslate"><span class="pre">DatetimeAccessor.series</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.Properties"><code class="docutils literal notranslate"><span class="pre">Properties</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.StringAccessor"><code class="docutils literal notranslate"><span class="pre">StringAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.StringAccessor.series"><code class="docutils literal notranslate"><span class="pre">StringAccessor.series</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.date_operators"><code class="docutils literal notranslate"><span class="pre">date_operators()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.accessor.string_operators"><code class="docutils literal notranslate"><span class="pre">string_operators()</span></code></a></li>
 </ul>
 </li>
 </ul>

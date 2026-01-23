@@ -10,6 +10,7 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/arkouda/pandas/accessor/index
    /autoapi/arkouda/pandas/categorical/index
    /autoapi/arkouda/pandas/conversion/index
    /autoapi/arkouda/pandas/dataframe/index
@@ -50,8 +51,12 @@ Classes
    arkouda.pandas.ArkoudaStringDtype
    arkouda.pandas.ArkoudaUint64Dtype
    arkouda.pandas.ArkoudaUint8Dtype
+   arkouda.pandas.CachedAccessor
+   arkouda.pandas.DatetimeAccessor
+   arkouda.pandas.Properties
    arkouda.pandas.Row
    arkouda.pandas.Series
+   arkouda.pandas.StringAccessor
 
 
 Functions
@@ -60,9 +65,11 @@ Functions
 .. autoapisummary::
 
    arkouda.pandas.compute_join_size
+   arkouda.pandas.date_operators
    arkouda.pandas.from_series
    arkouda.pandas.gen_ranges
    arkouda.pandas.join_on_eq_with_dt
+   arkouda.pandas.string_operators
 
 
 Package Contents
@@ -1476,6 +1483,74 @@ Package Contents
       instances of `type`.
 
 
+.. py:class:: CachedAccessor(name: str, accessor)
+
+   Descriptor for caching namespace-based accessors.
+
+   This custom property-like object enables lazy initialization of accessors
+   (e.g., `.str`, `.dt`) on Series-like objects, similar to pandas-style extension
+   accessors.
+
+   :param name: The name of the namespace to be accessed (e.g., ``df.foo``).
+   :type name: str
+   :param accessor: A class implementing the accessor logic.
+   :type accessor: type
+
+   .. rubric:: Notes
+
+   The `accessor` class's ``__init__`` method must accept a single positional
+   argument, which should be one of ``Series``, ``DataFrame``, or ``Index``.
+
+
+.. py:class:: DatetimeAccessor(series)
+
+   Bases: :py:obj:`Properties`
+
+
+   Accessor for datetime-like operations on Arkouda Series.
+
+   Provides datetime methods such as `.floor()`, `.ceil()`, and `.round()`,
+   mirroring the `.dt` accessor in pandas.
+
+   This accessor is automatically attached to Series objects that wrap
+   `arkouda.Datetime` values. It should not be instantiated directly.
+
+   :param series: The Series object containing `Datetime` values.
+   :type series: arkouda.pandas.Series
+
+   :raises AttributeError: If the underlying Series values are not of type `arkouda.Datetime`.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda import Datetime, Series
+   >>> s = Series(Datetime(ak.array([1_000_000_000_000])))
+   >>> s.dt.floor("D")
+   0   1970-01-01
+   dtype: datetime64[ns]
+
+
+   .. py:attribute:: series
+
+
+.. py:class:: Properties
+
+   Base class for accessor implementations in Arkouda.
+
+   Provides the `_make_op` class method to dynamically generate accessor methods
+   that wrap underlying `Strings` or `Datetime` operations and return new Series.
+
+   .. rubric:: Notes
+
+   This class is subclassed by `StringAccessor` and `DatetimeAccessor`, and is not
+   intended to be used directly.
+
+   .. rubric:: Examples
+
+   Subclasses should define `_make_op("operation_name")`, which will generate
+   a method that applies `series.values.operation_name(...)` and returns a new Series.
+
+
 .. py:class:: Row(dict=None, /, **kwargs)
 
    Bases: :py:obj:`collections.UserDict`
@@ -2278,10 +2353,61 @@ Package Contents
 
 
 
+.. py:class:: StringAccessor(series)
+
+   Bases: :py:obj:`Properties`
+
+
+   Accessor for string operations on Arkouda Series.
+
+   Provides string-like methods such as `.contains()`, `.startswith()`, and
+   `.endswith()` via the `.str` accessor, similar to pandas.
+
+   This accessor is automatically attached to Series objects that wrap
+   `arkouda.Strings` or `arkouda.Categorical` values. It should not be instantiated directly.
+
+   :param series: The Series object containing `Strings` or `Categorical` values.
+   :type series: arkouda.pandas.Series
+
+   :raises AttributeError: If the underlying Series values are not `Strings` or `Categorical`.
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> from arkouda import Series
+   >>> s = Series(["apple", "banana", "apricot"])
+   >>> s.str.startswith("a")
+   0     True
+   1    False
+   2     True
+   dtype: bool
+
+
+   .. py:attribute:: series
+
+
 .. py:function:: compute_join_size(a: arkouda.numpy.pdarrayclass.pdarray, b: arkouda.numpy.pdarrayclass.pdarray) -> Tuple[int, int]
 
    Compute the internal size of a hypothetical join between a and b. Returns
    both the number of elements and number of bytes required for the join.
+
+
+.. py:function:: date_operators(cls)
+
+   Add common datetime operation methods to a DatetimeAccessor class.
+
+   This class decorator dynamically attaches datetime operations (`floor`,
+   `ceil`, `round`) to the given class using the `_make_op` helper.
+
+   :param cls: The accessor class to decorate.
+   :type cls: type
+
+   :returns: The accessor class with datetime methods added.
+   :rtype: type
+
+   .. rubric:: Notes
+
+   Used internally to implement the `.dt` accessor API.
 
 
 .. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
@@ -2405,5 +2531,23 @@ Package Contents
        result_limit is not an int
    :raises ValueError: if a1, a2, t1, or t2 dtype is not int64, pred is not
        'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
+
+
+.. py:function:: string_operators(cls)
+
+   Add common string operation methods to a StringAccessor class.
+
+   This class decorator dynamically attaches string operations (`contains`,
+   `startswith`, `endswith`) to the given class using the `_make_op` helper.
+
+   :param cls: The accessor class to decorate.
+   :type cls: type
+
+   :returns: The accessor class with string methods added.
+   :rtype: type
+
+   .. rubric:: Notes
+
+   Used internally to implement the `.str` accessor API.
 
 
