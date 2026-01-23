@@ -96,7 +96,22 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_reshape(self, dtype):
         a = ak.arange(4, dtype=dtype)
-        r = a.reshape((2, 2))
+        r = a.reshape(2, 2)  # test sequence
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)  # test integer
+        assert ak.all(a == b)
+        r = a.reshape((2, 2))  # test tuple
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)
+        assert ak.all(a == b)
+        r = a.reshape(np.array([2, 2]))  # test ndarray
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)
+        assert ak.all(a == b)
+        r = a.reshape(ak.array([2, 2]))  # test pdarray
         assert r.shape == (2, 2)
         assert isinstance(r, ak.pdarray)
         b = r.reshape(4)
@@ -143,7 +158,7 @@ class TestPdarrayClass:
     def test_flatten_multidim(self, size, dtype):
         size = size - (size % 4)
         a = ak.arange(size, dtype=dtype)
-        b = a.reshape((2, 2, size / 4))
+        b = a.reshape((2, 2, size // 4))
         ak_assert_equal(b.flatten(), a)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
