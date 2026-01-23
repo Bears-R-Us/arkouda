@@ -27,11 +27,11 @@ Writes the resulting mapping to `benchmark_v2/datdir/configs/field_lookup_map.js
 
 """
 
+import argparse
 import json
 import logging
 import os
 import re
-import argparse
 
 # Aggregate operations explicitly defined
 import arkouda as ak
