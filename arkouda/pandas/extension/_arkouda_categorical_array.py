@@ -207,8 +207,9 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
     def describe(self, *args, **kwargs):
         self._categorical_not_implemented("describe")
 
-    def from_codes(self, *args, **kwargs):
-        self._categorical_not_implemented("from_codes")
+    @classmethod
+    def from_codes(cls, *args, **kwargs):
+        raise NotImplementedError("from_codes is not yet implemented for ArkoudaCategoricalArray.")
 
     def isnull(self, *args, **kwargs):
         self._categorical_not_implemented("isnull")
