@@ -5,6 +5,7 @@ import tempfile
 import numpy as np
 import pandas as pd
 import pytest
+import warnings
 
 from pandas.testing import assert_frame_equal, assert_series_equal
 from pandas.testing import assert_frame_equal as pd_assert_frame_equal
@@ -1589,8 +1590,8 @@ class TestDataFrame:
                             np.allclose(previous2["vals"].tolist(), current2["vals"].tolist())
                         )
                         if not res:
-                            print(f"\nnum locales: {cfg['numLocales']}")
-                            print(f"Failure with seed:\n{iseed}")
+                            warnings.warn(f"\nnum locales: {cfg['numLocales']}")
+                            warnings.warn(f"Failure with seed:\n{iseed}")
                         assert res
 
     @pytest.mark.parametrize("size", pytest.prob_size)
