@@ -770,17 +770,74 @@ class Index:
         return convert_bytes(self.values.nbytes, unit=unit)
 
     def to_pandas(self):
-        """Return the equivalent Pandas Index."""
+        """
+        Convert this Arkouda-backed index wrapper to an equivalent pandas Index.
+
+        This method materializes the underlying values into a local NumPy array
+        (or pandas Categorical, when applicable) and returns the corresponding
+        pandas ``Index`` (or ``CategoricalIndex``).
+
+        Returns
+        -------
+        pandas.Index
+            A pandas Index representing the same logical values. For categorical
+            data, a ``pandas.CategoricalIndex`` is returned.
+
+        Notes
+        -----
+        - If the underlying values are categorical, this returns a
+          ``pandas.CategoricalIndex``.
+        - For unicode string-like data (or object arrays inferred as strings),
+          this attempts to return a pandas "string" dtype Index to match pandas'
+          missing-value behavior (e.g., NA handling).
+        - Fixed-width bytes data is preserved as bytes (no implicit decoding).
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> import pandas as pd
+        >>> idx = ak.Index(ak.array([1,2,3]))
+        >>> pidx = idx.to_pandas()
+        >>> pidx.dtype
+        dtype('<i8')
+        """
+        import numpy as np
+        import pandas as pd
+
         from arkouda.pandas.categorical import Categorical
 
-        if isinstance(self.values, list):
-            val = ndarray(self.values)
-        elif isinstance(self.values, Categorical):
-            val = self.values.to_pandas()
-            return pd.CategoricalIndex(data=val, dtype=val.dtype, name=self.name)
-        else:
-            val = self.values.to_ndarray()
-        return pd.Index(data=val, dtype=val.dtype, name=self.name)
+        def _materialize(values):
+            """Return a concrete local ndarray-like for pandas construction."""
+            if isinstance(values, list):
+                return np.asarray(values)
+            if hasattr(values, "to_ndarray"):
+                return values.to_ndarray()
+            return np.asarray(values)
+
+        values = self.values
+
+        # 1) Categorical: preserve CategoricalIndex behavior
+        if isinstance(values, Categorical):
+            cat = values.to_pandas()
+            if isinstance(cat, pd.Index):
+                return cat.rename(self.name)
+            return pd.CategoricalIndex(cat, name=self.name)
+
+        val = _materialize(values)
+        dtype = getattr(val, "dtype", None)
+        kind = getattr(dtype, "kind", None)
+
+        # 2) Unicode: prefer pandas StringDtype for NA semantics.
+        if kind == "U":
+            return pd.Index(pd.array(val, dtype="str"), name=self.name)
+
+        # 3) For stable non-string dtypes, preserve dtype explicitly to avoid inference drift.
+        # Covers: bool, int, uint, float, complex, datetime64, timedelta64.
+        if kind in ("b", "i", "u", "f", "c", "M", "m"):
+            return pd.Index(val, dtype=dtype, name=self.name)
+
+        # 3) Fallback: let pandas decide (covers unusual/extension-ish cases).
+        return pd.Index(val, name=self.name)
 
     def to_ndarray(self):
         """
@@ -1562,7 +1619,7 @@ class MultiIndex(Index):
     >>> b = ak.array(['a', 'b', 'c'])
     >>> mi = MultiIndex([a, b])
     >>> mi[1]
-    MultiIndex([2, 'b'])
+    MultiIndex([np.int64(2), np.str_('b')])
 
     """
 
