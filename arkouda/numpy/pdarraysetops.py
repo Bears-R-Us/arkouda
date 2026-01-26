@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Literal, Sequence, Tuple, TypeVar, Union, cast, overload
 
 import numpy as np
 
@@ -19,7 +19,7 @@ from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_ty
 
 
 if TYPE_CHECKING:
-    from arkouda.numpy.pdarraycreation import array, zeros, zeros_like
+    from arkouda.numpy.pdarraycreation import array, zeros_like
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 else:
@@ -94,6 +94,7 @@ def _in1d_single(
     array([False True])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import zeros
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical as Categorical_
 
@@ -138,6 +139,26 @@ def _in1d_single(
         raise TypeError("Both pda1 and pda2 must be pdarray, Strings, or Categorical")
 
 
+@overload
+def in1d(
+    A: groupable,
+    B: groupable,
+    assume_unique: bool = ...,
+    symmetric: Literal[False] = ...,
+    invert: bool = ...,
+) -> pdarray: ...
+
+
+@overload
+def in1d(
+    A: groupable,
+    B: groupable,
+    assume_unique: bool = ...,
+    symmetric: Literal[True] = ...,
+    invert: bool = ...,
+) -> Tuple[pdarray, pdarray]: ...
+
+
 @typechecked
 def in1d(
     A: groupable,
@@ -145,15 +166,19 @@ def in1d(
     assume_unique: bool = False,
     symmetric: bool = False,
     invert: bool = False,
-) -> groupable:
+) -> Union[pdarray, Tuple[pdarray, pdarray]]:
     """
     Test whether each element of a 1-D array is also present in a second array.
 
-    Returns a boolean array the same length as `A` that is True
-    where an element of `A` is in `B` and False otherwise.
+    If ``symmetric=False`` (default), returns a boolean pdarray of the same
+    shape as ``A`` indicating whether each element of ``A`` is in ``B``.
 
-    Supports multi-level, i.e. test if rows of a are in the set of rows of b.
-    But note that multi-dimensional pdarrays are not supported.
+    If ``symmetric=True``, returns a tuple ``(maskA, maskB)`` where:
+
+      * ``maskA[i]`` is True iff ``A[i]`` is in ``B``
+      * ``maskB[j]`` is True iff ``B[j]`` is in ``A``
+
+    If ``invert=True``, the returned mask(s) are logically inverted.
 
     Parameters
     ----------
@@ -174,8 +199,18 @@ def in1d(
 
     Returns
     -------
-    groupable
-        True for each row in a that is contained in b
+    Union[pdarray, Tuple[pdarray, pdarray]]
+        If ``symmetric=False`` (default), returns ``maskA``:
+
+        * **maskA** : pdarray
+          Boolean array indicating whether each element of ``A`` is in ``B``.
+
+        If ``symmetric=True``, returns ``(maskA, maskB)``:
+
+        * **maskA** : pdarray
+          Boolean array indicating whether each element of ``A`` is in ``B``.
+        * **maskB** : pdarray
+          Boolean array indicating whether each element of ``B`` is in ``A``.
 
     Raises
     ------
@@ -223,7 +258,7 @@ def in1d(
             raise TypeError("If A is pdarray, B must also be pdarray")
         elif isinstance(B, (pdarray, Strings, Categorical_)):
             if symmetric:
-                return _in1d_single(A, B), _in1d_single(B, A, invert)
+                return _in1d_single(A, B, invert), _in1d_single(B, A, invert)
             return _in1d_single(A, B, invert)
         else:
             raise TypeError(
@@ -260,18 +295,25 @@ def in1d(
     if assume_unique:
         # Deinterleave truth into a and b domains
         if symmetric:
-            return truth[isa], truth[~isa] if not invert else ~truth[isa], ~truth[~isa]
+            aout = truth[isa]
+            bout = truth[~isa]
+            if invert:
+                return ~aout, ~bout
+            return aout, bout
         else:
-            return truth[isa] if not invert else ~truth[isa]
+            aout = truth[isa]
+            return ~aout if invert else aout
     else:
         # If didn't start unique, first need to deinterleave into ua domain,
         # then broadcast to a domain
         atruth = ag.broadcast(truth[isa], permute=True)
         if symmetric:
             btruth = bg.broadcast(truth[~isa], permute=True)
-            return atruth, btruth if not invert else ~atruth, ~btruth
+            if invert:
+                return ~atruth, ~btruth
+            return atruth, btruth
         else:
-            return atruth if not invert else ~atruth
+            return ~atruth if invert else atruth
 
 
 def in1dmulti(a, b, assume_unique=False, symmetric=False):
