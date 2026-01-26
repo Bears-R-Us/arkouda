@@ -236,60 +236,127 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         Parameters
         ----------
         key : Any
-            A valid positional indexer for the array. This may be a scalar integer,
-            slice, list-like of integers, boolean mask, NumPy array, pandas Index/Series,
-            or Arkouda ``pdarray``.
+            A positional indexer selecting the locations to modify. Supported forms include:
+
+            - Scalar integer position (e.g. ``arr[3] = ...``)
+            - Slice (e.g. ``arr[1:4] = ...``)
+            - Boolean mask (NumPy ``ndarray`` of bools, or Python ``list`` of bools)
+            - Integer indexer (NumPy ``ndarray`` of integers, Python ``list`` of ints)
+            - Arkouda ``pdarray`` indexer (integer index array or boolean mask)
+
+            For Python ``list`` indexers, all elements must be of a single supported type:
+            all-bool or all-int. Mixed bool/int lists are rejected. Boolean-mask lists
+            must have length equal to ``len(self)``.
+
         value : Any
-            A scalar value broadcast to the selected positions, or an array-like
-            (NumPy array, Arkouda ``pdarray``, or ``ArkoudaArray``) that is
-            aligned with ``key``.
+            The value(s) to assign.
+
+            - If a scalar (NumPy scalar or Python scalar), it is broadcast to all selected
+              positions.
+            - If an ``ArkoudaArray`` or Arkouda ``pdarray``, it is assigned directly.
+            - Otherwise, array-like inputs (e.g. Python lists, NumPy arrays) are converted
+              to an Arkouda ``pdarray`` and must be aligned with ``key``.
+
+        Raises
+        ------
+        TypeError
+            If a Python list indexer contains unsupported element types.
+        NotImplementedError
+            If a Python list indexer mixes boolean and integer elements.
+        IndexError
+            If a Python list boolean mask has length different from ``len(self)``.
 
         Notes
         -----
         This operation mutates the underlying server-side array in-place.
+
+        Empty indexers (e.g. an empty Python list, or an empty NumPy integer indexer
+        after normalization) are treated as a no-op.
 
         Examples
         --------
         Basic scalar assignment by position:
 
         >>> import arkouda as ak
+        >>> import numpy as np
         >>> from arkouda.pandas.extension import ArkoudaArray
-        >>> data = ak.arange(5)
-        >>> arr = ArkoudaArray(data)
+        >>> arr = ArkoudaArray(ak.arange(5))
         >>> arr[0] = 42
         >>> arr
         ArkoudaArray([42 1 2 3 4])
 
-        Using a NumPy boolean mask:
+        Assigning with a Python list of integer positions:
 
-        >>> data = ak.arange(5)
-        >>> arr = ArkoudaArray(data)
-        >>> mask = arr.to_ndarray() % 2 == 0  # even positions
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> arr[[1, 3]] = 99
+        >>> arr
+        ArkoudaArray([0 99 2 99 4])
+
+        Assigning with a NumPy boolean mask:
+
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> mask = arr.to_ndarray() % 2 == 0
         >>> arr[mask] = -1
         >>> arr
         ArkoudaArray([-1 1 -1 3 -1])
 
-        Using a NumPy integer indexer:
+        Assigning with a NumPy integer indexer:
 
-        >>> data = ak.arange(5)
-        >>> arr = ArkoudaArray(data)
+        >>> arr = ArkoudaArray(ak.arange(5))
         >>> idx = np.array([1, 3], dtype=np.int64)
-        >>> arr[idx] = 99
+        >>> arr[idx] = 7
         >>> arr
-        ArkoudaArray([0 99 2 99 4])
+        ArkoudaArray([0 7 2 7 4])
 
         Assigning from another ArkoudaArray:
 
-        >>> data = ak.arange(5)
-        >>> arr = ArkoudaArray(data)
+        >>> arr = ArkoudaArray(ak.arange(5))
         >>> other = ArkoudaArray(ak.arange(10, 15))
         >>> idx = [1, 3, 4]
         >>> arr[idx] = other[idx]
         >>> arr
         ArkoudaArray([0 11 2 13 14])
+
+        Python list boolean masks must match the array length:
+
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> arr[[True, False, True]] = 0
+        Traceback (most recent call last):
+        ...
+        IndexError: Boolean indexer has wrong length: 3 instead of 5
         """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
+
+        if isinstance(key, list):
+            if len(key) == 0:
+                return  # empty list => noop
+
+            # validate element types + detect mixed
+            has_bool = False
+            has_int = False
+            for k in key:
+                if isinstance(k, (bool, np.bool_)):
+                    has_bool = True
+                elif isinstance(k, (int, np.integer)) and not isinstance(k, (bool, np.bool_)):
+                    has_int = True
+                else:
+                    raise TypeError(
+                        "Only lists of ints or bools are supported for __setitem__ indexers."
+                    )
+
+                if has_bool and has_int:
+                    raise NotImplementedError("Mixed index list dtypes (bool + int) are not supported.")
+
+            if has_bool:
+                # boolean mask must match array length
+                if len(key) != len(self):
+                    raise IndexError(
+                        f"Boolean indexer has wrong length: {len(key)} instead of {len(self)}"
+                    )
+                key = np.array(key, dtype=bool)
+            else:
+                key = np.array(key, dtype=np.int64)
 
         # Normalize NumPy / Python indexers into Arkouda pdarrays where needed
         if isinstance(key, np.ndarray):
