@@ -29,9 +29,13 @@ module BinOp
     RotL, RotR
   }
 
-  enum OpEq {
-    Invalid,
-    Pe, Me, Te, De, Fde, Moe, Ee, Oe, Ae, Xe, Sle, Sre
+  use Operator;
+
+  enum CompoundOp {
+    InvEq,
+    AddEq, SubEq, MulEq, DivEq, FloorDivEq, ModEq, PowEq,
+    BitOrEq, BitAndEq, BitXorEq,
+    ShlEq, ShrEq
   }
 
   proc operatorFromString(op: string): Operator {
@@ -86,45 +90,45 @@ module BinOp
     }
   }
 
-  proc opeqFromString(op: string): OpEq {
+  proc compoundOpFromString(op: string): CompoundOp {
     select op {
-      when "+="  do return OpEq.Pe; // Plus equals
-      when "-="  do return OpEq.Me; // Minus equals
-      when "*="  do return OpEq.Te; // Times equals
-      when "/="  do return OpEq.De; // Divide equals
-      when "**=" do return OpEq.Ee; // Exp equals
-      when "|="  do return OpEq.Oe; // Or equals
-      when "&="  do return OpEq.Ae; // And equals
-      when "^="  do return OpEq.Xe; // Xor equals
-      when "<<=" do return OpEq.Sle; // Shift left equals
-      when ">>=" do return OpEq.Sre; // Shift right equals
-      when "//=" do return OpEq.Fde; // Floor div equals
-      when "%="  do return OpEq.Moe; // Mod equals
-      otherwise  do return OpEq.Invalid;
+      when "+="  do return CompoundOp.AddEq;
+      when "-="  do return CompoundOp.SubEq;
+      when "*="  do return CompoundOp.MulEq;
+      when "/="  do return CompoundOp.DivEq;
+      when "**=" do return CompoundOp.PowEq;
+      when "|="  do return CompoundOp.BitOrEq;
+      when "&="  do return CompoundOp.BitAndEq;
+      when "^="  do return CompoundOp.BitXorEq;
+      when "<<=" do return CompoundOp.ShlEq;
+      when ">>=" do return CompoundOp.ShrEq;
+      when "//=" do return CompoundOp.FloorDivEq;
+      when "%="  do return CompoundOp.ModEq;
+      otherwise  do return CompoundOp.InvEq;
     }
   }
 
-  proc opeqToString(op: OpEq): string {
+  proc compoundOpToString(op: CompoundOp): string {
     select op {
-      when OpEq.Pe       do return "+=";
-      when OpEq.Me       do return "-=";
-      when OpEq.Te       do return "*=";
-      when OpEq.De       do return "/=";
-      when OpEq.Fde      do return "//=";
-      when OpEq.Moe      do return "%=";
-      when OpEq.Ee       do return "**=";
-      when OpEq.Oe       do return "|=";
-      when OpEq.Ae       do return "&=";
-      when OpEq.Xe       do return "^=";
-      when OpEq.Sle      do return "<<=";
-      when OpEq.Sre      do return ">>=";
-      otherwise          do return "<invalid>";
+      when CompoundOp.AddEq      do return "+=";
+      when CompoundOp.SubEq      do return "-=";
+      when CompoundOp.MulEq      do return "*=";
+      when CompoundOp.DivEq      do return "/=";
+      when CompoundOp.FloorDivEq do return "//=";
+      when CompoundOp.ModEq      do return "%=";
+      when CompoundOp.PowEq      do return "**=";
+      when CompoundOp.BitOrEq    do return "|=";
+      when CompoundOp.BitAndEq   do return "&=";
+      when CompoundOp.BitXorEq   do return "^=";
+      when CompoundOp.ShlEq      do return "<<=";
+      when CompoundOp.ShrEq      do return ">>=";
+      otherwise            do return "<invalid>";
     }
   }
 
-  private const realOpSet  = new set(Operator, [Operator.Add, Operator.Sub, Operator.Mul, Operator.FloorDiv, Operator.Mod, Operator.Pow]);
-  private const boolOpSet  = new set(Operator, [Operator.Lt, Operator.Le, Operator.Gt, Operator.Ge, Operator.Eq, Operator.Ne]);
-  private const smallOpSet = new set(Operator, [Operator.Shl, Operator.Shr, Operator.Pow]);
+  private const realOpSet  = new set(Operator, [Add, Sub, Mul, FloorDiv, Mod, Pow]);
+  private const boolOpSet  = new set(Operator, [Lt, Le, Gt, Ge, Eq, Ne]);
+  private const smallOpSet = new set(Operator, [Shl, Shr, Pow]);
 
   inline proc isRealOp(op: Operator): bool  { return realOpSet.contains(op); }
   inline proc isBoolOp(op: Operator): bool  { return boolOpSet.contains(op); }
@@ -357,13 +361,13 @@ module BinOp
     op: Operator, ref e: [] bool, l: [] bool, r /*: [] bool OR bool*/
   ): bool {
     var handled = false;
-    if op == Operator.BitOr || op == Operator.Add {
+    if op == BitOr || op == Add {
       e = l | r;
       handled = true;
-    } else if op == Operator.BitAnd || op == Operator.Mul {
+    } else if op == BitAnd || op == Mul {
       e = l & r;
       handled = true;
-    } else if op == Operator.BitXor {
+    } else if op == BitXor {
       e = l ^ r;
       handled = true;
     }
@@ -413,12 +417,12 @@ module BinOp
 
         select op {
 
-          when Operator.Lt { e = (l.a: castType) < (r.a: castType); }
-          when Operator.Le { e = (l.a: castType) <= (r.a: castType); }
-          when Operator.Gt { e = (l.a: castType) > (r.a: castType); }
-          when Operator.Ge { e = (l.a: castType) >= (r.a: castType); }
-          when Operator.Eq { e = (l.a: castType) == (r.a: castType); }
-          when Operator.Ne { e = (l.a: castType) != (r.a: castType); }
+          when Lt { e = (l.a: castType) < (r.a: castType); }
+          when Le { e = (l.a: castType) <= (r.a: castType); }
+          when Gt { e = (l.a: castType) > (r.a: castType); }
+          when Ge { e = (l.a: castType) >= (r.a: castType); }
+          when Eq { e = (l.a: castType) == (r.a: castType); }
+          when Ne { e = (l.a: castType) != (r.a: castType); }
           otherwise do return MsgTuple.error(nie); // Shouldn't happen
 
         }
@@ -438,11 +442,11 @@ module BinOp
 
     else if lType == bool && rType == bool && etype == uint(8) { // Both bools is kinda weird
       select op {
-        when Operator.Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
-        when Operator.FloorDiv { e = (l.a & r.a): uint(8); }
-        when Operator.Pow { e = (!l.a & r.a): uint(8); }
-        when Operator.Shl { e = (l.a: uint(8)) << (r.a: uint(8)); }
-        when Operator.Shr { e = (l.a: uint(8)) >> (r.a: uint(8)); }
+        when Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
+        when FloorDiv { e = (l.a & r.a): uint(8); }
+        when Pow { e = (!l.a & r.a): uint(8); }
+        when Shl { e = (l.a: uint(8)) << (r.a: uint(8)); }
+        when Shr { e = (l.a: uint(8)) >> (r.a: uint(8)); }
         otherwise do return MsgTuple.error(nie);
         // >>> and <<< could probably be implemented as int(8) or uint(8) things
       }
@@ -452,23 +456,23 @@ module BinOp
     else if etype == real(32) || etype == real(64) {
 
       select op {
-        when Operator.Mul { e = (l.a: etype * r.a: etype): etype; }
-        when Operator.Add { e = (l.a: etype + r.a: etype): etype; }
-        when Operator.Sub { e = (l.a: etype - r.a: etype): etype; }
-        when Operator.Div { e = (l.a: etype / r.a: etype): etype; }
-        when Operator.Mod {
+        when Mul { e = (l.a: etype * r.a: etype): etype; }
+        when Add { e = (l.a: etype + r.a: etype): etype; }
+        when Sub { e = (l.a: etype - r.a: etype): etype; }
+        when Div { e = (l.a: etype / r.a: etype): etype; }
+        when Mod {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li: etype, ri: etype): etype;
         }
-        when Operator.FloorDiv {
+        when FloorDiv {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           ea = floorDivision(la, ra, etype);
         }
-        when Operator.Pow {
+        when Pow {
           e = ((l.a: etype) ** (r.a: etype)): etype;
         }
         otherwise do return MsgTuple.error(nie);
@@ -480,44 +484,44 @@ module BinOp
     else {
 
       select op {
-        when Operator.BitOr { e = (l.a | r.a): etype; }
-        when Operator.BitAnd { e = (l.a & r.a): etype; }
-        when Operator.Mul { e = (l.a * r.a): etype; }
-        when Operator.BitXor { e = (l.a ^ r.a): etype; }
-        when Operator.Add { e = (l.a + r.a): etype; }
-        when Operator.Sub { e = (l.a - r.a): etype; }
-        when Operator.Div { e = (l.a: etype) / (r.a: etype); }
-        when Operator.Mod {
+        when BitOr { e = (l.a | r.a): etype; }
+        when BitAnd { e = (l.a & r.a): etype; }
+        when Mul { e = (l.a * r.a): etype; }
+        when BitXor { e = (l.a ^ r.a): etype; }
+        when Add { e = (l.a + r.a): etype; }
+        when Sub { e = (l.a - r.a): etype; }
+        when Div { e = (l.a: etype) / (r.a: etype); }
+        when Mod {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
         }
-        when Operator.FloorDiv {
+        when FloorDiv {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           ea = floorDivision(la, ra, etype);
         }
-        when Operator.Pow {
+        when Pow {
           if || reduce (r.a<0)
             then return MsgTuple.error("Attempt to exponentiate base of type Int or UInt to negative exponent");
           e = (l.a: etype) ** (r.a: etype);
         }
-        when Operator.Shl {
+        when Shl {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < numBits(etype)) then ei = ((li: etype) << (ri: etype)): etype;
         }
-        when Operator.Shr {
+        when Shr {
           ref ea = e;
           ref la = l.a;
           ref ra = r.a;
           [(ei,li,ri) in zip(ea,la,ra)] if (0 <= ri && ri < numBits(etype)) then ei = ((li: etype) >> (ri: etype)): etype;
         }
-        when Operator.RotL { e = rotl(l.a: etype, r.a: etype); }
-        when Operator.RotR { e = rotr(l.a: etype, r.a: etype); }
+        when RotL { e = rotl(l.a: etype, r.a: etype); }
+        when RotR { e = rotr(l.a: etype, r.a: etype); }
         otherwise do return MsgTuple.error(nie);
       }
       return st.insert(new shared SymEntry(e));
@@ -547,12 +551,12 @@ module BinOp
 
         select op {
 
-          when Operator.Lt { e = (l.a: castType) < (val: castType); }
-          when Operator.Le { e = (l.a: castType) <= (val: castType); }
-          when Operator.Gt { e = (l.a: castType) > (val: castType); }
-          when Operator.Ge { e = (l.a: castType) >= (val: castType); }
-          when Operator.Eq { e = (l.a: castType) == (val: castType); }
-          when Operator.Ne { e = (l.a: castType) != (val: castType); }
+          when Lt { e = (l.a: castType) < (val: castType); }
+          when Le { e = (l.a: castType) <= (val: castType); }
+          when Gt { e = (l.a: castType) > (val: castType); }
+          when Ge { e = (l.a: castType) >= (val: castType); }
+          when Eq { e = (l.a: castType) == (val: castType); }
+          when Ne { e = (l.a: castType) != (val: castType); }
           otherwise do return MsgTuple.error(nie); // Shouldn't happen
 
         }
@@ -572,11 +576,11 @@ module BinOp
 
     else if lType == bool && rType == bool && etype == uint(8) { // Both bools is kinda weird
       select op {
-        when Operator.Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
-        when Operator.FloorDiv { e = (l.a & val): uint(8); }
-        when Operator.Pow { e = (!l.a & val): uint(8); }
-        when Operator.Shl { e = (l.a: uint(8)) << (val: uint(8)); }
-        when Operator.Shr { e = (l.a: uint(8)) >> (val: uint(8)); }
+        when Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
+        when FloorDiv { e = (l.a & val): uint(8); }
+        when Pow { e = (!l.a & val): uint(8); }
+        when Shl { e = (l.a: uint(8)) << (val: uint(8)); }
+        when Shr { e = (l.a: uint(8)) >> (val: uint(8)); }
         otherwise do return MsgTuple.error(nie);
         // >>> and <<< could probably be implemented as int(8) or uint(8) things
       }
@@ -586,21 +590,21 @@ module BinOp
     else if etype == real(32) || etype == real(64) {
 
       select op {
-        when Operator.Mul { e = (l.a: etype * val: etype): etype; }
-        when Operator.Add { e = (l.a: etype + val: etype): etype; }
-        when Operator.Sub { e = (l.a: etype - val: etype): etype; }
-        when Operator.Div { e = (l.a: etype / val: etype): etype; }
-        when Operator.Mod {
+        when Mul { e = (l.a: etype * val: etype): etype; }
+        when Add { e = (l.a: etype + val: etype): etype; }
+        when Sub { e = (l.a: etype - val: etype): etype; }
+        when Div { e = (l.a: etype / val: etype): etype; }
+        when Mod {
           ref ea = e;
           ref la = l.a;
           [(ei,li) in zip(ea,la)] ei = modHelper(li: etype, val: etype): etype;
         }
-        when Operator.FloorDiv {
+        when FloorDiv {
           ref ea = e;
           ref la = l.a;
           ea = floorDivision(la, val, etype);
         }
-        when Operator.Pow {
+        when Pow {
           e = ((l.a: etype) ** (val: etype)): etype;
         }
         otherwise do return MsgTuple.error(nie);
@@ -612,40 +616,40 @@ module BinOp
     else {
 
       select op {
-        when Operator.BitOr { e = (l.a | val): etype; }
-        when Operator.BitAnd { e = (l.a & val): etype; }
-        when Operator.Mul { e = (l.a * val): etype; }
-        when Operator.BitXor { e = (l.a ^ val): etype; }
-        when Operator.Add { e = (l.a + val): etype; }
-        when Operator.Sub { e = (l.a - val): etype; }
-        when Operator.Div { e = (l.a: etype) / (val: etype); }
-        when Operator.Mod {
+        when BitOr { e = (l.a | val): etype; }
+        when BitAnd { e = (l.a & val): etype; }
+        when Mul { e = (l.a * val): etype; }
+        when BitXor { e = (l.a ^ val): etype; }
+        when Add { e = (l.a + val): etype; }
+        when Sub { e = (l.a - val): etype; }
+        when Div { e = (l.a: etype) / (val: etype); }
+        when Mod {
           ref ea = e;
           ref la = l.a;
           [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
         }
-        when Operator.FloorDiv {
+        when FloorDiv {
           ref ea = e;
           ref la = l.a;
           ea = floorDivision(la, val, etype);
         }
-        when Operator.Pow {
+        when Pow {
           if val < 0
             then return MsgTuple.error("Attempt to exponentiate base of type Int or UInt to negative exponent");
           e = (l.a: etype) ** (val: etype);
         }
-        when Operator.Shl {
+        when Shl {
           ref ea = e;
           ref la = l.a;
           [(ei,li) in zip(ea,la)] if (0 <= val && val < numBits(etype)) then ei = ((li: etype) << (val: etype)): etype;
         }
-        when Operator.Shr {
+        when Shr {
           ref ea = e;
           ref la = l.a;
           [(ei,li) in zip(ea,la)] if (0 <= val && val < numBits(etype)) then ei = ((li: etype) >> (val: etype)): etype;
         }
-        when Operator.RotL { e = rotl(l.a: etype, val: etype); }
-        when Operator.RotR { e = rotr(l.a: etype, val: etype); }
+        when RotL { e = rotl(l.a: etype, val: etype); }
+        when RotR { e = rotr(l.a: etype, val: etype); }
         otherwise do return MsgTuple.error(nie);
       }
       return st.insert(new shared SymEntry(e));
@@ -673,12 +677,12 @@ module BinOp
 
         select op {
 
-          when Operator.Lt { e = (val: castType) < (r.a: castType); }
-          when Operator.Le { e = (val: castType) <= (r.a: castType); }
-          when Operator.Gt { e = (val: castType) > (r.a: castType); }
-          when Operator.Ge { e = (val: castType) >= (r.a: castType); }
-          when Operator.Eq { e = (val: castType) == (r.a: castType); }
-          when Operator.Ne { e = (val: castType) != (r.a: castType); }
+          when Lt { e = (val: castType) < (r.a: castType); }
+          when Le { e = (val: castType) <= (r.a: castType); }
+          when Gt { e = (val: castType) > (r.a: castType); }
+          when Ge { e = (val: castType) >= (r.a: castType); }
+          when Eq { e = (val: castType) == (r.a: castType); }
+          when Ne { e = (val: castType) != (r.a: castType); }
           otherwise do return MsgTuple.error(nie); // Shouldn't happen
 
         }
@@ -698,11 +702,11 @@ module BinOp
 
     else if lType == bool && rType == bool && etype == uint(8) { // Both bools is kinda weird
       select op {
-        when Operator.Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
-        when Operator.FloorDiv { e = (val & r.a): uint(8); }
-        when Operator.Pow { e = (!val & r.a): uint(8); }
-        when Operator.Shl { e = (val: uint(8)) << (r.a: uint(8)); }
-        when Operator.Shr { e = (val: uint(8)) >> (r.a: uint(8)); }
+        when Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
+        when FloorDiv { e = (val & r.a): uint(8); }
+        when Pow { e = (!val & r.a): uint(8); }
+        when Shl { e = (val: uint(8)) << (r.a: uint(8)); }
+        when Shr { e = (val: uint(8)) >> (r.a: uint(8)); }
         otherwise do return MsgTuple.error(nie);
         // >>> and <<< could probably be implemented as int(8) or uint(8) things
       }
@@ -712,21 +716,21 @@ module BinOp
     else if etype == real(32) || etype == real(64) {
 
       select op {
-        when Operator.Mul { e = (val: etype * r.a: etype): etype; }
-        when Operator.Add { e = (val: etype + r.a: etype): etype; }
-        when Operator.Sub { e = (val: etype - r.a: etype): etype; }
-        when Operator.Div { e = (val: etype / r.a: etype): etype; }
-        when Operator.Mod {
+        when Mul { e = (val: etype * r.a: etype): etype; }
+        when Add { e = (val: etype + r.a: etype): etype; }
+        when Sub { e = (val: etype - r.a: etype): etype; }
+        when Div { e = (val: etype / r.a: etype): etype; }
+        when Mod {
           ref ea = e;
           ref ra = r.a;
           [(ei,ri) in zip(ea,ra)] ei = modHelper(val: etype, ri: etype): etype;
         }
-        when Operator.FloorDiv {
+        when FloorDiv {
           ref ea = e;
           ref ra = r.a;
           ea = floorDivision(val, ra, etype);
         }
-        when Operator.Pow {
+        when Pow {
           e = ((val: etype) ** (r.a: etype)): etype;
         }
         otherwise do return MsgTuple.error(nie);
@@ -738,40 +742,40 @@ module BinOp
     else {
 
       select op {
-        when Operator.BitOr { e = (val | r.a): etype; }
-        when Operator.BitAnd { e = (val & r.a): etype; }
-        when Operator.Mul { e = (val * r.a): etype; }
-        when Operator.BitXor { e = (val ^ r.a): etype; }
-        when Operator.Add { e = (val + r.a): etype; }
-        when Operator.Sub { e = (val - r.a): etype; }
-        when Operator.Div { e = (val: etype) / (r.a: etype); }
-        when Operator.Mod {
+        when BitOr { e = (val | r.a): etype; }
+        when BitAnd { e = (val & r.a): etype; }
+        when Mul { e = (val * r.a): etype; }
+        when BitXor { e = (val ^ r.a): etype; }
+        when Add { e = (val + r.a): etype; }
+        when Sub { e = (val - r.a): etype; }
+        when Div { e = (val: etype) / (r.a: etype); }
+        when Mod {
           ref ea = e;
           ref ra = r.a;
           [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val%ri else 0;
         }
-        when Operator.FloorDiv {
+        when FloorDiv {
           ref ea = e;
           ref ra = r.a;
           ea = floorDivision(val, ra, etype);
         }
-        when Operator.Pow {
+        when Pow {
           if || reduce (r.a<0)
             then return MsgTuple.error("Attempt to exponentiate base of type Int or UInt to negative exponent");
           e = (val: etype) ** (r.a: etype);
         }
-        when Operator.Shl {
+        when Shl {
           ref ea = e;
           ref ra = r.a;
           [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < numBits(etype)) then ei = ((val: etype) << (ri: etype)): etype;
         }
-        when Operator.Shr {
+        when Shr {
           ref ea = e;
           ref ra = r.a;
           [(ei,ri) in zip(ea,ra)] if (0 <= ri && ri < numBits(etype)) then ei = ((val: etype) >> (ri: etype)): etype;
         }
-        when Operator.RotL { e = rotl(val: etype, r.a: etype); }
-        when Operator.RotR { e = rotr(val: etype, r.a: etype); }
+        when RotL { e = rotl(val: etype, r.a: etype); }
+        when RotR { e = rotr(val: etype, r.a: etype); }
         otherwise do return MsgTuple.error(nie);
       }
       return st.insert(new shared SymEntry(e));
@@ -799,15 +803,15 @@ module BinOp
       // ops that only work with a left hand side of bigint and right hand side non-bigint
       // Just bitshifts and exponentiation without local_max_size
       select op {
-        when Operator.Shl {
+        when Shl {
           forall (t, ri) in zip(tmp, ra) do
             t = if has_max_bits && ri >= max_bits then 0: bigint else t << ri;
         }
-        when Operator.Shr {
+        when Shr {
           forall (t, ri) in zip(tmp, ra) do
             t = if has_max_bits && ri >= max_bits then 0: bigint else t >> ri;
         }
-        when Operator.Pow {
+        when Pow {
           if || reduce (ra<0) { // In the future, this should actually lead into real number territory
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
@@ -824,13 +828,13 @@ module BinOp
     }
     else {
       select op {
-        when Operator.BitAnd { forall (t, ri) in zip(tmp, ra) do t &= ri: bigint; }
-        when Operator.BitOr { forall (t, ri) in zip(tmp, ra) do t |= ri: bigint; }
-        when Operator.BitXor { forall (t, ri) in zip(tmp, ra) do t ^= ri: bigint; }
-        when Operator.Add { forall (t, ri) in zip(tmp, ra) do t += ri: bigint; }
-        when Operator.Sub { forall (t, ri) in zip(tmp, ra) do t -= ri: bigint; }
-        when Operator.Mul { forall (t, ri) in zip(tmp, ra) do t *= ri: bigint; }
-        when Operator.FloorDiv {
+        when BitAnd { forall (t, ri) in zip(tmp, ra) do t &= ri: bigint; }
+        when BitOr { forall (t, ri) in zip(tmp, ra) do t |= ri: bigint; }
+        when BitXor { forall (t, ri) in zip(tmp, ra) do t ^= ri: bigint; }
+        when Add { forall (t, ri) in zip(tmp, ra) do t += ri: bigint; }
+        when Sub { forall (t, ri) in zip(tmp, ra) do t -= ri: bigint; }
+        when Mul { forall (t, ri) in zip(tmp, ra) do t *= ri: bigint; }
+        when FloorDiv {
           forall (t, ri) in zip(tmp, ra) {
             const denom: bigint = ri: bigint;   // <- cast bool/int/uint/etc to bigint
             if denom != 0 {
@@ -844,7 +848,7 @@ module BinOp
             }
           }
         }
-        when Operator.Mod {
+        when Mod {
           forall (t, ri) in zip(tmp, ra) {
             if ri != 0 {
               mod(t, t, ri: bigint);
@@ -853,7 +857,7 @@ module BinOp
             }
           }
         }
-        when Operator.Pow {
+        when Pow {
           if || reduce (ra<0) {
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
@@ -866,7 +870,7 @@ module BinOp
             throw new Error("Attempt to exponentiate base of type BigInt to BigInt without max_bits");
           }
         }
-        when Operator.RotL {
+        when RotL {
           if !has_max_bits { // This could be expanded if l.etype is not bigint but r.etype is
             throw new Error("Must set max_bits to rotl");
           }
@@ -890,7 +894,7 @@ module BinOp
             }
           }
         }
-        when Operator.RotR {
+        when RotR {
           if !has_max_bits {
             throw new Error("Must set max_bits to rotr");
           }
@@ -926,12 +930,12 @@ module BinOp
   proc doBigIntBinOpvvBoolReturn(l, r, op: Operator) throws {
     const opStr = operatorToString(op);
     select op {
-      when Operator.Lt { return l.a < r.a; }
-      when Operator.Gt { return l.a > r.a; }
-      when Operator.Le { return l.a <= r.a; }
-      when Operator.Ge { return l.a >= r.a; }
-      when Operator.Eq { return l.a == r.a; }
-      when Operator.Ne { return l.a != r.a; }
+      when Lt { return l.a < r.a; }
+      when Gt { return l.a > r.a; }
+      when Le { return l.a <= r.a; }
+      when Ge { return l.a >= r.a; }
+      when Eq { return l.a == r.a; }
+      when Ne { return l.a != r.a; }
       otherwise {
         // we should never reach this since we only enter this proc
         // if boolOps.contains(op)
@@ -1013,42 +1017,42 @@ module BinOp
     var e = makeDistArray(d, bool);
     ref ea = e;
     select op {
-      when Operator.Lt {
+      when Lt {
         if t1 == bigint {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = ltBigReal(li, ri);
         } else { // t2 == bigint
           forall (ei, li, ri) in zip(ea, la, ra) do ei = gtBigReal(ri, li); // li<ri  <=>  ri>li
         }
       }
-      when Operator.Gt {
+      when Gt {
         if t1 == bigint {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = gtBigReal(li, ri);
         } else {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = ltBigReal(ri, li);
         }
       }
-      when Operator.Le {
+      when Le {
         if t1 == bigint {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = leBigReal(li, ri);
         } else {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = geBigReal(ri, li);
         }
       }
-      when Operator.Ge {
+      when Ge {
         if t1 == bigint {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = geBigReal(li, ri);
         } else {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = leBigReal(ri, li);
         }
       }
-      when Operator.Eq {
+      when Eq {
         if t1 == bigint {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = eqBigReal(li, ri);
         } else {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = eqBigReal(ri, li);
         }
       }
-      when Operator.Ne {
+      when Ne {
         if t1 == bigint {
           forall (ei, li, ri) in zip(ea, la, ra) do ei = neBigReal(li, ri);
         } else {
@@ -1073,12 +1077,12 @@ module BinOp
   proc doBigIntBinOpvvRealReturn(l, r, op: Operator) throws {
     const opStr = operatorToString(op);
     select op {
-      when Operator.Add { return l.a: real + r.a: real; }
-      when Operator.Sub { return l.a: real - r.a: real; }
-      when Operator.Mul { return l.a: real * r.a: real; }
-      when Operator.Div { return l.a: real / r.a: real; }
-      when Operator.Pow { return l.a: real ** r.a: real; }
-      when Operator.Mod {
+      when Add { return l.a: real + r.a: real; }
+      when Sub { return l.a: real - r.a: real; }
+      when Mul { return l.a: real * r.a: real; }
+      when Div { return l.a: real / r.a: real; }
+      when Pow { return l.a: real ** r.a: real; }
+      when Mod {
         var e = makeDistArray((...l.tupShape), real);
         ref ea = e;
         ref la = l.a;
@@ -1086,7 +1090,7 @@ module BinOp
         [(ei,li,ri) in zip(ea,la,ra)] ei = modHelper(li: real, ri: real): real;
         return e;
       }
-      when Operator.FloorDiv {
+      when FloorDiv {
         var e = makeDistArray((...l.tupShape), real);
         ref ea = e;
         ref la = l.a;
@@ -1121,7 +1125,7 @@ module BinOp
       // first we try the ops that only work with
       // both being bigint
       select op {
-        when Operator.BitAnd {
+        when BitAnd {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             t &= local_val;
             if has_max_bits {
@@ -1130,7 +1134,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.BitOr {
+        when BitOr {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             t |= local_val;
             if has_max_bits {
@@ -1139,7 +1143,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.BitXor {
+        when BitXor {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             t ^= local_val;
             if has_max_bits {
@@ -1148,7 +1152,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Div {
+        when Div {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             t /= local_val;
             if has_max_bits {
@@ -1165,7 +1169,7 @@ module BinOp
       if val.type != bigint {
         // can't shift a bigint by a bigint
         select op {
-          when Operator.Shl {
+          when Shl {
             if has_max_bits && val >= max_bits {
               forall t in tmp with (var local_zero = 0:bigint) {
                 t = local_zero;
@@ -1181,7 +1185,7 @@ module BinOp
             }
             visted = true;
           }
-          when Operator.Shr {
+          when Shr {
             if has_max_bits && val >= max_bits {
               forall t in tmp with (var local_zero = 0:bigint) {
                 t = local_zero;
@@ -1197,7 +1201,7 @@ module BinOp
             }
             visted = true;
           }
-          when Operator.RotL {
+          when RotL {
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
@@ -1212,7 +1216,7 @@ module BinOp
             }
             visted = true;
           }
-          when Operator.RotR {
+          when RotR {
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
@@ -1230,7 +1234,7 @@ module BinOp
         }
       }
       select op {
-        when Operator.FloorDiv { // floordiv
+        when FloorDiv {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             if local_val != 0 {
               t /= local_val;
@@ -1244,7 +1248,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Mod { // modulo " <- quote is workaround for syntax highlighter bug
+        when Mod {
           // we only do in place mod when val != 0, tmp will be 0 in other locations
           // we can't use ei = li % val because this can result in negatives
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
@@ -1260,7 +1264,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Pow {
+        when Pow {
           if val<0 {
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
@@ -1282,7 +1286,7 @@ module BinOp
        (l.etype == bigint && (val.type == int || val.type == uint || val.type == bool)) ||
        (val.type == bigint && (l.etype == int || l.etype == uint || l.etype == bool)) {
       select op {
-        when Operator.Add {
+        when Add {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             t += local_val;
             if has_max_bits {
@@ -1291,7 +1295,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Sub {
+        when Sub {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             t -= local_val;
             if has_max_bits {
@@ -1300,7 +1304,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Mul {
+        when Mul {
           forall t in tmp with (var local_val = val, var local_max_size = max_size) {
             t *= local_val;
             if has_max_bits {
@@ -1322,32 +1326,32 @@ module BinOp
     ref la = l.a;
     var tmp = makeDistArray((...la.shape), bool);
     select op {
-      when Operator.Lt {
+      when Lt {
         forall (t, li) in zip(tmp, la) with (var local_val = val) {
           t = (li < local_val);
         }
       }
-      when Operator.Gt {
+      when Gt {
         forall (t, li) in zip(tmp, la) with (var local_val = val) {
           t = (li > local_val);
         }
       }
-      when Operator.Le {
+      when Le {
         forall (t, li) in zip(tmp, la) with (var local_val = val) {
           t = (li <= local_val);
         }
       }
-      when Operator.Ge {
+      when Ge {
         forall (t, li) in zip(tmp, la) with (var local_val = val) {
           t = (li >= local_val);
         }
       }
-      when Operator.Eq {
+      when Eq {
         forall (t, li) in zip(tmp, la) with (var local_val = val) {
           t = (li == local_val);
         }
       }
-      when Operator.Ne {
+      when Ne {
         forall (t, li) in zip(tmp, la) with (var local_val = val) {
           t = (li != local_val);
         }
@@ -1383,7 +1387,7 @@ module BinOp
       // first we try the ops that only work with
       // both being bigint
       select op {
-        when Operator.BitAnd {
+        when BitAnd {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             t &= ri;
             if has_max_bits {
@@ -1392,7 +1396,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.BitOr {
+        when BitOr {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             t |= ri;
             if has_max_bits {
@@ -1401,7 +1405,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.BitXor {
+        when BitXor {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             t ^= ri;
             if has_max_bits {
@@ -1410,7 +1414,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Div {
+        when Div {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             t /= ri;
             if has_max_bits {
@@ -1427,7 +1431,7 @@ module BinOp
       if r.etype != bigint {
         // can't shift a bigint by a bigint
         select op {
-          when Operator.Shl {
+          when Shl {
             forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
               if has_max_bits {
                 if ri >= max_bits {
@@ -1444,7 +1448,7 @@ module BinOp
             }
             visted = true;
           }
-          when Operator.Shr {
+          when Shr {
             forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
               if has_max_bits {
                 if ri >= max_bits {
@@ -1461,7 +1465,7 @@ module BinOp
             }
             visted = true;
           }
-          when Operator.RotL {
+          when RotL {
             if !has_max_bits {
               throw new Error("Must set max_bits to rotl");
             }
@@ -1477,7 +1481,7 @@ module BinOp
             }
             visted = true;
           }
-          when Operator.RotR {
+          when RotR {
             if !has_max_bits {
               throw new Error("Must set max_bits to rotr");
             }
@@ -1496,7 +1500,7 @@ module BinOp
         }
       }
       select op {
-        when Operator.FloorDiv { // floordiv
+        when FloorDiv {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             if ri != 0 {
               t /= ri;
@@ -1510,7 +1514,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Mod { // modulo " <- quote is workaround for syntax highlighter bug
+        when Mod {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             if ri != 0 {
               mod(t, t, ri);
@@ -1524,7 +1528,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Pow {
+        when Pow {
           if || reduce (ra<0) {
             throw new Error("Attempt to exponentiate base of type BigInt to negative exponent");
           }
@@ -1546,7 +1550,7 @@ module BinOp
        (val.type == bigint && (r.etype == int || r.etype == uint || r.etype == bool)) ||
        (r.etype == bigint && (val.type == int || val.type == uint || val.type == bool)) {
       select op {
-        when Operator.Add {
+        when Add {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             t += ri;
             if has_max_bits {
@@ -1555,7 +1559,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Sub {
+        when Sub {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             t -= ri;
             if has_max_bits {
@@ -1564,7 +1568,7 @@ module BinOp
           }
           visted = true;
         }
-        when Operator.Mul {
+        when Mul {
           forall (t, ri) in zip(tmp, ra) with (var local_max_size = max_size) {
             t *= ri;
             if has_max_bits {
@@ -1586,32 +1590,32 @@ module BinOp
     ref ra = r.a;
     var tmp = makeDistArray((...ra.shape), bool);
     select op {
-      when Operator.Lt {
+      when Lt {
         forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
           t = (local_val < ri);
         }
       }
-      when Operator.Gt {
+      when Gt {
         forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
           t = (local_val > ri);
         }
       }
-      when Operator.Le {
+      when Le {
         forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
           t = (local_val <= ri);
         }
       }
-      when Operator.Ge {
+      when Ge {
         forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
           t = (local_val >= ri);
         }
       }
-      when Operator.Eq {
+      when Eq {
         forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
           t = (local_val == ri);
         }
       }
-      when Operator.Ne {
+      when Ne {
         forall (t, ri) in zip(tmp, ra) with (var local_val = val) {
           t = (local_val != ri);
         }
