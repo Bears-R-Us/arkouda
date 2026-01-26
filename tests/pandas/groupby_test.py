@@ -220,6 +220,8 @@ class TestGroupBy:
         do_check = True
         try:
             pdkeys, pdvals = self.groupby_to_arrays(df, keyname, "float64", op, 1)
+            # ensure writable
+            pdvals = np.array(pdvals, copy=True)
         except Exception:
             print("Pandas does not implement")
             do_check = False

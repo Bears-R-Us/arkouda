@@ -366,7 +366,7 @@ class ArkoudaIndexAccessor:
         <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
         >>> out = ak_idx.ak.collect()
         >>> type(out.array)
-        <class 'pandas.core.arrays.numpy_.NumpyExtensionArray'>
+        <class 'pandas.arrays.NumpyExtensionArray'>
         """
         idx = self._obj
 

@@ -225,7 +225,7 @@ class ArkoudaSeriesAccessor:
         >>> s = pd.Series([1,2,3]).ak.to_ak()
         >>> out = s.ak.collect()
         >>> type(out.array)
-        <class 'pandas.core.arrays.numpy_.NumpyExtensionArray'>
+        <class 'pandas.arrays.NumpyExtensionArray'>
         """
         s = self._obj
         arr = s.array
