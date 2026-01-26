@@ -52,6 +52,7 @@ def bench_array_transfer_from_ndarray(benchmark, dtype):
 
         def from_np():
             ak.array(npa, max_bits=pytest.max_bits)
+
         def from_np_bigint():
             ak.array(npa, max_bits=-1, dtype=dtype, unsafe=True, num_bits=128, any_neg=False)
 
