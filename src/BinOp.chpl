@@ -135,92 +135,57 @@ module BinOp
   inline proc isSmallOp(op: Operator): bool { return smallOpSet.contains(op); }
 
   proc splitType(type dtype) param : int {
-      // 0 -> bool, 1 -> uint, 2 -> int, 3 -> real
+    // 0 -> bool, 1 -> uint, 2 -> int, 3 -> real
 
-      if dtype == bool then return 0;
-      else if dtype == uint(8) then return 1;
-      else if dtype == uint(16) then return 1;
-      else if dtype == uint(32) then return 1;
-      else if dtype == uint(64) then return 1;
-      else if dtype == int(8) then return 2;
-      else if dtype == int(16) then return 2;
-      else if dtype == int(32) then return 2;
-      else if dtype == int(64) then return 2;
-      else if dtype == real(32) then return 3;
-      else if dtype == real(64) then return 3;
-      else return 0;
+    if dtype == bool then return 0;
+    else if dtype == uint(8) then return 1;
+    else if dtype == uint(64) then return 1;
+    else if dtype == int(64) then return 2;
+    else if dtype == real(64) then return 3;
+    else return 0;
 
+  }
+
+  proc mySafeCast(type dtype1, type dtype2) type {
+    param k1 = splitType(dtype1); // 0 bool, 1 uint, 2 int, 3 real
+    param k2 = splitType(dtype2);
+
+    // Any real => real64 (only real we support)
+    if k1 == 3 || k2 == 3 then
+      return real(64);
+
+    // Mixed signed/unsigned:
+    // int64 + uint64 cannot be represented as int64, so promote to real64
+    if (k1 == 2 && k2 == 1) || (k1 == 1 && k2 == 2) {
+      if dtype1 == uint(64) || dtype2 == uint(64) then
+        return real(64);
+      // int64 with uint8 is safe -> int64
+      return int(64);
     }
 
-    proc mySafeCast(type dtype1, type dtype2) type {
-      param typeKind1 = splitType(dtype1);
-      param bitSize1 = if dtype1 == bool then 8 else numBits(dtype1);
-      param typeKind2 = splitType(dtype2);
-      param bitSize2 = if dtype2 == bool then 8 else numBits(dtype2);
+    // Any int => int64 (only int we support)
+    if k1 == 2 || k2 == 2 then
+      return int(64);
 
-      if typeKind1 == 2 && typeKind2 == 1 && bitSize1 <= bitSize2 {
-        select bitSize2 {
-          when 64 { return real(64); }
-          when 32 { return int(64); }
-          when 16 { return int(32); }
-          when 8 { return int(16); }
-        }
-      }
-
-      if typeKind2 == 2 && typeKind1 == 1 && bitSize2 <= bitSize1 {
-        select bitSize1 {
-          when 64 { return real(64); }
-          when 32 { return int(64); }
-          when 16 { return int(32); }
-          when 8 { return int(16); }
-        }
-      }
-
-      if dtype1 == real(32) && (dtype2 == int(32) || dtype2 == uint(32)) {
-        return real(64);
-      }
-
-      if dtype2 == real(32) && (dtype1 == int(32) || dtype1 == uint(32)) {
-        return real(64);
-      }
-
-      if typeKind1 == 3 || typeKind2 == 3 {
-        select max(bitSize1, bitSize2) {
-          when 64 { return real(64); }
-          when 32 { return real(32); }
-        }
-      }
-
-      if typeKind1 == 2 || typeKind2 == 2 {
-        select max(bitSize1, bitSize2) {
-          when 64 { return int(64); }
-          when 32 { return int(32); }
-          when 16 { return int(16); }
-          when 8 { return int(8); }
-        }
-      }
-
-      if typeKind1 == 1 || typeKind2 == 1 {
-        select max(bitSize1, bitSize2) {
-          when 64 { return uint(64); }
-          when 32 { return uint(32); }
-          when 16 { return uint(16); }
-          when 8 { return uint(8); }
-        }
-      }
-
-      return bool;
-
+    // Any uint => uint8 only if both are uint8; else uint64
+    if k1 == 1 || k2 == 1 {
+      if dtype1 == uint(8) && dtype2 == uint(8) then
+        return uint(8);
+      return uint(64);
     }
+
+    // bool op bool
+    return bool;
+  }
 
   // vector-vector case of floor division      
 
   proc floorDivision (dividend: [?d] ?tn, divisor: [d] ?td, type etype) : [d] etype throws {
     var quotient = makeDistArray(d, etype);
     forall idx in d {
-        const numerator = dividend[idx]:etype ;
-        const denom     = divisor[idx]:etype;
-        quotient[idx] = floorDivisionHelper(numerator, denom, etype);
+      const numerator = dividend[idx]:etype ;
+      const denom     = divisor[idx]:etype;
+      quotient[idx] = floorDivisionHelper(numerator, denom, etype);
     }
     return quotient;
   }
@@ -231,8 +196,8 @@ module BinOp
     var quotient = makeDistArray(d, etype);
     const denom = divisor:etype;
     forall idx in d {
-        const numerator = dividend[idx]:etype ;
-        quotient[idx] = floorDivisionHelper(numerator, denom, etype);
+      const numerator = dividend[idx]:etype ;
+      quotient[idx] = floorDivisionHelper(numerator, denom, etype);
     }
     return quotient;
   }
@@ -243,8 +208,8 @@ module BinOp
     var quotient = makeDistArray(d, etype);
     const numerator = dividend:etype;
     forall idx in d {
-        const denom = divisor[idx]:etype ;
-        quotient[idx] = floorDivisionHelper(numerator, denom, etype);
+      const denom = divisor[idx]:etype ;
+      quotient[idx] = floorDivisionHelper(numerator, denom, etype);
     }
     return quotient;
   }
@@ -289,39 +254,39 @@ module BinOp
 
     } else if isIntType(etype) then
         if (denom == 0) then
-            return 0: int;
+          return 0: int;
         else
-            if (numerator > 0 && denom > 0) || (numerator < 0 && denom < 0) || (numerator%denom == 0) then
-                return numerator/denom;
-            else
-                return numerator/denom - 1;
+          if (numerator > 0 && denom > 0) || (numerator < 0 && denom < 0) || (numerator%denom == 0) then
+            return numerator/denom;
+          else
+            return numerator/denom - 1;
 
     else // must be uint case.
-        if (denom == 0) then
-            return 0: uint;
-        else
-            return numerator/denom;
+      if (denom == 0) then
+        return 0: uint;
+      else
+        return numerator/denom;
   }
-    /*
-      Helper function to ensure that mod cases are handled in accordance with numpy
-    */
-    proc modHelper(dividend: ?t, divisor: ?t2): real {
-      extern proc fmod(x: real, y: real): real;
+  /*
+    Helper function to ensure that mod cases are handled in accordance with numpy
+  */
+  proc modHelper(dividend: ?t, divisor: ?t2): real {
+    extern proc fmod(x: real, y: real): real;
 
-      var res = fmod(dividend, divisor);
+    var res = fmod(dividend, divisor);
 
-      // to convert fmod (truncated) results into mod (floored) results
-      // when the dividend and divsor have opposite signs,
-      // we add the divsor into the result
-      // except for when res == 0 (divsor even divides dividend)
-      // see https://en.wikipedia.org/wiki/Modulo#math_1 for more information
+    // to convert fmod (truncated) results into mod (floored) results
+    // when the dividend and divsor have opposite signs,
+    // we add the divsor into the result
+    // except for when res == 0 (divsor even divides dividend)
+    // see https://en.wikipedia.org/wiki/Modulo#math_1 for more information
 
-      if res != 0 && (((dividend < 0) && (divisor > 0)) || ((dividend > 0) && (divisor < 0))) {
-        // we do + either way because we want to shift up for positive divisors and shift down for negative
-        res += divisor;
-      }
-      return res;
+    if res != 0 && (((dividend < 0) && (divisor > 0)) || ((dividend > 0) && (divisor < 0))) {
+      // we do + either way because we want to shift up for positive divisors and shift down for negative
+      res += divisor;
     }
+    return res;
+  }
 
   //
   // TODO: these checks sets are used only to check if a string matches
