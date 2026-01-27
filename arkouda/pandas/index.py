@@ -1562,7 +1562,7 @@ class MultiIndex(Index):
     >>> b = ak.array(['a', 'b', 'c'])
     >>> mi = MultiIndex([a, b])
     >>> mi[1]
-    MultiIndex([2, 'b'])
+    MultiIndex([np.int64(2), np.str_('b')])
 
     """
 

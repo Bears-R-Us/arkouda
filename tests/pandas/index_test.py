@@ -37,10 +37,11 @@ def df_test_base_tmp(request):
 
 
 class TestIndex:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_index_docstrings(self):
         import doctest
 
-        from arkouda import index
+        from arkouda.pandas import index
 
         result = doctest.testmod(index, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
