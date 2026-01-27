@@ -1754,41 +1754,69 @@ Package Contents
 
 
    .. py:method:: view(dtype=None)
-      :abstractmethod:
 
+      Return a shallow view of the ExtensionArray.
 
-      Return a view on the array.
+      This method is used by pandas internals (e.g. ``BlockManager.copy(deep=False)``)
+      to create a new ``ExtensionArray`` wrapper that shares the same underlying
+      Arkouda data without materializing or copying server-side arrays.
 
-      :param dtype: Default None.
-      :type dtype: str, np.dtype, or ExtensionDtype, optional
+      :param dtype: If provided and different from the current dtype, a dtype conversion
+                    is requested. In this case, the operation is delegated to
+                    ``astype(dtype, copy=False)`` and a new array with the requested dtype
+                    is returned.
+      :type dtype: optional
 
-      :returns: A view on the :class:`ExtensionArray`'s data.
-      :rtype: ExtensionArray or np.ndarray
+      :returns: A new ExtensionArray instance of the same concrete class that
+                references the same underlying Arkouda data.
+      :rtype: ArkoudaExtensionArray
 
-      .. seealso::
+      .. rubric:: Notes
 
-         :py:obj:`api.extensions.ExtensionArray.ravel`
-             Return a flattened view on input array.
-
-         :py:obj:`Index.view`
-             Equivalent function for Index.
-
-         :py:obj:`ndarray.view`
-             New view of array with the same data.
+      * This method performs a **shallow** copy only: the underlying Arkouda
+        server-side array is shared between the original and the returned object.
+      * No data is materialized, copied, or cast unless ``dtype`` is explicitly
+        requested.
+      * Optional internal attributes (e.g. masks, categorical metadata, caches)
+        are copied by reference when present, to preserve logical consistency.
+      * This method exists to satisfy pandas' expectations around ``.view()``
+        and ``copy(deep=False)`` semantics for ``ExtensionArray`` implementations.
 
       .. rubric:: Examples
 
-      This gives view on the underlying data of an ``ExtensionArray`` and is not a
-      copy. Modifications on either the view or the original ``ExtensionArray``
-      will be reflected on the underlying data:
+      Create a shallow view that shares the same underlying data:
 
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr2 = arr.view()
-      >>> arr[0] = 2
-      >>> arr2
-      <IntegerArray>
-      [2, 2, 3]
-      Length: 3, dtype: Int64
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+      >>> ak_arr = ak.arange(5)
+      >>> ea = ArkoudaArray(ak_arr)
+      >>> v = ea.view()
+      >>> v is ea
+      False
+      >>> v._data is ea._data
+      True
+
+      Requesting a dtype conversion delegates to ``astype`` without copying
+      the underlying data unless required:
+
+      >>> v2 = ea.view(dtype="float64")
+      >>> v2.dtype == ea.astype("float64").dtype
+      True
+
+      This method is commonly invoked indirectly by pandas during operations
+      that require shallow copies:
+
+      >>> import pandas as pd
+      >>> s = pd.Series(ea)
+      >>> df = pd.DataFrame({"col": s})  # does not raise
+
+      .. seealso::
+
+         :py:obj:`copy`
+             Create a shallow or deep copy of the array.
+
+         :py:obj:`astype`
+             Cast the array to a new dtype.
 
 
 

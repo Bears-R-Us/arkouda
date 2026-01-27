@@ -2390,42 +2390,72 @@ counts as the values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="id13">
-<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id13" title="Link to this definition">¶</a></dt>
-<dd><p>Return a view on the array.</p>
+<span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id13" title="Link to this definition">¶</a></dt>
+<dd><p>Return a shallow view of the ExtensionArray.</p>
+<p>This method is used by pandas internals (e.g. <code class="docutils literal notranslate"><span class="pre">BlockManager.copy(deep=False)</span></code>)
+to create a new <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code> wrapper that shares the same underlying
+Arkouda data without materializing or copying server-side arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dtype</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>np.dtype</em><em>, or </em><em>ExtensionDtype</em><em>, </em><em>optional</em>) – Default None.</p>
+<dd class="field-odd"><p><strong>dtype</strong> (<em>optional</em>) – If provided and different from the current dtype, a dtype conversion
+is requested. In this case, the operation is delegated to
+<code class="docutils literal notranslate"><span class="pre">astype(dtype,</span> <span class="pre">copy=False)</span></code> and a new array with the requested dtype
+is returned.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A view on the <code class="xref py py-class docutils literal notranslate"><span class="pre">ExtensionArray</span></code>’s data.</p>
+<dd class="field-even"><p>A new ExtensionArray instance of the same concrete class that
+references the same underlying Arkouda data.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ExtensionArray or np.ndarray</p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray">ArkoudaExtensionArray</a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This method performs a <strong>shallow</strong> copy only: the underlying Arkouda
+server-side array is shared between the original and the returned object.</p></li>
+<li><p>No data is materialized, copied, or cast unless <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is explicitly
+requested.</p></li>
+<li><p>Optional internal attributes (e.g. masks, categorical metadata, caches)
+are copied by reference when present, to preserve logical consistency.</p></li>
+<li><p>This method exists to satisfy pandas’ expectations around <code class="docutils literal notranslate"><span class="pre">.view()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">copy(deep=False)</span></code> semantics for <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code> implementations.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Create a shallow view that shares the same underlying data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ea</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak_arr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">ea</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="ow">is</span> <span class="n">ea</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="n">ea</span><span class="o">.</span><span class="n">_data</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Requesting a dtype conversion delegates to <code class="docutils literal notranslate"><span class="pre">astype</span></code> without copying
+the underlying data unless required:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">ea</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ea</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>This method is commonly invoked indirectly by pandas during operations
+that require shallow copies:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ea</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;col&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">})</span>  <span class="c1"># does not raise</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">api.extensions.ExtensionArray.ravel</span></code></dt><dd><p>Return a flattened view on input array.</p>
+<dt><a class="reference internal" href="#id8" title="arkouda.pandas.extension.ArkoudaExtensionArray.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a></dt><dd><p>Create a shallow or deep copy of the array.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index.view</span></code></dt><dd><p>Equivalent function for Index.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.view</span></code></dt><dd><p>New view of array with the same data.</p>
+<dt><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.astype" title="arkouda.pandas.extension.ArkoudaExtensionArray.astype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">astype</span></code></a></dt><dd><p>Cast the array to a new dtype.</p>
 </dd>
 </dl>
-</div>
-<p class="rubric">Examples</p>
-<p>This gives view on the underlying data of an <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code> and is not a
-copy. Modifications on either the view or the original <code class="docutils literal notranslate"><span class="pre">ExtensionArray</span></code>
-will be reflected on the underlying data:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span>
-<span class="go">&lt;IntegerArray&gt;</span>
-<span class="go">[2, 2, 3]</span>
-<span class="go">Length: 3, dtype: Int64</span>
-</pre></div>
 </div>
 </dd></dl>
 

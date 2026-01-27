@@ -1089,6 +1089,88 @@
         <span class="k">return</span> <span class="n">perm</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="ArkoudaExtensionArray.view">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a shallow view of the ExtensionArray.</span>
+
+<span class="sd">        This method is used by pandas internals (e.g. ``BlockManager.copy(deep=False)``)</span>
+<span class="sd">        to create a new ``ExtensionArray`` wrapper that shares the same underlying</span>
+<span class="sd">        Arkouda data without materializing or copying server-side arrays.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dtype : optional</span>
+<span class="sd">            If provided and different from the current dtype, a dtype conversion</span>
+<span class="sd">            is requested. In this case, the operation is delegated to</span>
+<span class="sd">            ``astype(dtype, copy=False)`` and a new array with the requested dtype</span>
+<span class="sd">            is returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ArkoudaExtensionArray</span>
+<span class="sd">            A new ExtensionArray instance of the same concrete class that</span>
+<span class="sd">            references the same underlying Arkouda data.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        * This method performs a **shallow** copy only: the underlying Arkouda</span>
+<span class="sd">          server-side array is shared between the original and the returned object.</span>
+<span class="sd">        * No data is materialized, copied, or cast unless ``dtype`` is explicitly</span>
+<span class="sd">          requested.</span>
+<span class="sd">        * Optional internal attributes (e.g. masks, categorical metadata, caches)</span>
+<span class="sd">          are copied by reference when present, to preserve logical consistency.</span>
+<span class="sd">        * This method exists to satisfy pandas&#39; expectations around ``.view()``</span>
+<span class="sd">          and ``copy(deep=False)`` semantics for ``ExtensionArray`` implementations.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Create a shallow view that shares the same underlying data:</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension._arkouda_array import ArkoudaArray</span>
+<span class="sd">        &gt;&gt;&gt; ak_arr = ak.arange(5)</span>
+<span class="sd">        &gt;&gt;&gt; ea = ArkoudaArray(ak_arr)</span>
+<span class="sd">        &gt;&gt;&gt; v = ea.view()</span>
+<span class="sd">        &gt;&gt;&gt; v is ea</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; v._data is ea._data</span>
+<span class="sd">        True</span>
+
+<span class="sd">        Requesting a dtype conversion delegates to ``astype`` without copying</span>
+<span class="sd">        the underlying data unless required:</span>
+
+<span class="sd">        &gt;&gt;&gt; v2 = ea.view(dtype=&quot;float64&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; v2.dtype == ea.astype(&quot;float64&quot;).dtype</span>
+<span class="sd">        True</span>
+
+<span class="sd">        This method is commonly invoked indirectly by pandas during operations</span>
+<span class="sd">        that require shallow copies:</span>
+
+<span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">        &gt;&gt;&gt; s = pd.Series(ea)</span>
+<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame({&quot;col&quot;: s})  # does not raise</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        copy : Create a shallow or deep copy of the array.</span>
+<span class="sd">        astype : Cast the array to a new dtype.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+        <span class="c1"># copy optional attributes if they exist</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_mask&quot;</span><span class="p">,</span> <span class="s2">&quot;_categories&quot;</span><span class="p">,</span> <span class="s2">&quot;_codes&quot;</span><span class="p">,</span> <span class="s2">&quot;_na_value&quot;</span><span class="p">,</span> <span class="s2">&quot;_cache&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">new</span></div>
+
+
 <div class="viewcode-block" id="ArkoudaExtensionArray.broadcast_arrays">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.broadcast_arrays">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">broadcast_arrays</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arrays</span><span class="p">):</span>
@@ -1203,12 +1285,6 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.interpolate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;interpolate is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ArkoudaExtensionArray.view">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray.view">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;view is not yet implemented for ArkoudaExtensionArray.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaExtensionArray._pad_or_backfill">
