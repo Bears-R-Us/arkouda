@@ -22,6 +22,16 @@ class TestArkoudaArrayExtension:
         data = ak.array([10, 20, 30, 40, 50])
         return ArkoudaArray(data)
 
+    def test_array_extension_docstrings(self):
+        import doctest
+
+        from arkouda.pandas.extension import _arkouda_array
+
+        result = doctest.testmod(
+            _arkouda_array, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_copy_shallow_creates_new_wrapper_but_shares_data(self, ea):
         """
         deep=False should:
@@ -39,16 +49,6 @@ class TestArkoudaArrayExtension:
 
         # Values are equal
         np.testing.assert_array_equal(shallow.to_numpy(), ea.to_numpy())
-
-    def test_array_extension_docstrings(self):
-        import doctest
-
-        from arkouda.pandas.extension import _arkouda_array
-
-        result = doctest.testmod(
-            _arkouda_array, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
-        )
-        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     def test_constructor_from_pdarray(self):
         arr = ArkoudaArray(ak.arange(5))
