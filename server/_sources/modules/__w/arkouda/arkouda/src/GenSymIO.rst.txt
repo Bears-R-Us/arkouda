@@ -21,7 +21,7 @@ or
 
 .. data:: config const NULL_STRINGS_VALUE = 0: uint(8)
 
-.. function:: proc deepcopy(x: [?d] ?t): [d] t throws where t == int || t == real || t == uint || t == bigint || t == bool
+.. function:: proc deepcopy(x: [?d] ?t): [d] t throws
 
 .. function:: proc array(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws where array_dtype != bigint
 
