@@ -1151,7 +1151,7 @@ to Python users.</p>
 <td><p>Format a floating-point scalar as a decimal string in scientific notation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.from_series" title="arkouda.from_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_series</span></code></a>(...)</p></td>
-<td><p>Converts a Pandas Series to an Arkouda pdarray or Strings object. If</p></td>
+<td><p>Convert a pandas <code class="docutils literal notranslate"><span class="pre">Series</span></code> to an Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> or <code class="docutils literal notranslate"><span class="pre">Strings</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.full" title="arkouda.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">full</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Create a pdarray filled with fill_value.</p></td>
@@ -14035,75 +14035,74 @@ identify the value may be printed and rounded unbiased.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.from_series">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">from_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pandas/index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><span class="pre">type</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/conversion.html#from_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.from_series" title="Link to this definition">¶</a></dt>
-<dd><p>Converts a Pandas Series to an Arkouda pdarray or Strings object. If
-dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
-the dtype parameter is set if the dtype of the Pandas Series is to be
-overridden or is  unknown (for example, in situations where the Series
-dtype is object).</p>
+<dd><p>Convert a pandas <code class="docutils literal notranslate"><span class="pre">Series</span></code> to an Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> or <code class="docutils literal notranslate"><span class="pre">Strings</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is not provided, the dtype is inferred from the pandas
+<code class="docutils literal notranslate"><span class="pre">Series</span></code> (using pandas’ dtype metadata). If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is provided, it
+is used as an override and normalized via Arkouda’s dtype resolution rules.</p>
+<p>In addition to the core numeric/bool types, this function supports
+datetime and timedelta Series of <strong>any</strong> resolution (<code class="docutils literal notranslate"><span class="pre">ns</span></code>, <code class="docutils literal notranslate"><span class="pre">us</span></code>, <code class="docutils literal notranslate"><span class="pre">ms</span></code>,
+etc.) by converting them to an <code class="docutils literal notranslate"><span class="pre">int64</span></code> pdarray of nanoseconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>series</strong> (<em>pd.Series</em>) – The Pandas Series with a dtype of bool, float64, int64, or string</p></li>
-<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a><em>, </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – The valid dtype types are np.bool, np.float64, np.int64, and np.str</p></li>
+<li><p><strong>series</strong> (<em>pd.Series</em>) – The pandas Series to convert.</p></li>
+<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a><em>, </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em><em>, </em><em>optional</em>) – <p>Optional dtype override. This may be a Python type (e.g. <code class="docutils literal notranslate"><span class="pre">bool</span></code>),
+a NumPy scalar type (e.g. <code class="docutils literal notranslate"><span class="pre">np.int64</span></code>), or a dtype string.</p>
+<p>String-like spellings are normalized to Arkouda string dtype, including:
+<code class="docutils literal notranslate"><span class="pre">&quot;object&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;str&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;string[python]&quot;</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">&quot;string[pyarrow]&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> for numeric/bool/datetime/timedelta inputs, or an
+Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> for string inputs.</p>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if the dtype cannot be interpreted or is unsupported for conversion.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">)))</span>
-<span class="go">array([4 3 3 5 0])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">]),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<p># ints
+&gt;&gt;&gt; np.random.seed(1701)
+&gt;&gt;&gt; ak.from_series(pd.Series(np.random.randint(0, 10, 5)))
+array([4 3 3 5 0])</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
 <span class="go">array([1 2 3 4 5])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1701</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">)))</span>
-<span class="go">array([0.089433234324597599 0.1153776854774361 0.51874393620990389])</span>
+<p># floats
+&gt;&gt;&gt; np.random.seed(1701)
+&gt;&gt;&gt; ak.from_series(pd.Series(np.random.uniform(low=0.0, high=1.0, size=3)))
+array([0.089433234324597599 0.1153776854774361 0.51874393620990389])</p>
+<p># bools
+&gt;&gt;&gt; np.random.seed(1864)
+&gt;&gt;&gt; ak.from_series(pd.Series(np.random.choice([True, False], size=5)))
+array([True True True False False])</p>
+<p># strings: pandas dtype spellings normalized to Arkouda Strings
+&gt;&gt;&gt; ak.from_series(pd.Series([‘a’, ‘b’, ‘c’, ‘d’, ‘e’], dtype=”string”))
+array([‘a’, ‘b’, ‘c’, ‘d’, ‘e’])</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string[pyarrow]&quot;</span><span class="p">))</span>
+<span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span>
-<span class="gp">... </span>        <span class="s1">&#39;0.57600036956445599&#39;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="s1">&#39;0.41619265571741659&#39;</span><span class="p">,</span>
-<span class="gp">... </span>        <span class="s1">&#39;0.6615356693784662&#39;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="p">]),</span>
-<span class="gp">... </span>    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="go">array([0.57600036956445599 0.41619265571741659 0.6615356693784662])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1864</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span><span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)))</span>
-<span class="go">array([True True True False False])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="s1">&#39;True&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-<span class="go">array([True True True True True])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">))</span>
-<span class="go">array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">from_series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s1">&#39;1/1/2018&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="s1">&#39;2018-01-01&#39;</span><span class="p">)])))</span>
-<span class="go">array([1514764800000000000 1514764800000000000])</span>
-</pre></div>
-</div>
+<p># datetime: any resolution is accepted, returned as int64 nanoseconds
+&gt;&gt;&gt; ak.from_series(pd.Series(pd.to_datetime([‘1/1/2018’, np.datetime64(‘2018-01-01’)])))
+array([1514764800000000000 1514764800000000000])</p>
 <p class="rubric">Notes</p>
-<p>The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
-data type is either inferred from the the Series or is set via the dtype parameter.</p>
-<p>Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)</p>
-<p>A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-contains strings and sets the dtype to str</p>
+<ul class="simple">
+<li><p>Datetime and timedelta Series are converted to <code class="docutils literal notranslate"><span class="pre">int64</span></code> nanoseconds.</p></li>
+<li><p>String-like pandas dtypes (including <code class="docutils literal notranslate"><span class="pre">object</span></code>) are treated as string and
+converted to Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code>.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py function">

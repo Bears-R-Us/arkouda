@@ -495,48 +495,273 @@
         <span class="c1"># If scalars is already a numpy array, we can preserve its dtype</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve one or more values using a pandas/NumPy-style indexer.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : Any</span>
+<span class="sd">            A valid indexer for 1D array-like data. This may be:</span>
+<span class="sd">            - A scalar integer position (e.g. ``1``)</span>
+<span class="sd">            - A Python ``slice`` (e.g. ``1:3``)</span>
+<span class="sd">            - A list-like of integer positions</span>
+<span class="sd">            - A boolean mask (NumPy array, pandas Series, or Arkouda ``pdarray``)</span>
+<span class="sd">            - A NumPy array, pandas Index/Series, or Arkouda ``pdarray``/``Strings``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Any</span>
+<span class="sd">            A scalar value for scalar indexers, or an ``ArkoudaArray`` for sequence-like</span>
+<span class="sd">            indexers.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If ``key`` is not a supported indexer type, or if a NumPy array or</span>
+<span class="sd">            list-like indexer has an unsupported dtype.</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            If a list-like indexer contains mixed element dtypes (e.g. a mixture</span>
+<span class="sd">            of booleans and integers), which is not supported.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
+<span class="sd">        &gt;&gt;&gt; data = ak.arange(5)</span>
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(data)</span>
+
+<span class="sd">        Scalar integer index returns a Python scalar:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr[1]</span>
+<span class="sd">        np.int64(1)</span>
+
+<span class="sd">        Slicing returns another ArkoudaArray:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr[1:4]</span>
+<span class="sd">        ArkoudaArray([1 2 3])</span>
+
+<span class="sd">        List-like integer positions:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr[[0, 2, 4]]</span>
+<span class="sd">        ArkoudaArray([0 2 4])</span>
+
+<span class="sd">        Boolean mask (NumPy array):</span>
+
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; mask = np.array([True, False, True, False, True])</span>
+<span class="sd">        &gt;&gt;&gt; arr[mask]</span>
+<span class="sd">        ArkoudaArray([0 2 4])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
-        <span class="c1"># Convert numpy boolean mask to arkouda pdarray</span>
+        <span class="c1"># Normalize NumPy ndarray indexers</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;i&quot;</span><span class="p">}:</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;u&quot;</span><span class="p">}:</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">):</span>
                 <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;uint64&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported numpy index type </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported NumPy index type </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Normalize Python lists</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Empty selection -&gt; empty ArkoudaArray of same dtype</span>
+                <span class="n">empty</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">empty</span><span class="p">)</span>
+
+            <span class="n">first</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">first_dtype</span> <span class="o">=</span> <span class="n">ak_dtype</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">item_dtype</span> <span class="o">=</span> <span class="n">ak_dtype</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">first_dtype</span> <span class="o">!=</span> <span class="n">item_dtype</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Mixed dtypes are not supported: </span><span class="si">{</span><span class="n">item_dtype</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">first_dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">result</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported list index type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Perform the indexing operation</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Scalar key → return Python scalar</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="c1"># If server returned a pdarray of length 1, extract scalar</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="c1"># All other cases → wrap result in same class</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
-    <span class="c1">#   TODO:  Simplify to use underlying array setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_supported_int</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign one or more values to the underlying Arkouda array in-place.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : Any</span>
+<span class="sd">            A positional indexer selecting the locations to modify. Supported forms include:</span>
+
+<span class="sd">            - Scalar integer position (e.g. ``arr[3] = ...``)</span>
+<span class="sd">            - Slice (e.g. ``arr[1:4] = ...``)</span>
+<span class="sd">            - Boolean mask (NumPy ``ndarray`` of bools, or Python ``list`` of bools)</span>
+<span class="sd">            - Integer indexer (NumPy ``ndarray`` of integers, Python ``list`` of ints)</span>
+<span class="sd">            - Arkouda ``pdarray`` indexer (integer index array or boolean mask)</span>
+
+<span class="sd">            For Python ``list`` indexers, all elements must be of a single supported type:</span>
+<span class="sd">            all-bool or all-int. Mixed bool/int lists are rejected. Boolean-mask lists</span>
+<span class="sd">            must have length equal to ``len(self)``.</span>
+
+<span class="sd">        value : Any</span>
+<span class="sd">            The value(s) to assign.</span>
+
+<span class="sd">            - If a scalar (NumPy scalar or Python scalar), it is broadcast to all selected</span>
+<span class="sd">              positions.</span>
+<span class="sd">            - If an ``ArkoudaArray`` or Arkouda ``pdarray``, it is assigned directly.</span>
+<span class="sd">            - Otherwise, array-like inputs (e.g. Python lists, NumPy arrays) are converted</span>
+<span class="sd">              to an Arkouda ``pdarray`` and must be aligned with ``key``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If a Python list indexer contains unsupported element types.</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            If a Python list indexer mixes boolean and integer elements.</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            If a Python list boolean mask has length different from ``len(self)``.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This operation mutates the underlying server-side array in-place.</span>
+
+<span class="sd">        Empty indexers (e.g. an empty Python list, or an empty NumPy integer indexer</span>
+<span class="sd">        after normalization) are treated as a no-op.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Basic scalar assignment by position:</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.arange(5))</span>
+<span class="sd">        &gt;&gt;&gt; arr[0] = 42</span>
+<span class="sd">        &gt;&gt;&gt; arr</span>
+<span class="sd">        ArkoudaArray([42 1 2 3 4])</span>
+
+<span class="sd">        Assigning with a Python list of integer positions:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.arange(5))</span>
+<span class="sd">        &gt;&gt;&gt; arr[[1, 3]] = 99</span>
+<span class="sd">        &gt;&gt;&gt; arr</span>
+<span class="sd">        ArkoudaArray([0 99 2 99 4])</span>
+
+<span class="sd">        Assigning with a NumPy boolean mask:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.arange(5))</span>
+<span class="sd">        &gt;&gt;&gt; mask = arr.to_ndarray() % 2 == 0</span>
+<span class="sd">        &gt;&gt;&gt; arr[mask] = -1</span>
+<span class="sd">        &gt;&gt;&gt; arr</span>
+<span class="sd">        ArkoudaArray([-1 1 -1 3 -1])</span>
+
+<span class="sd">        Assigning with a NumPy integer indexer:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.arange(5))</span>
+<span class="sd">        &gt;&gt;&gt; idx = np.array([1, 3], dtype=np.int64)</span>
+<span class="sd">        &gt;&gt;&gt; arr[idx] = 7</span>
+<span class="sd">        &gt;&gt;&gt; arr</span>
+<span class="sd">        ArkoudaArray([0 7 2 7 4])</span>
+
+<span class="sd">        Assigning from another ArkoudaArray:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.arange(5))</span>
+<span class="sd">        &gt;&gt;&gt; other = ArkoudaArray(ak.arange(10, 15))</span>
+<span class="sd">        &gt;&gt;&gt; idx = [1, 3, 4]</span>
+<span class="sd">        &gt;&gt;&gt; arr[idx] = other[idx]</span>
+<span class="sd">        &gt;&gt;&gt; arr</span>
+<span class="sd">        ArkoudaArray([0 11 2 13 14])</span>
+
+<span class="sd">        Python list boolean masks must match the array length:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaArray(ak.arange(5))</span>
+<span class="sd">        &gt;&gt;&gt; arr[[True, False, True]] = 0</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        IndexError: Boolean indexer has wrong length: 3 instead of 5</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
-        <span class="c1"># Convert numpy mask to pdarray if necessary</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="c1"># empty list =&gt; noop</span>
+
+            <span class="c1"># validate element types + detect mixed</span>
+            <span class="n">has_bool</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">has_int</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+                    <span class="n">has_bool</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+                    <span class="n">has_int</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s2">&quot;Only lists of ints or bools are supported for __setitem__ indexers.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">has_bool</span> <span class="ow">and</span> <span class="n">has_int</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Mixed index list dtypes (bool + int) are not supported.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">has_bool</span><span class="p">:</span>
+                <span class="c1"># boolean mask must match array length</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Boolean indexer has wrong length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+        <span class="c1"># Normalize NumPy / Python indexers into Arkouda pdarrays where needed</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="c1"># NumPy bool mask or integer indexer</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># Python list of bools or ints - convert to NumPy then to pdarray</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">_is_empty_indexer</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="c1"># Setting nothing is a no-op, consistent with numpy/pandas</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Normalize the value into something the underlying pdarray understands</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ArkoudaArray</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">_data</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="c1"># already an Arkouda pdarray; nothing to do</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)):</span>  <span class="c1"># Add scalar check</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>  <span class="c1"># assign scalar to scalar position</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="c1"># Fast path for scalar assignment</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Convert generic array-likes (Python lists, NumPy arrays, etc.)</span>
+            <span class="c1"># into Arkouda pdarrays.</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -836,6 +1061,32 @@
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">any</span><span class="p">())</span></div>
 </div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_empty_indexer</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
+
+    <span class="c1"># Python containers</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="c1"># NumPy arrays</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="c1"># Arkouda arrays</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="c1"># Pandas Index/Series often implement __len__ and are safe here,</span>
+    <span class="c1"># but we keep it conservative (optional):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
         </article>
       </div>

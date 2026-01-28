@@ -379,7 +379,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_extension_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
@@ -444,6 +445,134 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve one or more categorical values.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : Any</span>
+<span class="sd">            Location(s) to retrieve. Supported forms include:</span>
+
+<span class="sd">            * scalar integer index</span>
+<span class="sd">            * slice objects (e.g. ``1:3``)</span>
+<span class="sd">            * NumPy integer array (any integer dtype)</span>
+<span class="sd">            * NumPy boolean mask with the same length as the array</span>
+<span class="sd">            * Python list of integers or booleans</span>
+<span class="sd">            * Arkouda ``pdarray`` of integers or booleans</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Any</span>
+<span class="sd">            A Python scalar for scalar access, or a new</span>
+<span class="sd">            :class:`ArkoudaCategoricalArray` for non-scalar indexers.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If a NumPy indexer with an unsupported dtype is provided.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaCategoricalArray</span>
+<span class="sd">        &gt;&gt;&gt; data = ak.Categorical(ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]))</span>
+<span class="sd">        &gt;&gt;&gt; arr = ArkoudaCategoricalArray(data)</span>
+
+<span class="sd">        Scalar access returns a Python string-like scalar:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr[1]</span>
+<span class="sd">        np.str_(&#39;b&#39;)</span>
+
+<span class="sd">        Negative indexing:</span>
+
+<span class="sd">        &gt;&gt;&gt; arr[-1]</span>
+<span class="sd">        np.str_(&#39;d&#39;)</span>
+
+<span class="sd">        Slice indexing returns a new ArkoudaCategoricalArray:</span>
+
+<span class="sd">        &gt;&gt;&gt; result = arr[1:3]</span>
+<span class="sd">        &gt;&gt;&gt; type(result)</span>
+<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategoricalArray&#39;&gt;</span>
+
+<span class="sd">        NumPy integer array indexing:</span>
+
+<span class="sd">        &gt;&gt;&gt; idx = np.array([0, 2], dtype=np.int64)</span>
+<span class="sd">        &gt;&gt;&gt; sliced = arr[idx]</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(sliced, ArkoudaCategoricalArray)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        NumPy boolean mask:</span>
+
+<span class="sd">        &gt;&gt;&gt; mask = np.array([True, False, True, False])</span>
+<span class="sd">        &gt;&gt;&gt; masked = arr[mask]</span>
+<span class="sd">        &gt;&gt;&gt; isinstance(masked, ArkoudaCategoricalArray)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        Empty integer indexer returns an empty ArkoudaCategoricalArray:</span>
+
+<span class="sd">        &gt;&gt;&gt; empty_idx = np.array([], dtype=np.int64)</span>
+<span class="sd">        &gt;&gt;&gt; empty = arr[empty_idx]</span>
+<span class="sd">        &gt;&gt;&gt; len(empty)</span>
+<span class="sd">        0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+
+        <span class="c1"># Handle empty indexer (list / tuple / ndarray of length 0)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">empty_strings</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;str_&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">Categorical</span><span class="p">(</span><span class="n">empty_strings</span><span class="p">))</span>
+
+        <span class="c1"># Scalar integers and slices: delegate directly to the underlying Categorical</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="c1"># For scalar keys, just return the underlying scalar</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="n">result</span>
+            <span class="c1"># For slices, underlying arkouda.Categorical returns a Categorical</span>
+            <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="c1"># NumPy array indexers: normalize to Arkouda pdarrays</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">signedinteger</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;uint64&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported numpy index type </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+            <span class="c1"># Convert generic indexers (e.g. Python lists of ints/bools) to an Arkouda pdarray</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># Delegate to underlying arkouda.Categorical</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Scalar result: just return the underlying scalar</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># Categorical.__getitem__ will generally still give a Categorical here;</span>
+            <span class="c1"># we normalize to a Python scalar by going through categories[codes].</span>
+
+            <span class="n">codes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">codes</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="k">else</span> <span class="n">result</span>
+            <span class="n">cats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">categories</span>
+            <span class="c1"># codes is length-1, so this is length-1 Strings</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">cats</span><span class="p">[</span><span class="n">codes</span><span class="p">]</span>
+            <span class="c1"># Return a Python scalar string</span>
+            <span class="k">return</span> <span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Non-scalar: wrap Categorical in ArkoudaCategoricalArray</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="c1"># Fallback: if Categorical returned something array-like but not Categorical,</span>
+        <span class="c1"># rebuild a Categorical from it.</span>
+        <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">Categorical</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_sequence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">array</span>
@@ -452,11 +581,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="n">scalars</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">scalars</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
 
 <div class="viewcode-block" id="ArkoudaCategoricalArray.astype">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray.astype">[docs]</a>
@@ -467,7 +591,9 @@
 <div class="viewcode-block" id="ArkoudaCategoricalArray.isna">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray.isna">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">ak</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span></div>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+
+        <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bool_</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>

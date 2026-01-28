@@ -17,66 +17,71 @@ Module Contents
 
 .. py:function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
-   Converts a Pandas Series to an Arkouda pdarray or Strings object. If
-   dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
-   the dtype parameter is set if the dtype of the Pandas Series is to be
-   overridden or is  unknown (for example, in situations where the Series
-   dtype is object).
+   Convert a pandas ``Series`` to an Arkouda ``pdarray`` or ``Strings``.
 
-   :param series: The Pandas Series with a dtype of bool, float64, int64, or string
+   If ``dtype`` is not provided, the dtype is inferred from the pandas
+   ``Series`` (using pandas' dtype metadata). If ``dtype`` is provided, it
+   is used as an override and normalized via Arkouda's dtype resolution rules.
+
+   In addition to the core numeric/bool types, this function supports
+   datetime and timedelta Series of **any** resolution (``ns``, ``us``, ``ms``,
+   etc.) by converting them to an ``int64`` pdarray of nanoseconds.
+
+   :param series: The pandas Series to convert.
    :type series: pd.Series
-   :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
-   :type dtype: Optional[Union[type, str]]
+   :param dtype: Optional dtype override. This may be a Python type (e.g. ``bool``),
+                 a NumPy scalar type (e.g. ``np.int64``), or a dtype string.
 
+                 String-like spellings are normalized to Arkouda string dtype, including:
+                 ``"object"``, ``"str"``, ``"string"``, ``"string[python]"``,
+                 and ``"string[pyarrow]"``.
+   :type dtype: Optional[Union[type, str]], optional
+
+   :returns: An Arkouda ``pdarray`` for numeric/bool/datetime/timedelta inputs, or an
+             Arkouda ``Strings`` for string inputs.
    :rtype: Union[pdarray, Strings]
 
-   :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
+   :raises ValueError: Raised if the dtype cannot be interpreted or is unsupported for conversion.
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
+   >>> import numpy as np
+   >>> import pandas as pd
+
+   # ints
    >>> np.random.seed(1701)
-   >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
+   >>> ak.from_series(pd.Series(np.random.randint(0, 10, 5)))
    array([4 3 3 5 0])
 
-   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
+   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']), dtype=np.int64)
    array([1 2 3 4 5])
 
+   # floats
    >>> np.random.seed(1701)
-   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
+   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0, high=1.0, size=3)))
    array([0.089433234324597599 0.1153776854774361 0.51874393620990389])
 
-   >>> ak.from_series(
-   ...     pd.Series([
-   ...         '0.57600036956445599',
-   ...         '0.41619265571741659',
-   ...         '0.6615356693784662',
-   ...     ]),
-   ...     dtype=np.float64,
-   ... )
-   array([0.57600036956445599 0.41619265571741659 0.6615356693784662])
-
+   # bools
    >>> np.random.seed(1864)
-   >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
+   >>> ak.from_series(pd.Series(np.random.choice([True, False], size=5)))
    array([True True True False False])
 
-   >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=bool)
-   array([True True True True True])
-
+   # strings: pandas dtype spellings normalized to Arkouda Strings
    >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
    array(['a', 'b', 'c', 'd', 'e'])
 
+   >>> ak.from_series(pd.Series(['a', 'b', 'c'], dtype="string[pyarrow]"))
+   array(['a', 'b', 'c'])
+
+   # datetime: any resolution is accepted, returned as int64 nanoseconds
    >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
    array([1514764800000000000 1514764800000000000])
 
    .. rubric:: Notes
 
-   The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
-   data type is either inferred from the the Series or is set via the dtype parameter.
-
-   Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
-
-   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-   contains strings and sets the dtype to str
+   - Datetime and timedelta Series are converted to ``int64`` nanoseconds.
+   - String-like pandas dtypes (including ``object``) are treated as string and
+     converted to Arkouda ``Strings``.
 
 
