@@ -795,15 +795,12 @@ class Index:
         Examples
         --------
         >>> import arkouda as ak
-        >>> import pandas as pd
+        >>> import pandas
         >>> idx = ak.Index(ak.array([1,2,3]))
         >>> pidx = idx.to_pandas()
         >>> pidx.dtype
         dtype('<i8')
         """
-        import numpy as np
-        import pandas as pd
-
         from arkouda.pandas.categorical import Categorical
 
         def _materialize(values):
@@ -836,7 +833,7 @@ class Index:
         if kind in ("b", "i", "u", "f", "c", "M", "m"):
             return pd.Index(val, dtype=dtype, name=self.name)
 
-        # 3) Fallback: let pandas decide (covers unusual/extension-ish cases).
+        # 4) Fallback: let pandas decide (covers unusual/extension-ish cases).
         return pd.Index(val, name=self.name)
 
     def to_ndarray(self):
