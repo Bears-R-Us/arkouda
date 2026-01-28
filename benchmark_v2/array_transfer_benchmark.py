@@ -26,7 +26,7 @@ def bench_array_transfer_to_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
         n = pytest.prob_size  # use the per-locale problem size, not N
         a, num_bytes = create_ak_array(n, dtype)
-        ak.client.maxTransferBytes = num_bytes
+        ak.core.client.maxTransferBytes = num_bytes
 
         def setup():
             gc.collect()
@@ -59,7 +59,7 @@ def bench_array_transfer_from_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
         n = pytest.prob_size  # use the per-locale problem size, not N
         a, num_bytes = create_ak_array(n, dtype)
-        ak.client.maxTransferBytes = num_bytes
+        ak.core.client.maxTransferBytes = num_bytes
         npa = a.to_ndarray()
 
         def setup():

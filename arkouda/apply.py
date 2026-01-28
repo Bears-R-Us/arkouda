@@ -47,7 +47,7 @@ Notes
 See Also
 --------
 - arkouda.pdarray
-- arkouda.client.generic_msg
+- arkouda.core.client.generic_msg
 
 """
 
@@ -61,7 +61,7 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.client import get_config
+from arkouda.core.client import get_config
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import parse_single_value, pdarray
 
@@ -135,7 +135,7 @@ def apply(
     array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray
 
     if getattr(apply, "is_apply_supported", None) is None:
