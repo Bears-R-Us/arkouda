@@ -3,7 +3,7 @@ import numpy.random as np_random
 
 from typeguard import typechecked
 
-from arkouda.client import get_registration_config
+from arkouda.core.client import get_registration_config
 from arkouda.numpy.dtypes import (
     _val_isinstance_of_union,
     dtype_for_chapel,
@@ -101,7 +101,7 @@ class Generator:
         pdarray, numeric_scalar
             A pdarray containing the sampled values or a single random value if size not provided.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if size is None:
             ret_scalar = True
@@ -214,7 +214,7 @@ class Generator:
         pdarray
             Drawn samples from the standard exponential distribution.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
@@ -282,7 +282,7 @@ class Generator:
         array([4 2 5 5 3 5 5 2 2 2])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
 
         # normalize dtype so things like "int" will work
@@ -324,7 +324,7 @@ class Generator:
     #   the event of reseeding the global Generator repeatedly.
 
     def destructor(self):
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         for chapel_dt in get_registration_config()["parameter_classes"]["array"]["dtype"]:
             if chapel_dt not in _supported_chapel_types:
@@ -386,7 +386,7 @@ class Generator:
         >>> ak.random.default_rng(17).logistic(3, 2.5, 3)
         array([1.1319566682702642 -7.1665150633720014 7.7208667145173608])
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if size is None:
             # delegate to numpy when return size is 1
@@ -606,7 +606,7 @@ class Generator:
         array([0.016990291286171716 0.21612542775489499 0.49600147238356695])
 
         """  # noqa: W605
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
@@ -674,7 +674,7 @@ class Generator:
         array([0.53011556044134911 -0.30288808691027669 -1.1620170409701138])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
@@ -778,7 +778,7 @@ class Generator:
         >>> pda
         array([6 1 7 3 4 9 2 0 5 8])
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if not isinstance(x, pdarray):
             raise TypeError("shuffle only accepts a pdarray.")
@@ -858,7 +858,7 @@ class Generator:
         TypeError
             Raised if x is not of type int or pdarray.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if _val_isinstance_of_union(x, int_scalars):
             is_domain_perm = True
@@ -940,7 +940,7 @@ class Generator:
         array([1 2 3 2 5])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy import cast as akcast
         from arkouda.numpy.pdarraycreation import array as akarray
         from arkouda.numpy.util import _infer_shape_from_size, broadcast_to
@@ -1036,7 +1036,7 @@ class Generator:
         array([0.61194234944049319 0.43917496008973922 0.45079237944191908])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.util import _infer_shape_from_size
 
         if size is None:
@@ -1094,7 +1094,7 @@ class Generator:
         It dispatches to a server-side kernel that generates values
         independently for each global index.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if x.ndim != 1:
             raise ValueError("Only 1 dimensional arrays supported.")
@@ -1193,7 +1193,7 @@ class Generator:
         This method performs all computation server-side and guarantees
         reproducibility independent of locale count or execution order.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if x.ndim != 1:
             raise ValueError("Only 1 dimensional arrays supported.")
@@ -1274,7 +1274,7 @@ def default_rng(seed=None):
     Generator
         The initialized generator object.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(seed, Generator):
         # Pass through the generator

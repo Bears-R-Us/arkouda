@@ -37,6 +37,32 @@ from ._version import get_versions
 __version__ = get_versions()["version"]
 del get_versions
 
+from arkouda.core.logger import LogLevel, disableVerbose, enableVerbose, disable_verbose, enable_verbose, write_log
+
+from arkouda.core.client import (
+    connect,
+    disconnect,
+    generate_history,
+    get_config,
+    get_max_array_rank,
+    get_mem_avail,
+    get_mem_status,
+    get_mem_used,
+    get_server_commands,
+    print_server_commands,
+    ruok,
+    shutdown,
+)
+
+from arkouda.core.infoclass import (
+    AllSymbols,
+    RegisteredSymbols,
+    information,
+    list_registry,
+    list_symbol_table,
+    pretty_print_information,
+)
+
 from arkouda.numpy import (
     ARKOUDA_SUPPORTED_DTYPES,
     ARKOUDA_SUPPORTED_INTS,
@@ -387,32 +413,11 @@ from arkouda.pandas import (
     ArkoudaFloat64Dtype,
     ArkoudaArrayLike,
 )
-from arkouda.client import (
-    connect,
-    disconnect,
-    generate_history,
-    get_config,
-    get_max_array_rank,
-    get_mem_avail,
-    get_mem_status,
-    get_mem_used,
-    get_server_commands,
-    print_server_commands,
-    ruok,
-    shutdown,
-)
+
 from arkouda.client_dtypes import BitVector, bit_vectorizer, BitVectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
 from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, broadcast, groupable, unique
 from arkouda.categorical import Categorical
-from arkouda.logger import LogLevel, disableVerbose, enableVerbose, disable_verbose, enable_verbose, write_log
-from arkouda.infoclass import (
-    AllSymbols,
-    RegisteredSymbols,
-    information,
-    list_registry,
-    list_symbol_table,
-    pretty_print_information,
-)
+
 from arkouda.dataframe import (
     DataFrame,
     DataFrameGroupBy,

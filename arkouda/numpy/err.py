@@ -62,7 +62,7 @@ import warnings
 
 from typing import Callable, Dict, Iterator, Literal, Optional
 
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.logger import get_arkouda_logger
 
 
 __all__ = [

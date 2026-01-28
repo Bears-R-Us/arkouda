@@ -210,7 +210,7 @@ class BitVector(pdarray):
             Human-readable string showing formatted bit vectors.
 
         """
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.core.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
             vals = [self.format(self.values[i]) for i in range(self.size)]
@@ -384,7 +384,7 @@ class BitVector(pdarray):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -766,7 +766,7 @@ class IPv4(pdarray):
             Human-readable string showing IP addresses.
 
         """
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.core.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
             vals = [self.format(self.values[i]) for i in range(self.size)]
@@ -925,7 +925,7 @@ class IPv4(pdarray):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -948,7 +948,7 @@ class IPv4(pdarray):
         file_type: Literal["single", "distribute"] = "distribute",
     ):
         """Override of the pdarray to_hdf to store the special object type."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return (
@@ -968,7 +968,7 @@ class IPv4(pdarray):
 
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
         """Override the pdarray implementation so that the special object type will be used."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,

@@ -204,7 +204,7 @@ class Array:
             extract_chunk(
                 cast(
                     str,
-                    ak.client.generic_msg(
+                    ak.core.client.generic_msg(
                         cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>",
                         args={"array": self._array},
                     ),

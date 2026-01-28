@@ -150,7 +150,7 @@ def randint(
     >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
     array([False, True, True, True, True, False, True, True, True, True])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):
@@ -258,7 +258,7 @@ def standard_normal(
     >>> ak.standard_normal(3,1)
     array([-0.68586185091150265, 1.1723810583573375, 0.5675841071420...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     shape: Union[int_scalars, Tuple[int_scalars, ...]] = 1
     if isinstance(size, tuple):

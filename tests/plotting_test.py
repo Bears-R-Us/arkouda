@@ -132,11 +132,11 @@ class TestPlotting:
         # Make sure arrays would normally be well under the limit:
         nbytes_edges = edges.size * edges.to_ndarray().dtype.itemsize
         nbytes_counts = counts.size * counts.to_ndarray().dtype.itemsize
-        assert nbytes_edges < ak.client.maxTransferBytes
-        assert nbytes_counts < ak.client.maxTransferBytes
+        assert nbytes_edges < ak.core.client.maxTransferBytes
+        assert nbytes_counts < ak.core.client.maxTransferBytes
 
         # Patch maxTransferBytes to 1 to guarantee failure
-        monkeypatch.setattr(ak.client, "maxTransferBytes", 1, raising=False)
+        monkeypatch.setattr(ak.core.client, "maxTransferBytes", 1, raising=False)
 
         with pytest.raises(ValueError):
             plot_dist(edges, counts)

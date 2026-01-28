@@ -64,7 +64,7 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.logger import ArkoudaLogger, get_arkouda_logger
+from arkouda.core.logger import ArkoudaLogger, get_arkouda_logger
 from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint, float_scalars, int_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -165,7 +165,7 @@ def unique(
     array([1 2 3])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.pandas.categorical import Categorical as Categorical_
 
     if not return_groups and hasattr(pda, "unique"):
@@ -500,7 +500,7 @@ class GroupBy:
         GroupBy is not currently supported by Parquet
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -571,7 +571,7 @@ class GroupBy:
             If the file type cannot be determined or required metadata is missing.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -663,7 +663,7 @@ class GroupBy:
         array([2 3 1 4])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="sizeReduction",
@@ -767,7 +767,7 @@ class GroupBy:
          array([-1.00000000000000000 -0.5 0.00000000000000000 0.5 1.00000000000000000]))
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         operator = operator.lower()
         if operator not in self.Reductions:
@@ -1714,7 +1714,7 @@ class GroupBy:
         array([0 -6 -2 -8 -4 -10])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="segmentedReduction",
@@ -1796,7 +1796,7 @@ class GroupBy:
         array([-12 -18 -8 -14 -10 -16])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="segmentedReduction",
@@ -1947,7 +1947,7 @@ class GroupBy:
             Otherwise, return the sample values.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import round as akround
         from arkouda.numpy.pdarraycreation import full
@@ -2175,7 +2175,7 @@ class GroupBy:
         array([True False False True True False True True False True])
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.pdarraycreation import arange
         from arkouda.numpy.strings import Strings
 
@@ -2297,7 +2297,7 @@ class GroupBy:
 
         """
         from arkouda import Categorical
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         if self.registered_name is not None and self.is_registered():
@@ -2488,7 +2488,7 @@ def broadcast(
     array([2 2 1 1 1 0 0])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import arange
     from arkouda.numpy.strings import Strings
 

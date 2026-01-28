@@ -918,7 +918,7 @@ class Index:
         if isinstance(self.values, list):
             raise TypeError("Index cannot be registered when values are list type.")
 
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -1339,7 +1339,7 @@ class Index:
         determine the file format.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -1422,7 +1422,7 @@ class Index:
           file with the new data
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import (
             _file_type_to_int,
@@ -2013,7 +2013,7 @@ class MultiIndex(Index):
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical
 
         if self.registered_name is not None and self.is_registered():
@@ -2327,7 +2327,7 @@ class MultiIndex(Index):
         determine the file format.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
@@ -2402,7 +2402,7 @@ class MultiIndex(Index):
           file with the new data
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import (
             _file_type_to_int,

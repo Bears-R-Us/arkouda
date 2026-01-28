@@ -25,7 +25,7 @@ def bench_array_transfer_to_ndarray(benchmark, dtype):
         N = pytest.N
         a = create_ak_array(N, dtype)
         num_bytes = calc_num_bytes(a)
-        ak.client.maxTransferBytes = num_bytes
+        ak.core.client.maxTransferBytes = num_bytes
 
         def to_nd():
             a.to_ndarray()
@@ -47,7 +47,7 @@ def bench_array_transfer_from_ndarray(benchmark, dtype):
         N = pytest.N
         a = create_ak_array(N, dtype)
         num_bytes = calc_num_bytes(a)
-        ak.client.maxTransferBytes = num_bytes
+        ak.core.client.maxTransferBytes = num_bytes
         npa = a.to_ndarray()
 
         def from_np():

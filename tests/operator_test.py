@@ -844,7 +844,7 @@ class TestOperator:
             ak.concatenate([ak.ones(100), ak.array([True])])
 
     def test_str_repr(self):
-        ak.client.pdarrayIterThresh = 5
+        ak.core.client.pdarrayIterThresh = 5
         assert "[1 2 3]" == ak.array([1, 2, 3]).__str__()
         assert "[1 2 3 ... 17 18 19]" == ak.arange(1, 20).__str__()
 
@@ -885,7 +885,7 @@ class TestOperator:
         )
 
         # Don't forget to set this back for other tests
-        ak.client.pdarrayIterThresh = ak.client.pdarrayIterThreshDefVal
+        ak.core.client.pdarrayIterThresh = ak.core.client.pdarrayIterThreshDefVal
 
     def test_bigint_binops(self):
         # test bigint array with max_bits=64 against an equivalent uint64

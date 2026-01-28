@@ -126,7 +126,7 @@ def information(names: Union[List[str], str] = RegisteredSymbols) -> str:
         retrieving information about the objects in names
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(names, str):
         if names in [AllSymbols, RegisteredSymbols]:
@@ -157,7 +157,7 @@ def list_registry(detailed: bool = False):
         Raised if there's a server-side error thrown
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     data = json.loads(cast(str, generic_msg(cmd="list_registry")))
     objs = json.loads(data["Objects"]) if data["Objects"] != "" else []
