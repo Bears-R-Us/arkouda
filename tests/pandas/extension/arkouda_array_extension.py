@@ -132,32 +132,6 @@ class TestArkoudaArrayExtension:
         with pytest.raises(TypeError):
             ArkoudaArray({"a": 1, "b": 2})
 
-    def test_getitem_scalar(self):
-        ak_data = ak.arange(10)
-        arr = ArkoudaArray(ak_data)
-        assert arr[1] == 1
-
-    def test_getitem_slice(self):
-        ak_data = ak.arange(10)
-        arr = ArkoudaArray(ak_data)
-        sub = arr[2:5]
-        assert isinstance(sub, ArkoudaArray)
-        assert sub.to_numpy().tolist() == [2, 3, 4]
-
-    def test_setitem_scalar(self):
-        ak_data = ak.arange(10)
-        arr = ArkoudaArray(ak_data[:])  # avoid modifying fixture
-        arr[1] = 42
-        assert arr[1] == 42
-
-    def test_setitem_array(self):
-        ak_data = ak.arange(10)
-        arr = ArkoudaArray(ak_data[:])
-        # arr[[0, 2]] = [99, 88]
-        arr[ak.array([0, 2])] = [99, 88]
-        assert arr[0] == 99
-        assert arr[2] == 88
-
     def test_len(self):
         ak_data = ak.arange(10)
         arr = ArkoudaArray(ak_data)
@@ -815,3 +789,278 @@ class TestArkoudaArrayReduce:
         arr = ArkoudaArray(ak.array([1.0, np.nan, 2.0]))
         # whichever semantics you currently implement, it should not error
         _ = arr._reduce("sum", skipna=skipna)
+
+
+class TestArkoudaArraySetitem:
+    def test_setitem_scalar_integer_position(self):
+        ak_data = ak.arange(10)
+        arr = ArkoudaArray(ak_data[:])
+        arr[1] = 42
+        assert arr[1] == 42
+
+    def test_setitem_arkouda_int_indexer(self):
+        ak_data = ak.arange(10)
+        arr = ArkoudaArray(ak_data[:])
+        arr[ak.array([0, 2])] = [99, 88]
+        assert arr[0] == 99
+        assert arr[2] == 88
+
+    def test_scalar_setitem_numpy_integer_indexer(self):
+        data = ak.arange(5)
+        arr = ArkoudaArray(data)
+
+        idx = np.array([1, 3], dtype=np.int64)
+        arr[idx] = 99
+
+        assert np.array_equal(
+            arr.to_ndarray(),
+            np.array([0, 99, 2, 99, 4]),
+        )
+
+    def test_scalar_setitem_numpy_boolean_mask(self):
+        data = ak.arange(5)
+        arr = ArkoudaArray(data)
+
+        mask = arr.to_ndarray() % 2 == 0  # True at positions 0, 2, 4
+        arr[mask] = -1
+
+        assert np.array_equal(
+            arr.to_ndarray(),
+            np.array([-1, 1, -1, 3, -1]),
+        )
+
+    def test_setitem_with_python_sequence_value(self):
+        data = ak.arange(5)
+        arr = ArkoudaArray(data)
+
+        idx = np.array([1, 3, 4], dtype=np.int64)
+        arr[idx] = [10, 20, 30]
+
+        assert np.array_equal(
+            arr.to_ndarray(),
+            np.array([0, 10, 2, 20, 30]),
+        )
+
+    def test_setitem_with_arkoudaarray_value(self):
+        data = ak.arange(5)
+        arr = ArkoudaArray(data)
+
+        other = ArkoudaArray(ak.arange(10, 15))
+        idx = np.array([1, 3, 4], dtype=np.int64)
+
+        arr[idx] = other[idx]
+
+        # other[idx] is [11, 13, 14]
+        assert np.array_equal(
+            arr.to_ndarray(),
+            np.array([0, 11, 2, 13, 14]),
+        )
+
+    def test_setitem_with_pdarray_value(self):
+        data = ak.arange(5)
+        arr = ArkoudaArray(data)
+
+        values = ak.arange(100, 105)  # pdarray
+        idx = np.array([0, 2, 4], dtype=np.int64)
+
+        arr[idx] = values[idx]
+
+        # values[idx] is [100, 102, 104]
+        assert np.array_equal(
+            arr.to_ndarray(),
+            np.array([100, 1, 102, 3, 104]),
+        )
+
+    def test_scalar_fast_path_does_not_wrap_pdarray(self):
+        """
+        A bit white-box: make sure scalar assignment works without requiring
+        array conversion for the value (no crash, correct result).
+        """
+        data = ak.arange(3)
+        arr = ArkoudaArray(data)
+
+        # This should go through the scalar fast path in __setitem__
+        arr[1] = 777
+
+        assert isinstance(arr._data, pdarray)
+        assert np.array_equal(
+            arr.to_ndarray(),
+            np.array([0, 777, 2]),
+        )
+
+    def test_setitem_empty_list_noop(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        before = arr.to_numpy().copy()
+
+        # setitem with empty list should do nothing
+        arr[[]] = 99
+
+        after = arr.to_numpy()
+
+        assert (after == before).all()
+
+    def test_setitem_python_list_of_ints_indexer(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        arr[[1, 3]] = 99
+
+        np.testing.assert_array_equal(arr.to_ndarray(), np.array([0, 99, 2, 99, 4]))
+
+    def test_setitem_python_list_of_bools_indexer(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        arr[[True, False, True, False, True]] = -1
+
+        np.testing.assert_array_equal(arr.to_ndarray(), np.array([-1, 1, -1, 3, -1]))
+
+    def test_setitem_numpy_uint64_indexer(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        idx = np.array([0, 4], dtype=np.uint64)
+        arr[idx] = 777
+
+        np.testing.assert_array_equal(arr.to_ndarray(), np.array([777, 1, 2, 3, 777]))
+
+    def test_setitem_rejects_unsupported_list_element_type(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        with pytest.raises(TypeError):
+            arr[["nope"]] = 1
+
+    def test_setitem_mixed_index_dtype_not_supported(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        # Mixed list: bool + int should be rejected (mirror getitem behavior)
+        with pytest.raises(NotImplementedError):
+            arr[[True, 1, 2]] = 9
+
+    def test_setitem_empty_numpy_int_indexer_noop(self):
+        arr = ArkoudaArray(ak.arange(5))
+        before = arr.to_ndarray().copy()
+
+        empty = np.array([], dtype=np.int64)
+        arr[empty] = 123  # should be a no-op
+
+        after = arr.to_ndarray()
+        np.testing.assert_array_equal(after, before)
+
+    def test_setitem_slice_scalar_value(self):
+        arr = ArkoudaArray(ak.arange(6))
+
+        # slices are currently allowed by __setitem__ (passed through to pdarray)
+        arr[2:5] = 9
+
+        np.testing.assert_array_equal(arr.to_ndarray(), np.array([0, 1, 9, 9, 9, 5]))
+
+
+class TestArkoudaArrayGetitem:
+    def _make_array(self):
+        # Small, simple fixture for all tests
+        data = ak.arange(5)  # array([0, 1, 2, 3, 4])
+        return ArkoudaArray(data)
+
+    def test_getitem_scalar(self):
+        ak_data = ak.arange(10)
+        arr = ArkoudaArray(ak_data)
+        assert arr[1] == 1
+
+    def test_getitem_slice(self):
+        ak_data = ak.arange(10)
+        arr = ArkoudaArray(ak_data)
+        sub = arr[2:5]
+        assert isinstance(sub, ArkoudaArray)
+        assert sub.to_numpy().tolist() == [2, 3, 4]
+
+    def test_getitem_scalar_returns_python_scalar(self):
+        arr = self._make_array()
+
+        result = arr[2]
+        # Should be a scalar, not an ArkoudaArray
+        assert not isinstance(result, ArkoudaArray)
+        assert isinstance(result, (int, np.integer))
+        assert result == 2
+
+        # Negative index also returns scalar
+        result_neg = arr[-1]
+        assert isinstance(result_neg, (int, np.integer))
+        assert result_neg == 4
+
+    def test_getitem_slice_returns_arkouda_array(self):
+        arr = self._make_array()
+
+        result = arr[1:4]
+        assert isinstance(result, ArkoudaArray)
+
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([1, 2, 3]))
+
+    def test_getitem_numpy_int_array_indexer(self):
+        arr = self._make_array()
+        idx = np.array([0, 3], dtype=np.int64)
+
+        result = arr[idx]
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([0, 3]))
+
+    def test_getitem_numpy_bool_array_indexer(self):
+        arr = self._make_array()
+        mask = np.array([True, False, True, False, True])
+
+        result = arr[mask]
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([0, 2, 4]))
+
+    def test_getitem_python_list_of_ints(self):
+        arr = self._make_array()
+
+        result = arr[[1, 4]]
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([1, 4]))
+
+    def test_getitem_python_list_of_bools(self):
+        arr = self._make_array()
+
+        result = arr[[True, False, True, False, True]]
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([0, 2, 4]))
+
+    def test_getitem_empty_list_returns_empty_array(self):
+        arr = self._make_array()
+
+        result = arr[[]]
+        assert isinstance(result, ArkoudaArray)
+        # Underlying pdarray should be empty
+        assert result._data.size == 0
+        # And round-trip to NumPy should be empty as well
+        assert result.to_ndarray().size == 0
+
+    def test_getitem_arkouda_int_indexer(self):
+        arr = self._make_array()
+        ak_idx = ak.array([4, 0, 2])
+
+        result = arr[ak_idx]
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([4, 0, 2]))
+
+    def test_getitem_rejects_unsupported_list_element_type(self):
+        arr = self._make_array()
+
+        with pytest.raises(TypeError):
+            _ = arr[["not", "ints", "or", "bools"]]
+
+    def test_getitem_numpy_unsigned_int_indexer(self):
+        arr = self._make_array()
+        idx = np.array([1, 3], dtype=np.uint64)
+
+        result = arr[idx]
+        assert isinstance(result, ArkoudaArray)
+        np.testing.assert_array_equal(result.to_ndarray(), np.array([1, 3]))
+
+    def test_mixed_index_dtype_not_supported(self):
+        arr = ArkoudaArray(ak.arange(5))
+
+        # Mixed list: bool + int → mixed dtypes
+        idx = [True, 1, 2, 0, 3]
+
+        with pytest.raises(NotImplementedError):
+            _ = arr[idx]
