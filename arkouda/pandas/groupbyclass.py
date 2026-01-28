@@ -59,6 +59,7 @@ from typing import (
     cast,
     no_type_check,
 )
+from typing import cast as type_cast
 
 import numpy as np
 
@@ -78,9 +79,15 @@ from arkouda.numpy.sorting import argsort, sort
 if TYPE_CHECKING:
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
+    from arkouda.pandas.typing import ArkoudaArrayLike
 else:
     Categorical = TypeVar("Categorical")
     Strings = TypeVar("Strings")
+
+    generic_msg = TypeVar("generic_msg")
+    Categorical = TypeVar("Categorical")
+    ArkoudaArrayLike = TypeVar("ArkoudaArrayLike")
+
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupable"]
 
@@ -1372,25 +1379,27 @@ class GroupBy:
         k, v = self.aggregate(values, "argmax")
         return k, cast(pdarray, v)
 
-    def _nested_grouping_helper(self, values: groupable) -> groupable:
+    def _nested_grouping_helper(self, values: groupable) -> List[ArkoudaArrayLike]:
         from arkouda.numpy.pdarraycreation import arange
+        from arkouda.pandas.categorical import Categorical
 
         unique_key_idx = self.broadcast(arange(self.ngroups), permute=True)
-        if hasattr(values, "_get_grouping_keys"):
-            # All single-array groupable types must have a _get_grouping_keys method
+
+        togroup: List[ArkoudaArrayLike] = [unique_key_idx]
+
+        # Single-array case
+        if isinstance(values, (pdarray, Strings, Categorical)):
             if isinstance(values, pdarray) and values.dtype == akfloat64:
                 raise TypeError("grouping/uniquing unsupported for float64 arrays")
-            togroup = [unique_key_idx, values]
-        else:
-            # Treat as a sequence of groupable arrays
-            for v in values:
-                if isinstance(v, pdarray) and v.dtype not in [
-                    akint64,
-                    akuint64,
-                    bigint,
-                ]:
-                    raise TypeError("grouping/uniquing unsupported for this dtype")
-            togroup = [unique_key_idx] + list(values)
+            togroup.append(values)
+            return togroup
+
+        # Sequence-of-arrays case
+        seq = type_cast(Sequence[ArkoudaArrayLike], values)
+        for v in seq:
+            if isinstance(v, pdarray) and v.dtype not in [akint64, akuint64, bigint]:
+                raise TypeError("grouping/uniquing unsupported for this dtype")
+        togroup.extend(seq)
         return togroup
 
     def nunique(self, values: groupable) -> Tuple[groupable, pdarray]:
@@ -1658,61 +1667,63 @@ class GroupBy:
         values: groupable_element_type,
         n: int = 5,
         return_indices: bool = True,
+        sort_index: bool = False,
     ) -> Tuple[groupable, groupable_element_type]:
         """
-        Return the first n values from each group.
+        Return the first ``n`` rows from each group.
+
+        This method selects the first ``n`` items from each group of the grouped
+        array(s). It can return either the row indices or the corresponding values.
+        Optionally, results can be globally sorted by their original index order
+        to match the behavior of ``pandas.DataFrameGroupBy.head``.
 
         Parameters
         ----------
-        values : (list of) pdarray-like
-            The values from which to select, according to their group membership.
-        n: int, optional, default = 5
-            Maximum number of items to return for each group.
-            If the number of values in a group is less than n,
-            all the values from that group will be returned.
-        return_indices: bool, default False
-            If True, return the indices of the sampled values.
-            Otherwise, return the selected values.
+        values : pdarray, Strings, or Categorical
+            The array or column values to select from, grouped according to this
+            ``GroupBy`` instance.
+        n : int, default 5
+            The number of rows to include from each group.
+            If a group has fewer than ``n`` rows, all of its rows are returned.
+        return_indices : bool, default True
+            If True, return the indices (positions) of the selected rows.
+            If False, return the actual values from ``values``.
+        sort_index : bool, default False
+            If True, sort the concatenated results by the original index of the
+            grouped data. If False, keep the group-concatenation order
+            (i.e., groups appear in key order, one after another).
 
         Returns
         -------
-        Tuple[groupable, groupable_element_type]
-            unique_keys : (list of) pdarray-like
-                The unique keys, in grouped order
+        Tuple[groupable, pdarray-like]
+            unique_keys : same type as grouping keys
+                The unique group keys, in grouped order.
             result : pdarray-like
-                The first n items of each group.
-                If return_indices is True, the result are indices.
-                O.W. the result are values.
+                Either the indices or values of the first ``n`` rows per group,
+                depending on ``return_indices``.
+
+        See Also
+        --------
+        GroupBy.tail : Return the last n rows of each group.
+        pandas.DataFrameGroupBy.head : Pandas equivalent method.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.arange(10) %3
-        >>> a
-        array([0 1 2 0 1 2 0 1 2 0])
+        >>> a = ak.arange(10) % 3
         >>> v = ak.arange(10)
-        >>> v
-        array([0 1 2 3 4 5 6 7 8 9])
-        >>> g = GroupBy(a)
-        >>> unique_keys, idx = g.head(v, 2, return_indices=True)
-        >>> _, values = g.head(v, 2, return_indices=False)
-        >>> unique_keys
-        array([0 1 2])
+        >>> g = ak.GroupBy(a)
+        >>> _, idx = g.head(v, n=2, return_indices=True)
         >>> idx
         array([0 3 1 4 2 5])
-        >>> values
+        >>> _, vals = g.head(v, n=2, return_indices=False)
+        >>> vals
         array([0 3 1 4 2 5])
 
-        >>> v2 =  -2 * ak.arange(10)
-        >>> v2
-        array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])
-        >>> _, idx2 = g.head(v2, 2, return_indices=True)
-        >>> _, values2 = g.head(v2, 2, return_indices=False)
-        >>> idx2
-        array([0 3 1 4 2 5])
-        >>> values2
-        array([0 -6 -2 -8 -4 -10])
-
+        With sorting enabled to match pandas:
+        >>> _, idx_sorted = g.head(v, n=2, return_indices=True, sort_index=True)
+        >>> idx_sorted
+        array([0 1 2 3 4 5])
         """
         from arkouda.client import generic_msg
 
@@ -1730,6 +1741,7 @@ class GroupBy:
         self.logger.debug(rep_msg)
 
         ret_indices = create_pdarray(rep_msg)
+
         if return_indices is True:
             return self.unique_keys, ret_indices
         else:
@@ -1740,61 +1752,63 @@ class GroupBy:
         values: groupable_element_type,
         n: int = 5,
         return_indices: bool = True,
+        sort_index: bool = False,
     ) -> Tuple[groupable, groupable_element_type]:
         """
-        Return the last n values from each group.
+        Return the last ``n`` rows from each group.
+
+        This method selects the last ``n`` items from each group of the grouped
+        array(s). It can return either the row indices or the corresponding values.
+        Optionally, results can be globally sorted by their original index order
+        to match the behavior of ``pandas.DataFrameGroupBy.tail``.
 
         Parameters
         ----------
-        values : (list of) pdarray-like
-            The values from which to select, according to their group membership.
-        n: int, optional, default = 5
-            Maximum number of items to return for each group.
-            If the number of values in a group is less than n,
-            all the values from that group will be returned.
-        return_indices: bool, default False
-            If True, return the indices of the sampled values.
-            Otherwise, return the selected values.
+        values : pdarray, Strings, or Categorical
+            The array or column values to select from, grouped according to this
+            ``GroupBy`` instance.
+        n : int, default 5
+            The number of rows to include from each group.
+            If a group has fewer than ``n`` rows, all of its rows are returned.
+        return_indices : bool, default True
+            If True, return the indices (positions) of the selected rows.
+            If False, return the actual values from ``values``.
+        sort_index : bool, default False
+            If True, sort the concatenated results by the original index of the
+            grouped data. If False, keep the group-concatenation order
+            (i.e., groups appear in key order, one after another).
 
         Returns
         -------
-        Tuple[groupable, groupable_element_type]
-            unique_keys : (list of) pdarray-like
-                The unique keys, in grouped order
+        Tuple[groupable, pdarray-like]
+            unique_keys : same type as grouping keys
+                The unique group keys, in grouped order.
             result : pdarray-like
-                The last n items of each group.
-                If return_indices is True, the result are indices.
-                O.W. the result are values.
+                Either the indices or values of the last ``n`` rows per group,
+                depending on ``return_indices``.
+
+        See Also
+        --------
+        GroupBy.head : Return the first n rows of each group.
+        pandas.DataFrameGroupBy.tail : Pandas equivalent method.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> a = ak.arange(10) %3
-        >>> a
-        array([0 1 2 0 1 2 0 1 2 0])
+        >>> a = ak.arange(10) % 3
         >>> v = ak.arange(10)
-        >>> v
-        array([0 1 2 3 4 5 6 7 8 9])
-        >>> g = GroupBy(a)
-        >>> unique_keys, idx = g.tail(v, 2, return_indices=True)
-        >>> _, values = g.tail(v, 2, return_indices=False)
-        >>> unique_keys
-        array([0 1 2])
+        >>> g = ak.GroupBy(a)
+        >>> _, idx = g.tail(v, n=2, return_indices=True)
         >>> idx
         array([6 9 4 7 5 8])
-        >>> values
+        >>> _, vals = g.tail(v, n=2, return_indices=False)
+        >>> vals
         array([6 9 4 7 5 8])
 
-        >>> v2 =  -2 * ak.arange(10)
-        >>> v2
-        array([0 -2 -4 -6 -8 -10 -12 -14 -16 -18])
-        >>> _, idx2 = g.tail(v2, 2, return_indices=True)
-        >>> _, values2 = g.tail(v2, 2, return_indices=False)
-        >>> idx2
-        array([6 9 4 7 5 8])
-        >>> values2
-        array([-12 -18 -8 -14 -10 -16])
-
+        With sorting enabled to match pandas:
+        >>> _, idx_sorted = g.tail(v, n=2, return_indices=True, sort_index=True)
+        >>> idx_sorted
+        array([4 5 6 7 8 9])
         """
         from arkouda.client import generic_msg
 
@@ -1812,6 +1826,7 @@ class GroupBy:
         self.logger.debug(rep_msg)
 
         ret_indices = create_pdarray(rep_msg)
+
         if return_indices is True:
             return self.unique_keys, ret_indices
         else:
@@ -1952,6 +1967,8 @@ class GroupBy:
         from arkouda.numpy import round as akround
         from arkouda.numpy.pdarraycreation import full
 
+        num_samples: pdarray
+
         if frac is not None and n is not None:
             raise ValueError("Please enter a value for `frac` OR `n`, not both")
         if frac is None and n is None:
@@ -1969,12 +1986,12 @@ class GroupBy:
         if n is not None:
             if not _val_isinstance_of_union(n, int_scalars):
                 raise TypeError("n must be an int scalar.")
-            num_samples = full(seg_lens.size, n, akint64)
+            num_samples = type_cast(pdarray, full(seg_lens.size, n, akint64))
 
         if frac is not None:
             if not _val_isinstance_of_union(frac, float_scalars):
                 raise TypeError("frac must be a float scalar.")
-            num_samples = akcast(akround(frac * seg_lens), dt=akint64)
+            num_samples = type_cast(pdarray, akcast(akround(frac * seg_lens), dt=akint64))
 
         if not replace and (num_samples > seg_lens).any():
             raise ValueError("Cannot take a larger sample than population when replace is False")

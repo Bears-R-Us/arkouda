@@ -187,6 +187,7 @@ jobs:
     - name: pip list
       run: |
         python3 -m pip list        
+
     - name: Arkouda unit tests
       run: |
         make test-python size=100

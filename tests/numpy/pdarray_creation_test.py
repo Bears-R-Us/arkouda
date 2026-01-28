@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from typeguard import TypeCheckError
+
 import arkouda as ak
 
 from arkouda.numpy import newaxis, pdarraycreation
@@ -504,13 +506,13 @@ class TestPdarrayCreation:
         with pytest.raises(ValueError):
             ak.randint(low=1, high=0, size=1, dtype=ak.float64)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.randint(0, 1, "1000")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.randint("0", 1, 1000)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.randint(0, "1", 1000)
 
     #   The tests below retain the non pytest.seed because they assert specific values.
@@ -570,13 +572,13 @@ class TestPdarrayCreation:
             1.0441791878997098,
         ] == u_array.tolist()
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.uniform(low="0", high=5, size=size)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.uniform(low=0, high="5", size=size)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.uniform(low=0, high=5, size="100")
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -698,6 +700,10 @@ class TestPdarrayCreation:
 
         with pytest.raises(TypeError):
             ak.ones(5, dtype=ak.uint8)
+
+        #   Create a test for this when #5010 is resolved
+        # from arkouda.testing import assert_arkouda_strings_equal
+        # assert_arkouda_strings_equal(ak.ones(5, dtype=str),ak.array(['1', '1', '1', '1', '1']))
 
         # Test that int_scalars covers uint8, uint16, uint32
         int_arr = ak.ones(5)
@@ -965,10 +971,10 @@ class TestPdarrayCreation:
         assert npda.tolist() == pda.tolist()
 
     def test_standard_normal_errors(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.standard_normal("100")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.standard_normal(100.0)
 
         with pytest.raises(ValueError):
@@ -1003,13 +1009,13 @@ class TestPdarrayCreation:
         with pytest.raises(ValueError):
             ak.random_strings_uniform(maxlen=5, minlen=5, size=10)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_uniform(minlen="1", maxlen=5, size=10)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_uniform(minlen=1, maxlen="5", size=10)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_uniform(minlen=1, maxlen=5, size="10")
 
         # Test that int_scalars covers uint8, uint16, uint32
@@ -1074,13 +1080,13 @@ class TestPdarrayCreation:
         assert str == pda.dtype
 
     def test_random_strings_lognormal_errors(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_lognormal("2", 0.25, 100)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_lognormal(2, 0.25, "100")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)
 
         # Test that int_scalars covers uint8, uint16, uint32

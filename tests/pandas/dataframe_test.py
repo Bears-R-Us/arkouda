@@ -1664,6 +1664,74 @@ class TestDataFrame:
             df.to_pandas(retain_index=True).groupby("a").tail(n=2),
         )
 
+    @pytest.mark.parametrize("size", [30, 100])
+    def test_dataframe_groupby_head_sort_index(self, size):
+        # Build a simple DF with 3 groups (0,1,2)
+        bool_col = ak.full(size, False, dtype=ak.bool_)
+        bool_col[::2] = True
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(size) % 3,
+                "b": ak.arange(size, dtype="int64"),
+                "c": ak.arange(size, dtype="float64"),
+                "d": ak.random_strings_uniform(
+                    size=size, minlen=1, maxlen=2, seed=getattr(pytest, "seed", 1)
+                ),
+                "e": bool_col,
+            }
+        )
+
+        size_range = ak.arange(size)
+
+        # Expected concatenation order for head n=2 (per group, then concat by key order)
+        zeros_idx = size_range[df["a"] == 0][0:2]
+        ones_idx = size_range[df["a"] == 1][0:2]
+        twos_idx = size_range[df["a"] == 2][0:2]
+        expected_idx_unsorted = ak.concatenate([zeros_idx, ones_idx, twos_idx])
+
+        # 1) Arkouda: sort_index=False keeps grouped-concatenation order
+        got_unsorted = df.groupby("a").head(n=2, sort_index=False)
+        assert ak.all(got_unsorted.index == expected_idx_unsorted)
+
+        # 2) Arkouda vs pandas: sort_index=True matches pandas global index order
+        got_sorted = df.groupby("a").head(n=2, sort_index=True)
+        expected_pd = df.to_pandas(retain_index=True).groupby("a").head(n=2)
+        assert_frame_equal(got_sorted.to_pandas(retain_index=True), expected_pd, check_dtype=False)
+
+    @pytest.mark.parametrize("size", [30, 100])
+    def test_dataframe_groupby_tail_sort_index(self, size):
+        # Build a simple DF with 3 groups (0,1,2)
+        bool_col = ak.full(size, False, dtype=ak.bool_)
+        bool_col[::2] = True
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(size) % 3,
+                "b": ak.arange(size, dtype="int64"),
+                "c": ak.arange(size, dtype="float64"),
+                "d": ak.random_strings_uniform(
+                    size=size, minlen=1, maxlen=2, seed=getattr(pytest, "seed", 1)
+                ),
+                "e": bool_col,
+            }
+        )
+
+        size_range = ak.arange(size)
+
+        # Expected concatenation order for tail n=2 (per group, then concat by key order)
+        zeros_idx = size_range[df["a"] == 0][-2:]
+        ones_idx = size_range[df["a"] == 1][-2:]
+        twos_idx = size_range[df["a"] == 2][-2:]
+        expected_idx_unsorted = ak.concatenate([zeros_idx, ones_idx, twos_idx])
+
+        # 1) Arkouda: sort_index=False keeps grouped-concatenation order
+        got_unsorted = df.groupby("a").tail(n=2, sort_index=False)
+        assert ak.all(got_unsorted.index == expected_idx_unsorted)
+
+        # 2) Arkouda vs pandas: sort_index=True matches pandas global index order
+        got_sorted = df.groupby("a").tail(n=2, sort_index=True)
+        expected_pd = df.to_pandas(retain_index=True).groupby("a").tail(n=2)
+        pd_assert_frame_equal(got_sorted.to_pandas(retain_index=True), expected_pd, check_dtype=False)
+
     def test_assign(self):
         ak_df = ak.DataFrame(
             {"temp_c": ak.array([17.0, 25.0])}, index=ak.array(["Portland", "Berkeley"])

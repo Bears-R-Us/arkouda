@@ -5,6 +5,7 @@ import operator
 
 from builtins import str as builtin_str
 from typing import TYPE_CHECKING, Any, List, Literal, Optional, Tuple, TypeVar, Union, cast
+from typing import cast as type_cast
 
 import numpy as np
 import pandas as pd
@@ -15,12 +16,13 @@ from typeguard import typechecked
 import arkouda.pandas.dataframe
 
 from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
-from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
+from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_NUMBERS, bool_scalars, dtype, float64, int64
 from arkouda.numpy.pdarrayclass import RegistrationError, any, argmaxk, create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.util import get_callback, is_float
 from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
+from arkouda.pandas.typing import ArkoudaArrayLike
 
 
 if TYPE_CHECKING:
@@ -30,10 +32,16 @@ if TYPE_CHECKING:
     from arkouda.numpy.pdarraycreation import arange, array, zeros
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
+    from arkouda.pandas.dataframe import DataFrame
+
 else:
     Categorical = TypeVar("Categorical")
+
     SegArray = TypeVar("SegArray")
     Strings = TypeVar("Strings")
+
+    DataFrame = TypeVar("DataFrame")
+
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -427,35 +435,53 @@ class Series:
             entries to set.
 
         """
-        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.pdarraycreation import array as ak_array
+        from arkouda.numpy.segarray import SegArray
         from arkouda.numpy.strings import Strings
 
         val = self.validate_val(val)
         key = self.validate_key(key)
 
+        # Normalize key types up front
+        if isinstance(key, Series):
+            key = key.values
+        elif isinstance(key, List):
+            key = ak_array(key)
+        elif isinstance(key, SegArray):
+            key = key.values
+
         if isinstance(key, (pdarray, Strings)) and len(key) > 1 and self.has_repeat_labels():
             raise ValueError("Cannot set with multiple keys for Series with repeated labels.")
 
-        indices = None
+        indices: pdarray
         if is_supported_scalar(key):
             indices = self.index == key
+        elif isinstance(key, pdarray):
+            # Membership of index *labels* in key set
+            indices = type_cast(pdarray, in1d(self.index.values, key))
         else:
-            indices = in1d(self.index.values, key)
+            raise TypeError("Unsupported key type for Series.__setitem__")
+
         tf, counts = GroupBy(indices).size()
         update_count = counts[1] if len(counts) == 2 else 0
+
         if update_count == 0:
-            # adding a new entry
+            # adding a new entry — only allowed for a single scalar key
+            if not is_supported_scalar(key):
+                raise ValueError("Cannot add entries with multiple keys")
             if isinstance(val, (pdarray, Strings)):
                 raise ValueError("Cannot set. Too many values provided")
             new_index_values = concatenate([self.index.values, array([key])])
             self.index = Index.factory(new_index_values)
             self.values = concatenate([self.values, array([val])])
             return
+
+        # updates to existing labels
         if is_supported_scalar(val):
             cast(Any, self.values)[indices] = val
             return
         else:
-            val_array = cast(Union[pdarray, Strings], val)
+            val_array = type_cast(Union[pdarray, Strings], val)
             if val_array.size == 1 and is_supported_scalar(key):
                 cast(Any, self.values)[indices] = val_array[0]
                 return
@@ -464,7 +490,13 @@ class Series:
                     "Cannot set using a list-like indexer with a different length from the value"
                 )
             cast(Any, self.values)[indices] = val
+
             return
+        if update_count != val_array.size:
+            raise ValueError(
+                "Cannot set using a list-like indexer with a different length from the value"
+            )
+        self.values[indices] = val_array
 
     def memory_usage(self, index: bool = True, unit: Literal["B", "KB", "MB", "GB"] = "B") -> int:
         """
@@ -516,7 +548,7 @@ class Series:
         """
         from arkouda.numpy.util import convert_bytes
 
-        v = cast(int, convert_bytes(self.values.nbytes, unit=unit))
+        v = type_cast(int, convert_bytes(self.values.nbytes, unit=unit))
         if index:
             v += self.index.memory_usage(unit=unit)
         return v
@@ -711,8 +743,9 @@ class Series:
 
         values = concatenate([self.values, b.values], ordered=False)
 
-        idx, vals = GroupBy(index).sum(values)
-        return Series(data=vals, index=idx)
+        idx, vals = GroupBy(index).sum(type_cast(pdarray, values))
+
+        return Series(data=vals, index=Index(type_cast(ArkoudaArrayLike, idx)))
 
     @typechecked
     def topn(self, n: int = 10) -> Series:
@@ -938,7 +971,7 @@ class Series:
 
         dtype = get_callback(self.values)
         idx, vals = value_counts(self.values)
-        s = Series(index=idx, data=vals)
+        s = Series(index=Index(type_cast(ArkoudaArrayLike, idx)), data=vals)
         if sort:
             s = s.sort_values(ascending=False)
         s.index.set_dtype(dtype)
@@ -983,8 +1016,11 @@ class Series:
 
         """
         list_value_label = [value_label] if isinstance(value_label, str) else value_label
+        result = Series.concat([self], axis=1, index_labels=index_labels, value_labels=list_value_label)
+        from arkouda.pandas.dataframe import DataFrame
 
-        return Series.concat([self], axis=1, index_labels=index_labels, value_labels=list_value_label)
+        assert isinstance(result, DataFrame)
+        return result
 
     @typechecked
     def register(self, user_defined_name: builtin_str):
@@ -1605,6 +1641,8 @@ class Series:
             value_ = value.values
         else:
             value_ = value  # scalar or pdarray
+
+        assert isinstance(value, (str, ARKOUDA_SUPPORTED_NUMBERS, pdarray, Strings, Categorical))
 
         if isinstance(self.values, pdarray) and is_float(self.values):
             return Series(where(isnan(self.values), value_, self.values), index=self.index)

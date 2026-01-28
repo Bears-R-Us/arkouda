@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from pandas import Categorical as pd_Categorical
+from typeguard import TypeCheckError
 
 import arkouda as ak
 
@@ -243,7 +244,7 @@ class TestCategorical:
         with pytest.raises(NotImplementedError):
             cat._binop("string 1", "===")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             cat._binop(1, "==")
 
     def test_in1d(self):
@@ -347,7 +348,7 @@ class TestCategorical:
         """Test to save categorical to hdf5 and read it back successfully."""
         num_elems = 51  # create_basic_categorical starts counting at 1, so the size is really off by one
         cat = self.create_basic_categorical(size=num_elems)
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             # Expect error for mode not being append or truncate
             cat.to_hdf("foo", dataset="bar", mode="not_allowed")
 

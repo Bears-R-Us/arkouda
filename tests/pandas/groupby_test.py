@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pandas.testing import assert_frame_equal as pd_assert_frame_equal
+from typeguard import TypeCheckError
+
 import arkouda as ak
 
 from arkouda import GroupBy, concatenate
@@ -490,7 +493,7 @@ class TestGroupBy:
         with pytest.raises(TypeError):
             ak.GroupBy(ak.arange(4), ak.arange(4))
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             gb.broadcast([])
 
         with pytest.raises(TypeError):
@@ -754,6 +757,85 @@ class TestGroupBy:
             assert aksum(values) == aksum(expected_values)
         else:
             assert set(values.tolist()) == set(expected_values.tolist())
+
+    def test_groupby_head_tail_sort_index_indices(self):
+        # keys: 0,1,2,0,1,2,0,1,2,0
+        keys = ak.arange(10) % 3
+        vals = ak.arange(10)
+        g = GroupBy(keys)
+
+        # HEAD (n=2): per-group first two indices are:
+        #   group 0 -> [0, 3], group 1 -> [1, 4], group 2 -> [2, 5]
+        # concat in group order => [0, 3, 1, 4, 2, 5]
+        _, idx_head_unsorted = g.head(vals, n=2, return_indices=True, sort_index=False)
+        assert ak.all(idx_head_unsorted == ak.array([0, 3, 1, 4, 2, 5]))
+
+        # With sort_index=True, indices must be globally sorted by original index
+        _, idx_head_sorted = g.head(vals, n=2, return_indices=True, sort_index=True)
+        assert ak.all(idx_head_sorted == ak.array([0, 1, 2, 3, 4, 5]))
+
+        # TAIL (n=2): per-group last two indices are:
+        #   group 0 -> [6, 9], group 1 -> [4, 7], group 2 -> [5, 8]
+        # concat in group order => [6, 9, 4, 7, 5, 8]
+        _, idx_tail_unsorted = g.tail(vals, n=2, return_indices=True, sort_index=False)
+        assert ak.all(idx_tail_unsorted == ak.array([6, 9, 4, 7, 5, 8]))
+
+        # With sort_index=True, indices must be globally sorted by original index
+        _, idx_tail_sorted = g.tail(vals, n=2, return_indices=True, sort_index=True)
+        assert ak.all(idx_tail_sorted == ak.array([4, 5, 6, 7, 8, 9]))
+
+    @pytest.mark.parametrize("size", [30, 100])
+    def test_dataframe_groupby_head_tail_sort_index(self, size):
+        bool_col = ak.full(size, False, dtype=ak.bool_)
+        bool_col[::2] = True
+
+        df = ak.DataFrame(
+            {
+                "a": ak.arange(size) % 3,
+                "b": ak.arange(size, dtype="int64"),
+                "c": ak.arange(size, dtype="float64"),
+                "d": ak.random_strings_uniform(
+                    size=size, minlen=1, maxlen=2, seed=getattr(pytest, "seed", 1)
+                ),
+                "e": bool_col,
+            }
+        )
+
+        size_range = ak.arange(size)
+
+        # Expected concatenation order for head n=2 (per group, then concat by key order)
+        zeros_idx = size_range[df["a"] == 0][0:2]
+        ones_idx = size_range[df["a"] == 1][0:2]
+        twos_idx = size_range[df["a"] == 2][0:2]
+        head_expected_idx = ak.concatenate([zeros_idx, ones_idx, twos_idx])
+
+        head_unsorted = df.groupby("a").head(n=2, sort_index=False)
+        assert ak.all(head_unsorted.index == head_expected_idx)
+
+        # With sort_index=True, must match pandas
+        head_sorted = df.groupby("a").head(n=2, sort_index=True)
+        pd_assert_frame_equal(
+            head_sorted.to_pandas(retain_index=True),
+            df.to_pandas(retain_index=True).groupby("a").head(n=2),
+            check_dtype=False,
+        )
+
+        # Expected concatenation order for tail n=2
+        tail_zeros_idx = size_range[df["a"] == 0][-2:]
+        tail_ones_idx = size_range[df["a"] == 1][-2:]
+        tail_twos_idx = size_range[df["a"] == 2][-2:]
+        tail_expected_idx = ak.concatenate([tail_zeros_idx, tail_ones_idx, tail_twos_idx])
+
+        tail_unsorted = df.groupby("a").tail(n=2, sort_index=False)
+        assert ak.all(tail_unsorted.index == tail_expected_idx)
+
+        # With sort_index=True, must match pandas
+        tail_sorted = df.groupby("a").tail(n=2, sort_index=True)
+        pd_assert_frame_equal(
+            tail_sorted.to_pandas(retain_index=True),
+            df.to_pandas(retain_index=True).groupby("a").tail(n=2),
+            check_dtype=False,
+        )
 
     @pytest.mark.parametrize("dtype", ["bool", "str_", "int64", "float64"])
     @pytest.mark.parametrize("size", pytest.prob_size)

@@ -8,6 +8,7 @@ from typing import (
     Union,
     cast,
 )
+from typing import cast as type_cast
 
 import numpy as np
 
@@ -19,12 +20,14 @@ from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.typing import ArkoudaArrayLike
 
 
 if TYPE_CHECKING:
     from arkouda.numpy.strings import Strings
 else:
     Strings = TypeVar("Strings")
+
 
 __all__ = ["join_on_eq_with_dt", "gen_ranges", "compute_join_size"]
 
@@ -198,8 +201,8 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
     ua, asize = bya.size()
     byb = GroupBy(b)
     ub, bsize = byb.size()
-    afact = asize[in1d(ua, ub)]
-    bfact = bsize[in1d(ub, ua)]
+    afact = asize[in1d(type_cast(ArkoudaArrayLike, ua), type_cast(ArkoudaArrayLike, ub))]
+    bfact = bsize[in1d(type_cast(ArkoudaArrayLike, ub), type_cast(ArkoudaArrayLike, ua))]
     nelem = (afact * bfact).sum()
     nbytes = 3 * 8 * nelem
     return nelem, nbytes

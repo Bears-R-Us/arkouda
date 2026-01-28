@@ -6,6 +6,8 @@ from math import isclose, prod, sqrt
 import numpy as np
 import pytest
 
+from typeguard import TypeCheckError
+
 import arkouda as ak
 
 from arkouda.client import get_array_ranks, get_max_array_rank
@@ -313,13 +315,13 @@ class TestNumeric:
         assert 20 == len(result)
         assert int == result.dtype
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.histogram(np.array([range(0, 10)]).astype(num_type), bins=1)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.histogram(pda, bins="1")
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.histogram(np.array([range(0, 10)]).astype(num_type), bins="1")
 
         # add 'range'
@@ -393,7 +395,7 @@ class TestNumeric:
 
         ak_assert_almost_equivalent(akfunc(pda), npfunc(na))
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             akfunc(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", INT_FLOAT)
@@ -408,7 +410,7 @@ class TestNumeric:
             == ak.abs(ak.arange(-5, 0, dtype=num_type)).tolist()
         )
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.abs(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", INT_FLOAT)  # keep both int and float types
@@ -447,7 +449,7 @@ class TestNumeric:
 
         assert np.allclose(np.square(nda), ak.square(pda).to_ndarray())
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.square(np.array([range(-10, 10)]).astype(ak.bool_))
 
     @pytest.mark.parametrize("num_type", INT_FLOAT)
@@ -467,7 +469,7 @@ class TestNumeric:
 
         for npfunc, akfunc in ((np.cumsum, ak.cumsum), (np.cumprod, ak.cumprod)):
             ak_assert_almost_equivalent(npfunc(na), akfunc(pda))
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.cumsum(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.requires_chapel_module("StatsMsg")
@@ -503,7 +505,7 @@ class TestNumeric:
             _trig_and_hyp_test_helper(npfunc, na, akfunc, pda)
             if (npfunc, akfunc) in INFINITY_EDGE_CASES:
                 _infinity_edge_case_helper(npfunc, akfunc)
-            with pytest.raises(TypeError):
+            with pytest.raises(TypeCheckError):
                 akfunc(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
@@ -601,14 +603,14 @@ class TestNumeric:
         assert np.allclose(np.arctan2(na1, 0), ak.arctan2(pda1, 0).to_ndarray(), equal_nan=True)
         assert np.allclose(np.arctan2(0, na1), ak.arctan2(0, pda1).to_ndarray(), equal_nan=True)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.arctan2(
                 np.array([range(0, 10)]).astype(num_type),
                 np.array([range(10, 20)]).astype(num_type),
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.arctan2(pda_num[0], np.array([range(10, 20)]).astype(num_type))
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.arctan2(np.array([range(0, 10)]).astype(num_type), pda_denom[0])
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
@@ -617,7 +619,7 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
         _trig_and_hyp_test_helper(np.rad2deg, na, ak.rad2deg, pda)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.rad2deg(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", NO_BOOL)
@@ -626,7 +628,7 @@ class TestNumeric:
         pda = ak.array(na, dtype=num_type)
         _trig_and_hyp_test_helper(np.deg2rad, na, ak.deg2rad, pda)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.deg2rad(np.array([range(0, 10)]).astype(num_type))
 
     @pytest.mark.parametrize("num_type", NO_FLOAT)
@@ -659,7 +661,7 @@ class TestNumeric:
         assert (ak.array([1, 124]) == result[1]).all()
 
     def test_value_counts_error(self):
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.value_counts([0])
 
     def test_isnan(self):
@@ -683,7 +685,7 @@ class TestNumeric:
         assert ak.isnan(ark_s_bool).tolist() == [False, False, False, False]
 
         ark_s_string = ak.array(["a", "b", "c"])
-        with pytest.raises(TypeError):
+        with pytest.raises(TypeCheckError):
             ak.isnan(ark_s_string)
 
     def test_isinf_isfinite(self):
