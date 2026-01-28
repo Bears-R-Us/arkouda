@@ -444,7 +444,7 @@ module BinOp
       select op {
         when Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
         when FloorDiv { e = (l.a & r.a): uint(8); }
-        when Pow { e = (!l.a & r.a): uint(8); }
+        when Pow { e = (l.a | !r.a): uint(8); }
         when Shl { e = (l.a: uint(8)) << (r.a: uint(8)); }
         when Shr { e = (l.a: uint(8)) >> (r.a: uint(8)); }
         otherwise do return MsgTuple.error(nie);
@@ -578,7 +578,7 @@ module BinOp
       select op {
         when Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
         when FloorDiv { e = (l.a & val): uint(8); }
-        when Pow { e = (!l.a & val): uint(8); }
+        when Pow { e = (l.a | !val): uint(8); }
         when Shl { e = (l.a: uint(8)) << (val: uint(8)); }
         when Shr { e = (l.a: uint(8)) >> (val: uint(8)); }
         otherwise do return MsgTuple.error(nie);
@@ -704,7 +704,7 @@ module BinOp
       select op {
         when Mod { e = (0: uint(8)); } // numpy has these as int(8), but Arkouda doesn't really support that type.
         when FloorDiv { e = (val & r.a): uint(8); }
-        when Pow { e = (!val & r.a): uint(8); }
+        when Pow { e = (val | !r.a): uint(8); }
         when Shl { e = (val: uint(8)) << (r.a: uint(8)); }
         when Shr { e = (val: uint(8)) >> (r.a: uint(8)); }
         otherwise do return MsgTuple.error(nie);
