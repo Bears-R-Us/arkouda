@@ -542,7 +542,33 @@ Module Contents
 
    .. py:method:: to_pandas()
 
-      Return the equivalent Pandas Index.
+      Convert this Arkouda-backed index wrapper to an equivalent pandas Index.
+
+      This method materializes the underlying values into a local NumPy array
+      (or pandas Categorical, when applicable) and returns the corresponding
+      pandas ``Index`` (or ``CategoricalIndex``).
+
+      :returns: A pandas Index representing the same logical values. For categorical
+                data, a ``pandas.CategoricalIndex`` is returned.
+      :rtype: pandas.Index
+
+      .. rubric:: Notes
+
+      - If the underlying values are categorical, this returns a
+        ``pandas.CategoricalIndex``.
+      - For unicode string-like data (or object arrays inferred as strings),
+        this attempts to return a pandas "string" dtype Index to match pandas'
+        missing-value behavior (e.g., NA handling).
+      - Fixed-width bytes data is preserved as bytes (no implicit decoding).
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> import pandas
+      >>> idx = ak.Index(ak.array([1,2,3]))
+      >>> pidx = idx.to_pandas()
+      >>> pidx.dtype
+      dtype('<i8')
 
 
 
@@ -666,7 +692,7 @@ Module Contents
    >>> b = ak.array(['a', 'b', 'c'])
    >>> mi = MultiIndex([a, b])
    >>> mi[1]
-   MultiIndex([2, 'b'])
+   MultiIndex([np.int64(2), np.str_('b')])
 
 
    .. py:method:: argsort(ascending=True)

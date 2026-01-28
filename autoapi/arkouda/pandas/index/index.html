@@ -1031,7 +1031,37 @@ determine the file format.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.index.Index.to_pandas">
 <span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/index.html#Index.to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.index.Index.to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Return the equivalent Pandas Index.</p>
+<dd><p>Convert this Arkouda-backed index wrapper to an equivalent pandas Index.</p>
+<p>This method materializes the underlying values into a local NumPy array
+(or pandas Categorical, when applicable) and returns the corresponding
+pandas <code class="docutils literal notranslate"><span class="pre">Index</span></code> (or <code class="docutils literal notranslate"><span class="pre">CategoricalIndex</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A pandas Index representing the same logical values. For categorical
+data, a <code class="docutils literal notranslate"><span class="pre">pandas.CategoricalIndex</span></code> is returned.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.Index</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If the underlying values are categorical, this returns a
+<code class="docutils literal notranslate"><span class="pre">pandas.CategoricalIndex</span></code>.</p></li>
+<li><p>For unicode string-like data (or object arrays inferred as strings),
+this attempts to return a pandas “string” dtype Index to match pandas’
+missing-value behavior (e.g., NA handling).</p></li>
+<li><p>Fixed-width bytes data is preserved as bytes (no implicit decoding).</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pidx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pidx</span><span class="o">.</span><span class="n">dtype</span>
+<span class="go">dtype(&#39;&lt;i8&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1164,7 +1194,7 @@ each representing one level of the hierarchy.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mi</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mi</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="go">MultiIndex([2, &#39;b&#39;])</span>
+<span class="go">MultiIndex([np.int64(2), np.str_(&#39;b&#39;)])</span>
 </pre></div>
 </div>
 <dl class="py method">
