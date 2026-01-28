@@ -10,9 +10,9 @@ seed = pytest.seed
 
 def ret_shapes():
     shapes = [1000]
-    if 2 in ak.client.get_array_ranks():
+    if 2 in ak.core.client.get_array_ranks():
         shapes.append((20, 50))
-    if 3 in ak.client.get_array_ranks():
+    if 3 in ak.core.client.get_array_ranks():
         shapes.append((2, 10, 50))
     return shapes
 

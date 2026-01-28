@@ -73,16 +73,16 @@ from typing import Dict, List, Literal, Mapping, Optional, Tuple, Union, cast, o
 
 import zmq  # for typechecking
 
-from arkouda import __version__, security
-from arkouda.logger import ArkoudaLogger, LogLevel, get_arkouda_logger
-from arkouda.message import (
+from arkouda import __version__
+from arkouda.core import security
+from arkouda.core.logger import ArkoudaLogger, LogLevel, get_arkouda_logger
+from arkouda.core.message import (
     MessageFormat,
     MessageType,
     ParameterObject,
     ReplyMessage,
     RequestMessage,
 )
-from arkouda.pandas import io_util
 
 
 __all__ = [
@@ -395,6 +395,8 @@ class Channel:
             If there is an error reading/writing the tokens file.
 
         """
+        from arkouda.pandas import io_util
+
         path = f"{security.get_arkouda_client_directory()}/tokens.txt"
         url = f"{server}:{port}"
 

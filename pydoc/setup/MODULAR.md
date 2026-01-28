@@ -28,7 +28,7 @@ The last step on adding a new function is to add a function for the client side 
 
 ```python
 import arkouda as ak
-from arkouda.client import generic_msg
+from arkouda.core.client import generic_msg
 
 def test_command():
     rep_msg = generic_msg(cmd='test-command')

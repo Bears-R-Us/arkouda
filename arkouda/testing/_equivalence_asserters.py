@@ -153,7 +153,7 @@ def assert_almost_equivalent(
 
     Warning
     -------
-    This function cannot be used on pdarrays of size > ak.client.maxTransferBytes
+    This function cannot be used on pdarrays of size > ak.core.client.maxTransferBytes
     because it converts pdarrays to numpy arrays and calls np.allclose.
 
     See Also
