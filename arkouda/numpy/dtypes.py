@@ -258,7 +258,7 @@ def dtype(x):
         return bigint()
 
     # ---- String dtype spellings ----
-    if isinstance(x, str) and x.lower() in {"str", "str_", "Strings", "strings"}:
+    if isinstance(x, str) and x.lower() in {"str", "str_", "strings", "string"}:
         return np.dtype(np.str_)
     if x in (str, np.str_):
         return np.dtype(np.str_)
