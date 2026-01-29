@@ -1473,12 +1473,12 @@ def arctan2(
         return is_supported_number(arg) or is_supported_bool(arg)
 
     def _bool_case(x1, x2):
-        return type(x1) in (bool, np.bool_) and type(x2) in (bool, np.bool_)
+        return isinstance(x1, (bool, np.bool_)) and isinstance(x2, (bool, np.bool_))
 
     #   The function below is needed for the boolean scalar case.
 
     #   np.arctan2 returns float16 if x1 and x2 are both bool.  This helper converts it to float64
-    #   because subsequent functions such as where can't accomodate float16.
+    #   because subsequent functions such as where can't accommodate float16.
 
     def nparctan2(x1, x2):
         return np.float64(np.arctan2(x1, x2)) if _bool_case(x1, x2) else np.arctan2(x1, x2)
@@ -1604,7 +1604,9 @@ def arctan2(
     if _where is None or _where is True:
         if out is not None:
             out[:] = tmp
-        return out 
+            return out
+        else:
+            return tmp
     else:
         if out is None:
             raise ValueError("In arctan2, 'out' must be specified if 'where' is used.")
@@ -1614,7 +1616,7 @@ def arctan2(
 
 
 def handle_bools(x):
-    if x.dtype in (bool, np.bool_, ak_bool):
+    if x.dtype in ("bool", ak_bool):
         return x.astype(ak_float64)
     else:
         return x

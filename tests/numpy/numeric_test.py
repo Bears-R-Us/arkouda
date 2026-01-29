@@ -534,7 +534,7 @@ class TestNumeric:
     @pytest.mark.parametrize("num_scalar", [True, False])
     @pytest.mark.parametrize("denom_scalar", [True, False])
     @pytest.mark.parametrize("uses_where, uses_out", WHERE_OUT)
-    def test_arctan2(self, num_type, denom_type, num_scalar, denom_scalar, uses_out, uses_where):
+    def test_arctan2(self, num_type, denom_type, num_scalar, denom_scalar, uses_where, uses_out):
         from arkouda.numpy import cast as akcast
 
         np.random.seed(pytest.seed)
