@@ -329,7 +329,9 @@ def array(
     # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
         try:
-            if dtype is not None and dtype != bigint:
+            from arkouda.numpy.dtypes import dtype as ak_dtype
+
+            if dtype is not None and ak_dtype(dtype) != "bigint":
                 # if the user specified dtype, use that dtype
                 a = np.array(a, dtype=dtype)
             elif (
@@ -544,7 +546,7 @@ def _bigint_from_numpy(
                 pass
             else:
                 if not isinstance(x, (int, float, np.integer, np.floating)):
-                    raise TypeError("bigint requires numeric input, got non-numeric object")
+                    raise TypeError(f"bigint requires numeric input, got {type(x)}")
 
             # Handle floats: bigint-from-float behaves like existing code (cast to float64).
             # Note: we only need to know *that* a float exists, not which values.

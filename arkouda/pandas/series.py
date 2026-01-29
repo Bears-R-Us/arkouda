@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.alignment import lookup
-    from arkouda.numpy.pdarraycreation import arange, array, zeros
+    from arkouda.numpy.pdarraycreation import arange, zeros
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
 else:
@@ -677,38 +677,119 @@ class Series:
             A Series containing the values corresponding to the key.
 
         """
+        from arkouda.numpy.pdarraycreation import array
+
+        def is_scalar_label(x) -> bool:
+            # scalar label component (NOT array-like)
+            return not isinstance(x, (pdarray, Index, Series, list, tuple))
+
+        def to_pdarray(obj) -> pdarray:
+            """
+            Convert without ever touching pandas/numpy containers.
+            Assumes Arkouda Index/Series store pdarrays internally.
+            """
+            if isinstance(obj, pdarray):
+                return obj
+            if isinstance(obj, Index):
+                # Arkouda Index wrapper: underlying pdarray is on .index
+                return obj.index
+            if isinstance(obj, Series):
+                # Arkouda Series wrapper: underlying pdarray is on .values
+                values = obj.values
+                if isinstance(values, pdarray):
+                    return values
+            # python scalar / python list/tuple -> arkouda pdarray (server-side)
+            return array(obj)
+
+        def rebuild_mi_with_names(mi: MultiIndex, names) -> MultiIndex:
+            # Do not rely on mi.names setter being functional
+            return MultiIndex(mi.levels, names=list(names))
+
+        def finalize(selector) -> Series:
+            out_index = self.index[selector]
+            if isinstance(out_index, MultiIndex) and isinstance(self.index, MultiIndex):
+                out_index = rebuild_mi_with_names(out_index, self.index.names)
+            return Series(index=out_index, data=self.values[selector])
+
+        # ---- Series key: preserve its index, lookup by its values (Arkouda Series)
         if isinstance(key, Series):
-            # special case, keep the index values of the Series, and lookup the values
             return Series(index=key.index, data=lookup(self.index.index, self.values, key.values))
-        elif isinstance(key, MultiIndex):
-            idx = self.index.lookup(key.index)
-        elif isinstance(key, Index):
-            idx = self.index.lookup(key.index)
-        elif isinstance(key, pdarray):
-            idx = self.index.lookup(key)
-        elif isinstance(key, (list, tuple)):
+
+        # ---- Direct index objects
+        if isinstance(key, MultiIndex):
+            return finalize(self.index.lookup(key.index))
+
+        if isinstance(key, Index):
+            return finalize(self.index.lookup(key.index))
+
+        # ---- pdarray key
+        if isinstance(key, pdarray):
+            return finalize(self.index.lookup(key))
+
+        # ---- list/tuple keys
+        if isinstance(key, (list, tuple)):
+            if isinstance(self.index, MultiIndex):
+                nlevels = self.index.nlevels
+
+                if len(key) != nlevels:
+                    raise TypeError(
+                        "For MultiIndex Series, 'key' must be a tuple label, an Index/MultiIndex, "
+                        "or per-level keys with length equal to nlevels."
+                    )
+
+                # Reject flat list-of-scalars like [0, 2]
+                if isinstance(key, list):
+                    all_scalar = True
+                    for k in key:
+                        if not is_scalar_label(k):
+                            all_scalar = False
+                            break
+                    if all_scalar:
+                        raise TypeError(
+                            "For MultiIndex Series, a single label must be a tuple, e.g. (0, 2), "
+                            "not a flat list like [0, 2]."
+                        )
+
+                # Single scalar label tuple: (0, 10) -> per-level length-1 arrays
+                if isinstance(key, tuple):
+                    all_scalar = True
+                    for k in key:
+                        if not is_scalar_label(k):
+                            all_scalar = False
+                            break
+                    if all_scalar:
+                        per_level = [array([k]) for k in key]
+                        return finalize(self.index.lookup(per_level))
+
+                # Per-level keys: normalize each element without pandas/numpy
+                per_level = [to_pdarray(k) for k in key]
+
+                # Enforce paired selection: equal sizes (metadata only)
+                sizes = [int(k.size) for k in per_level]
+                if len(set(sizes)) != 1:
+                    raise ValueError(
+                        f"Per-level MultiIndex keys must have the same length; got {sizes}."
+                    )
+
+                return finalize(self.index.lookup(per_level))
+
+            # Non-MultiIndex:
+            # - list of scalars -> convert to pdarray
+            # - nested list/tuple -> transpose using pure Python (keys only)
             key0 = key[0]
-            if isinstance(key0, list) or isinstance(key0, tuple):
-                # nested list. check if already arkouda arrays
-                if not isinstance(key0[0], pdarray):
-                    # convert list of lists to list of pdarrays
-                    key = [array(a) for a in np.array(key).T.copy()]
 
-            elif not isinstance(key0, pdarray):
-                # a list of scalers, convert into arkouda array
-                try:
-                    val = array(key)
-                    if isinstance(val, pdarray):
-                        key = val
-                except Exception:
-                    raise TypeError("'key' parameter must be convertible to pdarray")
+            if isinstance(key0, (list, tuple)):
+                cols = list(zip(*key))
+                per_level = [array(col) for col in cols]  # col is a tuple of python scalars
+                return finalize(self.index.lookup(per_level))
 
-            # else already list if arkouda array, use as is
-            idx = self.index.lookup(key)
-        else:
-            # scalar value
-            idx = self.index == key
-        return Series(index=self.index[idx], data=self.values[idx])
+            if isinstance(key0, pdarray):
+                return finalize(self.index.lookup(key))
+
+            return finalize(self.index.lookup(to_pdarray(key)))
+
+        # ---- scalar key
+        return finalize(self.index == key)
 
     @classmethod
     def _make_binop(cls, operator):

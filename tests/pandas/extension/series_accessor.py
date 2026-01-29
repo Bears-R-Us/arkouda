@@ -13,6 +13,7 @@ from arkouda.pandas.extension._series_accessor import (
     _ak_array_to_pandas_series,
     _pandas_series_to_ak_array,
 )
+from arkouda.pandas.index import MultiIndex
 from arkouda.pandas.series import Series as ak_Series
 
 
@@ -22,6 +23,7 @@ def _assert_series_equal_values(s: pd.Series, values):
 
 
 class TestArkoudaSeriesAccessor:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_series_accessor_docstrings(self):
         import doctest
 
@@ -249,6 +251,28 @@ class TestArkoudaSeriesAccessor:
         # Data correct
         assert np.array_equal(s.to_numpy(), np.array([10, 20, 30, 40]))
 
+    def test_series_locate_multiindex_accepts_per_level_pdarray_keys(self):
+        # Build MultiIndex Series
+        lvl0 = ak.array([0, 0, 1, 1])
+        lvl1 = ak.array([10, 11, 10, 11])
+        mi = MultiIndex([lvl0, lvl1], names=["a", "b"])
+
+        vals = ak.array([100, 101, 102, 103])
+        s = Series(vals, index=mi)
+
+        # Per-level keys (pdarrays) — should be supported
+        k0 = ak.array([0, 1])
+        k1 = ak.array([10, 11])
+
+        # Expected: select (0,10) and (1,11) in that order -> [100, 103]
+        out = s.locate((k0, k1))
+        out = s.locate([k0, k1])
+
+        # Compare values (and optionally index)
+        assert out.tolist() == [100, 103]
+        assert out.index.nlevels == 2
+        assert out.index.names == ["a", "b"]
+
 
 class TestArkoudaSeriesGroupby:
     def test_series_ak_groupby_raises_if_not_arkouda_backed(self):
@@ -287,3 +311,42 @@ class TestArkoudaSeriesGroupby:
 
         with pytest.raises(TypeError, match=r"Arkouda-backed Series array does not expose '_data'"):
             _ = s.ak.groupby()
+
+    # ------------------------------------------------------------------
+    # locate
+    # ------------------------------------------------------------------
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    @pytest.mark.parametrize("dtype", ["int64", "uint64", "bool_", "bigint"])
+    @pytest.mark.parametrize("dtype_index", ["ak_int64", "ak_uint64"])
+    def test_locate(self, dtype, dtype_index):
+        pda = pd.array(ak.arange(3, dtype=dtype), dtype="ak." + dtype)
+        pda2 = pd.array(ak.array(["A", "B", "C"]), dtype="ak_str")
+        idx = pd.array(ak.arange(3), dtype=dtype_index)
+        for val in pda, pda2:
+            s = pd.Series(val, index=idx).ak.to_ak()
+
+            for key in (
+                1,
+                pd.Index([1], dtype=dtype_index),
+                pd.Index([0, 2], dtype=dtype_index),
+            ):
+                lk = s.ak.locate(key)
+                assert isinstance(lk, pd.Series)
+                key = ak.array(key) if not isinstance(key, int) else key
+                assert (lk.index == s.index[key]).all()
+                assert (lk.values == s.values[key]).all()
+
+            # testing multi-index lookup
+            mi = pd.MultiIndex.from_arrays([pda, pda[::-1]])
+            s = pd.Series(data=val, index=mi)
+            lk = s.ak.locate(mi[0])
+            assert isinstance(lk, pd.Series)
+            assert lk.values[0] == val[0]
+
+            # ensure error with scalar and multi-index
+            with pytest.raises(TypeError):
+                s.ak.locate(0)
+
+            with pytest.raises(TypeError):
+                s.ak.locate([0, 2])
