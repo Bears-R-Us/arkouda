@@ -1632,19 +1632,31 @@ class Series:
         dtype: float64
 
         """
+        import typing as t
+
         from arkouda.numpy import isnan, where
+        from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
 
+        # Normalize `value` to the underlying thing
         value_: Union[supported_scalars, pdarray, Strings, Categorical, SegArray]
-
         if isinstance(value, Series):
             value_ = value.values
         else:
             value_ = value  # scalar or pdarray
 
+        # Only float pdarray supports NaN fill
         if isinstance(self.values, pdarray) and is_float(self.values):
-            return Series(where(isnan(self.values), value_, self.values), index=self.index)
-        else:
-            return Series(self.values, index=self.index)
+            # For a float Series, the fill value must be numeric scalar or pdarray
+            if isinstance(value_, (Strings, Categorical, SegArray)):
+                raise TypeError("fillna for float Series requires a numeric scalar or pdarray")
+
+            value_num = t.cast(Union[supported_scalars, pdarray], value_)
+            return Series(where(isnan(self.values), value_num, self.values), index=self.index)
+
+        # Non-float: current behavior is "no-op"
+        return Series(self.values, index=self.index)
 
     @staticmethod
     @typechecked

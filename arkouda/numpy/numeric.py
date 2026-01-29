@@ -38,6 +38,7 @@ from arkouda.numpy.dtypes import (
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
+    str_scalars,
 )
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
@@ -166,6 +167,7 @@ def _merge_where(new_pda, where, ret):
     return new_pda
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: pdarray,
@@ -174,6 +176,7 @@ def cast(
 ) -> Strings: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: pdarray,
@@ -182,6 +185,7 @@ def cast(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: Strings,
@@ -190,6 +194,7 @@ def cast(
 ) -> Tuple[pdarray, pdarray]: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: Strings,
@@ -198,6 +203,7 @@ def cast(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: Strings,
@@ -206,6 +212,7 @@ def cast(
 ) -> Strings: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: Strings,
@@ -214,6 +221,7 @@ def cast(
 ) -> "Categorical": ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: "Categorical",
@@ -222,6 +230,7 @@ def cast(
 ) -> Strings: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: _Union[pdarray, numeric_scalars],
@@ -230,6 +239,7 @@ def cast(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def cast(
     pda: _Union[pdarray, Strings, "Categorical", numeric_scalars],
@@ -1688,18 +1698,22 @@ HashableItems = Union[pdarray, Strings, SegArray, Categorical]
 HashableList = List[HashableItems]
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def hash(pda: HashableItems, full: Literal[True] = True) -> Tuple[pdarray, pdarray]: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def hash(pda: HashableItems, full: Literal[False]) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def hash(pda: HashableList, full: Literal[True] = True) -> Tuple[pdarray, pdarray]: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def hash(pda: HashableList, full: Literal[False]) -> pdarray: ...
 
@@ -1905,144 +1919,291 @@ def _str_cat_where(
     raise TypeError("ak.where is not supported between Strings and Categorical")
 
 
-@typechecked
+# -------------------------
+# pdarray condition overloads
+# -------------------------
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
 def where(
     condition: pdarray,
-    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-) -> Union[pdarray, Strings, Categorical]:  # type: ignore
+    A: Union[numeric_and_bool_scalars, pdarray],
+    B: Union[numeric_and_bool_scalars, pdarray],
+) -> pdarray: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: pdarray,
+    A: Union[str_scalars, Strings],
+    B: Union[str_scalars, Strings],
+) -> Strings: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(condition: pdarray, A: Categorical, B: Categorical) -> Categorical: ...
+
+
+# -------------------------
+# scalar-bool condition overloads
+# -------------------------
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: bool_scalars,
+    A: numeric_and_bool_scalars,
+    B: numeric_and_bool_scalars,
+) -> numeric_and_bool_scalars: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: bool_scalars,
+    A: pdarray,
+    B: Union[numeric_and_bool_scalars, pdarray],
+) -> pdarray: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: bool_scalars,
+    A: Union[numeric_and_bool_scalars, pdarray],
+    B: pdarray,
+) -> pdarray: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(condition: bool_scalars, A: str_scalars, B: str_scalars) -> str_scalars: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: bool_scalars,
+    A: Strings,
+    B: Union[str_scalars, Strings],
+) -> Strings: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: bool_scalars,
+    A: Union[str_scalars, Strings],
+    B: Strings,
+) -> Strings: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(condition: bool_scalars, A: Categorical, B: Categorical) -> Categorical: ...
+
+
+# -------------------------
+# Broad fallbacks (last)
+# -------------------------
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: pdarray,
+    A: Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, Categorical],
+    B: Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, Categorical],
+) -> Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, Categorical]: ...
+
+
+# docstr-coverage:excused `overload-only, docs live on impl`
+@overload
+def where(
+    condition: bool_scalars,
+    A: Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, Categorical],
+    B: Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, Categorical],
+) -> Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, Categorical]: ...
+
+
+@typechecked
+def where(
+    condition: Union[bool_scalars, pdarray],
+    x: Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, "Categorical"],
+    y: Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, "Categorical"],
+) -> Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, "Categorical"]:
     """
-    Return an array with elements chosen from A and B based upon a
-    conditioning array. As is the case with numpy.where, the return array
-    consists of values from the first array (A) where the conditioning array
-    elements are True and from the second array (B) where the conditioning
-    array elements are False.
+    Return values chosen from ``x`` and ``y`` depending on ``condition``.
 
-    Parameters
-    ----------
-    condition : pdarray
-        Used to choose values from A or B
-    A : str, numeric_scalars, pdarray, Strings, or Categorical
-        Value(s) used when condition is True
-    B : str, numeric_scalars, pdarray, Strings, or Categorical
-        Value(s) used when condition is False
-
-    Returns
-    -------
-    pdarray
-        Values chosen from A where the condition is True and B where
-        the condition is False
-
-    Raises
-    ------
-    TypeError
-        Raised if the condition object is not a pdarray, if A or B is not
-        an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
-        if pdarray dtypes are not supported or do not match, or multiple
-        condition clauses (see Notes section) are applied
-    ValueError
-        Raised if the shapes of the condition, A, and B pdarrays are unequal
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a1 = ak.arange(1,10)
-    >>> a2 = ak.ones(9, dtype=np.int64)
-    >>> cond = a1 < 5
-    >>> ak.where(cond,a1,a2)
-    array([1 2 3 4 1 1 1 1 1])
-
-    >>> a1 = ak.arange(1,10)
-    >>> a2 = ak.ones(9, dtype=np.int64)
-    >>> cond = a1 == 5
-    >>> ak.where(cond,a1,a2)
-    array([1 1 1 1 5 1 1 1 1])
-
-    >>> a1 = ak.arange(1,10)
-    >>> a2 = 10
-    >>> cond = a1 < 5
-    >>> ak.where(cond,a1,a2)
-    array([1 2 3 4 10 10 10 10 10])
-
-    >>> s1 = ak.array([f'str {i}' for i in range(10)])
-    >>> s2 = 'str 21'
-    >>> cond = (ak.arange(10) % 2 == 0)
-    >>> ak.where(cond,s1,s2)
-    array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4',
-    'str 21', 'str 6', 'str 21', 'str 8', 'str 21'])
-
-    >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
-    >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
-    >>> cond = (ak.arange(10) % 2 == 0)
-    >>> ak.where(cond,c1,c2)
-    array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4',
-    'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
+    Broadcasting rules (NumPy-style):
+    - If ``condition`` is a boolean ``pdarray``, the output shape is the broadcasted
+      shape of ``condition`` and any array-like operands among ``x`` and ``y``.
+    - If ``condition`` is a scalar bool:
+        * if any operand is array-like, broadcast the condition to the broadcasted
+          shape of the array-like operands and return an array-like result
+        * if both operands are scalars, return a scalar
 
     Notes
     -----
-    A and B must have the same dtype and only one conditional clause
-    is supported e.g., n < 5, n > 1, which is supported in numpy
-    is not currently supported in Arkouda
+    * For numeric/bool ``pdarray`` inputs, Arkouda requires matching dtypes between
+      array operands (server-side constraint).
+    * Broadcasting is performed for ``pdarray`` operands via ``broadcast_to``.
+    * ``Strings`` and ``Categorical`` are treated as 1D; we validate broadcast
+      compatibility but do not currently broadcast these objects.
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
+    from arkouda.pandas.categorical import Categorical
 
-    if (not is_supported_number(A) and not isinstance(A, pdarray)) or (
-        not is_supported_number(B) and not isinstance(B, pdarray)
-    ):
-        from arkouda.pandas.categorical import Categorical  # type: ignore
+    operand = Union[str_scalars, numeric_and_bool_scalars, pdarray, Strings, Categorical]
 
-        # fmt: off
-        if (
-            not isinstance(A, (str, Strings, Categorical))  # type: ignore
-            or not isinstance(B, (str, Strings, Categorical))  # type: ignore
-        ):
-            # fmt:on
-            raise TypeError(
-                "both A and B must be an int, np.int64, float, np.float64, pdarray OR"
-                " both A and B must be an str, Strings, Categorical"
-            )
-        return _str_cat_where(condition, A, B)
+    # -------- helpers --------
 
-    #   The code below creates a command string for wherevv, wherevs, wheresv or wheress,
-    #   based on A and B.
+    def _is_arraylike(obj: operand) -> bool:
+        return isinstance(obj, (pdarray, Strings, Categorical))
 
-    if isinstance(A, pdarray) and isinstance(B, pdarray):
-        cmdstring = f"wherevv<{condition.ndim},{A.dtype},{B.dtype}>"
+    def _shape_of(obj: operand) -> tuple[int, ...]:
+        if isinstance(obj, pdarray):
+            return obj.shape
+        # Strings/Categorical: treat as 1D
+        return (int(getattr(obj, "size")),)
 
-    elif isinstance(A, pdarray) and np.isscalar(B):
-        if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
-            ltr = resolve_scalar_dtype(B)
-            cmdstring = "wherevs_" + ltr + f"<{condition.ndim},{A.dtype}>"
-        else:  # *should* be impossible because of the IsSupportedNumber check
-            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
+    def _maybe_broadcast_pd(val: operand, shape: tuple[int, ...]) -> operand:
+        if isinstance(val, pdarray) and val.shape != shape:
+            return broadcast_to(val, shape)
+        return val
 
-    elif isinstance(B, pdarray) and np.isscalar(A):
-        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
-            ltr = resolve_scalar_dtype(A)
-            cmdstring = "wheresv_" + ltr + f"<{condition.ndim},{B.dtype}>"
-        else:  # *should* be impossible because of the IsSupportedNumber check
-            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
+    def _is_numeric_like(obj: object) -> bool:
+        return is_supported_number(obj) or is_supported_bool(obj) or isinstance(obj, pdarray)
 
-    else:  # both are scalars
-        if resolve_scalar_dtype(A) in ["float64", "int64", "uint64", "bool"]:
-            ta = resolve_scalar_dtype(A)
-            if resolve_scalar_dtype(B) in ["float64", "int64", "uint64", "bool"]:
-                tb = resolve_scalar_dtype(B)
-            else:
-                raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(B)}")
+    def _is_string_like(obj: operand) -> bool:
+        return isinstance(obj, (str, Strings, Categorical))
+
+    # -------- classify path --------
+
+    x_num = _is_numeric_like(x)
+    y_num = _is_numeric_like(y)
+
+    # Mixed numeric/string is an error (matches previous behavior)
+    if x_num != y_num:
+        raise TypeError(
+            "both x and y must be numeric/bool (including pdarray) OR both must be "
+            "string-like (str, Strings, Categorical)"
+        )
+
+    # -------- compute broadcast shape (if any array-like exists) --------
+
+    shapes: list[tuple[int, ...]] = []
+    if isinstance(condition, pdarray):
+        shapes.append(condition.shape)
+    if _is_arraylike(x):
+        shapes.append(_shape_of(x))
+    if _is_arraylike(y):
+        shapes.append(_shape_of(y))
+
+    out_shape: tuple[int, ...] | None = None
+    if shapes:
+        try:
+            out_shape = broadcast_shapes(*shapes)
+        except ValueError as e:
+            raise ValueError(f"where: operands could not be broadcast together: {tuple(shapes)}") from e
+
+    # -------- scalar condition fast-path / broadcast condition --------
+    if is_supported_bool(condition):
+        chosen = x if bool(condition) else y
+
+        if out_shape is None:
+            return chosen
+
+        if np.isscalar(chosen):
+            if _is_numeric_like(chosen):
+                from arkouda.numpy.pdarraycreation import full
+
+                return full(
+                    out_shape,
+                    type_cast(Union[str_scalars, numeric_and_bool_scalars], chosen),
+                    dtype=None,
+                )
+
+        if isinstance(chosen, pdarray):
+            return broadcast_to(chosen, out_shape) if chosen.shape != out_shape else chosen
+
+        return chosen
+
+    # from here on, condition must be pdarray (and mypy should know that)
+    assert isinstance(condition, pdarray)
+    cond = condition  # pdarray-typed alias for mypy
+    if out_shape is not None and cond.shape != out_shape:
+        cond = broadcast_to(cond, out_shape)
+
+    # -------- string-like path --------
+
+    if not x_num and not y_num:
+        if not _is_string_like(x) or not _is_string_like(y):
+            raise TypeError("both x and y must be string-like (str, Strings, Categorical) on this path")
+
+        # Strings/Categorical are not broadcasted; require they already match out_shape when present
+        if out_shape is not None:
+            for obj, name in ((x, "x"), (y, "y")):
+                if isinstance(obj, (Strings, Categorical)) and _shape_of(obj) != out_shape:
+                    raise ValueError(
+                        f"where: {name} has shape {_shape_of(obj)} but broadcast shape is {out_shape}; "
+                        "Strings/Categorical broadcasting is not supported"
+                    )
+
+        return _str_cat_where(cond, x, y)
+
+    # -------- numeric/bool path --------
+
+    if out_shape is not None:
+        x = _maybe_broadcast_pd(x, out_shape)
+        y = _maybe_broadcast_pd(y, out_shape)
+
+    # mypy-friendly aliases
+    xn = x  # operand
+    yn = y  # operand
+
+    # -------- server dispatch --------
+
+    if isinstance(xn, pdarray) and isinstance(yn, pdarray):
+        cmdstring = f"wherevv<{cond.ndim},{xn.dtype},{yn.dtype}>"
+
+    elif isinstance(xn, pdarray) and np.isscalar(yn):
+        ltr = resolve_scalar_dtype(yn)
+        if ltr in ["float64", "int64", "uint64", "bool"]:
+            cmdstring = "wherevs_" + ltr + f"<{cond.ndim},{xn.dtype}>"
         else:
-            raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
-        cmdstring = "wheress_" + ta + "_" + tb + f"<{condition.ndim}>"
+            raise TypeError(f"where does not accept scalar type {ltr}")
+
+    elif isinstance(yn, pdarray) and np.isscalar(xn):
+        ltr = resolve_scalar_dtype(xn)
+        if ltr in ["float64", "int64", "uint64", "bool"]:
+            cmdstring = "wheresv_" + ltr + f"<{cond.ndim},{yn.dtype}>"
+        else:
+            raise TypeError(f"where does not accept scalar type {ltr}")
+
+    else:
+        # both scalars here implies cond is pdarray (broadcasted), so result is array-like
+        tx = resolve_scalar_dtype(xn)
+        ty = resolve_scalar_dtype(yn)
+        if tx not in ["float64", "int64", "uint64", "bool"]:
+            raise TypeError(f"where does not accept scalar type {tx}")
+        if ty not in ["float64", "int64", "uint64", "bool"]:
+            raise TypeError(f"where does not accept scalar type {ty}")
+        cmdstring = "wheress_" + tx + "_" + ty + f"<{cond.ndim}>"
 
     rep_msg = generic_msg(
         cmd=cmdstring,
         args={
-            "condition": condition,
-            "a": A,
-            "b": B,
+            "condition": cond,
+            "a": xn,  # server arg names
+            "b": yn,
         },
     )
-
     return create_pdarray(type_cast(str, rep_msg))
 
 
@@ -3541,179 +3702,134 @@ def take(
 
 
 @typechecked
-def minimum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scalars]) -> pdarray:
+def minimum(
+    x1: Union[pdarray, numeric_scalars],
+    x2: Union[pdarray, numeric_scalars],
+) -> Union[pdarray, numeric_scalars]:
     """
-    Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,
-    else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first
-    broadcast to a mutual shape, if possible.
+    Return the element-wise minimum of ``x1`` and ``x2``.
+
+    Where either value is NaN, return NaN; otherwise return the lesser of the two.
+    If ``x1`` and ``x2`` are not the same shape, they are broadcast to a mutual
+    shape when possible.
 
     Parameters
     ----------
-    x1 : pdarray, numeric_scalars
-        first argument in comparison.
-    x2 : pdarray, numeric_scalars
-        second argument in comparison.
+    x1 : pdarray or numeric_scalars
+        First argument in comparison.
+    x2 : pdarray or numeric_scalars
+        Second argument in comparison.
 
     Returns
     -------
-    pdarray, numeric_scalar
-        The element-wise minimum of x1 and x2.  If both are scalars, it invokes
-        numpy minimum, otherwise where either is a nan, the returned pdarray
-        Where neither is a nan, it stores the minimum of x1 and x2.
+    Union[pdarray, numeric_scalars]
+        The element-wise minimum of ``x1`` and ``x2``. If both inputs are scalars,
+        returns a scalar (via ``numpy.minimum``). Otherwise returns a ``pdarray``
+        (after broadcasting as needed).
 
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.array([1.0,2.0,ak.nan])
-    >>> b = ak.array([0.5,2.5,3.5])
-    >>> ak.minimum(a,b)
-    array([0.5 2.00000000000000000 nan])
-    >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
-    >>> d = ak.array([-0.5,2.5])
-    >>> ak.minimum(c,d)
-    array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])
+    Raises
+    ------
+    ValueError
+        Raised if ``x1`` and ``x2`` cannot be broadcast to a mutual shape.
     """
+    from arkouda.numpy import isnan, where
     from arkouda.numpy.imports import nan
     from arkouda.numpy.pdarraycreation import full
     from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
-    tx1 = x1
-    tx2 = x2
+    def _scalar_is_nan(x: numeric_scalars) -> bool:
+        return isinstance(x, (float, np.floating)) and np.isnan(x)
 
-    #  if both are scalars, just use numpy
+    # pdarray / pdarray
+    if isinstance(x1, pdarray) and isinstance(x2, pdarray):
+        tx1, tx2 = x1, x2
 
-    if np.isscalar(tx1) and np.isscalar(tx2):
-        return np.minimum(tx1, tx2)
-
-    # if tx1 was a scalar, then tx2 isn't (they can't both be, at this point).
-    # if tx1 is nan, then return all nans, otherwise:
-    #       where tx2 isn't nan, return the min of (tx1,tx2),
-    #       and where it is, return tx2
-
-    if np.isscalar(tx1) and isinstance(tx2, pdarray):
-        return (
-            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))
-        )
-
-    # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
-    # if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,
-    # and if it isn't, return the min of (tx1,tx2).
-
-    # Note about the line marked "nan special case":
-    # Numpy specifies that if both x1 and x2 are nan, then the output is x1.
-    # This is because in numpy, there are different types of nans.
-
-    elif np.isscalar(tx2) and isinstance(tx1, pdarray):
-        if np.isnan(tx2):
-            return where(isnan(tx1), tx1, tx2)  # nan special case
-        else:
-            return where(isnan(tx1), tx1, where(tx1 < tx2, tx1, tx2))
-
-    # if both are pdarrays, broadcasting may be required
-    #    return tx1 where tx1 is a nan, otherwise
-    #    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).
-
-    elif isinstance(tx1, pdarray) and isinstance(tx2, pdarray):
         if tx1.shape != tx2.shape:
             try:
                 mutual = broadcast_shapes(tx1.shape, tx2.shape)
-                tx1 = tx1 if mutual == tx1.shape else broadcast_to(tx1, mutual)
-                tx2 = tx2 if mutual == tx2.shape else broadcast_to(tx2, mutual)
+                if mutual != tx1.shape:
+                    tx1 = broadcast_to(tx1, mutual)
+                if mutual != tx2.shape:
+                    tx2 = broadcast_to(tx2, mutual)
             except Exception as e:
-                raise ValueError(f"Shapes {tx1.shape} and {tx2.shape} incompatible for minimum.") from e
+                raise ValueError(f"Shapes {x1.shape} and {x2.shape} incompatible for minimum.") from e
 
-        return where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2)))
+        return type_cast(
+            pdarray,
+            where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))),
+        )
 
-    else:
-        raise ValueError("Arguments to minimum must be pdarrays or scalars.")
+    # pdarray / scalar
+    if isinstance(x1, pdarray) and not isinstance(x2, pdarray):
+        s2 = type_cast(numeric_scalars, x2)
+        if _scalar_is_nan(s2):
+            # If scalar is NaN, result is all NaNs
+            return full(x1.shape, nan)
+        return type_cast(pdarray, where(isnan(x1), x1, where(x1 < s2, x1, s2)))
+
+    # scalar / pdarray
+    if not isinstance(x1, pdarray) and isinstance(x2, pdarray):
+        s1 = type_cast(numeric_scalars, x1)
+        if _scalar_is_nan(s1):
+            return full(x2.shape, nan)
+        return type_cast(pdarray, where(isnan(x2), x2, where(s1 < x2, s1, x2)))
+
+    # scalar / scalar
+    s1 = type_cast(numeric_scalars, x1)
+    s2 = type_cast(numeric_scalars, x2)
+    return np.minimum(s1, s2)
 
 
 @typechecked
-def maximum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scalars]) -> pdarray:
-    """
-    Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,
-    else the greater of x1, x2.  If x1 and x2 are not the same shape, they are first
-    broadcast to a mutual shape, if possible.
-
-    Parameters
-    ----------
-    x1 : pdarray, numeric_scalars
-        first argument in comparison.
-    x2 : pdarray, numeric_scalars
-        second argument in comparison.
-
-    Returns
-    -------
-    pdarray, numeric_scalar
-        The element-wise maximum of x1 and x2.  If both are scalars, it invokes
-        numpy maximum, otherwise where either is a nan, the returned pdarray
-        Where neither is a nan, it stores the maximum of x1 and x2.
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.array([1.0,2.0,ak.nan])
-    >>> b = ak.array([0.5,2.5,3.5])
-    >>> ak.maximum(a,b)
-    array([1.00000000000000000 2.5 nan])
-    >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
-    >>> d = ak.array([-0.5,2.5])
-    >>> ak.maximum(c,d)
-    array([array([0.00000000000000000 2.5]) array([2.00000000000000000 3.00000000000000000])])
-    """
+def maximum(
+    x1: Union[pdarray, numeric_scalars],
+    x2: Union[pdarray, numeric_scalars],
+) -> Union[pdarray, numeric_scalars]:
+    from arkouda.numpy import isnan, where
     from arkouda.numpy.imports import nan
     from arkouda.numpy.pdarraycreation import full
     from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
-    tx1 = x1
-    tx2 = x2
+    def _scalar_is_nan(x: numeric_scalars) -> bool:
+        return isinstance(x, (float, np.floating)) and np.isnan(x)
 
-    #  if both are scalars, just use numpy
+    # pdarray / pdarray
+    if isinstance(x1, pdarray) and isinstance(x2, pdarray):
+        tx1, tx2 = x1, x2
 
-    if np.isscalar(tx1) and np.isscalar(tx2):
-        return np.maximum(tx1, tx2)
-
-    # if tx1 was a scalar, then tx2 isn't (they can't both be, at this point).
-    # if tx1 is nan, then return all nans, otherwise:
-    #       where tx2 isn't nan, return the min of (tx1,tx2),
-    #       and where it is, return tx2
-
-    if np.isscalar(tx1) and isinstance(tx2, pdarray):
-        return (
-            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))
-        )
-
-    # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
-    # if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,
-    # and if it isn't, return the min of (tx1,tx2).
-
-    # Note about the line marked "nan special case":
-    # Numpy specifies that if both x1 and x2 are nan, then the output is x1.
-    # This is because in numpy, there are different types of nans.
-
-    elif np.isscalar(tx2) and isinstance(tx1, pdarray):
-        if np.isnan(tx2):
-            return where(isnan(tx1), tx1, tx2)  # nan special case
-        else:
-            return where(isnan(tx1), tx1, where(tx1 > tx2, tx1, tx2))
-
-    # if both are pdarrays, broadcasting may be required
-    #    return tx1 where tx1 is a nan, otherwise
-    #    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).
-
-    elif isinstance(tx1, pdarray) and isinstance(tx2, pdarray):
         if tx1.shape != tx2.shape:
             try:
                 mutual = broadcast_shapes(tx1.shape, tx2.shape)
-                tx1 = tx1 if mutual == tx1.shape else broadcast_to(tx1, mutual)
-                tx2 = tx2 if mutual == tx2.shape else broadcast_to(tx2, mutual)
+                if mutual != tx1.shape:
+                    tx1 = broadcast_to(tx1, mutual)
+                if mutual != tx2.shape:
+                    tx2 = broadcast_to(tx2, mutual)
             except Exception as e:
-                raise ValueError(f"Shapes {tx1.shape} and {tx2.shape} incompatible for maximum.") from e
+                raise ValueError(f"Shapes {x1.shape} and {x2.shape} incompatible for maximum.") from e
 
-        return where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2)))
+        return type_cast(
+            pdarray,
+            where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))),
+        )
 
-    else:
-        raise ValueError("Arguments to minimum must be pdarrays or scalars.")
+    # pdarray / scalar
+    if isinstance(x1, pdarray) and not isinstance(x2, pdarray):
+        s2 = type_cast(numeric_scalars, x2)
+        if _scalar_is_nan(s2):
+            return full(x1.shape, nan)
+        return type_cast(pdarray, where(isnan(x1), x1, where(x1 > s2, x1, s2)))
+
+    # scalar / pdarray
+    if not isinstance(x1, pdarray) and isinstance(x2, pdarray):
+        s1 = type_cast(numeric_scalars, x1)
+        if _scalar_is_nan(s1):
+            return full(x2.shape, nan)
+        return type_cast(pdarray, where(isnan(x2), x2, where(s1 > x2, s1, x2)))
+
+    # scalar / scalar
+    s1 = type_cast(numeric_scalars, x1)
+    s2 = type_cast(numeric_scalars, x2)
+    return np.maximum(s1, s2)
 
 
 #   New implementation of arctan2 using ufunc tools.
