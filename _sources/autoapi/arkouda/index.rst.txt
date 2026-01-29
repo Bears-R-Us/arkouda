@@ -11134,15 +11134,18 @@ Package Contents
      converted to Arkouda ``Strings``.
 
 
-.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_scalars, numpy.bool, str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: arkouda.numpy.dtypes.str_scalars, dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: str, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars], dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value.
 
    :param size: Size or shape of the array
    :type size: int_scalars or tuple of int_scalars
    :param fill_value: Value with which the array will be filled
-   :type fill_value: int_scalars or str
-   :param dtype: Resulting array type, default float64
+   :type fill_value: numeric_scalars, bool_scalars or str_scalars
+   :param dtype: Resulting array type.  If None, it will be inferred from fill_value
    :type dtype: all_scalars
    :param max_bits: Specifies the maximum number of bits; only used for bigint pdarrays
    :type max_bits: int
@@ -11153,6 +11156,7 @@ Package Contents
    :raises TypeError: Raised if the supplied dtype is not supported
    :raises RuntimeError: Raised if the size parameter is neither an int nor a str that is parseable to an int.
    :raises ValueError: Raised if the rank of the given shape is not in get_array_ranks() or is empty
+       Raised if a multi-dim Strings array was requested
        Raised if max_bits is not NONE and ndim does not equal 1
 
    .. seealso:: :py:obj:`zeros`, :py:obj:`ones`
@@ -13409,7 +13413,7 @@ Package Contents
    .. py:method:: copy_with(params)
 
 
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Create a pdarray filled with ones.
 
