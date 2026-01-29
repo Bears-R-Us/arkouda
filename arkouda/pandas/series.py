@@ -642,6 +642,8 @@ class Series:
             A Series containing the values corresponding to the key.
 
         """
+        from arkouda.numpy.pdarraycreation import array
+
         if isinstance(key, Series):
             # special case, keep the index values of the Series, and lookup the values
             return Series(index=key.index, data=lookup(self.index.index, self.values, key.values))
@@ -652,6 +654,23 @@ class Series:
         elif isinstance(key, pdarray):
             idx = self.index.lookup(key)
         elif isinstance(key, (list, tuple)):
+            # MultiIndex does not accept "flat" list-like keys.
+            # Use a tuple label (single key) or provide per-level keys / MultiIndex object.
+            if isinstance(self.index, MultiIndex):
+                # Allow single tuple label (handled separately) but reject [0,2] etc.
+                if not (isinstance(key, tuple) and len(key) == len(self.index.levels)):
+                    raise TypeError(
+                        "For MultiIndex Series, 'key' must be a tuple label, an Index/MultiIndex, "
+                        "or per-level keys; flat list-like keys are not supported."
+                    )
+            # Special case: a single MultiIndex label like (lvl0, lvl1, ...)
+            # pandas MultiIndex indexing commonly produces tuples.
+            if (
+                isinstance(self.index, MultiIndex)
+                and isinstance(key, tuple)
+                and len(key) == self.index.nlevels
+            ):
+                key = [array([k]) for k in key]
             key0 = key[0]
             if isinstance(key0, list) or isinstance(key0, tuple):
                 # nested list. check if already arkouda arrays
