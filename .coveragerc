@@ -18,13 +18,14 @@ omit =
     arkouda/array_api/sorting_functions.py
     arkouda/array_api/statistical_functions.py
     arkouda/array_api/utility_functions.py
-    arkouda/client.py
     arkouda/client_dtypes.py
     arkouda/comm_diagnostics.py
+    arkouda/core/client.py
+    arkouda/core/infoclass.py
+    arkouda/core/logger.py
+    arkouda/core/message.py
+    arkouda/core/security.py
     arkouda/history.py
-    arkouda/infoclass.py
-    arkouda/logger.py
-    arkouda/message.py
     arkouda/numpy/_typing/_typing.py
     arkouda/numpy/_bigint.py 
     arkouda/numpy/alignment.py
@@ -69,7 +70,6 @@ omit =
     arkouda/scipy/sparrayclass.py
     arkouda/scipy/sparsematrix.py
     arkouda/scipy/special/_math.py
-    arkouda/security.py
     arkouda/testing/_asserters.py
     arkouda/testing/_equivalence_asserters.py
 

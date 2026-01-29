@@ -6,7 +6,7 @@ import time
 import numpy as np
 
 import arkouda as ak
-import arkouda.client
+import arkouda.core.client
 
 
 def time_ak_noop(trial_time):
@@ -15,7 +15,7 @@ def time_ak_noop(trial_time):
     trials = 0
     while time.time() - start < trial_time:
         trials += 1
-        arkouda.client._no_op()
+        arkouda.core.client._no_op()
     end = time.time()
 
     timing = end - start
@@ -42,7 +42,7 @@ def time_np_noop(trial_time):
 
 
 def check_correctness():
-    assert arkouda.client._no_op() == "noop"
+    assert arkouda.core.client._no_op() == "noop"
 
 
 def create_parser():

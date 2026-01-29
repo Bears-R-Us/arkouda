@@ -77,7 +77,7 @@ def flip(
     ----
     This differs from numpy as it actually reverses the data, rather than presenting a view.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.strings import Strings
 
     axis_list = []
@@ -182,7 +182,7 @@ def repeat(
     >>> ak.repeat(x, [1, 2], axis=0)
     array([array([1 2]) array([3 4]) array([3 4])])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import array as ak_array
     from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pdarrayclass import any as akany
@@ -316,7 +316,7 @@ def squeeze(
     (10,)
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.dtypes import _val_isinstance_of_union
     from arkouda.numpy.pdarraycreation import array as ak_array
 
@@ -401,7 +401,7 @@ Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2)
     >>> ak.tile(c, (4, 1))
     array([array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4]) array([1 2 3 4])])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # Ensure 'reps' is a list
     if isinstance(reps, int):

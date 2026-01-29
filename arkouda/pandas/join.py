@@ -79,7 +79,7 @@ def join_on_eq_with_dt(
         'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if not (a1.dtype == akint64):
         raise ValueError("a1 must be int64 dtype")
