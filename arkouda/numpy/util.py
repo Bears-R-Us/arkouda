@@ -1030,10 +1030,9 @@ def map(
         isinstance(mapping, Series) and len(mapping.index) == 0
     ):
         if not isinstance(values, (Strings, Categorical)):
-            fillvals = full(nuniq, np.nan, values.dtype)
+            return broadcast(gb.segments, full(nuniq, np.nan, values.dtype), permutation=gb.permutation)
         else:
-            fillvals = full(nuniq, "null")
-        return broadcast(gb.segments, fillvals, permutation=gb.permutation)
+            return broadcast(gb.segments, full(nuniq, "null"), permutation=gb.permutation)
 
     if isinstance(mapping, dict):
         # Build mapping as a Series with an Index/MultiIndex (avoid rank>1 arrays)
@@ -1096,7 +1095,6 @@ def map(
             xtra_size = xtra_keys_s.size
 
             if xtra_size > 0:
-                nans: Union[pdarray, Strings]  # without this, mypy complains
                 if not isinstance(mapping.values, (Strings, Categorical)):
                     nans = full(xtra_size, np.nan, mapping.values.dtype)
                 else:
