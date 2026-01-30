@@ -413,7 +413,6 @@
 <span class="sd">&gt;&gt;&gt; data = [ak.arange(10), ak.linspace(0, 1, 10)]</span>
 <span class="sd">&gt;&gt;&gt; Path(my_path + &#39;/parquet_data&#39;).mkdir(parents=True, exist_ok=True)</span>
 <span class="sd">&gt;&gt;&gt; to_parquet(data, my_path + &#39;/parquet_data/data.parquet&#39;)</span>
-<span class="sd">File written successfully!</span>
 
 <span class="sd">Load the DataFrame back</span>
 <span class="sd">&gt;&gt;&gt; data2 = read_parquet(my_path + &#39;/parquet_data/data*&#39;)</span>

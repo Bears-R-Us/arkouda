@@ -1596,15 +1596,15 @@
 
 <span class="sd">        &gt;&gt;&gt; cat = ak.Categorical(ak.array([&#39;dog&#39;, &#39;cat&#39;, &#39;dog&#39;, &#39;bird&#39;]))</span>
 <span class="sd">        &gt;&gt;&gt; cat.argsort()</span>
-<span class="sd">        array([3, 1, 0, 2])  # &#39;bird&#39; &lt; &#39;cat&#39; &lt; &#39;dog&#39;</span>
+<span class="sd">        array([3 1 0 2])</span>
 
 <span class="sd">        &gt;&gt;&gt; cat.argsort(ascending=False)</span>
-<span class="sd">        array([2, 0, 1, 3])</span>
+<span class="sd">        array([2 0 1 3])</span>
 
 <span class="sd">        The result can be used to reorder the Categorical:</span>
 <span class="sd">        &gt;&gt;&gt; sorted_cat = cat[cat.argsort()]</span>
 <span class="sd">        &gt;&gt;&gt; sorted_cat</span>
-<span class="sd">        Categorical([&#39;bird&#39;, &#39;cat&#39;, &#39;dog&#39;, &#39;dog&#39;])</span>
+<span class="sd">        array([&#39;bird&#39;, &#39;cat&#39;, &#39;dog&#39;, &#39;dog&#39;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">zeros_like</span>

@@ -1575,7 +1575,7 @@
     <span class="n">params</span> <span class="o">=</span> <span class="n">alias</span><span class="o">.</span><span class="n">__parameters__</span>
     <span class="n">i</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_default</span><span class="p">():</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__default__</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__default__</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Too few arguments for </span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># Special case where Z[[int, str, bool]] == Z[int, str, bool] in PEP 612.</span>
@@ -1620,14 +1620,26 @@
                 <span class="sa">f</span><span class="s2">&quot;Parameters to </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">[...] must all be unique&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Subscripting a regular Generic subclass.</span>
-        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parameters__</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parameters__</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">init_subclass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;__init_subclass__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">init_subclass</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="kc">None</span><span class="p">,</span> <span class="n">Generic</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">}:</span>
+                <span class="n">e</span><span class="o">.</span><span class="n">add_note</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Note: this exception may have been caused by &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">init_subclass</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">!r}</span><span class="s2"> (or the &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;__init_subclass__&#39; method on a superclass) not &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;calling &#39;super().__init_subclass__()&#39;&quot;</span>
+                <span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
             <span class="n">prepare</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="s1">&#39;__typing_prepare_subst__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">prepare</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
         <span class="n">_check_generic_specialization</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
         <span class="n">new_args</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">new_arg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__parameters__</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">new_arg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">TypeVarTuple</span><span class="p">):</span>
                 <span class="n">new_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_arg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>

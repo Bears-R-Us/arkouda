@@ -416,8 +416,7 @@ for interoperability.</p>
 <p>Create and save a DataFrame
 &gt;&gt;&gt; data = [ak.arange(10), ak.linspace(0, 1, 10)]
 &gt;&gt;&gt; Path(my_path + ‘/parquet_data’).mkdir(parents=True, exist_ok=True)
-&gt;&gt;&gt; to_parquet(data, my_path + ‘/parquet_data/data.parquet’)
-File written successfully!</p>
+&gt;&gt;&gt; to_parquet(data, my_path + ‘/parquet_data/data.parquet’)</p>
 <p>Load the DataFrame back
 &gt;&gt;&gt; data2 = read_parquet(my_path + ‘/parquet_data/data*’)</p>
 <p>Save to HDF5
