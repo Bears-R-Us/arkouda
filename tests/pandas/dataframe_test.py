@@ -1,6 +1,7 @@
 import itertools
 import os
 import tempfile
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -717,24 +718,22 @@ class TestDataFrame:
         ak_df = self.build_ak_df_example2()
         pd_df = ak_df.to_pandas(retain_index=True)
 
-        pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).sum("count").drop(["nums"], axis=1)
+        pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False)[["count"]].sum()
         ak_result1 = ak_df.groupby(["key1", "key2"]).sum("count")
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
         assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
-        pd_result2 = (
-            pd_df.groupby(["key1", "key2"], as_index=False).sum(["count"]).drop(["nums"], axis=1)
-        )
+        pd_result2 = pd_df.groupby(["key1", "key2"], as_index=False)[["count"]].sum()
         ak_result2 = ak_df.groupby(["key1", "key2"]).sum(["count"])
         assert_frame_equal(pd_result2, ak_result2.to_pandas(retain_index=True))
         assert isinstance(ak_result2, ak.dataframe.DataFrame)
 
-        pd_result3 = pd_df.groupby(["key1", "key2"], as_index=False).sum(["count", "nums"])
+        pd_result3 = pd_df.groupby(["key1", "key2"], as_index=False)[["count", "nums"]].sum()
         ak_result3 = ak_df.groupby(["key1", "key2"]).sum(["count", "nums"])
         assert_frame_equal(pd_result3, ak_result3.to_pandas(retain_index=True))
         assert isinstance(ak_result3, ak.dataframe.DataFrame)
 
-        pd_result4 = pd_df.groupby(["key1", "key2"], as_index=False).sum().drop(["key3"], axis=1)
+        pd_result4 = pd_df.groupby(["key1", "key2"], as_index=False).sum(numeric_only=True)
         ak_result4 = ak_df.groupby(["key1", "key2"]).sum()
         assert_frame_equal(pd_result4, ak_result4.to_pandas(retain_index=True))
         assert isinstance(ak_result4, ak.dataframe.DataFrame)
@@ -1589,8 +1588,8 @@ class TestDataFrame:
                             np.allclose(previous2["vals"].tolist(), current2["vals"].tolist())
                         )
                         if not res:
-                            print(f"\nnum locales: {cfg['numLocales']}")
-                            print(f"Failure with seed:\n{iseed}")
+                            warnings.warn(f"\nnum locales: {cfg['numLocales']}")
+                            warnings.warn(f"Failure with seed:\n{iseed}")
                         assert res
 
     @pytest.mark.parametrize("size", pytest.prob_size)

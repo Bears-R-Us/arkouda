@@ -3767,7 +3767,7 @@ def minimum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scal
 
     if np.isscalar(tx1) and isinstance(tx2, pdarray):
         return (
-            full(nan, tx2.size) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))
+            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))
         )
 
     # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
@@ -3855,7 +3855,7 @@ def maximum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scal
 
     if np.isscalar(tx1) and isinstance(tx2, pdarray):
         return (
-            full(nan, tx2.size) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))
+            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))
         )
 
     # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).

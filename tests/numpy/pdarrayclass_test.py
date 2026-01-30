@@ -6,7 +6,7 @@ import pytest
 import arkouda as ak
 
 from arkouda.client import get_array_ranks, get_max_array_rank
-from arkouda.dtypes import bigint
+from arkouda.dtypes import bigint, uint8
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
@@ -96,7 +96,22 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_reshape(self, dtype):
         a = ak.arange(4, dtype=dtype)
-        r = a.reshape((2, 2))
+        r = a.reshape(2, 2)  # test sequence
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)  # test integer
+        assert ak.all(a == b)
+        r = a.reshape((2, 2))  # test tuple
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)
+        assert ak.all(a == b)
+        r = a.reshape(np.array([2, 2]))  # test ndarray
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)
+        assert ak.all(a == b)
+        r = a.reshape(ak.array([2, 2]))  # test pdarray
         assert r.shape == (2, 2)
         assert isinstance(r, ak.pdarray)
         b = r.reshape(4)
@@ -143,7 +158,7 @@ class TestPdarrayClass:
     def test_flatten_multidim(self, size, dtype):
         size = size - (size % 4)
         a = ak.arange(size, dtype=dtype)
-        b = a.reshape((2, 2, size / 4))
+        b = a.reshape((2, 2, size // 4))
         ak_assert_equal(b.flatten(), a)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -627,7 +642,7 @@ class TestPdarrayClass:
 
             assert_equivalent(b, np_b)
 
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES + [uint8])
     def test_copy(self, dtype):
         fixed_size = 100
         a = ak.arange(fixed_size, dtype=dtype)
@@ -637,7 +652,7 @@ class TestPdarrayClass:
         ak_assert_equal(a, a_cpy)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES + [uint8])
     def test_copy_multidim(self, dtype):
         a = ak.arange(1000, dtype=dtype).reshape((10, 10, 10))
         a_cpy = a.copy()

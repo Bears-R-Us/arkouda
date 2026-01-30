@@ -438,7 +438,7 @@ from arkouda.numpy.alignment import (
     zero_up,
 )
 from arkouda.plotting import hist_all, plot_dist
-from arkouda.accessor import (
+from arkouda.pandas.accessor import (
     CachedAccessor,
     DatetimeAccessor,
     Properties,

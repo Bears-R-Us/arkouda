@@ -201,7 +201,7 @@ class Properties:
     @classmethod
     def _make_op(cls, name):
         def accessop(self, *args, **kwargs):
-            from .pandas import Series
+            from . import Series
 
             results = getattr(self.series.values, name)(*args, **kwargs)
             return Series(data=results, index=self.series.index)
