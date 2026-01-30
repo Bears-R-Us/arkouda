@@ -985,7 +985,7 @@ Package Contents
       >>> df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
       >>> akdf = df.ak.to_ak()
       >>> type(akdf)
-      <class 'pandas.core.frame.DataFrame'>
+       <class 'pandas...DataFrame'>
 
       The columns are now Arkouda ExtensionArrays:
 
@@ -1989,7 +1989,7 @@ Package Contents
       <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
       >>> out = ak_idx.ak.collect()
       >>> type(out.array)
-      <class 'pandas.core.arrays.numpy_.NumpyExtensionArray'>
+      <class 'pandas...NumpyExtensionArray'>
 
 
 
@@ -2309,7 +2309,7 @@ Package Contents
       >>> s = pd.Series([1,2,3]).ak.to_ak()
       >>> out = s.ak.collect()
       >>> type(out.array)
-      <class 'pandas.core.arrays.numpy_.NumpyExtensionArray'>
+      <class 'pandas...NumpyExtensionArray'>
 
 
 

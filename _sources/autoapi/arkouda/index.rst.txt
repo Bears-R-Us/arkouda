@@ -4120,7 +4120,7 @@ Package Contents
       2    b
       3    d
       4    a
-      dtype: object
+      dtype: ...
 
 
 

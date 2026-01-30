@@ -489,18 +489,10 @@
                 <span class="c1"># M = datetime64, m = timedelta64</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid dtype: </span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdSeries</span><span class="p">):</span>
-                <span class="c1"># Pandas Datetime and Timedelta</span>
-                <span class="c1"># Get units of underlying numpy datetime64 array</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime_data</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: ignore [arg-type]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">_get_factor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
-                <span class="c1"># Create pdarray</span>
+                <span class="c1"># from_series() already returns int64 nanoseconds for datetime/timedelta</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">_BASE_UNIT</span>  <span class="c1"># &quot;ns&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">from_series</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
-                <span class="c1"># Scale if necessary</span>
-                <span class="c1"># This is futureproofing; it will not be used unless pandas</span>
-                <span class="c1"># changes its Datetime implementation</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="c1"># Scale inplace because we already created a copy</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="c1"># Numpy datetime64 and timedelta64</span>
                 <span class="c1"># Force through pandas.Series</span>
