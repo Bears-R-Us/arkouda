@@ -1,5 +1,14 @@
 # flake8: noqa
 
+import warnings
+
+warnings.warn(
+    "arkouda.pdarrayclass is deprecated and will be removed in a future release. "
+    "Please use arkouda.numpy.pdarrayclass instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from arkouda.numpy.pdarrayclass import (
     RegistrationError,
     all,
