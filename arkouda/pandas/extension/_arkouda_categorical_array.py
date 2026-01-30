@@ -216,6 +216,11 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
         return zeros(self._data.size, dtype=bool_)
 
+    def isnull(self):
+        from arkouda.numpy.pdarraycreation import zeros
+
+        return zeros(self._data.size, dtype=bool_)
+
     @property
     def dtype(self):
         return ArkoudaCategoricalDtype()
@@ -336,9 +341,6 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
     @classmethod
     def from_codes(cls, *args, **kwargs):
         raise NotImplementedError("from_codes is not yet implemented for ArkoudaCategoricalArray.")
-
-    def isnull(self, *args, **kwargs):
-        self._categorical_not_implemented("isnull")
 
     def memory_usage(self, *args, **kwargs):
         self._categorical_not_implemented("memory_usage")

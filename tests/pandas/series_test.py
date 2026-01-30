@@ -802,3 +802,79 @@ class TestSeries:
             _s1.iloc[[True, False, True]]
         with pytest.raises(IndexError):
             s1.iloc[[True, False, True]]
+
+    def test_isnull(self):
+        numeric_cases = [
+            [1, 0, np.nan, 3, np.nan],
+            [1, None, 3, None],
+            [1, 2, 3],
+            [np.nan, np.nan, np.nan],
+            [],
+        ]
+
+        string_cases = [
+            ["a", "", "c", ""],
+        ]
+
+        # numeric
+        for case in numeric_cases:
+            cleaned = [float(x) if x is not None else np.nan for x in case]
+
+            pd_case = pd.Series(cleaned, dtype="float")
+            expected = pd_case.isnull().to_list()
+
+            ak_case = ak.Series(cleaned)
+            result = ak_case.isnull()
+
+            ak_list = result.values.to_ndarray().tolist()
+            assert ak_list == expected
+
+        # string
+        for case in string_cases:
+            pd_case = pd.Series(case, dtype="string")
+            expected = [False] * len(case)
+
+            ak_case = ak.Series(case)
+            result = ak_case.isnull()
+            ak_list = result.values.to_ndarray().tolist()
+
+            assert ak_list == expected
+
+        # Series numeric
+        pd_series_num = pd.Series([1.0, np.nan, 3.0, np.nan])
+        ak_series_num = ak.Series([1.0, ak.nan, 3.0, ak.nan])
+
+        assert (ak_series_num.isnull().values.to_ndarray() == pd_series_num.isnull().values).all()
+
+        # Series string
+        pd_series_str = pd.Series(["a", "", "b", ""])
+        ak_series_str = ak.Series(["a", "", "b", ""])
+
+        assert (ak_series_str.isnull().values.to_ndarray() == pd_series_str.isnull().values).all()
+
+        # Dataframe numeric
+        pd_df = pd.DataFrame(
+            {
+                "a": [1.0, np.nan, 3.0],
+                "b": [np.nan, 2.0, np.nan],
+            }
+        )
+        ak_df = ak.DataFrame(pd_df)
+
+        for col in pd_df.columns:
+            pd_mask = pd_df[col].isnull().values
+
+            ak_col = ak.Series(ak_df[col])
+            ak_mask = ak_col.isnull().values.to_ndarray()
+
+            assert (ak_mask == pd_mask).all()
+
+    def test_isnull_categorical(self):
+        strings = ak.array(["a", "b", "NA", "a"])
+        cat = ak.Categorical(strings)
+        cat.codes[2] = -1
+        s = Series(cat)
+        result = s.isnull().to_ndarray()
+        expected = np.array([False, False, True, False])
+
+        assert (result == expected).all(), f"Expected {expected}, got {result}"

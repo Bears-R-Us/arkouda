@@ -1386,6 +1386,9 @@ class Series:
         if isinstance(self.values, SegArray):
             raise TypeError("isna is not supported for SegArray-backed Series")
 
+        if hasattr(self.values, "codes") and hasattr(self.values, "categories"):
+            return Series(self.values.codes == -1, index=self.index)
+
         if not is_float(self.values):
             return Series(full(self.values.size, False, dtype=bool), index=self.index)
 
