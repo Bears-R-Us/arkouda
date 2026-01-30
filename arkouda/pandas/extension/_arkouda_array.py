@@ -76,7 +76,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     ArkoudaArray([10 20 30])
     """
 
-    default_fill_value: int = -1
+    default_fill_value: int = 0
 
     def __init__(
         self,
@@ -110,6 +110,17 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
         from arkouda.numpy.pdarraycreation import array as ak_array
+
+        # normalize dtype input
+        if (
+            dtype is not None
+            and (
+                getattr(dtype, "name", None) in {"bigint", "ak.bigint"}
+                or str(dtype) in {"bigint", "ak.bigint"}
+            )
+            or dtype is ArkoudaBigintDtype
+        ):
+            dtype = "bigint"
 
         # If pandas passes our own EA dtype, ignore it and infer from data
         if isinstance(dtype, _ArkoudaBaseDtype):

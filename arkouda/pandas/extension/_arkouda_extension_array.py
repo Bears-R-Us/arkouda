@@ -77,7 +77,7 @@ def _ensure_numpy(x):
 
 
 class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
-    default_fill_value: Optional[Union[all_scalars, str]] = -1
+    default_fill_value: Optional[Union[all_scalars, str]] = 0
 
     _data: Any
 
@@ -406,6 +406,15 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
         if fill_value is None:
             fill_value = self.default_fill_value
 
+        # Pandas commonly passes fill_value=-1 for integer-like data when allow_fill=True.
+        # That cannot be represented in unsigned dtypes; fall back to a safe fill.
+        try:
+            if hasattr(self._data.dtype, "kind") and self._data.dtype.kind == "u" and fill_value < 0:
+                fill_value = self.default_fill_value
+        except TypeError:
+            # Non-numeric fill_value; let the cast below raise a sensible error
+            pass
+
         # cast once to ensure dtype match
         fv = self._data.dtype.type(fill_value)
 
@@ -418,7 +427,15 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
         if oob.any():
             raise IndexError("indexer out of bounds in take with allow_fill=True")
 
-        gathered = ak.where(mask, fv, self._data[idx_fix])
+        # gathered = ak.where(mask, fv, self._data[idx_fix])
+        data = self._data[idx_fix]
+
+        if self._data.dtype == ak.bigint:  # or however dtype compares in your codebase
+            gathered = data.copy()
+            gathered[mask] = fill_value
+        else:
+            gathered = ak.where(mask, fv, data)
+
         return type(self)(gathered)
 
     def factorize(self, use_na_sentinel=True) -> Tuple[NDArray[np.intp], "ArkoudaExtensionArray"]:
