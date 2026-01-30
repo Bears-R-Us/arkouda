@@ -6,7 +6,6 @@ from typing import (
     Iterable,
     List,
     Literal,
-    Never,
     Optional,
     Tuple,
     TypeVar,
@@ -14,6 +13,12 @@ from typing import (
     cast,
     overload,
 )
+
+try:
+    from typing import Never  # Python 3.11+
+except ImportError:
+    from typing_extensions import Never  # Python ≤3.10
+
 from typing import cast as type_cast
 
 import numpy as np
