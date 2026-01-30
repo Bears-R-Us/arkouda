@@ -762,7 +762,6 @@ def ones(
     Logic for generating the pdarray is delegated to the ak.full method.
     """
     dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
     return full(size=size, fill_value=1, dtype=dtype, max_bits=max_bits)
 
 
