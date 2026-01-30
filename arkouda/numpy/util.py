@@ -1068,6 +1068,8 @@ def map(
                     f"Mapping MultiIndex has {len(mkeys)} levels but GroupBy has {len(gb_keys)} keys"
                 )
 
+        # invert=True => mask is True for GroupBy unique keys that are *missing* from the mapping,
+        # i.e., values that should be filled with NaN/"null".
         mask = in1d(gb_keys, mkeys, invert=True)
 
         # Compute extra keys + extra size without mixing tuple/non-tuple assignments
