@@ -139,6 +139,7 @@ def _in1d_single(
         raise TypeError("Both pda1 and pda2 must be pdarray, Strings, or Categorical")
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def in1d(
     A: groupable,
@@ -149,6 +150,7 @@ def in1d(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def in1d(
     A: groupable,
