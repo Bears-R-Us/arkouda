@@ -28,7 +28,10 @@ def bench_array_transfer_to_ndarray(benchmark, dtype):
         ak.client.maxTransferBytes = num_bytes
 
         def to_nd():
-            a.to_ndarray()
+            x = a.to_ndarray()
+            # touch x so it isn't optimized away
+            _ = x[0]
+            del x
 
         benchmark.pedantic(to_nd, rounds=pytest.trials)
 
@@ -51,7 +54,9 @@ def bench_array_transfer_from_ndarray(benchmark, dtype):
         npa = a.to_ndarray()
 
         def from_np():
-            ak.array(npa, max_bits=pytest.max_bits)
+            x = ak.array(npa, max_bits=pytest.max_bits)
+            if hasattr(x, "__del__"):
+                x.__del__()
 
         benchmark.pedantic(from_np, rounds=pytest.trials)
 
