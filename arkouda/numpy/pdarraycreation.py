@@ -5,6 +5,8 @@ from typing import (
     Any,
     Iterable,
     List,
+    Literal,
+    Never,
     Optional,
     Tuple,
     TypeVar,
@@ -20,7 +22,14 @@ import pandas as pd
 from numpy.typing import NDArray
 from typeguard import typechecked
 
-from arkouda.numpy._typing._typing import _NumericLikeDType, _StringDType
+from arkouda.numpy._typing._typing import (
+    ArkoudaNumericTypes,
+    BuiltinNumericTypes,
+    NumericDTypeTypes,
+    StringDTypeTypes,
+    _NumericLikeDType,
+    _StringDType,
+)
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     NumericDTypes,
@@ -580,10 +589,26 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     )
 
 
+@overload
+def zeros(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    dtype: Union[NumericDTypeTypes, type[bigint]] = ...,
+    max_bits: Optional[int] = ...,
+) -> pdarray: ...
+
+
+@overload
+def zeros(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    dtype: StringDTypeTypes,
+    max_bits: Optional[int] = ...,
+) -> Never: ...
+
+
 @typechecked
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    dtype: Union[np.dtype, type, str, bigint] = float64,
+    dtype: Union[NumericDTypeTypes, type[bigint]] = float64,
     max_bits: Optional[int] = None,
 ) -> pdarray:
     """
@@ -661,10 +686,28 @@ def zeros(
     return create_pdarray(rep_msg, max_bits=max_bits)
 
 
+# 1) Explicit string dtype → Strings
+@overload
+def ones(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    dtype: StringDTypeTypes,
+    max_bits: Optional[int] = ...,
+) -> Strings: ...
+
+
+# 2) Numeric dtype (including bigint, None, etc.) → pdarray
+@overload
+def ones(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    dtype: Union[NumericDTypeTypes, type[bigint]] = ...,
+    max_bits: Optional[int] = ...,
+) -> pdarray: ...
+
+
 @typechecked
 def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    dtype: Union[np.dtype, type, str, bigint] = float64,
+    dtype: Union[NumericDTypeTypes, StringDTypeTypes, type[bigint]] = float64,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
@@ -733,16 +776,7 @@ def full(
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    fill_value: Union[numeric_and_bool_scalars, str_scalars],
-    dtype: str,
-    max_bits: Optional[int] = ...,
-) -> Strings: ...
-
-
-@overload
-def full(
-    size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    fill_value: Union[numeric_and_bool_scalars],
+    fill_value: numeric_and_bool_scalars,
     dtype: None = ...,
     max_bits: Optional[int] = ...,
 ) -> pdarray: ...
@@ -752,7 +786,34 @@ def full(
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     fill_value: Union[numeric_and_bool_scalars, str_scalars],
-    dtype: Union[np.dtype, type, bigint],
+    dtype: StringDTypeTypes,
+    max_bits: Optional[int] = ...,
+) -> Strings: ...
+
+
+# Explicit numeric dtype (dtype object / numeric type / bigint sentinel),
+# excluding None to avoid overlapping with the inference overloads above.
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: Union[
+        np.dtype[Any],
+        BuiltinNumericTypes,
+        ArkoudaNumericTypes,
+        bigint,
+        type[bigint],
+    ],
+    max_bits: Optional[int] = ...,
+) -> pdarray: ...
+
+
+# Explicit numeric dtype-name strings (again excluding None)
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: Literal["bigint", "float64", "int8", "int64", "uint8", "uint64", "bool", "bool_"],
     max_bits: Optional[int] = ...,
 ) -> pdarray: ...
 
@@ -761,7 +822,7 @@ def full(
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     fill_value: Union[numeric_and_bool_scalars, str_scalars],
-    dtype: Union[None, np.dtype, type, str, bigint] = None,
+    dtype: Union[StringDTypeTypes, NumericDTypeTypes, type[bigint]] = None,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
