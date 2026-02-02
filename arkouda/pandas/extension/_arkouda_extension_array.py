@@ -53,7 +53,6 @@ import numpy as np
 
 from numpy.typing import NDArray
 from pandas.api.extensions import ExtensionArray
-from pandas.core.arraylike import OpsMixin
 from typing_extensions import Self
 
 from arkouda.numpy.dtypes import all_scalars
@@ -76,7 +75,7 @@ def _ensure_numpy(x):
     return np.asarray(x)
 
 
-class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
+class ArkoudaExtensionArray(ExtensionArray):
     default_fill_value: Optional[Union[all_scalars, str]] = -1
 
     _data: Any
