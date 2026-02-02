@@ -32,9 +32,11 @@ from arkouda.numpy.dtypes import (
     int_scalars,
     is_supported_int,
     is_supported_number,
+    numeric_and_bool_scalars,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
+    str_scalars,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
@@ -664,7 +666,7 @@ def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
-) -> pdarray:
+) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with ones.
 
@@ -719,11 +721,47 @@ def ones(
     return full(size=size, fill_value=1, dtype=dtype, max_bits=max_bits)
 
 
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: str_scalars,
+    dtype: None = ...,
+    max_bits: Optional[int] = ...,
+) -> Strings: ...
+
+
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: str,
+    max_bits: Optional[int] = ...,
+) -> Strings: ...
+
+
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars],
+    dtype: None = ...,
+    max_bits: Optional[int] = ...,
+) -> pdarray: ...
+
+
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: Union[np.dtype, type, bigint],
+    max_bits: Optional[int] = ...,
+) -> pdarray: ...
+
+
 @typechecked
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    fill_value: Union[numeric_scalars, np.bool, str],
-    dtype: Union[np.dtype, type, str, bigint] = float64,
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: Union[None, np.dtype, type, str, bigint] = None,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
@@ -733,10 +771,10 @@ def full(
     ----------
     size: int_scalars or tuple of int_scalars
         Size or shape of the array
-    fill_value: int_scalars or str
+    fill_value: numeric_scalars, bool_scalars or str_scalars
         Value with which the array will be filled
     dtype: all_scalars
-        Resulting array type, default float64
+        Resulting array type.  If None, it will be inferred from fill_value
     max_bits: int
         Specifies the maximum number of bits; only used for bigint pdarrays
 
@@ -755,6 +793,7 @@ def full(
 
     ValueError
         Raised if the rank of the given shape is not in get_array_ranks() or is empty
+        Raised if a multi-dim Strings array was requested
         Raised if max_bits is not NONE and ndim does not equal 1
 
     See Also
@@ -775,32 +814,44 @@ def full(
     array([True True True True True])
     """
     from arkouda.client import generic_msg, get_array_ranks
-    from arkouda.numpy.dtypes import dtype as ak_dtype
     from arkouda.numpy.pdarrayclass import create_pdarray
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
-    if isinstance(fill_value, str):
-        return _full_string(size, fill_value)
-    elif ak_dtype(dtype) == str_ or dtype == Strings:
-        return _full_string(size, str_(fill_value))
-
-    dtype = dtype if dtype is not None else resolve_scalar_dtype(fill_value)
-
-    dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
-    # check dtype for error
-    if dtype_name not in NumericDTypes:
-        raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    #  Process the arguments (size, fill_value, dtype) before choosing an action.
 
     shape, ndim, full_size = _infer_shape_from_size(size)
+    fv_dtype = akdtype(resolve_scalar_dtype(fill_value))  # derived from fill_value
+    dtype = dtype if dtype is not None else fv_dtype  # must allow it to be None
+
+    if isinstance(dtype, bigint) or isinstance(dtype, np.dtype):
+        dtype_name = dtype.name
+    elif isinstance(dtype, type) or isinstance(dtype, str):
+        dtype_name = akdtype(dtype).name
+    else:
+        raise TypeError(f"Unsupported dtype {dtype!r}")
+
+    #  The only string cases.
+
+    if dtype == Strings or akdtype(dtype) == str_:
+        if ndim != 1:
+            raise ValueError(f"Size parameter {size} incompatible with Strings.")
+        else:
+            if isinstance(fill_value, float):  # needed to match numpy, which
+                fill_value = int(fill_value)  # truncates floats to ints before "str"
+            return _full_string(full_size, str(fill_value))
+
+    #  Remaining cases are all numeric.  Check dtype for error
+
+    if dtype_name not in NumericDTypes:
+        raise TypeError(f"Unsupported dtype {dtype} in ak.full")
+
+    #  dtype is supported.  Two more checks.
 
     if ndim not in get_array_ranks():
-        raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
+        raise ValueError(f"Array rank {ndim} not in compiled ranks {get_array_ranks()}")
 
     if isinstance(shape, tuple) and len(shape) == 0:
-        raise ValueError("size () not currently supported in ak.full.")
+        raise ValueError("Empty shape () not currently supported in ak.full.")
 
     rep_msg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
@@ -1370,10 +1421,10 @@ def linspace(
     if endpoint is None:
         endpoint = True
 
+    #   First make sure everything's a float.
+
     start_ = start
     stop_ = stop
-
-    #   First make sure everything's a float.
 
     if isinstance(start_, pdarray):
         start_ = start_.astype(float64)
@@ -1433,7 +1484,10 @@ def linspace(
     else:
         if axis == 0:
             delta = (stop_ - start_) / divisor
-            result = full(num, start_) + arange(num).astype(float64) * delta
+            if isinstance(start_, (int, float, np.number)):  # required for mypy
+                result = full(num, start_) + arange(num).astype(float64) * delta
+            else:  # this should be impossible to reach
+                raise TypeError("Non-numeric start value found in linspace.")
         else:
             raise ValueError("axis should not be supplied when start and stop are scalars.")
 
