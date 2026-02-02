@@ -594,6 +594,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     )
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -602,6 +603,7 @@ def zeros(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -610,6 +612,7 @@ def zeros(
 ) -> Never: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @typechecked
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -692,6 +695,8 @@ def zeros(
 
 
 # 1) Explicit string dtype → Strings
+
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -701,6 +706,8 @@ def ones(
 
 
 # 2) Numeric dtype (including bigint, None, etc.) → pdarray
+
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -770,6 +777,7 @@ def ones(
     return full(size=size, fill_value=1, dtype=dtype, max_bits=max_bits)
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -779,6 +787,7 @@ def full(
 ) -> Strings: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -788,6 +797,7 @@ def full(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -799,6 +809,8 @@ def full(
 
 # Explicit numeric dtype (dtype object / numeric type / bigint sentinel),
 # excluding None to avoid overlapping with the inference overloads above.
+
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -815,6 +827,8 @@ def full(
 
 
 # Explicit numeric dtype-name strings (again excluding None)
+
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
