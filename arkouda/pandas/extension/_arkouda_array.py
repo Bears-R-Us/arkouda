@@ -393,6 +393,194 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         self._data[key] = value
 
+    # -------------------------------------------------------------------------
+    # Dunder operator helpers
+    # -------------------------------------------------------------------------
+    def _coerce_other_for_binop(self, other: Any):
+        """
+        Normalize `other` for binary ops.
+
+        Returns a tuple (other_norm, kind) where:
+          - other_norm is one of: scalar, pdarray
+          - kind is one of: "scalar", "pdarray", "notimpl"
+
+        Notes
+        -----
+          - Accepts ArkoudaArray, pdarray, numpy arrays, and python sequences.
+          - Leaves non-scalar unsupported objects as NotImplemented.
+        """
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
+        if isinstance(other, ArkoudaArray):
+            return other._data, "pdarray"
+
+        if isinstance(other, pdarray):
+            return other, "pdarray"
+
+        if np.isscalar(other):
+            return other, "scalar"
+
+        if isinstance(other, (list, tuple, np.ndarray)):
+            # Let arkouda infer dtype; for bool ops we may override elsewhere.
+            return ak_array(other), "pdarray"
+
+        return None, "notimpl"
+
+    def _check_compatible_lengths(self, other_pdarray) -> None:
+        """
+        Enforce elementwise length compatibility.
+        Allow scalar-broadcast pdarray of size 1.
+        """
+        if getattr(other_pdarray, "size", None) not in (1, len(self)):
+            raise ValueError("Lengths must match for elementwise operation")
+
+    def _binary_op(self, other: Any, op, *, require_bool: bool = False):
+        """
+        Core binary operator for self <op> other.
+        `op` should be a callable accepting (lhs, rhs) returning a pdarray/scalar.
+        """
+        other_norm, kind = self._coerce_other_for_binop(other)
+        if kind == "notimpl":
+            return NotImplemented
+
+        if require_bool and self._data.dtype != "bool":
+            return NotImplemented
+
+        if kind == "pdarray":
+            if require_bool and getattr(other_norm, "dtype", None) != "bool":
+                return NotImplemented
+            # elementwise length check unless scalar-broadcast pdarray
+            self._check_compatible_lengths(other_norm)
+            return type(self)(op(self._data, other_norm))
+
+        # scalar
+        if require_bool and not isinstance(other_norm, (bool, np.bool_)):
+            return NotImplemented
+        return type(self)(op(self._data, other_norm))
+
+    def _rbinary_op(self, other: Any, op, *, require_bool: bool = False):
+        """Core binary operator for other <op> self (reverse op)."""
+        other_norm, kind = self._coerce_other_for_binop(other)
+        if kind == "notimpl":
+            return NotImplemented
+
+        if require_bool and self._data.dtype != "bool":
+            return NotImplemented
+
+        if kind == "pdarray":
+            if require_bool and getattr(other_norm, "dtype", None) != "bool":
+                return NotImplemented
+            self._check_compatible_lengths(other_norm)
+            return type(self)(op(other_norm, self._data))
+
+        # scalar
+        if require_bool and not isinstance(other_norm, (bool, np.bool_)):
+            return NotImplemented
+        return type(self)(op(other_norm, self._data))
+
+    def _unary_op(self, op):
+        """Core unary operator, returning ArkoudaArray or NotImplemented."""
+        try:
+            return type(self)(op(self._data))
+        except Exception:
+            return NotImplemented
+
+    # -------------------------------------------------------------------------
+    # Arithmetic dunders
+    # -------------------------------------------------------------------------
+    def __add__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a + b)
+
+    def __radd__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a + b)
+
+    def __sub__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a - b)
+
+    def __rsub__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a - b)
+
+    def __mul__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a * b)
+
+    def __rmul__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a * b)
+
+    def __truediv__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a / b)
+
+    def __rtruediv__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a / b)
+
+    def __floordiv__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a // b)
+
+    def __rfloordiv__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a // b)
+
+    def __mod__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a % b)
+
+    def __rmod__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a % b)
+
+    def __pow__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a**b)
+
+    def __rpow__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a**b)
+
+    # Unary arithmetic
+    def __neg__(self):
+        return self._unary_op(lambda a: -a)
+
+    def __pos__(self):
+        return self._unary_op(lambda a: +a)
+
+    def __abs__(self):
+        return self._unary_op(lambda a: abs(a))
+
+    # -------------------------------------------------------------------------
+    # Comparison dunders (elementwise, return ArkoudaArray[bool])
+    # -------------------------------------------------------------------------
+
+    def __ne__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a != b)
+
+    def __lt__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a < b)
+
+    def __le__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a <= b)
+
+    def __gt__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a > b)
+
+    def __ge__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a >= b)
+
+    # -------------------------------------------------------------------------
+    # Bitwise / logical dunders (only for bool dtype)
+    # -------------------------------------------------------------------------
+    def __and__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a & b, require_bool=True)
+
+    def __rand__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a & b, require_bool=True)
+
+    def __xor__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a ^ b, require_bool=True)
+
+    def __rxor__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a ^ b, require_bool=True)
+
+    def __invert__(self):
+        # ~ only makes sense for boolean arrays here (or integer bitwise if you later want it)
+        if self._data.dtype != "bool":
+            return NotImplemented
+        return type(self)(~self._data)
+
     # docstr-coverage:excused `typing-only overload stub`
     @overload
     def astype(self, dtype: np.dtype[Any], copy: bool = True) -> NDArray[Any]: ...
@@ -489,6 +677,7 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return type_cast(ExtensionArray, ArkoudaExtensionArray._from_sequence(casted))
 
         # --- 2) object -> numpy (satisfies overload #1 / general) ---
+
         if dtype in (object, np.object_, "object", np.dtype("O")):
             return self.to_ndarray().astype(object, copy=False)
 
