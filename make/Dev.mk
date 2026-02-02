@@ -26,4 +26,4 @@ chplcheck:
 COV_MIN ?= 100
 .PHONY: coverage
 coverage:
-	python3 -m pytest -c pytest.ini  --cov=$(ARKOUDA_PROJECT_DIR)/arkouda --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=$(COV_MIN) --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) --skip_doctest="True"
+	python3 -m pytest -c pytest.ini  --cov=arkouda --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=$(COV_MIN) --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) --skip_doctest="True"
