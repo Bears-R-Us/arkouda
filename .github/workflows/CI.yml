@@ -395,7 +395,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.4.0','2.5.0','2.6.0','2.7.0']
+        chpl-version: ['2.5.0','2.6.0','2.7.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -436,7 +436,7 @@ jobs:
       ARKOUDA_CONFIG_FILE: .configs/MultiDimTestServerModules.cfg
     strategy:
       matrix:
-        chpl-version: ['2.4.0','2.5.0','2.6.0','2.7.0']
+        chpl-version: ['2.5.0','2.6.0','2.7.0']
       max-parallel: 3
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
