@@ -612,7 +612,6 @@ def zeros(
 ) -> Never: ...
 
 
-# docstr-coverage:excused `overload-only, docs live on impl`
 @typechecked
 def zeros(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
