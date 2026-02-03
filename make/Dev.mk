@@ -15,6 +15,7 @@ format: ruff-format isort check-doc-examples
 	
 docstr-coverage:
 	#   Check coverage for doc strings:
+	mkdir -p $(ARKOUDA_PROJECT_DIR)/docs
 	docstr-coverage arkouda --config .docstr.yaml
 
 
