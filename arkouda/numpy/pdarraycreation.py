@@ -14,6 +14,7 @@ from typing import (
     overload,
 )
 
+
 try:
     from typing import Never  # Python 3.11+
 except ImportError:
@@ -695,6 +696,7 @@ def zeros(
 
 # 1) Explicit string dtype → Strings
 
+
 # docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def ones(
@@ -705,6 +707,7 @@ def ones(
 
 
 # 2) Numeric dtype (including bigint, None, etc.) → pdarray
+
 
 # docstr-coverage:excused `overload-only, docs live on impl`
 @overload
@@ -809,6 +812,7 @@ def full(
 # Explicit numeric dtype (dtype object / numeric type / bigint sentinel),
 # excluding None to avoid overlapping with the inference overloads above.
 
+
 # docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
@@ -826,6 +830,7 @@ def full(
 
 
 # Explicit numeric dtype-name strings (again excluding None)
+
 
 # docstr-coverage:excused `overload-only, docs live on impl`
 @overload
