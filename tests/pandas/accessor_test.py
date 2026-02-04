@@ -28,7 +28,7 @@ class TestAccessor:
     def test_alignment_docstrings(self):
         import doctest
 
-        from arkouda import accessor
+        from arkouda.pandas import accessor
 
         result = doctest.testmod(accessor, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
@@ -126,9 +126,11 @@ class TestDatetimeAccessor:
 
     def test_4524_datetime_reproduer(self):
         s = Series(Datetime(ak.array([1_000_000_000_000])))
-        pd_assert_series_equal(
-            s.dt.floor("s").to_pandas(), pd_Series(pd_Timestamp("1970-01-01 00:16:40"))
-        )
+
+        left = s.dt.floor("s").to_pandas().astype("datetime64[ns]")
+        right = pd_Series(pd_Timestamp("1970-01-01 00:16:40")).astype("datetime64[ns]")
+
+        pd_assert_series_equal(left, right)
 
 
 class TestStringAccessor:

@@ -710,6 +710,7 @@ def broadcast_to(x: Union[numeric_scalars, pdarray], shape: Union[int, Tuple[int
     from arkouda.numpy.pdarraycreation import full as akfull
 
     if _val_isinstance_of_union(x, numeric_scalars):
+        assert not isinstance(x, pdarray)  # Required for mypy
         return akfull(shape, x, dtype=type(x))
     elif isinstance(x, pdarray) and isinstance(shape, int):
         if x.ndim == 1 and x.size == shape:
@@ -1024,6 +1025,7 @@ def map(
         xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
 
         if xtra_keys.size > 0:
+            nans: Union[pdarray, Strings]  # without this, mypy complains
             if not isinstance(mapping.values, (Strings, Categorical)):
                 nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
             else:

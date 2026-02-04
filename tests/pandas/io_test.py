@@ -241,7 +241,7 @@ class TestParquet:
     def test_io_docstrings(self, par_test_base_tmp):
         import doctest
 
-        from arkouda import io
+        from arkouda.pandas import io
 
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             old_cwd = os.getcwd()

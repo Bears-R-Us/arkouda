@@ -683,6 +683,12 @@ class pdarray:
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
+    def __abs__(self):
+        """Absolute value (abs(self))."""
+        from arkouda.numpy.numeric import abs as ak_abs
+
+        return ak_abs(self)
+
     @property
     def shape(self):
         """

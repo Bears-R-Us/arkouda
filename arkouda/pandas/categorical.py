@@ -1163,15 +1163,15 @@ class Categorical:
 
         >>> cat = ak.Categorical(ak.array(['dog', 'cat', 'dog', 'bird']))
         >>> cat.argsort()
-        array([3, 1, 0, 2])  # 'bird' < 'cat' < 'dog'
+        array([3 1 0 2])
 
         >>> cat.argsort(ascending=False)
-        array([2, 0, 1, 3])
+        array([2 0 1 3])
 
         The result can be used to reorder the Categorical:
         >>> sorted_cat = cat[cat.argsort()]
         >>> sorted_cat
-        Categorical(['bird', 'cat', 'dog', 'dog'])
+        array(['bird', 'cat', 'dog', 'dog'])
 
         """
         from arkouda import arange, zeros_like

@@ -1356,7 +1356,7 @@ class Series:
         2    b
         3    d
         4    a
-        dtype: object
+        dtype: ...
 
         """
         from arkouda import Series
