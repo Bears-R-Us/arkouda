@@ -9,7 +9,7 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import NumericDTypes, dtype, int_scalars
 from arkouda.numpy.pdarrayclass import create_pdarrays, pdarray
 
@@ -84,7 +84,7 @@ class sparray:
             self.max_bits = max_bits
 
     def __del__(self):  # pragma: no cover
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         try:
             logger.debug(f"deleting sparray with name {self.name}")
@@ -107,12 +107,12 @@ class sparray:
         raise NotImplementedError("sparray does not support __getitem__")
 
     def __str__(self):
-        from arkouda.client import generic_msg, sparrayIterThresh
+        from arkouda.core.client import generic_msg, sparrayIterThresh
 
         return generic_msg(cmd="str", args={"array": self, "printThresh": sparrayIterThresh})
 
     # def __repr__(self):
-    #     from arkouda.client import sparrayIterThresh
+    #     from arkouda.core.client import sparrayIterThresh
     #     print("Called repr")
     #     return generic_msg(cmd="repr", args={"array": self, "printThresh": sparrayIterThresh})
 
@@ -134,7 +134,7 @@ class sparray:
 
     @typechecked
     def to_pdarray(self) -> List[pdarray]:
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         dtype = self.dtype
         dtype_name = cast(np.dtype, dtype).name
@@ -150,7 +150,7 @@ class sparray:
     """"""
 
     def fill_vals(self, a: pdarray):
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.dtype != a.dtype:
             raise ValueError("sparray and pdarray must have the same dtype for fill_vals")

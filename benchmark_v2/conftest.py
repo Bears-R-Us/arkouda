@@ -9,7 +9,7 @@ import pytest
 
 import arkouda as ak
 
-from arkouda.client import get_array_ranks
+from arkouda.core.client import get_array_ranks
 from server_util.test.server_test_util import (
     TestRunningMode,
     get_arkouda_numlocales,

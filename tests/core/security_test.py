@@ -2,7 +2,7 @@ import platform
 
 from os.path import expanduser
 
-from arkouda import security
+from arkouda.core import security
 
 
 class TestSecurity:

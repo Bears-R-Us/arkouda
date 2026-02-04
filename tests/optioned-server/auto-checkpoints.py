@@ -28,7 +28,7 @@ Another unknown delay is from when the checkpointing starts until it finishes,
 especially it needs to save a noticeable amount of data. For that, we use
 a testing helper that waits for an in-progres auto-checkpointing, if any,
 to complete:
-    ak.client.wait_for_async_activity()
+    ak.core.client.wait_for_async_activity()
 
 `ak.load_checkpoint()` tells us whether an auto-checkpoint has been created
 successfully. We do not test checkpoint correctness here. We leave that for
@@ -88,7 +88,7 @@ class TestIdleAndInterval:
         assert not directory_exists(autockptDir)
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
-        ak.client.wait_for_async_activity()
+        ak.core.client.wait_for_async_activity()
         delete_directory(autockptDir)
         b = ak.ones(pytest.prob_size[0])
         # expect auto-checkpointing after ~3 seconds [checkpointInterval]
@@ -96,7 +96,7 @@ class TestIdleAndInterval:
         assert not directory_exists(autockptDir)
         sleep(1)
         assert directory_exists_delayed(autockptDir, 10)
-        ak.client.wait_for_async_activity()
+        ak.core.client.wait_for_async_activity()
         c = ak.ones(pytest.prob_size[0])
         # expect another auto-checkpointing after ~3 seconds [checkpointInterval]
         # that will move autockptDir to autockptPrevDir and create a new autockptDir;
@@ -106,7 +106,7 @@ class TestIdleAndInterval:
         assert not directory_exists(autockptPrevDir)
         sleep(1)
         assert directory_exists_delayed(autockptPrevDir, 10)
-        ak.client.wait_for_async_activity()
+        ak.core.client.wait_for_async_activity()
         assert directory_exists(autockptDir)
         # verify that these checkpoints were created successfully
         ak.load_checkpoint(autockptName)
@@ -156,7 +156,7 @@ class TestMemPct:
         big_array = ak.zeros(int(avail_mem / 140))  # over 5% of avail_mem
         sleep(1.5)
         assert directory_exists_delayed(autockptDir, 10)
-        ak.client.wait_for_async_activity()
+        ak.core.client.wait_for_async_activity()
         delete_directory(autockptDir)
         sleep(2.5)
         assert not directory_exists(autockptDir)

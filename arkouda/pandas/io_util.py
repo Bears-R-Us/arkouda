@@ -45,7 +45,7 @@ from os.path import isdir
 from pathlib import Path
 from typing import Any, Dict, Mapping
 
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.logger import get_arkouda_logger
 
 
 __all__ = [
