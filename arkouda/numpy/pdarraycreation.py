@@ -882,6 +882,7 @@ def ones(
     return full(size=size, fill_value=1, dtype=dtype, max_bits=max_bits)
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -891,6 +892,7 @@ def full(
 ) -> Strings: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -900,6 +902,7 @@ def full(
 ) -> Strings: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
@@ -909,6 +912,7 @@ def full(
 ) -> pdarray: ...
 
 
+# docstr-coverage:excused `overload-only, docs live on impl`
 @overload
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
