@@ -21,6 +21,7 @@ module EfuncMsg
     use AryUtil;
     use CTypes;
     use OS.POSIX;
+    use BigInteger;
 
     use CommAggregation;
 
@@ -118,9 +119,14 @@ module EfuncMsg
        
     @arkouda.registerCommand(name="abs")
     proc ak_abs (const ref pda : [?d] ?t) : [d] t throws
-        where (t==int || t==real) // TODO maybe: allow uint also
+        where (t==int || t==real || t==bigint) // TODO maybe: allow uint also
     {
-        return abs(pda);
+        if t == bigint {
+            const zero: bigint = 0:bigint;
+            return [i in d] if pda[i] < zero then -pda[i] else pda[i];
+        } else {
+            return abs(pda); // promoted for int/real
+        }
     }
 
     @arkouda.registerCommand(name="square")
