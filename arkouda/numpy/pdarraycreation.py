@@ -1587,6 +1587,17 @@ def linspace(
     start_ = start
     stop_ = stop
 
+    #   Handle the special cases of num
+
+    if num == 0:
+        return array([], dtype=float64)
+
+    if num == 1:
+        if isinstance(start_, pdarray):
+            return start_.reshape((1,) + start_.shape)
+        else:
+            return array([start_], dtype=float64)
+
     if isinstance(start_, pdarray):
         start_ = start_.astype(float64)
     elif isinstance(start_, int):
