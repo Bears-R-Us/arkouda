@@ -6,7 +6,7 @@ import json
 from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, Union, cast, overload
+from typing import TYPE_CHECKING, List, Literal, Optional, Sequence, Tuple, Union, cast, overload
 
 import numpy as np
 
@@ -682,6 +682,12 @@ class pdarray:
         from arkouda.client import generic_msg, pdarrayIterThresh
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
+
+    def __abs__(self):
+        """Absolute value (abs(self))."""
+        from arkouda.numpy.numeric import abs as ak_abs
+
+        return ak_abs(self)
 
     @property
     def shape(self):
@@ -2649,7 +2655,20 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    def reshape(self, *shape):
+    @overload
+    def reshape(self, shape: Sequence[int_scalars]) -> pdarray: ...
+
+    @overload
+    def reshape(self, *shape: int_scalars) -> pdarray: ...
+
+    @overload
+    def reshape(self, shape: pdarray) -> pdarray: ...
+
+    @overload
+    def reshape(self, shape: np.ndarray) -> pdarray: ...
+
+    @typechecked
+    def reshape(self, *shape: Union[int_scalars, Sequence[int_scalars], np.ndarray, pdarray]) -> pdarray:
         """
         Gives a new shape to an array without changing its data.
 
@@ -2683,21 +2702,43 @@ class pdarray:
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
         # the lenshape variable addresses an error that occurred when a single integer was
         # passed
+        from typing import get_args
+
         from arkouda.client import generic_msg
 
+        shape_seq: Sequence[int_scalars]
+
         if len(shape) == 1:
-            shape = shape[0]
-            lenshape = 1
-        if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
-            shape = [i for i in shape]
-            lenshape = len(shape)
+            arg = shape[0]
+
+            if isinstance(arg, get_args(int_scalars)):
+                shape_seq = (arg,)
+
+            elif isinstance(arg, Sequence):
+                shape_seq = tuple(arg)
+
+            elif isinstance(arg, np.ndarray):
+                shape_seq = tuple(arg)
+
+            elif isinstance(arg, pdarray):
+                shape_seq = cast(Sequence[int_scalars], arg.tolist())
+
+            else:
+                raise TypeError(f"Invalid shape argument {shape}")
+
+        else:
+            shape_seq = cast(Sequence[int_scalars], shape)
+
+        shape_arg: list[int_scalars] = list(shape_seq)
+
+        lenshape = len(shape_arg)
 
         return create_pdarray(
             generic_msg(
                 cmd=f"reshape<{self.dtype},{self.ndim},{lenshape}>",
                 args={
                     "name": self.name,
-                    "shape": shape,
+                    "shape": shape_arg,
                 },
             ),
             max_bits=self.max_bits,
@@ -3392,6 +3433,16 @@ class pdarray:
 
 # end pdarray class def
 
+# overloads for create_pdarray
+
+
+@overload
+def create_pdarray(rep_msg: str, max_bits: int | None = ...) -> pdarray: ...
+
+
+@overload
+def create_pdarray(rep_msg: memoryview, max_bits: int | None = ...) -> pdarray: ...
+
 
 # creates pdarray object
 #   only after:
@@ -3401,13 +3452,20 @@ class pdarray:
 def create_pdarray(rep_msg: Union[str, memoryview], max_bits=None) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
-    The user should not call this function directly.
+    This is intended for internal use only.  The user should not call this function
+    directly.
 
     Parameters
     ----------
-    rep_msg : str
-        space-delimited string containing the pdarray name, datatype, size
-        dimension, shape,and itemsize
+    rep_msg : str, memoryview
+        a space-delimited response from the arkouda server describing a newly
+        created array.  The message encodes, in order, the array name, dtype,
+        total size, rank, shape, and itemsize.  If provided as a memoryview,
+        it will be decoded to a UTF-8 string before parsing.
+
+    max_bits: int, optional
+        The maximum number of bits used to represent values in the array,
+        used for bigint.
 
     Returns
     -------

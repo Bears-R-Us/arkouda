@@ -23,7 +23,6 @@ from typeguard import typechecked
 from arkouda.numpy._typing._typing import _NumericLikeDType, _StringDType
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
-    DTypes,
     NumericDTypes,
     bigint,
     bool_scalars,
@@ -33,9 +32,11 @@ from arkouda.numpy.dtypes import (
     int_scalars,
     is_supported_int,
     is_supported_number,
+    numeric_and_bool_scalars,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
+    str_scalars,
 )
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
@@ -273,42 +274,8 @@ def array(
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
     if dtype is not None and dtype not in [bigint, "bigint"]:
         a = a.astype(dtype)
-    if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a) and dtype is None:
+    if a.dtype == object and dtype is None and all(isinstance(x, (int, np.integer)) for x in a.flat):
         dtype = bigint
-
-    #   Special case, to get around error when putting negative numbers in a bigint
-
-    if (
-        not isinstance(a, Strings)
-        and not np.issubdtype(a.dtype, np.str_)
-        and dtype == bigint
-        and (a < 0).any()
-    ):
-        neg_mask = array((a < 0) * -2 + 1)
-        abs_a = array(abs(a), dtype, max_bits=max_bits)
-        assert isinstance(abs_a, pdarray)  # This is for mypy reasons
-        return neg_mask * abs_a
-
-    if a.dtype == bigint or a.dtype.name not in DTypes or dtype == bigint:
-        # We need this array whether the number of dimensions is 1 or greater.
-        uint_arrays: List[Union[pdarray, Strings]] = []
-
-    if (a.dtype == bigint or dtype == bigint) and a.ndim in get_array_ranks() and a.ndim > 1:
-        sh = a.shape
-        try:
-            # attempt to break bigint into multiple uint64 arrays
-            # early out if we would have more uint arrays than can fit in max_bits
-            early_out = (max_bits // 64) + (max_bits % 64 != 0) if max_bits != -1 else float("inf")
-            while (a != 0).any() and len(uint_arrays) < early_out:
-                low, a = a % 2**64, a // 2**64
-                uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
-            # If uint_arrays is empty, this will create an empty ak array and reshape it.
-            if not uint_arrays:
-                return zeros(size=sh, dtype=bigint, max_bits=max_bits)
-            else:
-                return bigint_from_uint_arrays(uint_arrays[::-1], max_bits=max_bits)
-        except TypeError:
-            raise RuntimeError(f"Unhandled dtype {a.dtype}")
 
     if a.ndim == 0 and a.dtype.name not in NumericDTypes:
         raise TypeError("Must be an iterable or have a numeric DType")
@@ -318,9 +285,6 @@ def array(
 
     if a.ndim not in get_array_ranks():
         raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
-
-    if a.dtype == object and all(isinstance(x, (int, np.integer)) for x in a.ravel()) and dtype is None:
-        dtype = bigint
     if a.dtype.kind in ("i", "u", "f", "O") and (dtype == bigint or dtype == "bigint"):
         return _bigint_from_numpy(a, max_bits)
     elif not (
@@ -403,7 +367,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
 
     a = np.asarray(np_a)
     out_shape = a.shape
-    flat = a.ravel()
+    flat = a.ravel()  # ndarray (view when possible)
 
     # Empty → empty bigint (shape-preserving)
     if a.size == 0:
@@ -414,10 +378,10 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
         raise TypeError(f"bigint requires numeric input, got dtype={a.dtype}")
 
     if a.dtype.kind == "O":
-        # Only allow Python ints
-        if not all(isinstance(x, (int, float)) for x in flat):
+        # Only allow Python ints and floats
+        if not all(isinstance(x, (int, float)) for x in a.flat):
             raise TypeError("bigint requires numeric input, got non-numeric object")
-        if any(isinstance(x, float) for x in flat):
+        if any(isinstance(x, float) for x in a.flat):
             a = a.astype(np.float64, copy=False)
 
     # Fast all-zero path or single limb path
@@ -444,7 +408,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
             )
         )
     else:
-        if all(int(x) == 0 for x in flat):
+        if all(int(x) == 0 for x in a.flat):
             return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
     any_neg = np.any(flat < 0)
     req_bits: int
@@ -456,7 +420,7 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
     mask = (1 << 64) - 1
     uint_arrays: List[Union[pdarray, Strings]] = []
     # attempt to break bigint into multiple uint64 arrays
-    while (flat != 0).any() and len(uint_arrays) < req_limbs:
+    for _ in range(req_limbs):
         low = flat & mask
         flat = flat >> 64  # type: ignore
         # low, flat = flat & mask, flat >> 64
@@ -702,7 +666,7 @@ def ones(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
     dtype: Union[np.dtype, type, str, bigint] = float64,
     max_bits: Optional[int] = None,
-) -> pdarray:
+) -> Union[pdarray, Strings]:
     """
     Create a pdarray filled with ones.
 
@@ -757,11 +721,47 @@ def ones(
     return full(size=size, fill_value=1, dtype=dtype, max_bits=max_bits)
 
 
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: str_scalars,
+    dtype: None = ...,
+    max_bits: Optional[int] = ...,
+) -> Strings: ...
+
+
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: str,
+    max_bits: Optional[int] = ...,
+) -> Strings: ...
+
+
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars],
+    dtype: None = ...,
+    max_bits: Optional[int] = ...,
+) -> pdarray: ...
+
+
+@overload
+def full(
+    size: Union[int_scalars, Tuple[int_scalars, ...], str],
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: Union[np.dtype, type, bigint],
+    max_bits: Optional[int] = ...,
+) -> pdarray: ...
+
+
 @typechecked
 def full(
     size: Union[int_scalars, Tuple[int_scalars, ...], str],
-    fill_value: Union[numeric_scalars, np.bool, str],
-    dtype: Union[np.dtype, type, str, bigint] = float64,
+    fill_value: Union[numeric_and_bool_scalars, str_scalars],
+    dtype: Union[None, np.dtype, type, str, bigint] = None,
     max_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
@@ -771,10 +771,10 @@ def full(
     ----------
     size: int_scalars or tuple of int_scalars
         Size or shape of the array
-    fill_value: int_scalars or str
+    fill_value: numeric_scalars, bool_scalars or str_scalars
         Value with which the array will be filled
     dtype: all_scalars
-        Resulting array type, default float64
+        Resulting array type.  If None, it will be inferred from fill_value
     max_bits: int
         Specifies the maximum number of bits; only used for bigint pdarrays
 
@@ -793,6 +793,7 @@ def full(
 
     ValueError
         Raised if the rank of the given shape is not in get_array_ranks() or is empty
+        Raised if a multi-dim Strings array was requested
         Raised if max_bits is not NONE and ndim does not equal 1
 
     See Also
@@ -813,32 +814,44 @@ def full(
     array([True True True True True])
     """
     from arkouda.client import generic_msg, get_array_ranks
-    from arkouda.numpy.dtypes import dtype as ak_dtype
     from arkouda.numpy.pdarrayclass import create_pdarray
+    from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
-    if isinstance(fill_value, str):
-        return _full_string(size, fill_value)
-    elif ak_dtype(dtype) == str_ or dtype == Strings:
-        return _full_string(size, str_(fill_value))
-
-    dtype = dtype if dtype is not None else resolve_scalar_dtype(fill_value)
-
-    dtype = akdtype(dtype)  # normalize dtype
-    dtype_name = dtype.name if isinstance(dtype, bigint) else cast(np.dtype, dtype).name
-    # check dtype for error
-    if dtype_name not in NumericDTypes:
-        raise TypeError(f"unsupported dtype {dtype}")
-    from arkouda.numpy.util import (
-        _infer_shape_from_size,  # placed here to avoid circ import
-    )
+    #  Process the arguments (size, fill_value, dtype) before choosing an action.
 
     shape, ndim, full_size = _infer_shape_from_size(size)
+    fv_dtype = akdtype(resolve_scalar_dtype(fill_value))  # derived from fill_value
+    dtype = dtype if dtype is not None else fv_dtype  # must allow it to be None
+
+    if isinstance(dtype, bigint) or isinstance(dtype, np.dtype):
+        dtype_name = dtype.name
+    elif isinstance(dtype, type) or isinstance(dtype, str):
+        dtype_name = akdtype(dtype).name
+    else:
+        raise TypeError(f"Unsupported dtype {dtype!r}")
+
+    #  The only string cases.
+
+    if dtype == Strings or akdtype(dtype) == str_:
+        if ndim != 1:
+            raise ValueError(f"Size parameter {size} incompatible with Strings.")
+        else:
+            if isinstance(fill_value, float):  # needed to match numpy, which
+                fill_value = int(fill_value)  # truncates floats to ints before "str"
+            return _full_string(full_size, str(fill_value))
+
+    #  Remaining cases are all numeric.  Check dtype for error
+
+    if dtype_name not in NumericDTypes:
+        raise TypeError(f"Unsupported dtype {dtype} in ak.full")
+
+    #  dtype is supported.  Two more checks.
 
     if ndim not in get_array_ranks():
-        raise ValueError(f"array rank {ndim} not in compiled ranks {get_array_ranks()}")
+        raise ValueError(f"Array rank {ndim} not in compiled ranks {get_array_ranks()}")
 
     if isinstance(shape, tuple) and len(shape) == 0:
-        raise ValueError("size () not currently supported in ak.full.")
+        raise ValueError("Empty shape () not currently supported in ak.full.")
 
     rep_msg = generic_msg(cmd=f"create<{dtype_name},{ndim}>", args={"shape": shape})
 
@@ -1408,10 +1421,10 @@ def linspace(
     if endpoint is None:
         endpoint = True
 
+    #   First make sure everything's a float.
+
     start_ = start
     stop_ = stop
-
-    #   First make sure everything's a float.
 
     if isinstance(start_, pdarray):
         start_ = start_.astype(float64)
@@ -1471,7 +1484,10 @@ def linspace(
     else:
         if axis == 0:
             delta = (stop_ - start_) / divisor
-            result = full(num, start_) + arange(num).astype(float64) * delta
+            if isinstance(start_, (int, float, np.number)):  # required for mypy
+                result = full(num, start_) + arange(num).astype(float64) * delta
+            else:  # this should be impossible to reach
+                raise TypeError("Non-numeric start value found in linspace.")
         else:
             raise ValueError("axis should not be supplied when start and stop are scalars.")
 

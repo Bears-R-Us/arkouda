@@ -117,18 +117,10 @@ class _AbstractBaseTime(pdarray):
                 # M = datetime64, m = timedelta64
                 raise TypeError(f"Invalid dtype: {pda.dtype.name}")
             if isinstance(pda, pdSeries):
-                # Pandas Datetime and Timedelta
-                # Get units of underlying numpy datetime64 array
-                self.unit = np.datetime_data(pda.values.dtype)[0]  # type: ignore [arg-type]
-                self._factor = _get_factor(self.unit)
-                # Create pdarray
+                # from_series() already returns int64 nanoseconds for datetime/timedelta
+                self.unit = _BASE_UNIT  # "ns"
+                self._factor = 1
                 self.values = from_series(pda)
-                # Scale if necessary
-                # This is futureproofing; it will not be used unless pandas
-                # changes its Datetime implementation
-                if self._factor != 1:
-                    # Scale inplace because we already created a copy
-                    self.values *= self._factor
             elif isinstance(pda, np.ndarray):
                 # Numpy datetime64 and timedelta64
                 # Force through pandas.Series

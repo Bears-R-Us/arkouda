@@ -17,7 +17,7 @@ class TestNumpyManipulationFunctions:
     def test_manipulation_functions_docstrings(self):
         import doctest
 
-        from arkouda import manipulation_functions
+        from arkouda.numpy import manipulation_functions
 
         result = doctest.testmod(
             manipulation_functions,

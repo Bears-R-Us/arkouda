@@ -18,3 +18,12 @@ from arkouda.pandas.row import Row
 from arkouda.pandas.series import Series
 from arkouda.pandas.typing import ArkoudaArrayLike
 from arkouda.pandas.conversion import from_series
+
+from arkouda.pandas.accessor import (
+    CachedAccessor,
+    DatetimeAccessor,
+    Properties,
+    StringAccessor,
+    date_operators,
+    string_operators,
+)

@@ -27,6 +27,7 @@ Writes the resulting mapping to `benchmark_v2/datdir/configs/field_lookup_map.js
 
 """
 
+import argparse
 import json
 import logging
 import os
@@ -38,8 +39,9 @@ import arkouda as ak
 from arkouda.logger import get_arkouda_logger
 
 
-GRAPH_INFRA_DIR = "benchmark_v2/graph_infra"
-OUTPUT_JSON = "benchmark_v2/datdir/configs/field_lookup_map.json"
+BENCHMARK_DIR = os.path.dirname(__file__)
+GRAPH_INFRA_DIR = os.path.join(BENCHMARK_DIR, "graph_infra")
+OUTPUT_JSON = os.path.join("configs", "field_lookup_map.json")
 
 # Benchmarks that just need default Average rate/time keys
 DEFAULT_BENCHMARKS = [
@@ -350,6 +352,15 @@ def add_aggregate_ops(field_lookup_map):
 
 def main():
     logger = get_arkouda_logger(name="generate field lookup map")
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--dat-dir",
+        default=os.path.join(BENCHMARK_DIR, "datdir"),
+        help="Directory with .dat files stored",
+    )
+    args = parser.parse_args()
+    OUTPUT_JSON = os.path.join(args.dat_dir, "configs", "field_lookup_map.json")
 
     field_lookup_map = build_field_lookup_map()
     field_lookup_map = add_default_mappings(field_lookup_map)
