@@ -12,7 +12,6 @@ per-file-ignores =
     #   Remove below per/file ignores when the errors are resolved:
     installers.py: DOC105,DOC106,DOC107,DOC203,DOC502
     server_util/test/parallel_start_test.py: DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
-    arkouda/accessor.py: DOC105,DOC106,DOC107,DOC203
     arkouda/alignment.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
     arkouda/apply.py: DOC501,DOC503
     arkouda/array_api/creation_functions.py: DOC101,DOC103,DOC105,DOC201,DOC203,DOC501,DOC503
@@ -47,6 +46,7 @@ per-file-ignores =
     arkouda/numpy/timeclass.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC502,DOC503,DOC601,DOC603
     arkouda/numpy/util.py: DOC103,DOC105,DOC106,DOC107,DOC203,DOC502,
     arkouda/numpy/utils.py: DOC105,DOC501,DOC503,
+    arkouda/pandas/accessor.py: DOC105,DOC106,DOC107,DOC203
     arkouda/pandas/categorical.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC502,DOC503,DOC601,DOC603
     arkouda/pandas/dataframe.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC109,DOC110,DOC201,DOC203,DOC501,DOC502,DOC503,DOC601,DOC603,
     arkouda/pandas/extension/_arkouda_extension_array.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203

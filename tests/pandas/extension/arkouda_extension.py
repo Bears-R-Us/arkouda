@@ -13,9 +13,9 @@ from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.extension import (
     ArkoudaArray,
     ArkoudaCategoricalArray,
+    ArkoudaExtensionArray,
     ArkoudaStringArray,
 )
-from arkouda.pandas.extension._arkouda_extension_array import ArkoudaExtensionArray
 from arkouda.pdarrayclass import pdarray
 from arkouda.testing import assert_arkouda_array_equal, assert_equal
 
@@ -691,3 +691,72 @@ class TestArkoudaExtensionArrayArithmatic:
 
         out = x._arith_method(y, operator.add)
         np.testing.assert_array_equal(out.to_numpy(), np.array([11, 22, 33]))
+
+
+class TestArkoudaExtensionArrayView:
+    def test_extension_array_view_is_shallow_wrapper(self):
+        ak_arr = ak.arange(5)
+        ea = ArkoudaArray(ak_arr)
+
+        v = ea.view()
+
+        assert isinstance(v, type(ea))
+        assert v is not ea
+        # critical contract: view is shallow over the same backing data
+        assert getattr(v, "_data") is getattr(ea, "_data")
+
+        # sanity: values match
+        assert np.array_equal(v.to_numpy(), ea.to_numpy())
+
+    def test_extension_array_view_copies_optional_attrs_if_present(self):
+        ak_arr = ak.arange(3)
+        ea = ArkoudaArray(ak_arr)
+
+        # Attach optional attributes that view() promises to copy if present
+        ea._cache = {"k": "v"}
+        ea._na_value = None
+        ea._mask = "sentinel-mask"
+
+        v = ea.view()
+
+        assert v._cache is ea._cache
+        assert v._na_value is ea._na_value
+        assert v._mask is ea._mask
+
+    def test_extension_array_view_with_dtype_delegates_to_astype(self, monkeypatch):
+        ak_arr = ak.arange(4)
+        ea = ArkoudaArray(ak_arr)
+
+        called = {}
+
+        def fake_astype(dtype, copy=True):
+            called["dtype"] = dtype
+            called["copy"] = copy
+            return "astype-result"
+
+        # Patch the bound method on this instance
+        monkeypatch.setattr(ea, "astype", fake_astype)
+
+        out = ea.view(dtype="float64")
+
+        assert out == "astype-result"
+        assert called["dtype"] == "float64"
+        assert called["copy"] is False
+
+    def test_pandas_dataframe_construction_does_not_error_due_to_view(self):
+        """
+        Regression test: pandas may call EA.view() during internal shallow copies
+        when constructing a DataFrame from Series/arrays.
+
+        This used to raise NotImplementedError; it should not anymore.
+        """
+        ak_arr = ak.arange(5)
+        ea = ArkoudaArray(ak_arr)
+
+        s = pd.Series(ea)
+        # The key is: this should not raise (pandas may call .view() internally)
+        df = pd.DataFrame({"a": s})
+
+        # Ensure the result exists and round-trips values
+        assert list(df.columns) == ["a"]
+        assert np.array_equal(df["a"].to_numpy(), np.arange(5))
