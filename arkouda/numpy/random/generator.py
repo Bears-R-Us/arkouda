@@ -288,8 +288,8 @@ class Generator:
         # normalize dtype so things like "int" will work
         dtype = to_numpy_dtype(dtype)
 
-        if dtype is akfloat64:
-            raise TypeError("Unsupported dtype dtype('float64') for integers")
+        if dtype.kind == "f":
+            raise TypeError(f"Unsupported dtype {dtype!r} for integers")
 
         if size is None:
             # delegate to numpy when return size is 1

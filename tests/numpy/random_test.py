@@ -75,6 +75,11 @@ class TestRandom:
         result = doctest.testmod(generator, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    def test_integers_rejects_float64_dtype(self):
+        rng = ak.random.default_rng(123)
+        with pytest.raises(TypeError):
+            rng.integers(0, 10, size=10, dtype=ak.float64)
+
     def test_integers(self):
         # verify same seed gives different but reproducible arrays
         rng = ak.random.default_rng(pytest.seed)
