@@ -213,10 +213,38 @@ module EfuncMsg
     }
 
     @arkouda.registerCommand(name="round")
-    proc ak_round (x : [?d] ?t) : [d] real throws
+    proc ak_round (x : [?d] ?t, n: int) : [d] real throws
         where (t==real)
     {
-        return round(x);
+        if n == 0 {
+            return roundHalfToEven(x);
+        } else {
+            const scale = 10.0 ** n;
+            var scaled = makeDistArray(d, real);
+            scaled = scale * x;
+            return roundHalfToEven(scaled) / scale;
+        }
+    }
+
+    // This function implements "round to even," to match numpy. 
+
+    // It rounds downward if the fractional part is < 0.5, or
+    //   if the fractional part = 0.5 and the integer part is even,
+
+    // It rounds upward if the fractional part is > 0.5, or
+    //   if the fractional part = 0.5 and the integer part is odd.
+
+    proc roundHalfToEven(x: [?d] real): [d] real throws {
+        var rX = makeDistArray(d, real);
+        forall idx in d {
+            const f = floor(x[idx]);
+            const frac = x[idx] - f;
+            rX[idx] =
+                if frac < 0.5 || (frac == 0.5 && (f:int) % 2 == 0)
+                then f
+                else f + 1.0;
+        }
+        return rX;
     }
 
     @arkouda.registerCommand(name="trunc")
