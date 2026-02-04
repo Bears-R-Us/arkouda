@@ -67,7 +67,7 @@ class TestGroupBy:
     def test_groupbyclass_docstrings(self):
         import doctest
 
-        from arkouda import groupbyclass
+        from arkouda.pandas import groupbyclass
 
         result = doctest.testmod(
             groupbyclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE

@@ -36,7 +36,7 @@ class TestCategorical:
     def test_categorical_docstrings(self):
         import doctest
 
-        from arkouda import categorical
+        from arkouda.pandas import categorical
 
         result = doctest.testmod(
             categorical, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE

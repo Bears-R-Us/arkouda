@@ -22,7 +22,7 @@ class TestSeries:
     def test_series_docstrings(self):
         import doctest
 
-        from arkouda import series
+        from arkouda.pandas import series
 
         result = doctest.testmod(series, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
