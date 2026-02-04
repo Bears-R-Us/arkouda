@@ -486,14 +486,14 @@ def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 
 @typechecked
-def round(pda: pdarray, decimal: Optional[Union[int, None]] = None) -> pdarray:
+def round(pda: pdarray, decimals: Optional[Union[int, None]] = None) -> pdarray:
     """
     Return the element-wise rounding of the array.
 
     Parameters
     ----------
     pda : pdarray
-    decimal: Optional[Union[int, None]], default = None
+    decimals: Optional[Union[int, None]], default = None
         for float pdarrays, the number of decimal places of accuracy for the round.
         May be None, positive, negative, or zero.  If None, zero is used.
 
@@ -521,21 +521,21 @@ def round(pda: pdarray, decimal: Optional[Union[int, None]] = None) -> pdarray:
     array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
     >>> ak.round(ak.array([1.5, 2.5, 3.5]))
     array([2.00000000000000000 2.00000000000000000 4.00000000000000000])
-    >>> ak.round(ak.array([-143.1, 279.8]),decimal=-1)
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=-1)
     array([-140.00000000000000000 280.00000000000000000])
-    >>> ak.round(ak.array([-143.1, 279.8]),decimal=0)
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=0)
     array([-143.00000000000000000 280.00000000000000000])
-    >>> ak.round(ak.array([1.541, 2.732]),decimal=2)
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=2)
     array([1.54 2.73])
-    >>> ak.round(ak.array([1.541, 2.732]),decimal=3)
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=3)
     array([1.5409999999999999 2.7320000000000002])
 
 
     """
     from arkouda.client import generic_msg
 
-    if decimal is None:
-        decimal = 0
+    if decimals is None:
+        decimals = 0
 
     _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "round")
 
@@ -548,7 +548,7 @@ def round(pda: pdarray, decimal: Optional[Union[int, None]] = None) -> pdarray:
         cmd=f"round<{pda.dtype},{pda.ndim}>",
         args={
             "x": pda,
-            "n": decimal,
+            "n": decimals,
         },
     )
     return create_pdarray(rep_msg)
