@@ -413,6 +413,8 @@ Module Contents
 
    :raises TypeError: If `mapping` is not of type `dict` or `Series`.
        If `values` is not of type `pdarray`, `Categorical`, or `Strings`.
+   :raises ValueError: If a mapping with tuple keys has inconsistent lengths, or if a MultiIndex
+       mapping has a different number of levels than the GroupBy keys.
 
    .. rubric:: Examples
 

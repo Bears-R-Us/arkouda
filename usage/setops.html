@@ -435,10 +435,16 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 <dt class="sig sig-object py" id="arkouda.in1d">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraysetops.html#in1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.in1d" title="Link to this definition">¶</a></dt>
 <dd><p>Test whether each element of a 1-D array is also present in a second array.</p>
-<p>Returns a boolean array the same length as <cite>A</cite> that is True
-where an element of <cite>A</cite> is in <cite>B</cite> and False otherwise.</p>
-<p>Supports multi-level, i.e. test if rows of a are in the set of rows of b.
-But note that multi-dimensional pdarrays are not supported.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">symmetric=False</span></code> (default), returns a boolean pdarray of the same
+shape as <code class="docutils literal notranslate"><span class="pre">A</span></code> indicating whether each element of <code class="docutils literal notranslate"><span class="pre">A</span></code> is in <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">symmetric=True</span></code>, returns a tuple <code class="docutils literal notranslate"><span class="pre">(maskA,</span> <span class="pre">maskB)</span></code> where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">maskA[i]</span></code> is True iff <code class="docutils literal notranslate"><span class="pre">A[i]</span></code> is in <code class="docutils literal notranslate"><span class="pre">B</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">maskB[j]</span></code> is True iff <code class="docutils literal notranslate"><span class="pre">B[j]</span></code> is in <code class="docutils literal notranslate"><span class="pre">A</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>If <code class="docutils literal notranslate"><span class="pre">invert=True</span></code>, the returned mask(s) are logically inverted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -454,10 +460,22 @@ to (but is faster than) <code class="docutils literal notranslate"><span class="
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True for each row in a that is contained in b</p>
+<dd class="field-even"><p><p>If <code class="docutils literal notranslate"><span class="pre">symmetric=False</span></code> (default), returns <code class="docutils literal notranslate"><span class="pre">maskA</span></code>:</p>
+<ul class="simple">
+<li><p><strong>maskA</strong> : pdarray
+Boolean array indicating whether each element of <code class="docutils literal notranslate"><span class="pre">A</span></code> is in <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p></li>
+</ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">symmetric=True</span></code>, returns <code class="docutils literal notranslate"><span class="pre">(maskA,</span> <span class="pre">maskB)</span></code>:</p>
+<ul class="simple">
+<li><p><strong>maskA</strong> : pdarray
+Boolean array indicating whether each element of <code class="docutils literal notranslate"><span class="pre">A</span></code> is in <code class="docutils literal notranslate"><span class="pre">B</span></code>.</p></li>
+<li><p><strong>maskB</strong> : pdarray
+Boolean array indicating whether each element of <code class="docutils literal notranslate"><span class="pre">B</span></code> is in <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+</ul>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable">groupable</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, Tuple[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">

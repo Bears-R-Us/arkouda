@@ -372,7 +372,7 @@
           <h1>Source code for arkouda.numpy.pdarraysetops</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -391,7 +391,7 @@
 
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">zeros_like</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros_like</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
 <span class="k">else</span><span class="p">:</span>
@@ -466,6 +466,7 @@
 <span class="sd">    array([False True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
@@ -510,6 +511,28 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Both pda1 and pda2 must be pdarray, Strings, or Categorical&quot;</span><span class="p">)</span>
 
 
+<span class="c1"># docstr-coverage:excused `overload-only, docs live on impl`</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">in1d</span><span class="p">(</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">symmetric</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">invert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
+
+
+<span class="c1"># docstr-coverage:excused `overload-only, docs live on impl`</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">in1d</span><span class="p">(</span>
+    <span class="n">A</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">B</span><span class="p">:</span> <span class="n">groupable</span><span class="p">,</span>
+    <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">symmetric</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">invert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]:</span> <span class="o">...</span>
+
+
 <div class="viewcode-block" id="in1d">
 <a class="viewcode-back" href="../../../usage/setops.html#arkouda.in1d">[docs]</a>
 <span class="nd">@typechecked</span>
@@ -519,15 +542,19 @@
     <span class="n">assume_unique</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">symmetric</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">invert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">groupable</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test whether each element of a 1-D array is also present in a second array.</span>
 
-<span class="sd">    Returns a boolean array the same length as `A` that is True</span>
-<span class="sd">    where an element of `A` is in `B` and False otherwise.</span>
+<span class="sd">    If ``symmetric=False`` (default), returns a boolean pdarray of the same</span>
+<span class="sd">    shape as ``A`` indicating whether each element of ``A`` is in ``B``.</span>
 
-<span class="sd">    Supports multi-level, i.e. test if rows of a are in the set of rows of b.</span>
-<span class="sd">    But note that multi-dimensional pdarrays are not supported.</span>
+<span class="sd">    If ``symmetric=True``, returns a tuple ``(maskA, maskB)`` where:</span>
+
+<span class="sd">      * ``maskA[i]`` is True iff ``A[i]`` is in ``B``</span>
+<span class="sd">      * ``maskB[j]`` is True iff ``B[j]`` is in ``A``</span>
+
+<span class="sd">    If ``invert=True``, the returned mask(s) are logically inverted.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -548,8 +575,18 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    groupable</span>
-<span class="sd">        True for each row in a that is contained in b</span>
+<span class="sd">    Union[pdarray, Tuple[pdarray, pdarray]]</span>
+<span class="sd">        If ``symmetric=False`` (default), returns ``maskA``:</span>
+
+<span class="sd">        * **maskA** : pdarray</span>
+<span class="sd">          Boolean array indicating whether each element of ``A`` is in ``B``.</span>
+
+<span class="sd">        If ``symmetric=True``, returns ``(maskA, maskB)``:</span>
+
+<span class="sd">        * **maskA** : pdarray</span>
+<span class="sd">          Boolean array indicating whether each element of ``A`` is in ``B``.</span>
+<span class="sd">        * **maskB** : pdarray</span>
+<span class="sd">          Boolean array indicating whether each element of ``B`` is in ``A``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -597,7 +634,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;If A is pdarray, B must also be pdarray&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">),</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">invert</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">invert</span><span class="p">),</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">invert</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">_in1d_single</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">invert</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -634,18 +671,25 @@
     <span class="k">if</span> <span class="n">assume_unique</span><span class="p">:</span>
         <span class="c1"># Deinterleave truth into a and b domains</span>
         <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">truth</span><span class="p">[</span><span class="n">isa</span><span class="p">],</span> <span class="n">truth</span><span class="p">[</span><span class="o">~</span><span class="n">isa</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">invert</span> <span class="k">else</span> <span class="o">~</span><span class="n">truth</span><span class="p">[</span><span class="n">isa</span><span class="p">],</span> <span class="o">~</span><span class="n">truth</span><span class="p">[</span><span class="o">~</span><span class="n">isa</span><span class="p">]</span>
+            <span class="n">aout</span> <span class="o">=</span> <span class="n">truth</span><span class="p">[</span><span class="n">isa</span><span class="p">]</span>
+            <span class="n">bout</span> <span class="o">=</span> <span class="n">truth</span><span class="p">[</span><span class="o">~</span><span class="n">isa</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">~</span><span class="n">aout</span><span class="p">,</span> <span class="o">~</span><span class="n">bout</span>
+            <span class="k">return</span> <span class="n">aout</span><span class="p">,</span> <span class="n">bout</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">truth</span><span class="p">[</span><span class="n">isa</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">invert</span> <span class="k">else</span> <span class="o">~</span><span class="n">truth</span><span class="p">[</span><span class="n">isa</span><span class="p">]</span>
+            <span class="n">aout</span> <span class="o">=</span> <span class="n">truth</span><span class="p">[</span><span class="n">isa</span><span class="p">]</span>
+            <span class="k">return</span> <span class="o">~</span><span class="n">aout</span> <span class="k">if</span> <span class="n">invert</span> <span class="k">else</span> <span class="n">aout</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># If didn&#39;t start unique, first need to deinterleave into ua domain,</span>
         <span class="c1"># then broadcast to a domain</span>
         <span class="n">atruth</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="n">isa</span><span class="p">],</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
             <span class="n">btruth</span> <span class="o">=</span> <span class="n">bg</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">truth</span><span class="p">[</span><span class="o">~</span><span class="n">isa</span><span class="p">],</span> <span class="n">permute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">atruth</span><span class="p">,</span> <span class="n">btruth</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">invert</span> <span class="k">else</span> <span class="o">~</span><span class="n">atruth</span><span class="p">,</span> <span class="o">~</span><span class="n">btruth</span>
+            <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">~</span><span class="n">atruth</span><span class="p">,</span> <span class="o">~</span><span class="n">btruth</span>
+            <span class="k">return</span> <span class="n">atruth</span><span class="p">,</span> <span class="n">btruth</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">atruth</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">invert</span> <span class="k">else</span> <span class="o">~</span><span class="n">atruth</span></div>
+            <span class="k">return</span> <span class="o">~</span><span class="n">atruth</span> <span class="k">if</span> <span class="n">invert</span> <span class="k">else</span> <span class="n">atruth</span></div>
 
 
 

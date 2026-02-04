@@ -90,15 +90,31 @@ Module Contents
    array([-5 -6 -7 -8 -9])
 
 
-.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._StringDType = ..., *, copy: bool = ..., max_bits: int = ...) -> arkouda.numpy.strings.Strings
-                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._NumericLikeDType = ..., *, copy: bool = ..., max_bits: int = ...) -> arkouda.numpy.pdarrayclass.pdarray
-                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype=None, *, copy: bool = ..., max_bits: int = ...) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
-                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, List[arkouda.numpy._typing._typing._NumericLikeDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> arkouda.numpy.pdarrayclass.pdarray
-                 array(a: Union[arkouda.numpy.strings.Strings, Iterable[arkouda.numpy._typing._typing._StringDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> arkouda.numpy.strings.Strings
-                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._StringDType = ..., *, copy: bool = ..., max_bits: int = ..., unsafe: bool = ..., any_neg: Optional[bool] = ..., num_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: arkouda.numpy._typing._typing._NumericLikeDType = ..., *, copy: bool = ..., max_bits: int = ..., unsafe: bool = ..., any_neg: Optional[bool] = ..., num_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype=None, *, copy: bool = ..., max_bits: int = ..., unsafe: bool = ..., any_neg: Optional[bool] = ..., num_bits: Optional[int] = ...) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, List[arkouda.numpy._typing._typing._NumericLikeDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1, *, unsafe: bool = ..., any_neg: Optional[bool] = ..., num_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 array(a: Union[arkouda.numpy.strings.Strings, Iterable[arkouda.numpy._typing._typing._StringDType]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1, *, unsafe: bool = ..., any_neg: Optional[bool] = ..., num_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 array(a: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, Iterable[Any], numpy.typing.NDArray[Any]], dtype: Union[arkouda.numpy._typing._typing._StringDType, arkouda.numpy._typing._typing._NumericLikeDType, None] = None, copy: bool = False, max_bits: int = -1, *, unsafe: bool = ..., any_neg: Optional[bool] = ..., num_bits: Optional[int] = ...) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
 
    Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
    transferring data to the Arkouda server.
+
+   Bigint fast path
+   ----------------
+   When `dtype` is `bigint` (or ``"bigint"``) and the input is a NumPy ``dtype=object`` array,
+   building the bigint representation may require Python-level passes over the data to infer
+   sign and required bit width.
+
+   Set ``unsafe=True`` to enable optional performance shortcuts for trusted inputs:
+
+   * If both ``any_neg`` and ``num_bits`` are provided, Arkouda will trust these hints and
+     skip inference passes, proceeding directly to limb extraction.
+   * If hints are not provided, Arkouda may still perform a single-pass inference step
+     for ``dtype=object`` inputs (implementation-dependent).
+
+   .. warning::
+      If ``unsafe=True`` and the provided hints are incorrect, results may be incorrect.
 
    :param a: The array-like input to convert. Supported types include Arkouda `Strings`, `pdarray`,
              NumPy `ndarray`, or Python iterables such as list, tuple, range, or deque.
@@ -112,6 +128,18 @@ Module Contents
    :type copy: bool, default=False
    :param max_bits: The maximum number of bits for bigint arrays. Ignored for other dtypes.
    :type max_bits: int, optional
+   :param unsafe: Enable performance-oriented shortcuts for bigint creation from dtype=object arrays.
+                  When True, the caller may supply trusted hints (any_neg, num_bits) to skip Python-level
+                  full-array scans. If hints are not supplied, Arkouda will still do a single-pass scan
+                  (rather than multiple scans) for dtype=object.
+
+                  WARNING: If unsafe=True and provided hints are wrong, results may be incorrect.
+   :type unsafe: bool, default=False
+   :param any_neg: Bigint hint: whether any value is negative. Only used when dtype=bigint and a is numeric/object.
+   :type any_neg: Optional[bool], default=None
+   :param num_bits: Bigint hint: required bit-width for values (including sign bit if signed).
+                    If provided with unsafe=True, Arkouda can compute number of limbs without scanning.
+   :type num_bits: Optional[int], default=None
 
    :returns: A `pdarray` stored on the Arkouda server, or a `Strings` object.
    :rtype: Union[pdarray, Strings]

@@ -61,15 +61,20 @@ Module Contents
    array(['one', 'two', 'three', 'four', 'five'])
 
 
-.. py:function:: in1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = False, symmetric: bool = False, invert: bool = False) -> arkouda.pandas.groupbyclass.groupable
+.. py:function:: in1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = ..., symmetric: Literal[False] = ..., invert: bool = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 in1d(A: arkouda.pandas.groupbyclass.groupable, B: arkouda.pandas.groupbyclass.groupable, assume_unique: bool = ..., symmetric: Literal[True] = ..., invert: bool = ...) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
 
    Test whether each element of a 1-D array is also present in a second array.
 
-   Returns a boolean array the same length as `A` that is True
-   where an element of `A` is in `B` and False otherwise.
+   If ``symmetric=False`` (default), returns a boolean pdarray of the same
+   shape as ``A`` indicating whether each element of ``A`` is in ``B``.
 
-   Supports multi-level, i.e. test if rows of a are in the set of rows of b.
-   But note that multi-dimensional pdarrays are not supported.
+   If ``symmetric=True``, returns a tuple ``(maskA, maskB)`` where:
+
+     * ``maskA[i]`` is True iff ``A[i]`` is in ``B``
+     * ``maskB[j]`` is True iff ``B[j]`` is in ``A``
+
+   If ``invert=True``, the returned mask(s) are logically inverted.
 
    :param A: Entries will be tested for membership in B
    :type A: list of pdarrays, pdarray, Strings, or Categorical
@@ -86,8 +91,18 @@ Module Contents
                   to (but is faster than) ``~ak.in1d(a, b)``.
    :type invert: bool, optional, defaults to False
 
-   :returns: True for each row in a that is contained in b
-   :rtype: groupable
+   :returns: If ``symmetric=False`` (default), returns ``maskA``:
+
+             * **maskA** : pdarray
+               Boolean array indicating whether each element of ``A`` is in ``B``.
+
+             If ``symmetric=True``, returns ``(maskA, maskB)``:
+
+             * **maskA** : pdarray
+               Boolean array indicating whether each element of ``A`` is in ``B``.
+             * **maskB** : pdarray
+               Boolean array indicating whether each element of ``B`` is in ``A``.
+   :rtype: Union[pdarray, Tuple[pdarray, pdarray]]
 
    :raises TypeError: Raised if either A or B is not a pdarray, Strings, or Categorical
        object, or if both are pdarrays and either has rank > 1,

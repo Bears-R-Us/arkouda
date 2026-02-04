@@ -1432,6 +1432,9 @@
 <span class="sd">    TypeError</span>
 <span class="sd">        If `mapping` is not of type `dict` or `Series`.</span>
 <span class="sd">        If `values` is not of type `pdarray`, `Categorical`, or `Strings`.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a mapping with tuple keys has inconsistent lengths, or if a MultiIndex</span>
+<span class="sd">        mapping has a different number of levels than the GroupBy keys.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1453,30 +1456,99 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">in1d</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiIndex</span>
 
     <span class="n">keys</span> <span class="o">=</span> <span class="n">values</span>
     <span class="n">gb</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">dropna</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">gb_keys</span> <span class="o">=</span> <span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span>
 
+    <span class="c1"># helper: number of unique keys (works for single key or tuple-of-keys)</span>
+    <span class="n">nuniq</span> <span class="o">=</span> <span class="n">gb_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">gb_keys</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="c1"># Fast-path: empty mapping =&gt; everything is missing</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">Series</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">full</span><span class="p">(</span><span class="n">nuniq</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">permutation</span><span class="o">=</span><span class="n">gb</span><span class="o">.</span><span class="n">permutation</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">broadcast</span><span class="p">(</span><span class="n">gb</span><span class="o">.</span><span class="n">segments</span><span class="p">,</span> <span class="n">full</span><span class="p">(</span><span class="n">nuniq</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">),</span> <span class="n">permutation</span><span class="o">=</span><span class="n">gb</span><span class="o">.</span><span class="n">permutation</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">([</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())),</span> <span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))])</span>
+        <span class="c1"># Build mapping as a Series with an Index/MultiIndex (avoid rank&gt;1 arrays)</span>
+        <span class="n">m_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">m_vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="n">k0</span> <span class="o">=</span> <span class="n">m_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k0</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="c1"># validate tuple keys</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">m_keys</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Mixed key types in mapping dict (tuple and non-tuple).&quot;</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">k0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">m_keys</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All tuple keys in mapping dict must have the same length.&quot;</span><span class="p">)</span>
+
+            <span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">m_keys</span><span class="p">))</span>  <span class="c1"># transpose list[tuple] -&gt; list[level]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="p">([</span><span class="n">array</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">])</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">m_vals</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">m_vals</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">array</span><span class="p">(</span><span class="n">m_keys</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
-        <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">gb_keys</span><span class="p">[</span><span class="n">in1d</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+        <span class="c1"># Normalize mapping index keys into a &quot;groupable&quot; (single array OR tuple-of-arrays)</span>
+        <span class="n">mindex</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mindex</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
+            <span class="n">mkeys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">mindex</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mkeys</span> <span class="o">=</span> <span class="n">mindex</span><span class="o">.</span><span class="n">values</span>
 
-        <span class="k">if</span> <span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">nans</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]</span>  <span class="c1"># without this, mypy complains</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
-                <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_keys</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mkeys</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mkeys</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Mapping MultiIndex has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mkeys</span><span class="p">)</span><span class="si">}</span><span class="s2"> levels but GroupBy has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">)</span><span class="si">}</span><span class="s2"> keys&quot;</span>
+                <span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xtra_keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
-                <span class="n">xtra_keys</span> <span class="o">=</span> <span class="n">xtra_keys</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
+        <span class="c1"># invert=True =&gt; mask is True for GroupBy unique keys that are *missing* from the mapping,</span>
+        <span class="c1"># i.e., values that should be filled with NaN/&quot;null&quot;.</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">in1d</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">mkeys</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="n">xtra_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">nans</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">xtra_keys</span><span class="p">)</span>
-            <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">mapping</span><span class="p">,</span> <span class="n">xtra_series</span><span class="p">])</span>
+        <span class="c1"># Compute extra keys + extra size without mixing tuple/non-tuple assignments</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">xtra_keys_t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">gb_keys</span><span class="p">)</span>
+            <span class="n">xtra_size</span> <span class="o">=</span> <span class="n">xtra_keys_t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xtra_keys_t</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
 
+            <span class="k">if</span> <span class="n">xtra_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nans</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]</span>  <span class="c1"># without this, mypy complains</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+                    <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_size</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Convert any categorical levels to strings, level-by-level</span>
+                <span class="n">xtra_keys_t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                    <span class="n">k</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">xtra_keys_t</span>
+                <span class="p">)</span>
+
+                <span class="n">xtra_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">nans</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">MultiIndex</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">xtra_keys_t</span><span class="p">)))</span>
+                <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">mapping</span><span class="p">,</span> <span class="n">xtra_series</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xtra_keys_s</span> <span class="o">=</span> <span class="n">gb_keys</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">xtra_size</span> <span class="o">=</span> <span class="n">xtra_keys_s</span><span class="o">.</span><span class="n">size</span>
+
+            <span class="k">if</span> <span class="n">xtra_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+                    <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nans</span> <span class="o">=</span> <span class="n">full</span><span class="p">(</span><span class="n">xtra_size</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xtra_keys_s</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+                    <span class="n">xtra_keys_s</span> <span class="o">=</span> <span class="n">xtra_keys_s</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
+
+                <span class="n">xtra_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">nans</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">xtra_keys_s</span><span class="p">)</span>
+                <span class="n">mapping</span> <span class="o">=</span> <span class="n">Series</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">mapping</span><span class="p">,</span> <span class="n">xtra_series</span><span class="p">])</span>
+
+        <span class="c1"># Align mapping to gb_keys</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gb_keys</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
             <span class="n">mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">gb_keys</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()]</span>
         <span class="k">else</span><span class="p">:</span>

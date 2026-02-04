@@ -466,16 +466,22 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@overload</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">array</span><span class="p">(</span>
     <span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">_NumericLikeDType</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>  <span class="c1"># object covers np.dtype, type, int/float/bool dtypes, etc.</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">_NumericLikeDType</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -486,7 +492,14 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span> <span class="o">...</span>
+
+
+<span class="c1"># The remaining overloads can stay as-is, but it&#39;s nicer to add the kwargs there too</span>
+<span class="c1"># so tooling doesn&#39;t complain in those call patterns. Minimal version:</span>
 
 
 <span class="nd">@overload</span>
@@ -495,6 +508,10 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">_StringDType</span><span class="p">,</span> <span class="n">_NumericLikeDType</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -504,6 +521,10 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">_StringDType</span><span class="p">,</span> <span class="n">_NumericLikeDType</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strings</span><span class="p">:</span> <span class="o">...</span>
 
 
@@ -513,6 +534,10 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">_StringDType</span><span class="p">,</span> <span class="n">_NumericLikeDType</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span> <span class="o">...</span>
 
 
@@ -523,10 +548,30 @@
     <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,</span>
 <span class="sd">    transferring data to the Arkouda server.</span>
+
+<span class="sd">    Bigint fast path</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    When `dtype` is `bigint` (or ``&quot;bigint&quot;``) and the input is a NumPy ``dtype=object`` array,</span>
+<span class="sd">    building the bigint representation may require Python-level passes over the data to infer</span>
+<span class="sd">    sign and required bit width.</span>
+
+<span class="sd">    Set ``unsafe=True`` to enable optional performance shortcuts for trusted inputs:</span>
+
+<span class="sd">    * If both ``any_neg`` and ``num_bits`` are provided, Arkouda will trust these hints and</span>
+<span class="sd">      skip inference passes, proceeding directly to limb extraction.</span>
+<span class="sd">    * If hints are not provided, Arkouda may still perform a single-pass inference step</span>
+<span class="sd">      for ``dtype=object`` inputs (implementation-dependent).</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">       If ``unsafe=True`` and the provided hints are incorrect, results may be incorrect.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -545,6 +590,21 @@
 
 <span class="sd">    max_bits : int, optional</span>
 <span class="sd">        The maximum number of bits for bigint arrays. Ignored for other dtypes.</span>
+
+<span class="sd">    unsafe : bool, default=False</span>
+<span class="sd">        Enable performance-oriented shortcuts for bigint creation from dtype=object arrays.</span>
+<span class="sd">        When True, the caller may supply trusted hints (any_neg, num_bits) to skip Python-level</span>
+<span class="sd">        full-array scans. If hints are not supplied, Arkouda will still do a single-pass scan</span>
+<span class="sd">        (rather than multiple scans) for dtype=object.</span>
+
+<span class="sd">        WARNING: If unsafe=True and provided hints are wrong, results may be incorrect.</span>
+
+<span class="sd">    any_neg : Optional[bool], default=None</span>
+<span class="sd">        Bigint hint: whether any value is negative. Only used when dtype=bigint and a is numeric/object.</span>
+
+<span class="sd">    num_bits : Optional[int], default=None</span>
+<span class="sd">        Bigint hint: required bit-width for values (including sign bit if signed).</span>
+<span class="sd">        If provided with unsafe=True, Arkouda can compute number of limbs without scanning.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -626,7 +686,6 @@
         <span class="n">a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="c1"># If a is not already a numpy.ndarray, convert it</span>
-
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">bigint</span><span class="p">:</span>
@@ -646,8 +705,13 @@
                 <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;a must be a pdarray, np.ndarray, or convertible to a numpy array&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">bigint</span><span class="p">,</span> <span class="s2">&quot;bigint&quot;</span><span class="p">]:</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># If numpy gave us an object array of integers and dtype was not specified, default to bigint.</span>
+    <span class="c1"># NOTE: This scan can be expensive for very large arrays; callers who already know they want</span>
+    <span class="c1"># bigint should pass dtype=bigint to avoid this inference.</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">flat</span><span class="p">):</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">bigint</span>
 
@@ -656,11 +720,18 @@
 
     <span class="c1"># Return multi-dimensional pdarray if a.ndim in get_array_ranks()</span>
     <span class="c1"># otherwise raise an error</span>
-
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_array_ranks</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array rank </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> not in compiled ranks </span><span class="si">{</span><span class="n">get_array_ranks</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Bigint conversion path (including dtype=object numeric inputs)</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bigint&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">_bigint_from_numpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">max_bits</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_bigint_from_numpy</span><span class="p">(</span>
+            <span class="n">a</span><span class="p">,</span>
+            <span class="n">max_bits</span><span class="p">,</span>
+            <span class="n">unsafe</span><span class="o">=</span><span class="n">unsafe</span><span class="p">,</span>
+            <span class="n">any_neg</span><span class="o">=</span><span class="n">any_neg</span><span class="p">,</span>
+            <span class="n">num_bits</span><span class="o">=</span><span class="n">num_bits</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">)</span>
         <span class="ow">or</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">object_</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">))</span>
@@ -691,7 +762,6 @@
         <span class="k">return</span> <span class="n">strings</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">],</span> <span class="n">akcast</span><span class="p">(</span><span class="n">strings</span><span class="p">,</span> <span class="n">dtype</span><span class="p">))</span>
 
     <span class="c1"># If not strings, then check that dtype is supported in arkouda</span>
-
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">_infer_shape_from_size</span>
 
     <span class="n">shape</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">full_size</span> <span class="o">=</span> <span class="n">_infer_shape_from_size</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -736,7 +806,33 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_bigint_from_numpy</span><span class="p">(</span><span class="n">np_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bigint_from_numpy</span><span class="p">(</span>
+    <span class="n">np_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">max_bits</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">unsafe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">any_neg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_bits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a bigint pdarray from a NumPy ndarray.</span>
+
+<span class="sd">    Fast paths:</span>
+<span class="sd">    - Empty arrays return an empty bigint with shape preserved.</span>
+<span class="sd">    - Non-object numeric arrays (int/uint/float) use a single-limb transfer.</span>
+<span class="sd">    - dtype=object arrays of Python ints are split into uint64 limbs client-side.</span>
+
+<span class="sd">    Performance notes:</span>
+<span class="sd">    - dtype=object requires Python-level work. To reduce overhead:</span>
+<span class="sd">      * this implementation uses a SINGLE PASS over the data to validate and infer sizing</span>
+<span class="sd">        (instead of multiple passes), unless the caller provides trusted hints.</span>
+<span class="sd">      * if unsafe=True and both any_neg and num_bits are provided, we skip all scans</span>
+<span class="sd">        and proceed directly to limb extraction.</span>
+
+<span class="sd">    WARNING:</span>
+<span class="sd">    - If unsafe=True and provided hints are wrong (e.g., num_bits too small or any_neg incorrect),</span>
+<span class="sd">      results may be incorrect.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span><span class="p">,</span> <span class="n">pdarray</span>
 
@@ -748,18 +844,13 @@
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bigint</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
 
-    <span class="c1"># Only ints/object should reach here (strings handled upstream)</span>
+    <span class="c1"># Only ints/uints/floats/object should reach here (strings handled upstream)</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bigint requires numeric input, got dtype=</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span><span class="p">:</span>
-        <span class="c1"># Only allow Python ints and floats</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">flat</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;bigint requires numeric input, got non-numeric object&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">flat</span><span class="p">):</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="c1"># Fast all-zero path or single limb path</span>
+    <span class="c1"># ------------------------------------------------------------</span>
+    <span class="c1"># Fast path for non-object numeric dtypes: send a single limb.</span>
+    <span class="c1"># ------------------------------------------------------------</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bigint</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
@@ -771,7 +862,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ak_a</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
-        <span class="c1"># Send a single limb array</span>
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
             <span class="n">generic_msg</span><span class="p">(</span>
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;big_int_creation_one_limb&lt;</span><span class="si">{</span><span class="n">ak_a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ak_a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
@@ -782,31 +872,102 @@
                 <span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">flat</span><span class="p">):</span>
+
+    <span class="c1"># ----------------------------------------------------------------</span>
+    <span class="c1"># dtype=object path (typically Python ints, sometimes floats/other):</span>
+    <span class="c1"># ----------------------------------------------------------------</span>
+
+    <span class="c1"># If caller supplied trusted sizing hints, skip all validation/scans.</span>
+    <span class="c1"># This is intended for benchmarking or trusted pipelines where the caller</span>
+    <span class="c1"># already knows whether the data are signed and how many bits are needed.</span>
+    <span class="k">if</span> <span class="n">unsafe</span> <span class="ow">and</span> <span class="n">any_neg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">num_bits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">num_bits</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bigint</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
-    <span class="n">any_neg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">flat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">req_bits</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="k">if</span> <span class="n">any_neg</span><span class="p">:</span>
-        <span class="n">req_bits</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">flat</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">bit_length</span><span class="p">(),</span> <span class="p">(</span><span class="o">-</span><span class="n">flat</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">.</span><span class="n">bit_length</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">req_bits</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_bits</span><span class="p">)</span>
+        <span class="n">req_limbs</span> <span class="o">=</span> <span class="p">(</span><span class="n">req_bits</span> <span class="o">+</span> <span class="mi">63</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span>  <span class="c1"># == ceil(req_bits / 64)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">req_bits</span> <span class="o">=</span> <span class="n">flat</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
-    <span class="n">req_limbs</span> <span class="o">=</span> <span class="p">(</span><span class="n">req_bits</span> <span class="o">+</span> <span class="mi">63</span><span class="p">)</span> <span class="o">//</span> <span class="mi">64</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># Single-pass scan:</span>
+        <span class="c1"># - validate types (unless unsafe)</span>
+        <span class="c1"># - detect floats (fallback to float64 one-limb path)</span>
+        <span class="c1"># - detect all-zero (fast path)</span>
+        <span class="c1"># - infer any_neg and required bits</span>
+        <span class="n">has_float</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">any_nonzero</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">inferred_any_neg</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">max_mag_bits</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Iterate once over Python objects.</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">flat</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">unsafe</span><span class="p">:</span>
+                <span class="c1"># Caller asserts objects are numeric (typically Python ints).</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;bigint requires numeric input, got non-numeric object&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Handle floats: bigint-from-float behaves like existing code (cast to float64).</span>
+            <span class="c1"># Note: we only need to know *that* a float exists, not which values.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
+                <span class="n">has_float</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+            <span class="c1"># Integers (Python int or numpy integer)</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">xi</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">any_nonzero</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">xi</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">inferred_any_neg</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">mag_bits</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">xi</span><span class="p">)</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mag_bits</span> <span class="o">=</span> <span class="n">xi</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
+                <span class="n">max_mag_bits</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_mag_bits</span><span class="p">,</span> <span class="n">mag_bits</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">has_float</span><span class="p">:</span>
+            <span class="c1"># Match previous behavior: object array containing floats becomes float64</span>
+            <span class="c1"># and uses the single-limb float path above.</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bigint</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
+            <span class="n">ak_a</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
+                <span class="n">generic_msg</span><span class="p">(</span>
+                    <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;big_int_creation_one_limb&lt;</span><span class="si">{</span><span class="n">ak_a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ak_a</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">ak_a</span><span class="p">,</span>
+                        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">ak_a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                        <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">max_bits</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">any_nonzero</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bigint</span><span class="p">,</span> <span class="n">max_bits</span><span class="o">=</span><span class="n">max_bits</span><span class="p">)</span>
+
+        <span class="n">any_neg</span> <span class="o">=</span> <span class="n">inferred_any_neg</span>
+        <span class="c1"># For signed representation reserve a sign bit (+1).</span>
+        <span class="n">req_bits</span> <span class="o">=</span> <span class="n">max_mag_bits</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">any_neg</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">req_limbs</span> <span class="o">=</span> <span class="p">(</span><span class="n">req_bits</span> <span class="o">+</span> <span class="mi">63</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span>  <span class="c1"># == ceil(req_bits / 64)</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="mh">0xFFFFFFFFFFFFFFFF</span>  <span class="c1"># 2**64 - 1</span>
     <span class="n">uint_arrays</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># attempt to break bigint into multiple uint64 arrays</span>
+
+    <span class="c1"># Attempt to break bigint into multiple uint64 limb arrays.</span>
+    <span class="c1"># NOTE: This loop is inherently heavy for dtype=object inputs (Python big ints),</span>
+    <span class="c1"># but we minimize overhead by avoiding extra pre-scans of the data.</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">req_limbs</span><span class="p">):</span>
         <span class="n">low</span> <span class="o">=</span> <span class="n">flat</span> <span class="o">&amp;</span> <span class="n">mask</span>
         <span class="n">flat</span> <span class="o">=</span> <span class="n">flat</span> <span class="o">&gt;&gt;</span> <span class="mi">64</span>  <span class="c1"># type: ignore</span>
-        <span class="c1"># low, flat = flat &amp; mask, flat &gt;&gt; 64</span>
         <span class="n">uint_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akuint64</span><span class="p">))</span>
+
+    <span class="c1"># Server expects shape of the resulting bigint array (original shape).</span>
     <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span>
         <span class="n">generic_msg</span><span class="p">(</span>
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;big_int_creation_multi_limb&lt;</span><span class="si">{</span><span class="n">uint_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,1&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;arrays&quot;</span><span class="p">:</span> <span class="n">uint_arrays</span><span class="p">,</span>
                 <span class="s2">&quot;num_arrays&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">uint_arrays</span><span class="p">),</span>
-                <span class="s2">&quot;signed&quot;</span><span class="p">:</span> <span class="n">any_neg</span><span class="p">,</span>
+                <span class="s2">&quot;signed&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">any_neg</span><span class="p">),</span>
                 <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">flat</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
                 <span class="s2">&quot;max_bits&quot;</span><span class="p">:</span> <span class="n">max_bits</span><span class="p">,</span>
             <span class="p">},</span>
@@ -1835,6 +1996,17 @@
 
     <span class="n">start_</span> <span class="o">=</span> <span class="n">start</span>
     <span class="n">stop_</span> <span class="o">=</span> <span class="n">stop</span>
+
+    <span class="c1">#   Handle the special cases of num</span>
+
+    <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">start_</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">start_</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">array</span><span class="p">([</span><span class="n">start_</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float64</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
         <span class="n">start_</span> <span class="o">=</span> <span class="n">start_</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float64</span><span class="p">)</span>
