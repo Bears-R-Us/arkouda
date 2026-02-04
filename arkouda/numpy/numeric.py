@@ -371,6 +371,9 @@ def abs(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
+    if pda.dtype == "uint64" or pda.dtype == "bool":
+        return pda.copy()
+
     rep_msg = generic_msg(
         cmd=f"abs<{pda.dtype},{pda.ndim}>",
         args={

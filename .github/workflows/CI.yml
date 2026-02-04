@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.6.0']
+        chpl-version: ['2.7.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -79,7 +79,7 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -117,7 +117,7 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -152,9 +152,9 @@ jobs:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
     env:
-      CHPL_HOME: /opt/chapel-2.6.0
+      CHPL_HOME: /opt/chapel-2.7.0
     container:
-      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.github_token }}
@@ -300,7 +300,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.6.0']
+        chpl-version: ['2.7.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -395,7 +395,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.4.0','2.5.0','2.6.0']
+        chpl-version: ['2.5.0','2.6.0','2.7.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -436,7 +436,7 @@ jobs:
       ARKOUDA_CONFIG_FILE: .configs/MultiDimTestServerModules.cfg
     strategy:
       matrix:
-        chpl-version: ['2.4.0','2.5.0','2.6.0']
+        chpl-version: ['2.7.0']
       max-parallel: 3
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
@@ -482,11 +482,12 @@ jobs:
         make test-python size=100
 
 
+
   arkouda_multi-dim_test_coverage:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.6.0']
+        chpl-version: ['2.7.0']
       max-parallel: 3
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
@@ -563,6 +564,88 @@ jobs:
         flags: python-coverage
         fail_ci_if_error: true
 
+#  arkouda_multi-dim_test_coverage:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        chpl-version: ['2.6.0']
+#      max-parallel: 3
+#    container:
+#      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+#      credentials:
+#        username: ${{ github.actor }}
+#        password: ${{ secrets.github_token }}
+#    steps:
+#    - name: Show memory available
+#      run: |
+#        echo "Memory info:"
+#        free -h
+#        echo "CPU info:"
+#        nproc
+#    - name: Checkout Repository
+#      uses: actions/checkout@v4
+#    - name: Set Python version to 3.13
+#      run: |
+#        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+#    - name: Check Chapel version
+#      run: |
+#        chpl --version
+#    - name: Install dependencies
+#      uses: nick-fields/retry@v2
+#      with:
+#        timeout_seconds: 1200  # or use timeout_minutes
+#        max_attempts: 2
+#        retry_wait_seconds: 60
+#        retry_on: error
+#        command: |
+#          apt-get update && apt-get install -y time
+#          python3 -m ensurepip --default-pip
+#          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+#          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
+#          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
+#    - name: Use MultiDim Configs
+#      run: |
+#        cp .configs/registration-config-multi-dim.json registration-config.json
+#        bash scripts/trim_server_modules.sh
+#    - name: Build arkouda_server
+#      shell: bash
+#      run: |
+#        set -euxo pipefail
+#        /usr/bin/time -v make
+#        echo "$PWD" >> "$GITHUB_PATH"
+#        echo "$PWD"
+#    - name: Install Arkouda
+#      run: |
+#        python3 -m pip install .[dev]
+#    - name: Run tests with coverage (fail if below threshold)
+#      run: |
+#        make coverage size=10
+#    - name: Sanity check coverage.xml
+#      if: always()
+#      run: |
+#        pwd
+#        ls -l
+#        [ -f coverage.xml ] && echo "coverage.xml present" || (echo "coverage.xml MISSING"; exit 1)
+#        head -n 20 coverage.xml || true
+#    - name: Upload coverage artifacts
+#      if: always()
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: coverage-artifacts
+#        path: |
+#          coverage.xml
+#          .coverage
+#          .pytest/report.html
+#        if-no-files-found: warn
+#    - name: Upload to Codecov
+#      uses: codecov/codecov-action@v4
+#      with:
+#        token: ${{ secrets.CODECOV_TOKEN }}   # not needed for public repos
+#        files: coverage.xml
+#        flags: python-coverage
+#        fail_ci_if_error: true
+
+
 
 
   arkouda_tests_linux:
@@ -571,7 +654,7 @@ jobs:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
     strategy:
       matrix:
-        chpl-version: ['2.6.0']
+        chpl-version: ['2.7.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
@@ -620,7 +703,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.6.0']
+        chpl-version: ['2.7.0']
     container:
       image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
       credentials:
