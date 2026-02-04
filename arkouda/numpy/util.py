@@ -17,6 +17,7 @@ from arkouda.numpy.dtypes import (
     float_scalars,
     int_scalars,
     numeric_scalars,
+    resolve_scalar_dtype,
 )
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import unique
@@ -711,7 +712,7 @@ def broadcast_to(x: Union[numeric_scalars, pdarray], shape: Union[int, Tuple[int
 
     if _val_isinstance_of_union(x, numeric_scalars):
         assert not isinstance(x, pdarray)  # Required for mypy
-        return akfull(shape, x, dtype=type(x))
+        return akfull(shape, x, dtype=dtype(resolve_scalar_dtype(x)))
     elif isinstance(x, pdarray) and isinstance(shape, int):
         if x.ndim == 1 and x.size == shape:
             return x
