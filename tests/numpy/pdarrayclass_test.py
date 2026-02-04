@@ -6,7 +6,7 @@ import pytest
 import arkouda as ak
 
 from arkouda.client import get_array_ranks, get_max_array_rank
-from arkouda.dtypes import bigint
+from arkouda.dtypes import bigint, uint8
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
@@ -642,7 +642,7 @@ class TestPdarrayClass:
 
             assert_equivalent(b, np_b)
 
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES + [uint8])
     def test_copy(self, dtype):
         fixed_size = 100
         a = ak.arange(fixed_size, dtype=dtype)
@@ -652,7 +652,7 @@ class TestPdarrayClass:
         ak_assert_equal(a, a_cpy)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES + [uint8])
     def test_copy_multidim(self, dtype):
         a = ak.arange(1000, dtype=dtype).reshape((10, 10, 10))
         a_cpy = a.copy()
@@ -725,3 +725,117 @@ class TestPdarrayClass:
 
         expected_delta = (4 - 2) * N * limb_bytes
         assert (bytes_a - bytes_b) == expected_delta
+
+    def test_invert_bool(self):
+        a = ak.array([True, False, True])
+        got = ~a
+        exp = ak.array([False, True, False])
+        assert (got == exp).all()
+
+    def test_invert_int64_matches_numpy_semantics(self):
+        a = ak.array([0, 1, 2, -1], dtype=ak.int64)
+        got = ~a
+        # NumPy semantics: ~x == -x - 1 for signed integers
+        exp = (-a) - 1
+        assert (got == exp).all()
+
+    def test_invert_uint64_matches_numpy_semantics(self):
+        a = ak.array([0, 1, 2, 2**63], dtype=ak.uint64)
+        got = ~a
+        # For unsigned ints: ~x == max_uint - x
+        max_u64 = (2**64) - 1
+        exp = ak.array([max_u64, max_u64 - 1, max_u64 - 2, max_u64 - (2**63)], dtype=ak.uint64)
+        assert (got == exp).all()
+
+    def test_invert_float_raises(self):
+        a = ak.array([0.0, 1.0], dtype=ak.float64)
+        with pytest.raises(TypeError):
+            _ = ~a
+
+    def test_invert_strings_raises(self):
+        s = ak.array(["a", "b"])
+        with pytest.raises(TypeError):
+            _ = ~s
+
+    def test_invert_bigint_roundtrip_small_values(self):
+        """Invert not yet supported for bigint."""
+        a = ak.array([0, 1, 2, 123456789], dtype=ak.bigint)
+
+        with pytest.raises(TypeError):
+            _ = ~a
+
+    @pytest.mark.parametrize(
+        "vals",
+        [
+            [0, 1, -2, 3],
+            [-1, -2, -3, 0],
+            [5, 0, 7, 8],
+        ],
+    )
+    @pytest.mark.parametrize("dtype", ["int64", "float64"])
+    def test_abs_int64_float64(self, vals, dtype):
+        a = ak.array(vals, dtype=dtype)
+        got = abs(a)
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize(
+        "vals",
+        [
+            [[0, 1], [-2, 3]],
+            [[-1, -2], [-3, 0]],
+            [[5, 0], [7, 8]],
+        ],
+    )
+    @pytest.mark.parametrize("dtype", ["int64", "float64"])
+    def test_abs_int64_float64_multidim(self, vals, dtype):
+        a = ak.array(vals, dtype=dtype)
+        got = abs(a)
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()
+
+    def test_abs_uint64_is_identity(self):
+        a = ak.array([0, 1, 2, 2**63], dtype="uint64")
+        got = abs(a)
+        assert (got == a).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_abs_uint64_is_identity_multidim(self):
+        a = ak.array([[0, 1], [2, 2**63]], dtype="uint64")
+        got = abs(a)
+        assert (got == a).all()
+
+    def test_abs_bool_is_identity(self):
+        a = ak.array([True, False, True])
+        got = abs(a)
+        assert (got == a).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_abs_bool_is_identity_multidim(self):
+        a = ak.array([[True, False], [True, False]])
+        got = abs(a)
+        assert (got == a).all()
+
+    def test_abs_bigint(self):
+        a = ak.array([0, 1, -2, 3, -123456789], dtype=ak.bigint)
+        got = abs(a)
+
+        #   where is not implemented for bigint, so cast to int64
+        a = a.astype("int64")
+        got = got.astype("int64")
+
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_abs_bigint_multidim(self):
+        a = ak.array([[0, 1], [3, -123456789]], dtype=ak.bigint)
+        got = abs(a)
+
+        #   where is not implemented for bigint, so cast to int64
+        a = a.astype("int64")
+        got = got.astype("int64")
+
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()

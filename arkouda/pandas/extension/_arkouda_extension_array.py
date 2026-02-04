@@ -685,6 +685,85 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
 
         return perm.to_ndarray().astype(np.intp, copy=False)
 
+    def view(self, dtype=None):
+        """
+        Return a shallow view of the ExtensionArray.
+
+        This method is used by pandas internals (e.g. ``BlockManager.copy(deep=False)``)
+        to create a new ``ExtensionArray`` wrapper that shares the same underlying
+        Arkouda data without materializing or copying server-side arrays.
+
+        Parameters
+        ----------
+        dtype : optional
+            If provided and different from the current dtype, a dtype conversion
+            is requested. In this case, the operation is delegated to
+            ``astype(dtype, copy=False)`` and a new array with the requested dtype
+            is returned.
+
+        Returns
+        -------
+        ArkoudaExtensionArray
+            A new ExtensionArray instance of the same concrete class that
+            references the same underlying Arkouda data.
+
+        Notes
+        -----
+        * This method performs a **shallow** copy only: the underlying Arkouda
+          server-side array is shared between the original and the returned object.
+        * No data is materialized, copied, or cast unless ``dtype`` is explicitly
+          requested.
+        * Optional internal attributes (e.g. masks, categorical metadata, caches)
+          are copied by reference when present, to preserve logical consistency.
+        * This method exists to satisfy pandas' expectations around ``.view()``
+          and ``copy(deep=False)`` semantics for ``ExtensionArray`` implementations.
+
+        Examples
+        --------
+        Create a shallow view that shares the same underlying data:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+        >>> ak_arr = ak.arange(5)
+        >>> ea = ArkoudaArray(ak_arr)
+        >>> v = ea.view()
+        >>> v is ea
+        False
+        >>> v._data is ea._data
+        True
+
+        Requesting a dtype conversion delegates to ``astype`` without copying
+        the underlying data unless required:
+
+        >>> v2 = ea.view(dtype="float64")
+        >>> v2.dtype == ea.astype("float64").dtype
+        True
+
+        This method is commonly invoked indirectly by pandas during operations
+        that require shallow copies:
+
+        >>> import pandas as pd
+        >>> s = pd.Series(ea)
+        >>> df = pd.DataFrame({"col": s})  # does not raise
+
+        See Also
+        --------
+        copy : Create a shallow or deep copy of the array.
+        astype : Cast the array to a new dtype.
+        """
+        if dtype is not None and str(dtype) != str(self.dtype):
+            return self.astype(dtype, copy=False)
+
+        new = type(self).__new__(type(self))
+        new._data = self._data
+
+        # copy optional attributes if they exist
+        for name in ("_mask", "_categories", "_codes", "_na_value", "_cache"):
+            if hasattr(self, name):
+                setattr(new, name, getattr(self, name))
+
+        return new
+
     def broadcast_arrays(self, *arrays):
         raise NotImplementedError(
             "ArkoudaExtensionArray.broadcast_arrays is not implemented in Arkouda yet"
@@ -755,9 +834,6 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
 
     def interpolate(self, method="linear", *, limit=None, **kwargs):
         raise NotImplementedError("interpolate is not yet implemented for ArkoudaExtensionArray.")
-
-    def view(self, dtype=None):
-        raise NotImplementedError("view is not yet implemented for ArkoudaExtensionArray.")
 
     def _pad_or_backfill(self, method, limit=None, mask=None):
         raise NotImplementedError("_pad_or_backfill is not yet implemented for ArkoudaExtensionArray.")

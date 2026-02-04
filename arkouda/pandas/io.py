@@ -41,7 +41,6 @@ Create and save a DataFrame
 >>> data = [ak.arange(10), ak.linspace(0, 1, 10)]
 >>> Path(my_path + '/parquet_data').mkdir(parents=True, exist_ok=True)
 >>> to_parquet(data, my_path + '/parquet_data/data.parquet')
-File written successfully!
 
 Load the DataFrame back
 >>> data2 = read_parquet(my_path + '/parquet_data/data*')

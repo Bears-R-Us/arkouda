@@ -31,8 +31,7 @@
     //  prototype deep copy function
 
     @arkouda.registerCommand()
-    proc deepcopy(x : [?d] ?t) : [d] t throws
-        where (t==int || t==real || t==uint || t==bigint || t==bool) {
+    proc deepcopy(x : [?d] ?t) : [d] t throws {
         var retVal = makeDistArray(d, t);
         retVal = x;
         return retVal;
