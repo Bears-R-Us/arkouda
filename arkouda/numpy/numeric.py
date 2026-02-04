@@ -30,7 +30,9 @@ from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_INTS,
     _datatype_check,
     bigint,
+    bool_scalars,
     int_scalars,
+    is_supported_bool,
     is_supported_number,
     numeric_scalars,
     resolve_scalar_dtype,
@@ -2086,8 +2088,8 @@ def _str_cat_where(
 @typechecked
 def where(
     condition: pdarray,
-    A: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
-    B: Union[str, numeric_scalars, pdarray, Strings, Categorical],  # type: ignore
+    A: Union[str, numeric_scalars, bool_scalars, pdarray, Strings, Categorical],  # type: ignore
+    B: Union[str, numeric_scalars, bool_scalars, pdarray, Strings, Categorical],  # type: ignore
 ) -> Union[pdarray, Strings, Categorical]:  # type: ignore
     """
     Return an array with elements chosen from A and B based upon a
@@ -2164,8 +2166,8 @@ def where(
     """
     from arkouda.client import generic_msg
 
-    if (not is_supported_number(A) and not isinstance(A, pdarray)) or (
-        not is_supported_number(B) and not isinstance(B, pdarray)
+    if (not is_supported_number(A) and not isinstance(A, pdarray) and not is_supported_bool(A)) or (
+        not is_supported_number(B) and not isinstance(B, pdarray) and not is_supported_bool(B)
     ):
         from arkouda.pandas.categorical import Categorical  # type: ignore
 

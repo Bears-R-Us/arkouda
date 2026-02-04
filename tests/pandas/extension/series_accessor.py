@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 import arkouda as ak
 
@@ -205,3 +206,43 @@ class TestArkoudaSeriesAccessor:
             assert s_back.index.tolist() == [10, 20, 30]
             assert s_back.index.name == "id"
             assert s_back.tolist() == [100, 200, 300]
+
+    # ------------------------------------------------------------------
+    # locate
+    # ------------------------------------------------------------------
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    @pytest.mark.parametrize("dtype", ["int64", "uint64", "bool_", "bigint"])
+    @pytest.mark.parametrize("dtype_index", ["ak_int64", "ak_uint64"])
+    def test_locate(self, dtype, dtype_index):
+        pda = pd.array(ak.arange(3, dtype=dtype), dtype="ak." + dtype)
+        pda2 = pd.array(ak.array(["A", "B", "C"]), dtype="ak_str")
+        idx = pd.array(ak.arange(3), dtype=dtype_index)
+        for val in pda, pda2:
+            s = pd.Series(val, index=idx).ak.to_ak()
+
+            for key in (
+                1,
+                pd.Index([1], dtype=dtype_index),
+                pd.Index([0, 2], dtype=dtype_index),
+            ):
+                lk = s.ak.locate(key)
+                assert isinstance(lk, pd.Series)
+                key = ak.array(key) if not isinstance(key, int) else key
+                assert (lk.index == s.index[key]).all()
+                assert (lk.values == s.values[key]).all()
+
+            # testing multi-index lookup
+            mi = pd.MultiIndex.from_arrays([pda, pda[::-1]])
+            s = pd.Series(data=val, index=mi)
+            lk = s.ak.locate(mi[0])
+            assert isinstance(lk, pd.Series)
+            # assert lk.index.index == mi[0].index
+            assert lk.values[0] == val[0]
+
+            # ensure error with scalar and multi-index
+            with pytest.raises(TypeError):
+                s.ak.locate(0)
+
+            with pytest.raises(TypeError):
+                s.ak.locate([0, 2])
