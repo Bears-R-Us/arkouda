@@ -73,6 +73,6 @@ tags-clean:
 	$(MAKE) ARRAY_ND_MAX=2 $(DEFAULT_TARGET)
 
 3d:
-	$(MAKE) ARRAY_ND_MAX=3 $(DEFAULT_TARGET)
+	$(MAKE) ARRAY_ND_MAX=3 $(DEFAULT_TARGET) instantiate_max=1024
 
 
