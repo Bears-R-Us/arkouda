@@ -486,7 +486,7 @@ def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 
 @typechecked
-def round(pda: pdarray, decimals: Optional[Union[int, None]] = None) -> pdarray:
+def round(pda: pdarray, decimals: Optional[int] = None) -> pdarray:
     """
     Return the element-wise rounding of the array.
 
