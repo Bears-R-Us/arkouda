@@ -1,5 +1,14 @@
 # flake8: noqa
 
+import warnings
+
+warnings.warn(
+    "arkouda.dtypes is deprecated and will be removed in a future release. "
+    "Please use arkouda.numpy.dtypes instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_DTYPES,
     ARKOUDA_SUPPORTED_INTS,

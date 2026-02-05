@@ -18,7 +18,7 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.groupbyclass import GroupBy, broadcast, groupable_element_type
 
 
 if TYPE_CHECKING:
@@ -198,8 +198,8 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
     ua, asize = bya.size()
     byb = GroupBy(b)
     ub, bsize = byb.size()
-    afact = asize[in1d(ua, ub)]
-    bfact = bsize[in1d(ub, ua)]
+    afact = asize[in1d(cast(groupable_element_type, ua), cast(groupable_element_type, ub))]
+    bfact = bsize[in1d(cast(groupable_element_type, ub), cast(groupable_element_type, ua))]
     nelem = (afact * bfact).sum()
     nbytes = 3 * 8 * nelem
     return nelem, nbytes

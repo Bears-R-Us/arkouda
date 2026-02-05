@@ -1,4 +1,12 @@
 # flake8: noqa
+import warnings
+
+warnings.warn(
+    "arkouda.alignment is deprecated and will be removed in a future release. "
+    "Please use arkouda.numpy.alignment instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from arkouda.numpy.alignment import (
     NonUniqueError,

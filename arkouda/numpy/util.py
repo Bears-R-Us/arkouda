@@ -992,6 +992,9 @@ def map(
     TypeError
         If `mapping` is not of type `dict` or `Series`.
         If `values` is not of type `pdarray`, `Categorical`, or `Strings`.
+    ValueError
+        If a mapping with tuple keys has inconsistent lengths, or if a MultiIndex
+        mapping has a different number of levels than the GroupBy keys.
 
     Examples
     --------
@@ -1013,30 +1016,99 @@ def map(
     from arkouda.numpy.pdarraysetops import in1d
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
+    from arkouda.pandas.index import MultiIndex
 
     keys = values
     gb = GroupBy(keys, dropna=False)
     gb_keys = gb.unique_keys
 
+    # helper: number of unique keys (works for single key or tuple-of-keys)
+    nuniq = gb_keys[0].size if isinstance(gb_keys, tuple) else gb_keys.size
+
+    # Fast-path: empty mapping => everything is missing
+    if (isinstance(mapping, dict) and len(mapping) == 0) or (
+        isinstance(mapping, Series) and len(mapping.index) == 0
+    ):
+        if not isinstance(values, (Strings, Categorical)):
+            return broadcast(gb.segments, full(nuniq, np.nan, values.dtype), permutation=gb.permutation)
+        else:
+            return broadcast(gb.segments, full(nuniq, "null"), permutation=gb.permutation)
+
     if isinstance(mapping, dict):
-        mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
+        # Build mapping as a Series with an Index/MultiIndex (avoid rank>1 arrays)
+        m_keys = list(mapping.keys())
+        m_vals = list(mapping.values())
+
+        k0 = m_keys[0]
+        if isinstance(k0, tuple):
+            # validate tuple keys
+            if not all(isinstance(k, tuple) for k in m_keys):
+                raise TypeError("Mixed key types in mapping dict (tuple and non-tuple).")
+            n = len(k0)
+            if not all(len(k) == n for k in m_keys):
+                raise ValueError("All tuple keys in mapping dict must have the same length.")
+
+            cols = list(zip(*m_keys))  # transpose list[tuple] -> list[level]
+            idx = MultiIndex([array(col) for col in cols])
+            mapping = Series(array(m_vals), index=idx)
+        else:
+            mapping = Series(array(m_vals), index=array(m_keys))
 
     if isinstance(mapping, Series):
-        xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
+        # Normalize mapping index keys into a "groupable" (single array OR tuple-of-arrays)
+        mindex = mapping.index
+        if isinstance(mindex, MultiIndex):
+            mkeys = tuple(mindex.index)
+        else:
+            mkeys = mindex.values
 
-        if xtra_keys.size > 0:
-            nans: Union[pdarray, Strings]  # without this, mypy complains
-            if not isinstance(mapping.values, (Strings, Categorical)):
-                nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
-            else:
-                nans = full(xtra_keys.size, "null")
+        if isinstance(gb_keys, tuple) and isinstance(mkeys, tuple):
+            if len(gb_keys) != len(mkeys):
+                raise ValueError(
+                    f"Mapping MultiIndex has {len(mkeys)} levels but GroupBy has {len(gb_keys)} keys"
+                )
 
-            if isinstance(xtra_keys, Categorical):
-                xtra_keys = xtra_keys.to_strings()
+        # invert=True => mask is True for GroupBy unique keys that are *missing* from the mapping,
+        # i.e., values that should be filled with NaN/"null".
+        mask = in1d(gb_keys, mkeys, invert=True)
 
-            xtra_series = Series(nans, index=xtra_keys)
-            mapping = Series.concat([mapping, xtra_series])
+        # Compute extra keys + extra size without mixing tuple/non-tuple assignments
+        if isinstance(gb_keys, tuple):
+            xtra_keys_t = tuple(k[mask] for k in gb_keys)
+            xtra_size = xtra_keys_t[0].size if len(xtra_keys_t) > 0 else 0
 
+            if xtra_size > 0:
+                nans: Union[pdarray, Strings]  # without this, mypy complains
+                if not isinstance(mapping.values, (Strings, Categorical)):
+                    nans = full(xtra_size, np.nan, mapping.values.dtype)
+                else:
+                    nans = full(xtra_size, "null")
+
+                # Convert any categorical levels to strings, level-by-level
+                xtra_keys_t = tuple(
+                    k.to_strings() if isinstance(k, Categorical) else k for k in xtra_keys_t
+                )
+
+                xtra_series = Series(nans, index=MultiIndex(list(xtra_keys_t)))
+                mapping = Series.concat([mapping, xtra_series])
+
+        else:
+            xtra_keys_s = gb_keys[mask]
+            xtra_size = xtra_keys_s.size
+
+            if xtra_size > 0:
+                if not isinstance(mapping.values, (Strings, Categorical)):
+                    nans = full(xtra_size, np.nan, mapping.values.dtype)
+                else:
+                    nans = full(xtra_size, "null")
+
+                if isinstance(xtra_keys_s, Categorical):
+                    xtra_keys_s = xtra_keys_s.to_strings()
+
+                xtra_series = Series(nans, index=xtra_keys_s)
+                mapping = Series.concat([mapping, xtra_series])
+
+        # Align mapping to gb_keys
         if isinstance(gb_keys, Categorical):
             mapping = mapping[gb_keys.to_strings()]
         else:
