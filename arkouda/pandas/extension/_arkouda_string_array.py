@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, Sequence, TypeVar, Union, overload
 from typing import cast as type_cast
 
 import numpy as np
 
 from numpy import ndarray
+from numpy.typing import NDArray
+from pandas import StringDtype as pd_StringDtype
 from pandas.api.extensions import ExtensionArray
+from pandas.core.dtypes.dtypes import ExtensionDtype
 
 from arkouda.numpy.dtypes import str_
 from arkouda.pandas.extension import ArkoudaArray
@@ -178,11 +181,122 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
         # materialize via ak.array and wrap again as Strings.
         return ArkoudaStringArray(ak_array(result))
 
-    def astype(self, dtype, copy: bool = False):
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: np.dtype[Any], copy: bool = True) -> NDArray[Any]: ...
+
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: ExtensionDtype, copy: bool = True) -> ExtensionArray: ...
+
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: Any, copy: bool = True) -> Union[ExtensionArray, NDArray[Any]]: ...
+
+    def astype(
+        self,
+        dtype: Any,
+        copy: bool = True,
+    ) -> Union[ExtensionArray, NDArray[Any]]:
+        """
+        Cast to a specified dtype.
+
+        Casting rules:
+
+        * If ``dtype`` requests ``object``, returns a NumPy ``NDArray[Any]`` of dtype
+          ``object`` containing the string values.
+        * If ``dtype`` is a string dtype (e.g. pandas ``StringDtype``, NumPy unicode,
+          or Arkouda string dtype), returns an ``ArkoudaStringArray``. If ``copy=True``,
+          attempts to copy the underlying Arkouda ``Strings`` data.
+        * For all other dtypes, casts the underlying Arkouda ``Strings`` using
+          ``Strings.astype`` and returns an Arkouda-backed ``ArkoudaExtensionArray``
+          constructed from the result.
+
+        Parameters
+        ----------
+        dtype : Any
+            Target dtype. May be a NumPy dtype, pandas dtype, or Arkouda dtype.
+        copy : bool
+            Whether to force a copy when the result is an ``ArkoudaStringArray``.
+            Default is True.
+
+        Returns
+        -------
+        Union[ExtensionArray, NDArray[Any]]
+            The cast result. Returns a NumPy array only when casting to ``object``;
+            otherwise returns an Arkouda-backed ExtensionArray.
+
+        Examples
+        --------
+        Casting to a string dtype returns an Arkouda-backed string array:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaStringArray
+        >>> s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+        >>> out = s.astype("string")
+        >>> out is s
+        False
+
+        Forcing a copy when casting to a string dtype returns a new array:
+
+        >>> out2 = s.astype("string", copy=True)
+        >>> out2 is s
+        False
+        >>> out2.to_ndarray()
+        array(['a', 'b', 'c'], dtype='<U1')
+
+        Casting to ``object`` materializes the data to a NumPy array:
+
+        >>> s.astype(object)
+        array(['a', 'b', 'c'], dtype=object)
+
+        Casting to a non-string dtype uses Arkouda to cast the underlying strings
+        and returns an Arkouda-backed ExtensionArray:
+
+        >>> s_num = ArkoudaStringArray(ak.array(["1", "2", "3"]))
+        >>> a = s_num.astype("int64")
+        >>> a.to_ndarray()
+        array([1, 2, 3])
+
+        NumPy and pandas dtype objects are also accepted:
+
+        >>> import numpy as np
+        >>> a = s_num.astype(np.dtype("float64"))
+        >>> a.to_ndarray()
+        array([1., 2., 3.])
+        """
+        from arkouda.numpy._typing._typing import is_string_dtype_hint
+        from arkouda.numpy.dtypes import dtype as ak_dtype
+
+        # --- 1) ExtensionDtype branch first (satisfies overload #2) ---
+        if isinstance(dtype, ExtensionDtype):
+            if hasattr(dtype, "numpy_dtype"):
+                dtype = dtype.numpy_dtype
+
+            if isinstance(dtype, pd_StringDtype) or is_string_dtype_hint(dtype):
+                if not copy:
+                    return self
+                data = self._data.copy() if hasattr(self._data, "copy") else self._data
+                return type_cast(ExtensionArray, type(self)(data))
+
+            dtype = ak_dtype(dtype)
+            casted = self._data.astype(dtype)
+            return type_cast(ExtensionArray, ArkoudaExtensionArray._from_sequence(casted))
+
+        # --- 2) object -> numpy (satisfies overload #1 / general) ---
         if dtype in (object, np.object_, "object", np.dtype("O")):
-            return self.to_ndarray().astype(object, copy=copy)
-        # Let pandas do the rest locally
-        return self.to_ndarray().astype(dtype, copy=copy)
+            return self.to_ndarray().astype(object, copy=False)
+
+        # string targets -> stay string EA
+        if isinstance(dtype, pd_StringDtype) or is_string_dtype_hint(dtype):
+            if not copy:
+                return self
+            data = self._data.copy() if hasattr(self._data, "copy") else self._data
+            return type(self)(data)
+
+        dtype = ak_dtype(dtype)
+        casted = self._data.astype(dtype)
+        return ArkoudaExtensionArray._from_sequence(casted)
 
     def isna(self):
         from arkouda.numpy.pdarraycreation import zeros
