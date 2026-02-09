@@ -36,11 +36,18 @@ def df_test_base_tmp(request):
     return df_test_base_tmp
 
 
+def _assert_string_index(idx: pd.Index, expected, name: str) -> None:
+    assert idx.name == name
+    assert list(idx.to_numpy(dtype=object)) == list(expected)
+    assert pd.api.types.is_string_dtype(idx.dtype)
+
+
 class TestIndex:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_index_docstrings(self):
         import doctest
 
-        from arkouda import index
+        from arkouda.pandas import index
 
         result = doctest.testmod(index, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
@@ -766,45 +773,92 @@ class TestIndex:
             idx.to_hdf(f"{tmp_dirname}/idx_file.h5")
             assert len(glob.glob(f"{tmp_dirname}/idx_file_*.h5")) == locale_count
 
+    def test_to_pandas_preserves_int_dtype(self):
+        out = ak.Index([1, 2, 3], name="ints").to_pandas()
+        pd_assert_index_equal(out, pd.Index([1, 2, 3], dtype="int64", name="ints"))
+
+    def test_to_pandas_preserves_int_dtype_allow_list(self):
+        out = ak.Index([1, 2, 3], allow_list=True, name="ints_list").to_pandas()
+        pd_assert_index_equal(out, pd.Index([1, 2, 3], dtype="int64", name="ints_list"))
+
+    def test_to_pandas_preserves_float_dtype(self):
+        out = ak.Index([1.0, 2.0, 3.0], name="floats").to_pandas()
+        assert out.dtype == np.dtype("float64")
+        pd_assert_index_equal(out, pd.Index([1.0, 2.0, 3.0], dtype="float64", name="floats"))
+
+    def test_to_pandas_preserves_bool_dtype(self):
+        out = ak.Index([True, False, True], name="bools").to_pandas()
+        assert out.dtype == np.dtype("bool")
+        pd_assert_index_equal(out, pd.Index([True, False, True], dtype="bool", name="bools"))
+
+    def test_to_pandas_strings_from_python_list_are_string_dtype(self):
+        out = ak.Index(["a", "b", "c"], allow_list=True, name="str_list").to_pandas()
+        _assert_string_index(out, ["a", "b", "c"], "str_list")
+
+    def test_to_pandas_strings_from_ak_strings_are_string_dtype(self):
+        out = ak.Index(ak.array(["a", "b", "c"]), name="str_ak").to_pandas()
+        _assert_string_index(out, ["a", "b", "c"], "str_ak")
+
+    def test_index_allow_list_rejects_mixed_types(self):
+        with pytest.raises(TypeError, match=r"Values of Index must all be the same type"):
+            ak.Index([1, "a", 2], allow_list=True, name="mixed")
+
+    def test_index_allow_list_rejects_none_mixed_with_strings(self):
+        # Current behavior: list must be homogeneous; None triggers a mismatch.
+        with pytest.raises(TypeError, match=r"Values of Index must all be the same type"):
+            ak.Index(["a", None, "c"], allow_list=True, name="str_with_none")
+
+    def test_to_pandas_empty_index(self):
+        out = ak.Index([], allow_list=True, name="empty").to_pandas()
+        assert out.name == "empty"
+        assert len(out) == 0
+
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_to_pandas(self, size):
-        i = ak.Index([1, 2, 3])
-        assert i.to_pandas().equals(pd.Index([1, 2, 3]))
-
-        i2 = ak.Index([1, 2, 3], allow_list=True)
-        assert i2.to_pandas().equals(pd.Index([1, 2, 3]))
-
-        i3 = ak.Index(["a", "b", "c"], allow_list=True)
-        assert i3.to_pandas().equals(pd.Index(["a", "b", "c"]))
-
-        i4 = ak.Index(ak.array(["a", "b", "c"]))
-        assert i4.to_pandas().equals(pd.Index(["a", "b", "c"]))
-
-        # categorical case
-        strings1 = ak.random_strings_uniform(1, 2, size)
-        ak_cat = ak.Categorical(strings1)
+    def test_to_pandas_categorical(self, size):
+        strings = ak.random_strings_uniform(1, 2, size)
+        ak_cat = ak.Categorical(strings)
 
         pd_cat = pd_Categorical.from_codes(
-            codes=ak_cat.codes.to_ndarray(), categories=ak_cat.categories.to_ndarray()
+            codes=ak_cat.codes.to_ndarray(),
+            categories=ak_cat.categories.to_ndarray(),
         )
 
-        pd_assert_index_equal(ak.Index(ak_cat).to_pandas(), pd_Index(pd_cat), check_categorical=True)
+        out = ak.Index(ak_cat, name="cat").to_pandas()
+        exp = pd_Index(pd_cat, name="cat")
+        pd_assert_index_equal(out, exp, check_categorical=True)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_to_pandas_multiindex(self, size):
         ak_str = ak.random_strings_uniform(1, 2, size)
         ak_cat = ak.Categorical(ak_str)
         ak_int = ak.arange(size)
+
         ak_multi = ak.MultiIndex([ak_str, ak_cat, ak_int], names=["first", "second", "third"])
+        out = ak_multi.to_pandas()
 
         pd_str = ak_str.to_ndarray()
         pd_cat = ak_cat.to_pandas()
         pd_int = ak_int.to_ndarray()
-        pd_multi = pd.MultiIndex.from_arrays(
-            [pd_str, pd_cat, pd_int], names=["first", "second", "third"]
-        )
+        exp = pd.MultiIndex.from_arrays([pd_str, pd_cat, pd_int], names=["first", "second", "third"])
 
-        pd_assert_index_equal(ak_multi.to_pandas(), pd_multi, check_categorical=True)
+        pd_assert_index_equal(out, exp, check_categorical=True)
+
+        assert out.names == ["first", "second", "third"]
+        assert out.nlevels == 3
+        assert len(out) == size
+
+        # level 1 is categorical
+        assert isinstance(out.levels[1], pd.CategoricalIndex)
+
+        # round-trip checks: values match without being brittle about dtype/backends
+        np.testing.assert_array_equal(
+            pd.Index(out.get_level_values(0)).to_numpy(dtype=object),
+            pd.Index(pd_str).to_numpy(dtype=object),
+        )
+        np.testing.assert_array_equal(
+            pd.Index(out.get_level_values(2)).to_numpy(dtype=object),
+            pd.Index(pd_int).to_numpy(dtype=object),
+        )
 
     def test_to_ndarray(self):
         from numpy import array as ndarray

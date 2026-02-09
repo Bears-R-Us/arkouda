@@ -53,7 +53,13 @@ def bench_array_transfer_from_ndarray(benchmark, dtype):
         def from_np():
             ak.array(npa, max_bits=pytest.max_bits)
 
-        benchmark.pedantic(from_np, rounds=pytest.trials)
+        def from_np_bigint():
+            ak.array(npa, max_bits=-1, dtype=dtype, unsafe=True, num_bits=128, any_neg=False)
+
+        if dtype == "bigint":
+            benchmark.pedantic(from_np_bigint, rounds=pytest.trials)
+        else:
+            benchmark.pedantic(from_np, rounds=pytest.trials)
 
         benchmark.extra_info["description"] = "Measures the performance of ak.array"
         benchmark.extra_info["problem_size"] = N

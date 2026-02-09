@@ -371,6 +371,9 @@ def abs(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
+    if pda.dtype == "uint64" or pda.dtype == "bool":
+        return pda.copy()
+
     rep_msg = generic_msg(
         cmd=f"abs<{pda.dtype},{pda.ndim}>",
         args={
@@ -483,17 +486,16 @@ def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 
 @typechecked
-def round(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
+def round(pda: pdarray, decimals: Optional[int] = None) -> pdarray:
     """
     Return the element-wise rounding of the array.
 
     Parameters
     ----------
     pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
+    decimals: Optional[Union[int, None]], default = None
+        for float pdarrays, the number of decimal places of accuracy for the round.
+        May be None, positive, negative, or zero.  If None, zero is used.
 
     Returns
     -------
@@ -503,16 +505,53 @@ def round(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if the parameter is not a pdarray
+        Raised if the parameter is not a pdarray or if the dtype of the pdarray
+        is other than ak.float64, ak.int64, ak.uint64 or ak.bool.
+
+    Notes
+    -----
+    This function follows numpy's rule of "round to even" when the fractional part
+    of the number equals .5.  For example, 2.5 rounds to 2, but 3.5 rounds to 4.
+    Arkouda's use of decimal is not perfect, as shown in the examples below.
 
     Examples
     --------
     >>> import arkouda as ak
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
-    array([1.00000000... 3.00000000... 3.00000000...])
+    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
+    >>> ak.round(ak.array([1.5, 2.5, 3.5]))
+    array([2.00000000000000000 2.00000000000000000 4.00000000000000000])
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=-1)
+    array([-140.00000000000000000 280.00000000000000000])
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=0)
+    array([-143.00000000000000000 280.00000000000000000])
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=2)
+    array([1.54 2.73])
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=3)
+    array([1.5409999999999999 2.7320000000000002])
+
+
     """
-    _datatype_check(pda.dtype, [float], "round")
-    return _general_helper(pda, "round", where)
+    from arkouda.client import generic_msg
+
+    if decimals is None:
+        decimals = 0
+
+    _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "round")
+
+    if pda.dtype in [ak_int64, ak_uint64]:
+        return pda.copy()  # int arguments return copies of the input
+    if pda.dtype == ak_bool:
+        return pda.astype(ak_float64)  # not an exact match to numpy, which uses np.float16
+
+    rep_msg = generic_msg(
+        cmd=f"round<{pda.dtype},{pda.ndim}>",
+        args={
+            "x": pda,
+            "n": decimals,
+        },
+    )
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -3767,7 +3806,7 @@ def minimum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scal
 
     if np.isscalar(tx1) and isinstance(tx2, pdarray):
         return (
-            full(nan, tx2.size) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))
+            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))
         )
 
     # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
@@ -3855,7 +3894,7 @@ def maximum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scal
 
     if np.isscalar(tx1) and isinstance(tx2, pdarray):
         return (
-            full(nan, tx2.size) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))
+            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))
         )
 
     # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
