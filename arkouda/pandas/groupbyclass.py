@@ -86,6 +86,7 @@ __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupab
 
 groupable_element_type = Union[pdarray, Strings, "Categorical"]
 groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
+
 # Note: we won't be typechecking GroupBy until we can figure out a way to handle
 # the circular import with Categorical
 
