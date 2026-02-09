@@ -673,8 +673,8 @@
         <span class="c1"># normalize dtype so things like &quot;int&quot; will work</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">to_numpy_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="n">akfloat64</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unsupported dtype dtype(&#39;float64&#39;) for integers&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> for integers&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># delegate to numpy when return size is 1</span>
