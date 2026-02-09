@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 
+
 TYPES = ("int64", "uint64", "float64")
 STYLES = ("vv", "vs", "sv", "ss")
 
@@ -17,9 +18,7 @@ def alternate(L, R, n):
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("v_or_s", STYLES)
 def bench_where(benchmark, dtype, v_or_s):
-    """
-    Measures the performance of where
-    """
+    """Measures the performance of where."""
     if dtype in pytest.dtype:
         N = pytest.N
         seed = pytest.seed

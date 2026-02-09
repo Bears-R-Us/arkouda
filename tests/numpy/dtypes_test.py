@@ -2,7 +2,9 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import dtypes
+
 
 """
 DtypesTest encapsulates arkouda dtypes module methods
@@ -82,7 +84,7 @@ class TestDTypes:
         assert dtypes.dtype("bigint") == bi
         assert dtypes.dtype("bigint") == ak.arange(2**200, 2**200 + 10).dtype
 
-    def test_isSupportedInt(self):
+    def test_is_supported_int(self):
         for supported in (
             -10,
             1,
@@ -92,15 +94,15 @@ class TestDTypes:
             2**63 + 1,
             2**200,
         ):
-            assert dtypes.isSupportedInt(supported)
+            assert dtypes.is_supported_int(supported)
         for unsupported in 1.0, "1":
-            assert not dtypes.isSupportedInt(unsupported)
+            assert not dtypes.is_supported_int(unsupported)
 
-    def test_isSupportedFloat(self):
+    def test_is_supported_float(self):
         for supported in np.nan, -np.inf, 3.1, -0.0, float(1), np.float64(1):
-            assert dtypes.isSupportedFloat(supported)
+            assert dtypes.is_supported_float(supported)
         for unsupported in np.int64(1.0), int(1.0), "1.0":
-            assert not dtypes.isSupportedFloat(unsupported)
+            assert not dtypes.is_supported_float(unsupported)
 
     def test_DtypeEnum(self):
         assert "bool" == str(dtypes.DType.BOOL)

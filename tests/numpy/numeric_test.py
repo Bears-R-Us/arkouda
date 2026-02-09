@@ -1,16 +1,18 @@
-from math import isclose, prod, sqrt
 import random
 import warnings
+
+from math import isclose, prod, sqrt
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.client import get_array_ranks, get_max_array_rank
-from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import str_
+from arkouda.testing import assert_almost_equal, assert_arkouda_array_equivalent
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
-from arkouda.testing import assert_arkouda_array_equivalent
+
 
 ARRAY_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64, str_]
 NUMERIC_TYPES = [ak.int64, ak.float64, ak.bool_, ak.uint64]
@@ -170,6 +172,7 @@ def _infinity_edge_case_helper(np_func, ak_func):
 
 
 class TestNumeric:
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_numeric_docstrings(self):
         import doctest
@@ -456,6 +459,7 @@ class TestNumeric:
 
     #   cumsum and cumprod tests were identical, and so have been combined.
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     def test_cumsum_and_cumprod_1D(self, num_type):
         na = np.linspace(1, 10, 10).astype(num_type)
@@ -466,6 +470,7 @@ class TestNumeric:
         with pytest.raises(TypeError):
             ak.cumsum(np.array([range(0, 10)]).astype(num_type))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("axis_", [None, 0, 1])
@@ -476,6 +481,7 @@ class TestNumeric:
         for npfunc, akfunc in ((np.cumsum, ak.cumsum), (np.cumprod, ak.cumprod)):
             ak_assert_almost_equivalent(npfunc(na, axis=axis_), akfunc(pda, axis=axis_))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("num_type", NUMERIC_TYPES)
     @pytest.mark.parametrize("axis_", [None, 0, 1, 2])
@@ -626,10 +632,31 @@ class TestNumeric:
     @pytest.mark.parametrize("num_type", NO_FLOAT)
     def test_value_counts(self, num_type):
         pda = ak.ones(100, dtype=num_type)
+        pda[0] = 0
         result = ak.value_counts(pda)
 
-        assert ak.array([1]) == result[0]
-        assert ak.array([100]) == result[1]
+        assert (ak.array([0, 1]) == result[0]).all()
+        assert (ak.array([1, 99]) == result[1]).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("num_type", NO_FLOAT)
+    def test_value_counts_2D(self, num_type):
+        pda = ak.ones((10, 10), dtype=num_type)
+        pda[0, 0] = 0
+        result = ak.value_counts(pda)
+
+        assert (ak.array([0, 1]) == result[0]).all()
+        assert (ak.array([1, 99]) == result[1]).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("num_type", NO_FLOAT)
+    def test_value_counts_3D(self, num_type):
+        pda = ak.ones((5, 5, 5), dtype=num_type)
+        pda[0, 0, 0] = 0
+        result = ak.value_counts(pda)
+
+        assert (ak.array([0, 1]) == result[0]).all()
+        assert (ak.array([1, 124]) == result[1]).all()
 
     def test_value_counts_error(self):
         with pytest.raises(TypeError):
@@ -649,14 +676,18 @@ class TestNumeric:
         ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
         assert ak.isnan(ark_s_int64).tolist() == [False, False, False, False]
 
+        ark_s_uint64 = ak.array(np.array([1, 2, 3, 4], dtype="uint64"))
+        assert ak.isnan(ark_s_uint64).tolist() == [False, False, False, False]
+
+        ark_s_bool = ak.array(np.array([0, 1, 2, 3], dtype="bool"))
+        assert ak.isnan(ark_s_bool).tolist() == [False, False, False, False]
+
         ark_s_string = ak.array(["a", "b", "c"])
         with pytest.raises(TypeError):
             ak.isnan(ark_s_string)
 
     def test_isinf_isfinite(self):
-        """
-        Test isinf and isfinite.  These return pdarrays of T/F values as appropriate.
-        """
+        """Test isinf and isfinite.  These return pdarrays of T/F values as appropriate."""
         nda = np.array([0, 9999.9999])
         pda = ak.array(nda)
         warnings.filterwarnings("ignore")
@@ -680,6 +711,7 @@ class TestNumeric:
             assert isinstance(cast_str, ak.Strings)
             assert isinstance(cast_cat, ak.Categorical)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_precision(self, prob_size):
         # See https://github.com/Bears-R-Us/arkouda/issues/964
@@ -1040,17 +1072,12 @@ class TestNumeric:
     # the resulting matrices are on the order of size*size.
 
     # tril works on ints, floats, or bool
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_tril(self, data_type, prob_size):
         size = int(sqrt(prob_size))
-
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
 
         # test on one square and two non-square matrices
 
@@ -1061,21 +1088,15 @@ class TestNumeric:
             for diag in sweep:
                 npa = np.tril(nda, diag)
                 ppa = ak.tril(pda, diag).to_ndarray()
-                assert check(npa, ppa, data_type)
+                assert_almost_equal(npa, ppa)
 
     # triu works on ints, floats, or bool
-
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.skip_if_rank_not_compiled(2)
     def test_triu(self, data_type, prob_size):
         size = int(sqrt(prob_size))
-
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
 
         # test on one square and two non-square matrices
 
@@ -1086,7 +1107,7 @@ class TestNumeric:
             for diag in sweep:
                 npa = np.triu(nda, diag)
                 ppa = ak.triu(pda, diag).to_ndarray()
-                assert check(npa, ppa, data_type)
+                assert_almost_equal(npa, ppa)
 
     # transpose works on ints, floats, or bool
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
@@ -1118,17 +1139,12 @@ class TestNumeric:
                     )
 
     # eye works on ints, floats, or bool
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_eye(self, data_type, prob_size):
         size = int(sqrt(prob_size))
-
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
 
         # test on one square and two non-square matrices
 
@@ -1137,9 +1153,10 @@ class TestNumeric:
             for k in sweep:
                 nda = np.eye(N, M, k, dtype=data_type)
                 pda = ak.eye(N, M, k, dt=data_type).to_ndarray()
-                assert check(nda, pda, data_type)
+                assert_almost_equal(nda, pda)
 
     # matmul works on ints, floats, or bool
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled(2)
     @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
     @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
@@ -1148,12 +1165,6 @@ class TestNumeric:
         size = int(sqrt(prob_size))
         high1 = 10 if data_type1 != ak.bool_ else 2
         high2 = 10 if data_type2 != ak.bool_ else 2
-
-        # ints and bools are checked for equality; floats are checked for closeness
-
-        check = lambda a, b, t: (  # noqa: E731
-            np.allclose(a.tolist(), b.tolist()) if akdtype(t) == "float64" else (a == b).all()
-        )
 
         # test on one square and two non-square products
 
@@ -1164,7 +1175,42 @@ class TestNumeric:
             ndaRight = pdaRight.to_ndarray()
             akProduct = ak.matmul(pdaLeft, pdaRight)
             npProduct = np.matmul(ndaLeft, ndaRight)
-            assert check(npProduct, akProduct.to_ndarray(), akProduct.dtype)
+            assert_almost_equal(npProduct, akProduct.to_ndarray())
+
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
+    @pytest.mark.skip_if_rank_not_compiled((2, 3))
+    @pytest.mark.parametrize("data_type1", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("data_type2", INT_FLOAT_BOOL)
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_matmulmultidim(self, data_type1, data_type2, prob_size):
+        # In the pdarray generations below, using .astype avoids a TypeError when the
+        # type is bool.
+        # Note that the left argument is always data_type1, and the right data_type2.
+
+        nda_1d = np.arange(10).astype(data_type2)
+        pda_1d = ak.array(nda_1d)
+        nda_nd = np.arange(60).reshape(2, 3, 10).astype(data_type1)
+        pda_nd = ak.array(nda_nd)
+        akProduct = ak.matmul(pda_nd, pda_1d)
+        npProduct = np.matmul(nda_nd, nda_1d)
+        assert_almost_equal(npProduct, akProduct.to_ndarray())
+
+        nda_1d = np.arange(10).astype(data_type1)
+        nda_nd = np.arange(60).reshape(2, 10, 3).astype(data_type2)
+        pda_1d = ak.array(nda_1d)
+        pda_nd = ak.array(nda_nd)
+        akProduct = ak.matmul(pda_1d, pda_nd)
+        npProduct = np.matmul(nda_1d, nda_nd)
+        assert_almost_equal(npProduct, akProduct.to_ndarray())
+
+        ssize = prob_size // 20 if prob_size > 20 else 3
+        nda_nd = np.arange(20 * ssize).reshape(2, 10, ssize).astype(data_type1)
+        pda_nd = ak.array(nda_nd)
+        nda_md = np.arange(5 * ssize).astype(data_type2).reshape(1, ssize, 5)
+        pda_md = ak.array(nda_md)
+        akProduct = ak.matmul(pda_nd, pda_md)
+        npProduct = np.matmul(nda_nd, nda_md)
+        assert_almost_equal(npProduct, akProduct.to_ndarray())
 
     # Notes about array_equal:
     #   Strings compared to non-strings are always not equal.
@@ -1215,6 +1261,94 @@ class TestNumeric:
                 )
                 assert not (ak.array_equal(pda_a, pda_b))
 
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_minimum_pdarrays(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+            pda2[prob_size - 1] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_min = np.minimum(nda1, nda2)
+        ak_min = ak.minimum(pda1, pda2)
+        ak_assert_almost_equivalent(np_min, ak_min)
+        assert_arkouda_array_equivalent(ak_min, ak.minimum(pda2, pda1))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_minimum_scalars(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = True if num_type == ak.bool_ else (top + bottom) / 2
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2
+        np_min = np.minimum(nda1, nda2)
+        ak_min = ak.minimum(pda1, pda2)
+        ak_assert_almost_equivalent(np_min, ak_min)
+        assert_arkouda_array_equivalent(ak_min, ak.minimum(pda2, pda1))
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_minimum_diff_shapes(self, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, (1, 5), dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, (6, 1), dtype=num_type)
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_min = np.minimum(nda1, nda2)
+        ak_min = ak.minimum(pda1, pda2)
+        ak_assert_almost_equivalent(np_min, ak_min)
+        assert_arkouda_array_equivalent(ak_min, ak.minimum(pda2, pda1))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_maximum_pdarrays(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+            pda2[prob_size - 1] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_max = np.maximum(nda1, nda2)
+        ak_max = ak.maximum(pda1, pda2)
+        ak_assert_almost_equivalent(np_max, ak_max)
+        assert_arkouda_array_equivalent(ak_max, ak.maximum(pda2, pda1))
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_maximum_scalars(self, prob_size, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, prob_size, dtype=num_type)
+        pda2 = True if num_type == ak.bool_ else (top + bottom) / 2
+        if num_type == ak.float64:
+            pda1[0] = np.nan
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2
+        np_max = np.maximum(nda1, nda2)
+        ak_max = ak.maximum(pda1, pda2)
+        ak_assert_almost_equivalent(np_max, ak_max)
+        assert_arkouda_array_equivalent(ak_max, ak.maximum(pda2, pda1))
+
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    @pytest.mark.parametrize("num_type", INT_FLOAT_BOOL)
+    def test_maximum_diff_shapes(self, num_type):
+        (bottom, top) = (-10, 10) if num_type != ak.bool_ else (0, 2)
+        pda1 = ak.random.randint(bottom, top, (1, 5), dtype=num_type)
+        pda2 = ak.random.randint(bottom, top, (6, 1), dtype=num_type)
+        nda1 = pda1.to_ndarray()
+        nda2 = pda2.to_ndarray()
+        np_max = np.maximum(nda1, nda2)
+        ak_max = ak.maximum(pda1, pda2)
+        ak_assert_almost_equivalent(np_max, ak_max)
+        assert_arkouda_array_equivalent(ak_max, ak.maximum(pda2, pda1))
+
     @pytest.mark.parametrize("func", ["floor", "ceil", "trunc"])
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_rounding_functions(self, prob_size, func):
@@ -1234,6 +1368,43 @@ class TestNumeric:
                 sample = sample.reshape(local_shape)  # reshape only needed if rank > 1
             aksample = ak.array(sample)
             assert np.all(npfunc(sample) == akfunc(aksample).to_ndarray())
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_floats(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.uniform(0, 10000, prob_size)
+        pda = ak.array(nda)
+        for decimal in range(-5, 5):
+            nres = np.round(nda, decimal)
+            pres = ak.round(pda, decimal)
+            ak_assert_almost_equivalent(nres, pres)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_ints(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.randint(-10000, 10000, prob_size)
+        pda = ak.array(nda)
+        nres = np.round(nda)
+        pres = ak.round(pda)
+        ak_assert_almost_equivalent(nres, pres)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_uints(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.randint(1, 10000, prob_size, dtype=np.uint64)
+        pda = ak.array(nda)
+        nres = np.round(nda)
+        pres = ak.round(pda)
+        ak_assert_almost_equivalent(nres, pres)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_bools(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.randint(0, 2, prob_size, dtype=np.bool_)
+        pda = ak.array(nda)
+        nres = np.round(nda).astype(np.float64)  # for comparison below
+        pres = ak.round(pda)
+        ak_assert_almost_equivalent(nres, pres)
 
     def test_can_cast(self):
         from arkouda.numpy.dtypes import can_cast
@@ -1558,6 +1729,21 @@ class TestNumeric:
         anp_taken = np.take(anp, indices_np)
 
         assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+        assert np.array_equal(a.take(indices).to_ndarray(), anp_taken)
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_take_strings(self, size):
+        a = ak.random_strings_uniform(1, 3, size, seed=pytest.seed)
+        anp = a.to_ndarray()
+
+        indices = ak.randint(0, size, size // 2, dtype="int64", seed=pytest.seed)
+        indices_np = indices.to_ndarray()
+
+        a_taken = ak.take(a, indices)
+        anp_taken = np.take(anp, indices_np)
+
+        assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+        assert np.array_equal(a.take(indices).to_ndarray(), anp_taken)
 
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
     @pytest.mark.skip_if_rank_not_compiled([3])
@@ -1576,6 +1762,7 @@ class TestNumeric:
         anp_taken = np.take(anp, indices_np, axis=axis)
 
         assert np.array_equal(a_taken.to_ndarray(), anp_taken)
+        assert np.array_equal(a.take(indices, axis=axis).to_ndarray(), anp_taken)
 
     @pytest.mark.parametrize("dtype", NO_BOOL)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -1669,8 +1856,7 @@ class TestNumeric:
         ak_assert_almost_equivalent(np_vecdot, ak_vecdot_f)
         ak_assert_almost_equivalent(ak_vecdot_f, ak_vecdot_r)
 
-    #   The error test sends incompatible shapes to vecdot, which passes them to
-    #   ak.broadcast_dims, which is where the error is raised.
+    #   The error test sends incompatible shapes to vecdot.
 
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("dtype", NO_BOOL)
@@ -1687,3 +1873,10 @@ class TestNumeric:
         arr = ak.array([], dtype="str_")
         assert isinstance(arr, ak.Strings)
         assert arr.size == 0
+
+    def test_idiv_edge_case(self):
+        a = ak.array([-1])
+        b = ak.array([1 / 3])
+        assert (a // b)[0] == -4.0
+        a = ak.array([1])
+        assert (a // b)[0] == 3.0

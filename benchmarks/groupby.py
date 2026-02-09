@@ -5,6 +5,7 @@ import time
 
 import arkouda as ak
 
+
 TYPES = ("int64",)
 
 

@@ -9,8 +9,8 @@ from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.numpy.util import _axis_validation
 
-from ._dtypes import (  # _complex_floating_dtypes,; complex128,
-    _numeric_dtypes,
+from ._dtypes import (
+    _numeric_dtypes,  # _complex_floating_dtypes,; complex128,
     _real_floating_dtypes,
     _real_numeric_dtypes,
     _signed_integer_dtypes,
@@ -20,6 +20,7 @@ from ._dtypes import (  # _complex_floating_dtypes,; complex128,
 )
 from .array_object import Array, implements_numpy
 from .manipulation_functions import squeeze
+
 
 __all__ = [
     "_prod_sum_dtype",
@@ -611,9 +612,9 @@ def cumulative_sum(
 
     if dtype is None:
         if x_.dtype == "bool":
-            x_ = akcast(x_, int)
+            x_ = Array._new(akcast(x_, int))
     else:
-        x_ = akcast(x_, dtype)
+        x_ = Array._new(akcast(x_, dtype))
 
     resp = generic_msg(
         cmd=f"cumSum<{x_.dtype},{x.ndim}>",
@@ -690,9 +691,9 @@ def cumulative_prod(
 
     if dtype is None:
         if x_.dtype == "bool":
-            x_ = akcast(x_, int)
+            x_ = Array._new(akcast(x_, int))
     else:
-        x_ = akcast(x_, dtype)
+        x_ = Array._new(akcast(x_, dtype))
 
     resp = generic_msg(
         cmd=f"cumProd<{x_.dtype},{x.ndim}>",

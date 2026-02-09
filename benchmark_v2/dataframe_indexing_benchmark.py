@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
 
+from benchmark_utils import calc_num_bytes
+
 import arkouda as ak
+
 
 OPS = ["_get_head_tail_server", "_get_head_tail"]
 
@@ -11,9 +13,7 @@ OPS = ["_get_head_tail_server", "_get_head_tail"]
 @pytest.mark.benchmark(group="Dataframe_Indexing")
 @pytest.mark.parametrize("op", OPS)
 def bench_dataframe(benchmark, op):
-    """
-    Measures the performance of arkouda Dataframe indexing
-    """
+    """Measures the performance of arkouda Dataframe indexing."""
     N = pytest.N
 
     types = [ak.Categorical, ak.pdarray, ak.Strings, ak.SegArray]

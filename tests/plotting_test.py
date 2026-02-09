@@ -9,8 +9,10 @@ import pytest
 
 import arkouda as ak
 
+
 # Import targets under test
 from arkouda.plotting import plot_dist
+
 
 matplotlib.use("Agg")  # must be set before importing pyplot
 
@@ -44,6 +46,7 @@ class TestPlotting:
 
         from arkouda import plotting
 
+        matplotlib.use("Agg")  # Use non-GUI backend to suppress plots
         # Run doctests inside a temp directory so any files (e.g., savefig) go here
         cwd = os.getcwd()
         os.chdir(tmp_path)

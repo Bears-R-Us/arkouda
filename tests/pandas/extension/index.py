@@ -1,6 +1,7 @@
 import pandas as pd
 
 import arkouda as ak
+
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
 
@@ -11,7 +12,6 @@ class TestIndexExtension:
         assert len(idx) == 3
         assert idx.name == "foo"
         assert idx[0] == 10
-        # assert list(idx[:2]._data.to_ndarray()) == [10, 20]
         assert list(idx[:2].to_numpy()) == [10, 20]
 
     def test_index_equality(self):

@@ -4,15 +4,20 @@ import pytest
 
 import arkouda as ak
 
+
 """
 Encapsulates a variety of arkouda apply test cases.
 """
 
 
 def supports_apply():
-    return ak.numpy.pdarrayclass.parse_single_value(ak.client.generic_msg("isPythonModuleSupported"))
+    try:
+        return ak.numpy.pdarrayclass.parse_single_value(ak.client.generic_msg("isPythonModuleSupported"))
+    except Exception:
+        return False
 
 
+@pytest.mark.requires_chapel_module("ApplyMsg")
 class TestApply:
     def test_apply_docstrings(self):
         import doctest

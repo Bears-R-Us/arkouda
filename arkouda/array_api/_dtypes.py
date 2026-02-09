@@ -1,5 +1,11 @@
+import numpy as np
+
 import arkouda as ak
+
 from arkouda import dtype as akdtype
+
+from ._typing import Dtype
+
 
 __all__: list[str] = []
 
@@ -20,21 +26,23 @@ complex64 = ak.complex64
 complex128 = ak.complex128
 bool_ = ak.bool_
 
-_all_dtypes = (
-    int8,
-    int16,
-    int32,
-    int64,
-    uint8,
-    uint16,
-    uint32,
-    uint64,
-    float32,
-    float64,
-    complex64,
-    complex128,
-    bool,
+
+_all_dtypes: tuple[Dtype, ...] = (
+    np.dtype(np.int8),
+    np.dtype(np.int16),
+    np.dtype(np.int32),
+    np.dtype(np.int64),
+    np.dtype(np.uint8),
+    np.dtype(np.uint16),
+    np.dtype(np.uint32),
+    np.dtype(np.uint64),
+    np.dtype(np.float32),
+    np.dtype(np.float64),
+    np.dtype(np.complex64),
+    np.dtype(np.complex128),
+    np.dtype(np.bool_),
 )
+
 _boolean_dtypes = (bool,)
 _real_floating_dtypes = (float32, float64)
 _floating_dtypes = (float32, float64, complex64, complex128)

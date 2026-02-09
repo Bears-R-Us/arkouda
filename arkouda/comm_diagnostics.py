@@ -87,10 +87,10 @@ arkouda.DataFrame, arkouda.client.generic_msg
 """
 
 import sys
-from typing import cast as typecast
 
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.pandas.dataframe import DataFrame
+
 
 __all__ = [
     "start_comm_diagnostics",
@@ -139,7 +139,7 @@ def start_comm_diagnostics():
         cmd="startCommDiagnostics",
         args={},
     )
-    return typecast(str, rep_msg)
+    return rep_msg
 
 
 def stop_comm_diagnostics():
@@ -158,7 +158,7 @@ def stop_comm_diagnostics():
         cmd="stopCommDiagnostics",
         args={},
     )
-    return typecast(str, rep_msg)
+    return rep_msg
 
 
 def reset_comm_diagnostics():
@@ -177,7 +177,7 @@ def reset_comm_diagnostics():
         cmd="resetCommDiagnostics",
         args={},
     )
-    return typecast(str, rep_msg)
+    return rep_msg
 
 
 def print_comm_diagnostics_table(print_empty_columns=False):
@@ -216,7 +216,7 @@ def print_comm_diagnostics_table(print_empty_columns=False):
     else:
         sys.stdout.write(df[[col for col in df.columns if ak_sum(df[col]) != 0]].to_markdown())
 
-    return typecast(str, rep_msg)
+    return rep_msg
 
 
 def start_verbose_comm():
@@ -239,7 +239,7 @@ def start_verbose_comm():
         cmd="startVerboseComm",
         args={},
     )
-    return typecast(str, rep_msg)
+    return rep_msg
 
 
 def stop_verbose_comm():
@@ -258,7 +258,7 @@ def stop_verbose_comm():
         cmd="stopVerboseComm",
         args={},
     )
-    return typecast(str, rep_msg)
+    return rep_msg
 
 
 def get_comm_diagnostics_put():
@@ -278,7 +278,7 @@ def get_comm_diagnostics_put():
         cmd="getCommDiagnosticsPut",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_get():
@@ -298,7 +298,7 @@ def get_comm_diagnostics_get():
         cmd="getCommDiagnosticsGet",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_put_nb():
@@ -318,7 +318,7 @@ def get_comm_diagnostics_put_nb():
         cmd="getCommDiagnosticsPutNb",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_get_nb():
@@ -338,7 +338,7 @@ def get_comm_diagnostics_get_nb():
         cmd="getCommDiagnosticsGetNb",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_test_nb():
@@ -358,7 +358,7 @@ def get_comm_diagnostics_test_nb():
         cmd="getCommDiagnosticsTestNb",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_wait_nb():
@@ -378,7 +378,7 @@ def get_comm_diagnostics_wait_nb():
         cmd="getCommDiagnosticsWaitNb",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_try_nb():
@@ -398,7 +398,7 @@ def get_comm_diagnostics_try_nb():
         cmd="getCommDiagnosticsTryNb",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_amo():
@@ -418,7 +418,7 @@ def get_comm_diagnostics_amo():
         cmd="getCommDiagnosticsAmo",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_execute_on():
@@ -438,7 +438,7 @@ def get_comm_diagnostics_execute_on():
         cmd="getCommDiagnosticsExecuteOn",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_execute_on_fast():
@@ -458,7 +458,7 @@ def get_comm_diagnostics_execute_on_fast():
         cmd="getCommDiagnosticsExecuteOnFast",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_execute_on_nb():
@@ -478,7 +478,7 @@ def get_comm_diagnostics_execute_on_nb():
         cmd="getCommDiagnosticsExecuteOnNb",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_get_hits():
@@ -500,7 +500,7 @@ def get_comm_diagnostics_cache_get_hits():
         cmd="getCommDiagnosticsCacheGetHits",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_get_misses():
@@ -520,7 +520,7 @@ def get_comm_diagnostics_cache_get_misses():
         cmd="getCommDiagnosticsCacheGetMisses",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_put_hits():
@@ -540,7 +540,7 @@ def get_comm_diagnostics_cache_put_hits():
         cmd="getCommDiagnosticsCachePutHits",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_put_misses():
@@ -560,7 +560,7 @@ def get_comm_diagnostics_cache_put_misses():
         cmd="getCommDiagnosticsCachePutMisses",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_num_prefetches():
@@ -582,7 +582,7 @@ def get_comm_diagnostics_cache_num_prefetches():
         cmd="getCommDiagnosticsCacheNumPrefetches",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_num_page_readaheads():
@@ -602,7 +602,7 @@ def get_comm_diagnostics_cache_num_page_readaheads():
         cmd="getCommDiagnosticsCacheNumPageReadaheads",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_prefetch_unused():
@@ -625,7 +625,7 @@ def get_comm_diagnostics_cache_prefetch_unused():
         cmd="getCommDiagnosticsCachePrefetchUnused",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_prefetch_waited():
@@ -648,7 +648,7 @@ def get_comm_diagnostics_cache_prefetch_waited():
         cmd="getCommDiagnosticsCachePrefetchWaited",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_readahead_unused():
@@ -671,7 +671,7 @@ def get_comm_diagnostics_cache_readahead_unused():
         cmd="getCommDiagnosticsCacheReadaheadUnused",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics_cache_readahead_waited():
@@ -695,7 +695,7 @@ def get_comm_diagnostics_cache_readahead_waited():
         cmd="getCommDiagnosticsCacheReadaheadWaited",
         args={},
     )
-    return create_pdarray(typecast(str, rep_msg))
+    return create_pdarray(rep_msg)
 
 
 def get_comm_diagnostics() -> DataFrame:

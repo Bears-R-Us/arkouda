@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import builtins
+
 from typing import List, Optional, Sequence, Union, cast
+from typing import cast as type_cast
 
 import numpy as np
+
 from typeguard import typechecked
 
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import NumericDTypes, dtype, int_scalars
 from arkouda.numpy.pdarrayclass import create_pdarrays, pdarray
 
-logger = getArkoudaLogger(name="sparrayclass")
+
+logger = get_arkouda_logger(name="sparrayclass")
 
 __all__ = [
     "sparray",
@@ -79,7 +83,7 @@ class sparray:
         if max_bits:
             self.max_bits = max_bits
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         from arkouda.client import generic_msg
 
         try:
@@ -137,10 +141,10 @@ class sparray:
         # check dtype for error
         if dtype_name not in NumericDTypes:
             raise TypeError(f"unsupported dtype {dtype}")
-        responseArrays = generic_msg(
+        response_arrays = generic_msg(
             cmd=f"sparse_to_pdarrays<{self.dtype},{self.layout}>", args={"matrix": self}
         )
-        array_list = create_pdarrays(responseArrays)
+        array_list = create_pdarrays(type_cast(str, response_arrays))
         return array_list
 
     """"""
@@ -165,14 +169,14 @@ class sparray:
 #       all values have been checked by python module and...
 #       server has created pdarray already before this is called
 @typechecked
-def create_sparray(repMsg: str, max_bits=None) -> sparray:
+def create_sparray(rep_msg: str, max_bits=None) -> sparray:
     """
     Return a sparray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
 
     Parameters
     ----------
-    repMsg : str
+    rep_msg : str
         space-delimited string containing the sparray name, datatype, size
         dimension, shape,and itemsize
 
@@ -184,14 +188,14 @@ def create_sparray(repMsg: str, max_bits=None) -> sparray:
     Raises
     ------
     ValueError
-        If there's an error in parsing the repMsg parameter into the six
+        If there's an error in parsing the rep_msg parameter into the six
         values needed to create the pdarray instance
     RuntimeError
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
     try:
-        fields = repMsg.split()
+        fields = rep_msg.split()
         name = fields[1]
         mydtype = fields[2]
         size = int(fields[3])

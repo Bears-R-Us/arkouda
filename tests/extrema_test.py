@@ -2,7 +2,9 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.testing import assert_arkouda_array_equivalent
+
 
 NUMERIC_TYPES = ["int64", "uint64", "float64", "bool"]
 
@@ -42,6 +44,7 @@ def make_np_edge_cases(dtype):
     return None
 
 
+@pytest.mark.requires_chapel_module("KExtremeMsg")
 class TestExtrema:
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", ["int64", "uint64", "float64"])

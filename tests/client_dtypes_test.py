@@ -4,7 +4,9 @@ import random
 import pytest
 
 import arkouda as ak
+
 from arkouda import client_dtypes
+
 
 INT_TYPES = [ak.int64, ak.uint64]
 
@@ -46,7 +48,7 @@ class TestClientDTypes:
 
         # test use of vectorizer function
         arr = ak.arange(4, dtype=dtype)
-        bvectorizer = ak.BitVectorizer(3)
+        bvectorizer = ak.bit_vectorizer(3)
         bv = bvectorizer(arr)
         assert isinstance(bv, ak.BitVector)
         assert bv.tolist() == bv_answer

@@ -4,6 +4,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
+
 seed = pytest.seed
 
 
@@ -26,7 +27,15 @@ class TestManipulation:
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
-    def test_broadcast(self):
+    def test_broadcast_to(self):
+        a = xp.ones((1, 6, 1))
+
+        abig = xp.broadcast_to(a, (5, 6, 5))
+        assert abig.shape == (5, 6, 5)
+        assert (abig == xp.ones((5, 6, 5))).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    def test_broadcast_arrays(self):
         a = xp.ones((1, 6, 1))
         b = xp.ones((5, 1, 10))
         c = xp.ones((5, 6, 1))

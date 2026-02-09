@@ -1,41 +1,42 @@
 from __future__ import annotations
 
 import builtins
-from functools import reduce
 import json
+
+from functools import reduce
 from math import ceil
 from sys import modules
-from typing import TYPE_CHECKING, List, Optional, Tuple, TypeVar, Union, cast, overload
+from typing import TYPE_CHECKING, List, Literal, Optional, Sequence, Tuple, Union, cast, overload
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.infoclass import information, pretty_print_information
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    DTypes,
+    bigint,
+    bool_scalars,
+    dtype,
+    get_byteorder,
+    get_server_byteorder,
     int_scalars,
-    isSupportedBool,
-    isSupportedInt,
-    isSupportedNumber,
+    is_supported_bool,
+    is_supported_int,
+    is_supported_number,
     numeric_scalars,
     numpy_scalars,
     resolve_scalar_dtype,
     result_type,
 )
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, DTypes, bigint
 from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars, dtype
 from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import get_byteorder, get_server_byteorder
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
 
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg, get_array_ranks
-else:
-    generic_msg = TypeVar("generic_msg")
-    get_array_ranks = TypeVar("get_array_ranks")
 
 module = modules[__name__]
 
@@ -161,16 +162,12 @@ if TYPE_CHECKING:
     var = stats_reduce
     std = stats_reduce
 
-    from arkouda.client import generic_msg, get_array_ranks
-else:
-    generic_msg = TypeVar("generic_msg")
-    get_array_ranks = TypeVar("get_array_ranks")
-
 __all__ = [
     "pdarray",
     "clear",
     "any",
     "all",
+    "logical_not",
     "is_sorted",
     "sum",
     "dot",
@@ -193,6 +190,7 @@ __all__ = [
     "rotl",
     "rotr",
     "cov",
+    "allclose",
     "corr",
     "divmod",
     "sqrt",
@@ -200,11 +198,11 @@ __all__ = [
     "mod",
     "fmod",
     "RegistrationError",
-    "broadcast_to_shape",
     "_to_pdarray",
     "diff",
+    "create_pdarray",
 ]
-logger = getArkoudaLogger(name="pdarrayclass")
+logger = get_arkouda_logger(name="pdarrayclass")
 
 SUPPORTED_REDUCTION_OPS = [
     "any",
@@ -307,9 +305,7 @@ def parse_single_value(msg: str) -> Union[numpy_scalars, int]:
 
 
 def _create_scalar_array(value):
-    """
-    Create a pdarray from a single scalar value.
-    """
+    """Create a pdarray from a single scalar value."""
     from arkouda.client import generic_msg
 
     return create_pdarray(
@@ -323,9 +319,7 @@ def _create_scalar_array(value):
 
 
 def _slice_index(array: pdarray, starts: List[int], stops: List[int], strides: List[int]):
-    """
-    Slice a pdarray with a set of start, stop and stride values.
-    """
+    """Slice a pdarray with a set of start, stop and stride values."""
     from arkouda.client import generic_msg
 
     return create_pdarray(
@@ -460,6 +454,55 @@ def _array_memview(a) -> memoryview:
         return memoryview(a)
 
 
+@overload
+def logical_not(x: pdarray) -> pdarray: ...
+@overload
+def logical_not(x: numeric_scalars) -> akbool: ...
+
+
+@typechecked
+def logical_not(x: Union[pdarray, numeric_scalars]) -> Union[pdarray, akbool]:
+    """Compute the truth value of NOT *x* element-wise.
+
+    This function returns a boolean ``pdarray`` where each element is
+    the logical negation of the corresponding element in ``x``. For
+    boolean arrays, this is equivalent to applying the unary ``~``
+    operator. For numeric arrays, zero is treated as False and
+    non-zero as True.
+
+    Parameters
+    ----------
+    x : pdarray
+        Input array on which to compute element-wise logical NOT.
+
+    Returns
+    -------
+    pdarray
+        A boolean ``pdarray`` with the same shape as ``x`` containing
+        the result of the NOT operation applied element-wise.
+
+    Notes
+    -----
+    This is a simplified version of :func:`numpy.logical_not`. It
+    currently does not support keyword arguments such as ``out`` or
+    ``where``, and always allocates a new result array.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> x = ak.array([True, False, True])
+    >>> ak.logical_not(x)
+    array([False  True False])
+
+    >>> y = ak.array([0, 1, 2])
+    >>> ak.logical_not(y)
+    array([True False False])
+    """
+    if not isinstance(x, pdarray):
+        return np.logical_not(x)
+    return x == 0
+
+
 # class for the pdarray
 class pdarray:
     """
@@ -545,13 +588,78 @@ class pdarray:
 
         self.registered_name: Optional[str] = None
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
+        """
+        Attempt to delete the remote array from the Arkouda server when this
+        ``pdarray`` instance is garbage-collected.
+
+        This method is **best-effort only**: it performs a safe, silent cleanup
+        that never raises exceptions and skips work during interpreter shutdown.
+        The deletion request is sent via ``generic_msg("delete", {"name": name})``
+        if the Arkouda client is still available and the array has not already
+        been deleted.
+
+        Behavior summary
+        ----------------
+        1. Detects Python interpreter finalization and exits early if modules or
+           logging are being torn down.
+        2. Gracefully retrieves the array name; if missing, no deletion occurs.
+        3. Marks the object with a ``_deleted`` flag to prevent double deletion.
+        4. Logs the deletion attempt at DEBUG level, ignoring any logging errors.
+        5. Invokes the Arkouda ``delete`` command if possible, swallowing all
+           exceptions that might arise from network teardown, missing imports,
+           or client unavailability.
+
+        Notes
+        -----
+        - ``__del__`` is not guaranteed to run promptly or at all, depending on
+          reference cycles and interpreter state.
+        - For deterministic resource cleanup, users should call
+          :meth:`ak.pdarray.delete` explicitly instead of relying on the
+          destructor.
+        """
+        # 1) Bail out early during interpreter shutdown (imports/logging unsafe).
         try:
-            logger.debug(f"deleting pdarray with name {self.name}")
+            import sys
+
+            # If Python is finalizing or import machinery is gone, do nothing.
+            if (getattr(sys, "is_finalizing", None) and sys.is_finalizing()) or getattr(
+                sys, "meta_path", None
+            ) is None:
+                return
+        except Exception:
+            return
+
+        # 2) Get the array name safely; if absent, nothing to do.
+        try:
+            name = getattr(self, "name", None)
+            if not name:
+                return
+        except Exception:
+            return
+
+        # 3) Prevent re-entrancy / double delete on the same object.
+        try:
+            if getattr(self, "_deleted", False):
+                return
+            setattr(self, "_deleted", True)
+        except Exception:
+            # If we can't set the flag, still proceed best-effort.
+            pass
+
+        # 4) Best-effort log (don't let logging explode during teardown).
+        try:
+            logger.debug(f"deleting pdarray with name {name}")
+        except Exception:
+            pass
+
+        # 5) Send delete if the client is still importable/usable; swallow all errors.
+        try:
             from arkouda.client import generic_msg
 
-            generic_msg(cmd="delete", args={"name": self.name})
-        except (RuntimeError, AttributeError):
+            generic_msg(cmd="delete", args={"name": name})
+        except Exception:
+            # Channel closed, client gone, or shutdown in progress — ignore.
             pass
 
     def __bool__(self) -> builtins.bool:
@@ -574,6 +682,12 @@ class pdarray:
         from arkouda.client import generic_msg, pdarrayIterThresh
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
+
+    def __abs__(self):
+        """Absolute value (abs(self))."""
+        from arkouda.numpy.numeric import abs as ak_abs
+
+        return ak_abs(self)
 
     @property
     def shape(self):
@@ -694,7 +808,7 @@ class pdarray:
         return fmt.format(other)
 
     # binary operators
-    def _binop(self, other: pdarray, op: str) -> pdarray:
+    def _binop(self, other: Union[pdarray, numeric_scalars], op: str) -> pdarray:
         """
         Execute binary operation specified by the op string.
 
@@ -743,7 +857,7 @@ class pdarray:
                 x1, x2, tmp_x1, tmp_x2 = broadcast_if_needed(self, other)
             except ValueError:
                 raise ValueError(f"shape mismatch {self.shape} {other.shape}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>",
                 args={"op": op, "a": x1, "b": x2},
             )
@@ -751,7 +865,7 @@ class pdarray:
                 del x1
             if tmp_x2:
                 del x2
-            return create_pdarray(repMsg)
+            return create_pdarray(rep_msg)
         # pdarray binop scalar
         # If scalar cannot be safely cast, server will infer the return dtype
         dt = resolve_scalar_dtype(other)
@@ -763,18 +877,18 @@ class pdarray:
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
-        if isSupportedBool(other):
+        if is_supported_bool(other):
             dt = "bool"
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"binopvs<{self.dtype},{dt},{self.ndim}>",
             args={"op": op, "a": self, "value": other},
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
-    def _r_binop(self, other: pdarray, op: str) -> pdarray:
+    def _r_binop(self, other: Union[pdarray, numeric_scalars], op: str) -> pdarray:
         """
         Execute reverse binary operation specified by the op string.
 
@@ -814,14 +928,14 @@ class pdarray:
         if self.dtype != "bigint" and ak_can_cast(other, self.dtype):
             dt = self.dtype.name
 
-        if isSupportedBool(other):
+        if is_supported_bool(other):
             dt = "bool"
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"binopsv<{self.dtype},{dt},{self.ndim}>",
             args={"op": op, "a": self, "value": other},
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
     def transfer(self, hostname: str, port: int_scalars):
         """
@@ -1005,7 +1119,19 @@ class pdarray:
 
     # overload unary- for pdarray implemented as pdarray*(-1)
     def __neg__(self):
+        if self.dtype == "uint64":
+            return (~self + 1) & 0xFFFFFFFFFFFFFFFF
+        if self.dtype == "bool_":
+            raise TypeError(
+                "Unary negation (`-`) is not supported for boolean pdarrays; "
+                "use `~a` or `ak.logical_not(a)` instead."
+            )
         return self._binop(-1, "*")
+
+    def __pos__(self):
+        if self.dtype == "bool_":
+            raise TypeError("Unary + not supported for bool")
+        return self
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
@@ -1019,9 +1145,7 @@ class pdarray:
 
     @property
     def inferred_type(self) -> Union[str, None]:
-        """
-        Return a string of the type inferred from the values.
-        """
+        """Return a string of the type inferred from the values."""
         from arkouda.numpy.dtypes import float_scalars, int_scalars
         from arkouda.numpy.util import _is_dtype_in_union
 
@@ -1129,20 +1253,20 @@ class pdarray:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
-                repMsg = generic_msg(
+                rep_msg = generic_msg(
                     cmd=f"[int]<{self.dtype},1>",
                     args={
                         "array": self,
                         "idx": key,
                     },
                 )
-                return parse_single_value(repMsg)
+                return parse_single_value(rep_msg)
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
 
         if self.ndim == 1 and isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"[slice]<{self.dtype},1>",
                 args={
                     "array": self,
@@ -1152,7 +1276,7 @@ class pdarray:
                     "max_bits": self.max_bits if self.max_bits is not None else 0,
                 },
             )
-            return create_pdarray(repMsg)
+            return create_pdarray(rep_msg)
 
         if isinstance(key, tuple):
             # handle None and Ellipsis in the key tuple
@@ -1165,14 +1289,14 @@ class pdarray:
 
             if len(scalar_axes) == len(clean_key):
                 # all scalars: use simpler indexing (and return a scalar)
-                repMsg = generic_msg(
+                rep_msg = generic_msg(
                     cmd=f"[int]<{self.dtype},{self.ndim}>",
                     args={
                         "array": self,
                         "idx": clean_key,
                     },
                 )
-                ret_array = parse_single_value(repMsg)
+                ret_array = parse_single_value(rep_msg)
 
             elif len(pdarray_axes) > 0:
                 if len(pdarray_axes) == len(clean_key):
@@ -1257,14 +1381,14 @@ class pdarray:
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             if key.dtype == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd="[pdarray]",
                 args={
                     "array": self,
                     "idx": key,
                 },
             )
-            return create_pdarray(repMsg)
+            return create_pdarray(rep_msg)
 
         import numpy as np
 
@@ -1604,7 +1728,7 @@ class pdarray:
             return coargsort(self.bigint_to_uint_arrays(), algorithm, ascending=ascending)
 
         cmd = f"argsort<{self.dtype.name},{self.ndim}>"
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=cmd,
             args={
                 "name": self.name,
@@ -1614,7 +1738,7 @@ class pdarray:
             },
         )
 
-        sorted_array = create_pdarray(cast(str, repMsg))
+        sorted_array = create_pdarray(cast(str, rep_msg))
 
         if ascending:
             return sorted_array
@@ -1712,6 +1836,39 @@ class pdarray:
         Works as a method of a pdarray (e.g. a.any()) or a standalone function (e.g. ak.all(a))
         """
         return all(self, axis=axis, keepdims=keepdims)
+
+    def logical_not(self) -> pdarray:
+        """
+        Compute the truth value of NOT *self* element-wise.
+
+        This method is equivalent to :func:`arkouda.logical_not(self)`.
+        It returns a boolean ``pdarray`` where each element is the
+        logical negation of the corresponding element in ``self``.
+
+        Returns
+        -------
+        pdarray
+            A boolean ``pdarray`` with the same shape as ``self``
+            containing the result of the NOT operation.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.array([True, False, True])
+        >>> a.logical_not()
+        array([False  True False])
+        >>> ak.logical_not(a)
+        array([False  True False])
+
+        Notes
+        -----
+        Works as a method of a ``pdarray`` (e.g. ``a.logical_not()``)
+        or as a standalone function (e.g. ``ak.logical_not(a)``). For
+        boolean arrays, this is equivalent to applying the unary ``~``
+        operator. For numeric arrays, zero is treated as False and
+        non-zero as True.
+        """
+        return logical_not(self)
 
     def is_registered(self) -> np.bool_:
         """
@@ -2274,34 +2431,38 @@ class pdarray:
         return std(self, ddof=ddof, axis=axis, keepdims=keepdims)
 
     def cov(self, y: pdarray) -> np.float64:
-        """
-        Compute the covariance between self and y.
-        """
+        """Compute the covariance between self and y."""
         return cov(self, y)
 
     def corr(self, y: pdarray) -> np.float64:
         """
         Compute the correlation between self and y using pearson correlation coefficient.
+
         See ``arkouda.corr`` for details.
         """
         return corr(self, y)
 
     def mink(self, k: int_scalars) -> pdarray:
         """
-        Compute the minimum "k" values.  See ``arkouda.mink`` for details.
+        Compute the minimum "k" values.
+
+        See ``arkouda.mink`` for details.
         """
         return mink(self, k)
 
     @typechecked
     def maxk(self, k: int_scalars) -> pdarray:
         """
-        Compute the maximum "k" values.  See ``arkouda.maxk`` for details.
+        Compute the maximum "k" values.
+
+        See ``arkouda.maxk`` for details.
         """
         return maxk(self, k)
 
     def argmink(self, k: int_scalars) -> pdarray:
         """
         Finds the indices corresponding to the `k` minimum values of an array.
+
         See ``arkouda.argmink`` for details.
         """
         return argmink(self, k)
@@ -2309,44 +2470,49 @@ class pdarray:
     def argmaxk(self, k: int_scalars) -> pdarray:
         """
         Finds the indices corresponding to the `k` maximum values of an array.
+
         See ``arkouda.argmaxk`` for details.
         """
         return argmaxk(self, k)
 
     def popcount(self) -> pdarray:
         """
-        Find the population (number of bits set) in each element. See `ak.popcount`.
+        Find the population (number of bits set) in each element.
+
+        See `ak.popcount`.
         """
         return popcount(self)
 
     def parity(self) -> pdarray:
         """
-        Find the parity (XOR of all bits) in each element. See `ak.parity`.
+        Find the parity (XOR of all bits) in each element.
+
+        See `ak.parity`.
         """
         return parity(self)
 
     def clz(self) -> pdarray:
         """
-        Count the number of leading zeros in each element. See `ak.clz`.
+        Count the number of leading zeros in each element.
+
+        See `ak.clz`.
         """
         return clz(self)
 
     def ctz(self) -> pdarray:
         """
-        Count the number of trailing zeros in each element. See `ak.ctz`.
+        Count the number of trailing zeros in each element.
+
+        See `ak.ctz`.
         """
         return ctz(self)
 
     def rotl(self, other) -> pdarray:
-        """
-        Rotate bits left by <other>.
-        """
+        """Rotate bits left by <other>."""
         return rotl(self, other)
 
     def rotr(self, other) -> pdarray:
-        """
-        Rotate bits right by <other>.
-        """
+        """Rotate bits right by <other>."""
         return rotr(self, other)
 
     def value_counts(self):
@@ -2370,10 +2536,7 @@ class pdarray:
         """
         from arkouda.numpy import value_counts
 
-        if self.ndim > 1:
-            raise ValueError(f"value_counts is only implemented for 1D arrays; got {self.ndim}")
-
-        return value_counts(self)
+        return value_counts(self.flatten()) if self.ndim > 1 else value_counts(self)
 
     def astype(self, dtype) -> pdarray:
         """
@@ -2492,7 +2655,20 @@ class pdarray:
         ret_list = json.loads(generic_msg(cmd=cmd, args={"array": self}))
         return list(reversed([create_pdarray(a) for a in ret_list]))
 
-    def reshape(self, *shape):
+    @overload
+    def reshape(self, shape: Sequence[int_scalars]) -> pdarray: ...
+
+    @overload
+    def reshape(self, *shape: int_scalars) -> pdarray: ...
+
+    @overload
+    def reshape(self, shape: pdarray) -> pdarray: ...
+
+    @overload
+    def reshape(self, shape: np.ndarray) -> pdarray: ...
+
+    @typechecked
+    def reshape(self, *shape: Union[int_scalars, Sequence[int_scalars], np.ndarray, pdarray]) -> pdarray:
         """
         Gives a new shape to an array without changing its data.
 
@@ -2526,21 +2702,43 @@ class pdarray:
         # For example, a.reshape(10, 11) is equivalent to a.reshape((10, 11))
         # the lenshape variable addresses an error that occurred when a single integer was
         # passed
+        from typing import get_args
+
         from arkouda.client import generic_msg
 
+        shape_seq: Sequence[int_scalars]
+
         if len(shape) == 1:
-            shape = shape[0]
-            lenshape = 1
-        if (not isinstance(shape, int)) and (not isinstance(shape, pdarray)):
-            shape = [i for i in shape]
-            lenshape = len(shape)
+            arg = shape[0]
+
+            if isinstance(arg, get_args(int_scalars)):
+                shape_seq = (arg,)
+
+            elif isinstance(arg, Sequence):
+                shape_seq = tuple(arg)
+
+            elif isinstance(arg, np.ndarray):
+                shape_seq = tuple(arg)
+
+            elif isinstance(arg, pdarray):
+                shape_seq = cast(Sequence[int_scalars], arg.tolist())
+
+            else:
+                raise TypeError(f"Invalid shape argument {shape}")
+
+        else:
+            shape_seq = cast(Sequence[int_scalars], shape)
+
+        shape_arg: list[int_scalars] = list(shape_seq)
+
+        lenshape = len(shape_arg)
 
         return create_pdarray(
             generic_msg(
                 cmd=f"reshape<{self.dtype},{self.ndim},{lenshape}>",
                 args={
                     "name": self.name,
-                    "shape": shape,
+                    "shape": shape_arg,
                 },
             ),
             max_bits=self.max_bits,
@@ -2769,7 +2967,7 @@ class pdarray:
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
+        mode: Literal["truncate", "append"] = "truncate",
         compression: Optional[str] = None,
     ) -> str:
         """
@@ -2784,7 +2982,7 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         compression : str (Optional)
@@ -2852,8 +3050,8 @@ class pdarray:
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ) -> str:
         """
         Save the pdarray to HDF5.
@@ -2865,10 +3063,10 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single", "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
@@ -3199,8 +3397,51 @@ class pdarray:
         else:
             raise TypeError("Grouping is only supported on numeric data (integral types) and bools.")
 
+    def take(self, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray:
+        """
+        Take elements from the array along an axis.
+
+        When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+        using arrays); however, it can be easier to use if you need elements along a given axis.
+        A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+        Parameters
+        ----------
+        indices : numeric_scalars or pdarray
+            The indices of the values to extract. Also allow scalars for indices.
+        axis : int, optional
+            The axis over which to select values. By default, the flattened input array is used.
+
+        Returns
+        -------
+        pdarray
+            The returned array has the same type as `a`.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.array([4, 3, 5, 7, 6, 8])
+        >>> indices = [0, 1, 4]
+        >>> a.take(indices)
+        array([4 3 6])
+
+        """
+        from arkouda.numpy.numeric import take
+
+        return take(self, indices=indices, axis=axis)
+
 
 # end pdarray class def
+
+# overloads for create_pdarray
+
+
+@overload
+def create_pdarray(rep_msg: str, max_bits: int | None = ...) -> pdarray: ...
+
+
+@overload
+def create_pdarray(rep_msg: memoryview, max_bits: int | None = ...) -> pdarray: ...
 
 
 # creates pdarray object
@@ -3208,16 +3449,23 @@ class pdarray:
 #       all values have been checked by python module and...
 #       server has created pdarray already before this is called
 @typechecked
-def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
+def create_pdarray(rep_msg: Union[str, memoryview], max_bits=None) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
-    The user should not call this function directly.
+    This is intended for internal use only.  The user should not call this function
+    directly.
 
     Parameters
     ----------
-    repMsg : str
-        space-delimited string containing the pdarray name, datatype, size
-        dimension, shape,and itemsize
+    rep_msg : str, memoryview
+        a space-delimited response from the arkouda server describing a newly
+        created array.  The message encodes, in order, the array name, dtype,
+        total size, rank, shape, and itemsize.  If provided as a memoryview,
+        it will be decoded to a UTF-8 string before parsing.
+
+    max_bits: int, optional
+        The maximum number of bits used to represent values in the array,
+        used for bigint.
 
     Returns
     -------
@@ -3227,17 +3475,17 @@ def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
     Raises
     ------
     ValueError
-        If there's an error in parsing the repMsg parameter into the six
+        If there's an error in parsing the rep_msg parameter into the six
         values needed to create the pdarray instance
     RuntimeError
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
-    if isinstance(repMsg, memoryview):
-        repMsg = repMsg.tobytes().decode()
+    if isinstance(rep_msg, memoryview):
+        rep_msg = rep_msg.tobytes().decode()
 
     try:
-        fields = repMsg.split()
+        fields = rep_msg.split()
         name = fields[1]
         mydtype = fields[2]
         size = int(fields[3])
@@ -3260,14 +3508,14 @@ def create_pdarray(repMsg: Union[str, memoryview], max_bits=None) -> pdarray:
 
 
 @typechecked
-def create_pdarrays(repMsg: str) -> List[pdarray]:
+def create_pdarrays(rep_msg: str) -> List[pdarray]:
     """
     Return a list of pdarray instances pointing to arrays created by the
     arkouda server.
 
     Parameters
     ----------
-    repMsg : str
+    rep_msg : str
         A JSON list of space delimited strings, each containing the pdarray
         name, datatype, size,
 
@@ -3279,7 +3527,7 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
     Raises
     ------
     ValueError
-        If there's an error in parsing the repMsg parameter into the six
+        If there's an error in parsing the rep_msg parameter into the six
         values needed to create the pdarray instance
     RuntimeError
         Raised if a server-side error is thrown in the process of creating
@@ -3287,8 +3535,8 @@ def create_pdarrays(repMsg: str) -> List[pdarray]:
     """
     # TODO: maybe add more robust json parsing here
     try:
-        repMsg = repMsg.strip("[]")
-        responses = [r.strip().strip('"') for r in repMsg.split('",')]
+        rep_msg = rep_msg.strip("[]")
+        responses = [r.strip().strip('"') for r in rep_msg.split('",')]
         return [create_pdarray(response) for response in responses]
     except Exception as e:
         raise ValueError(e)
@@ -3942,9 +4190,9 @@ def dot(
     """
     from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy import cast as akcast
-    from arkouda.numpy.numeric import matmul as akmatmul
+    from arkouda.numpy.numeric import _matmul2d as akmatmul2d
 
-    specialCase = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
+    special_case = int_uint_case(pda1, pda2)  # used to handle the (int,uint)->(float) case
 
     def ship(result, flag):  # "ship" converts to float for the (int,uint) case
         return akcast(result, akfloat64) if flag else result  # else leaves type alone
@@ -3956,20 +4204,20 @@ def dot(
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.ndim == 1 and pda2.ndim == 1:
             if pda1.dtype != akbool or pda2.dtype != akbool:
-                return sum(ship(pda1 * pda2, specialCase))  # type: ignore
+                return sum(ship(pda1 * pda2, special_case))  # type: ignore
             else:
                 return (pda1 & pda2).any()  # type: ignore
 
         #   Second case is two 2D arrays.
 
-        elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul will do the shape check
-            return ship(akmatmul(pda1, pda2), specialCase)  # type: ignore
+        elif pda1.ndim == 2 and pda2.ndim == 2:  # matmul2D will do the shape check
+            return ship(akmatmul2d(pda1, pda2), special_case)  # type: ignore
 
-        #   Third and fourth cases involve a left argument of N-dimensions, and a right argument
-        #   of 1 or more.  The 1-D right argument is handled by reshaping it to 2-D and then
-        #   reshaping the answer to remove the extra dimension.
+        #   Third and fourth cases involve left or right argument of N-dimensions, and right
+        #   or left argument of 1 or more.  The 1-D  argument is handled by reshaping it to 2-D,
+        #   and squeezing the answer to remove the extra dimension.
 
-        elif pda1.ndim > 1 and pda2.ndim >= 1:
+        elif pda1.ndim >= 1 and pda2.ndim >= 1:
             s3 = _compute_dot_result_shape(pda1.shape, pda2.shape)
             if len(s3) not in get_array_ranks():
                 raise ValueError(
@@ -3977,22 +4225,31 @@ def dot(
                 )
             else:
                 d1_case = pda2.ndim == 1
+                d2_case = pda1.ndim == 1
                 temp_pda2 = pda2.reshape(pda2.size, 1) if d1_case else pda2  # type: ignore
-                repMsg = generic_msg(
-                    cmd=f"dot<{pda1.dtype},{pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
+                temp_pda1 = pda1.reshape(1, pda1.size) if d2_case else pda1
+                rep_msg = generic_msg(
+                    cmd=f"dot<{pda1.dtype},{temp_pda1.ndim},{pda2.dtype},{temp_pda2.ndim}>",
                     args={
-                        "a": pda1,
+                        "a": temp_pda1,
                         "b": temp_pda2,
                     },
                 )
+
                 if d1_case:
-                    temp_ans = create_pdarray(repMsg)
+                    temp_ans = create_pdarray(rep_msg)
                     newshape = list(temp_ans.shape)  # these steps remove
                     del newshape[-1]  # the padded 1 from
                     temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
-                    return ship(temp_ans, specialCase)
+                    return ship(temp_ans, special_case)
+                elif d2_case:
+                    temp_ans = create_pdarray(rep_msg)
+                    newshape = list(temp_ans.shape)  # these steps remove
+                    del newshape[0]  # the padded 1 from
+                    temp_ans = temp_ans.reshape(tuple(newshape))  # the shape of result
+                    return ship(temp_ans, special_case)
                 else:
-                    return ship(create_pdarray(repMsg), specialCase)
+                    return ship(create_pdarray(rep_msg), special_case)
 
     #   If both are scalar
 
@@ -4002,7 +4259,7 @@ def dot(
     #   Finally if just one is scalar
 
     elif np.isscalar(pda1) or np.isscalar(pda2):
-        return ship(pda1 * pda2, specialCase)  # type: ignore
+        return ship(pda1 * pda2, special_case)  # type: ignore
 
     else:
         raise TypeError("Inputs to ak.dot must be scalars or pdarrays.")
@@ -4060,6 +4317,70 @@ def cov(x: pdarray, y: pdarray) -> np.float64:
 
     return parse_single_value(
         generic_msg(cmd=f"cov<{x.dtype},{x.ndim},{y.dtype},{y.ndim}>", args={"x": x, "y": y})
+    )
+
+
+@typechecked
+def allclose(
+    a: pdarray, b: pdarray, rtol: float = 1e-5, atol: float = 1e-8, equal_nan: bool = False
+) -> bool:
+    """
+    Returns True if all elements of ``a`` and ``b`` are equal within a tolerance.
+
+    This function compares two arrays elementwise and returns True if they are
+    equal within the tolerance defined by the parameters ``rtol`` and ``atol``.
+    The comparison uses the formula: absolute(a - b) <= (atol + rtol * absolute(b))
+
+    Parameters
+    ----------
+    a : pdarray
+        First array to compare.
+    b : pdarray
+        Second array to compare.
+    rtol : float, optional
+        Relative tolerance. Default is 1e-5.
+    atol : float, optional
+        Absolute tolerance. Default is 1e-8.
+    equal_nan : bool, optional
+        Whether to consider NaNs in corresponding positions as equal.
+        Default is False.
+
+    Returns
+    -------
+    bool
+        True if all elements are equal within the specified tolerance,
+        False otherwise.
+
+    Raises
+    ------
+    TypeError
+        If either ``a`` or ``b`` is not a ``pdarray``.
+    TypeError
+        If either array has dtype ``bigint``, which is not supported.
+    ValueError
+        If ``a`` and ``b`` have different shapes.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> x = ak.array([1.0, 2.0, 3.0])
+    >>> y = ak.array([1.0, 2.00001, 2.99999])
+    >>> ak.allclose(x, y)
+    True
+    """
+    from arkouda.client import generic_msg
+
+    if not isinstance(a, pdarray) or not isinstance(b, pdarray):
+        raise TypeError("a and b must be pdarray instances")
+    if (a.dtype in [bigint]) or (b.dtype in [bigint]):
+        raise TypeError("bigint is not supported for allclose")
+    return bool(
+        parse_single_value(
+            generic_msg(
+                cmd=f"allclose<{a.dtype},{a.ndim},{b.dtype},{b.ndim}>",
+                args={"a": a, "b": b, "rtol": rtol, "atol": atol, "equal_nan": equal_nan},
+            )
+        )
     )
 
 
@@ -4246,8 +4567,8 @@ def mink(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"mink is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": False})
-    return create_pdarray(cast(str, repMsg))
+    rep_msg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": False})
+    return create_pdarray(cast(str, rep_msg))
 
 
 @typechecked
@@ -4304,8 +4625,8 @@ def maxk(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"maxk is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": False})
-    return create_pdarray(repMsg)
+    rep_msg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": False})
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -4359,8 +4680,8 @@ def argmink(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"argmink is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": True})
-    return create_pdarray(repMsg)
+    rep_msg = generic_msg(cmd="mink", args={"array": pda, "k": k, "rtnInd": True})
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -4416,8 +4737,8 @@ def argmaxk(pda: pdarray, k: int_scalars) -> pdarray:
     if pda.ndim > 1:
         raise ValueError(f"argmaxk is only implemented for 1D arrays; got {pda.ndim}")
 
-    repMsg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": True})
-    return create_pdarray(repMsg)
+    rep_msg = generic_msg(cmd="maxk", args={"array": pda, "k": k, "rtnInd": True})
+    return create_pdarray(rep_msg)
 
 
 def popcount(pda: pdarray) -> pdarray:
@@ -4455,13 +4776,13 @@ def popcount(pda: pdarray) -> pdarray:
 
         return sum(popcount(a) for a in pda.bigint_to_uint_arrays())  # type: ignore
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"popcount<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def parity(pda: pdarray) -> pdarray:
@@ -4498,13 +4819,13 @@ def parity(pda: pdarray) -> pdarray:
         # XOR the parity of the underlying uint array to get the parity of the bigint array
         return reduce(lambda x, y: x ^ y, [parity(a) for a in pda.bigint_to_uint_arrays()])
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"parity<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def clz(pda: pdarray) -> pdarray:
@@ -4579,13 +4900,13 @@ def clz(pda: pdarray) -> pdarray:
         return lz
 
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"clz<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def ctz(pda: pdarray) -> pdarray:
@@ -4662,13 +4983,13 @@ def ctz(pda: pdarray) -> pdarray:
         return tz
 
     else:
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"ctz<{pda.dtype},{pda.ndim}>",
             args={
                 "pda": pda,
             },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 def rotl(x, rot) -> pdarray:
@@ -4700,11 +5021,13 @@ def rotl(x, rot) -> pdarray:
     array([0 2 8 24 64 160 384 896 2048 4608])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
-        if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
+        if (
+            isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
+        ) or is_supported_int(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
+    elif is_supported_int(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, "<<<")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -4739,11 +5062,13 @@ def rotr(x, rot) -> pdarray:
     array([0 512 512 384 256 160 96 56 32 18])
     """
     if isinstance(x, pdarray) and x.dtype in [akint64, akuint64, bigint]:
-        if (isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]) or isSupportedInt(rot):
+        if (
+            isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64, bigint, bool]
+        ) or is_supported_int(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
+    elif is_supported_int(x) and isinstance(rot, pdarray) and rot.dtype in [akint64, akuint64]:
         return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")
@@ -4974,13 +5299,13 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
     from arkouda.client import generic_msg
 
     if not builtins.all(
-        isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
+        is_supported_number(arg) or isinstance(arg, pdarray) for arg in [dividend, divisor]
     ):
         raise TypeError(
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    if isSupportedNumber(dividend) and isSupportedNumber(divisor):
+    if is_supported_number(dividend) and is_supported_number(divisor):
         raise TypeError(
             f"Unsupported types {type(dividend)} and/or {type(divisor)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -5001,7 +5326,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         scalar_dtype = resolve_scalar_dtype(divisor)
         if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
             acmd = "fmod2vs_" + scalar_dtype
-        else:  # this condition *should* be impossible because of the isSupportedNumber check
+        else:  # this condition *should* be impossible because of the is_supported_number check
             raise TypeError(f"Scalar divisor type {scalar_dtype} not allowed in fmod")
         if not (dividend.dtype.name == "float64" or scalar_dtype == "float64"):
             raise TypeError(
@@ -5014,7 +5339,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
         scalar_dtype = resolve_scalar_dtype(dividend)
         if scalar_dtype in ["float64", "int64", "uint64", "bool"]:
             acmd = "fmod2sv_" + scalar_dtype
-        else:  # this condition *should* be impossible because of the isSupportedNumber check
+        else:  # this condition *should* be impossible because of the is_supported_number check
             raise TypeError(f"Scalar dividend type {scalar_dtype} not allowed in fmod")
         if not (
             divisor.dtype.name == "float64" or scalar_dtype == "float64"  # type: ignore[union-attr]
@@ -5041,7 +5366,7 @@ def fmod(dividend: Union[pdarray, numeric_scalars], divisor: Union[pdarray, nume
 
 @typechecked
 def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, bool, bool]:
-    from arkouda.numpy.util import broadcast_dims
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
     if x1.shape == x2.shape:
         return (x1, x2, False, False)
@@ -5050,7 +5375,7 @@ def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, boo
         tmp_x2 = False
         try:
             # determine common shape for broadcasting
-            bc_shape = broadcast_dims(x1.shape, x2.shape)
+            bc_shape = broadcast_shapes(x1.shape, x2.shape)
         except ValueError:
             raise ValueError(
                 f"Incompatible array shapes for broadcasted operation: {x1.shape} and {x2.shape}"
@@ -5058,82 +5383,18 @@ def broadcast_if_needed(x1: pdarray, x2: pdarray) -> Tuple[pdarray, pdarray, boo
 
         # broadcast x1 if needed
         if bc_shape != x1.shape:
-            x1b = broadcast_to_shape(x1, bc_shape)
+            x1b = broadcast_to(x1, bc_shape)
             tmp_x1 = True
         else:
             x1b = x1
 
         # broadcast x2 if needed
         if bc_shape != x2.shape:
-            x2b = broadcast_to_shape(x2, bc_shape)
+            x2b = broadcast_to(x2, bc_shape)
             tmp_x2 = True
         else:
             x2b = x2
         return (x1b, x2b, tmp_x1, tmp_x2)
-
-
-@typechecked
-def broadcast_to_shape(pda: pdarray, shape: Tuple[int, ...]) -> pdarray:
-    r"""
-    Create a "broadcasted" array (of rank 'nd') by copying an array into an
-    array of the given shape.
-
-    E.g., given the following broadcast:\n
-    pda    (3d array):  1 x 4 x 1\n
-    shape  ( shape  ):  7 x 4 x 2\n
-    Result (3d array):  7 x 4 x 2
-
-    When copying from a singleton dimension, the value is repeated along
-    that dimension (e.g., pda's 1st and 3rd above).
-    For non singleton dimensions, the size of the two arrays must match,
-    and the values are copied into the result array.
-
-    When prepending a new dimension to increase an array's rank, the
-    values from the other dimensions are repeated along the new dimension.
-
-
-    Parameters
-    ----------
-    pda : pdarray
-        the input to be broadcast
-    shape: tuple of int
-        the shape to which pda is to be broadcast
-
-    Returns
-    -------
-    pdarray
-        the result of the broadcast operation
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(2).reshape(1,2,1)
-    >>> ak.broadcast_to_shape(a,(2,2,2))
-    array([array([array([0 0]) array([1 1])]) array([array([0 0]) array([1 1])])])
-    >>> a = ak.array([5,19]).reshape(1,2)
-    >>> ak.broadcast_to_shape(a,(2,2,2))
-    array([array([array([5 19]) array([5 19])]) array([array([5 19]) array([5 19])])])
-
-    Raises
-    ------
-    RuntimeError
-        raised if the pda can't be broadcast to the given shape
-
-    """
-    from arkouda.client import generic_msg
-
-    return create_pdarray(
-        cast(
-            str,
-            generic_msg(
-                cmd=f"broadcast<{pda.dtype},{pda.ndim},{len(shape)}>",
-                args={
-                    "name": pda,
-                    "shape": shape,
-                },
-            ),
-        )
-    )
 
 
 def diff(a: pdarray, n: int = 1, axis: int = -1, prepend=None, append=None) -> pdarray:

@@ -214,6 +214,9 @@ module LinalgMsg {
         return (true, outDims);
     }
 
+    //  batchedMatMult is now OBE with the addition of multidimmatmul, and will
+    //  probably be removed in a future update.
+
     proc batchedMatMult(in A: [?D], in B, ref C) throws {
         const BatchDom = domOffAxis(D, D.rank-2, D.rank-1);
 
@@ -384,9 +387,9 @@ module LinalgMsg {
     // Note: error checking (e.g. ensuring the two ks are equal) was already
     // done python-side.
 
-    // In general, if aShape is ( (front dims), k) and
-    //            and bShape is ( (back dims), k, m), then
-    //         then shapeOut is ( (front dims), (back dims), m)
+    // In general, if aShape is ( (front dims), k)
+    //            and bShape is ( (back dims), k, m)
+    //           then shapeOut is ( (front dims), (back dims), m)
 
     proc dotShape(aShape: ?N*int, bShape: ?N2*int): (N+N2-2)*int
         where N > 1 && N2 > 1 {
@@ -397,6 +400,66 @@ module LinalgMsg {
         return shapeOut;
     }
 
+    // matmulShape is similar, but for multi-dimensional matmul
+
+    // If aShape is ( (front dims), m, n) and
+    //    bShape is ( (front dims), n, k), then
+    //    shapeOut is ( (front dims), m, k)
+
+    // Note that aShape and bShape were created python-side, and all the error
+    // checking was done there.
+
+    proc matmulShape(aShape: ?N*int, bShape: N*int) : N*int
+        where N > 1 {
+        var shapeOut: N*int;
+        for i in 0..<(N-1) do shapeOut[i] = aShape[i];
+        shapeOut[N-1] = bShape[N-1];
+        return shapeOut;
+    }
+
+
+    // Multidimensional matmul has the same functionality as in numpy.  We expect
+    // the shapes to have been managed (and broadcast if need be) client-side before
+    // this proc is invoked.
+    // That is, the shapes of a and b must be identical except for the last 2 dims.
+    // Those 2 dims must be compatible with regular 2D matrix multiplication (i.e.
+    // m,n and n,k, giving a product of m,k).
+
+    @arkouda.registerCommand(name="multidimmatmul")
+    proc multidimmatmul(a: [?da] ?ta, b: [?db] ?tb): [] np_ret_type(ta,tb) throws
+    where ( (da.rank >= 2 && da.rank == db.rank)
+        && (ta == int || ta == real || ta == bool || ta == uint )
+        && (tb == int || tb == real || tb == bool || tb == uint )
+           ) {
+        param pn = Reflection.getRoutineName();
+        const dRank = da.rank;  // since da.rank must == db.rank, we'll just refer to one rank below
+
+        // make an array of the appropriate shape and type to hold the output
+
+        var eOut = makeDistArray((...matmulShape(a.shape, b.shape)), np_ret_type(ta,tb));
+
+        // loop over all output elements
+
+        forall outIdx in eOut.domain {
+
+            var aIdx = outIdx;
+            var bIdx = outIdx;
+
+            var total: np_ret_type(ta,tb) = 0:np_ret_type(ta,tb);
+            for i in 0..<a.shape(dRank-1) {
+                aIdx = outIdx; aIdx[dRank-1] = i; // aIdx = ( (front dims), m, loop variable)
+                bIdx = outIdx; bIdx[dRank-2] = i; // bIdx = ( (front dims), loop variable, k)
+                if np_ret_type(ta,tb) == bool {
+                    total |= a[aIdx]:bool && b[bIdx]:bool;
+                } else {
+                    total += a[aIdx]:np_ret_type(ta,tb) * b[bIdx]:np_ret_type(ta,tb);
+                }
+            }
+            eOut[outIdx] = total;
+        }
+
+        return eOut;
+    }
 
     /*
         Compute the generalized dot product of two tensors along the specified axis.

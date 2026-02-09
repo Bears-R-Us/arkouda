@@ -41,7 +41,6 @@ Create and save a DataFrame
 >>> data = [ak.arange(10), ak.linspace(0, 1, 10)]
 >>> Path(my_path + '/parquet_data').mkdir(parents=True, exist_ok=True)
 >>> to_parquet(data, my_path + '/parquet_data/data.parquet')
-File written successfully!
 
 Load the DataFrame back
 >>> data2 = read_parquet(my_path + '/parquet_data/data*')
@@ -66,20 +65,20 @@ arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 import glob
 import json
 import os
+
 from typing import (
-    TYPE_CHECKING,
     Dict,
     List,
     Literal,
     Mapping,
     Optional,
-    TypeVar,
     Union,
     cast,
 )
 from warnings import warn
 
 import pandas as pd
+
 from typeguard import typechecked
 
 from arkouda.client_dtypes import IPv4
@@ -94,10 +93,6 @@ from arkouda.pandas.dataframe import DataFrame
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.index import Index, MultiIndex
 
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-else:
-    generic_msg = TypeVar("generic_msg")
 
 __all__ = [
     "get_filetype",
@@ -1258,14 +1253,13 @@ def export(
         path to file where arkouda data is stored.
     dataset_name: str
         name to store dataset under
-    index: bool
-        Default False. When True, maintain the indexes loaded from the pandas file
     write_file: str
         path to file to write pandas formatted data to. Only write the file if this is set.
         Default is None.
     return_obj: bool
         When True (default) return the Pandas DataFrame object, otherwise return None.
-
+    index: bool
+        Default False. When True, maintain the indexes loaded from the pandas file
 
     Raises
     ------
@@ -1326,22 +1320,22 @@ def _bulk_write_prep(
     names: Optional[List[str]] = None,
     convert_categoricals: bool = False,
 ):
-    datasetNames = []
+    dataset_names = []
     if names is not None:
         if len(names) != len(columns):
             raise ValueError("Number of names does not match number of columns")
         else:
-            datasetNames = names
+            dataset_names = names
 
     data = []  # init to avoid undefined errors
     if isinstance(columns, dict):
         data = list(columns.values())
         if names is None:
-            datasetNames = list(columns.keys())
+            dataset_names = list(columns.keys())
     elif isinstance(columns, list):
         data = cast(List[pdarray], columns)
         if names is None:
-            datasetNames = [str(column) for column in range(len(columns))]
+            dataset_names = [str(column) for column in range(len(columns))]
 
     if len(data) == 0:
         raise RuntimeError("No data was found.")
@@ -1353,7 +1347,7 @@ def _bulk_write_prep(
 
     col_objtypes = [c.objType for c in data]
 
-    return datasetNames, data, col_objtypes
+    return dataset_names, data, col_objtypes
 
 
 def _delete_arkouda_files(prefix_path: str):
@@ -1464,10 +1458,10 @@ def to_parquet(
     if mode.lower() == "truncate":
         _delete_arkouda_files(prefix_path)
 
-    datasetNames, data, col_objtypes = _bulk_write_prep(columns, names, convert_categoricals)
+    dataset_names, data, col_objtypes = _bulk_write_prep(columns, names, convert_categoricals)
     # append or single column use the old logic
     if mode.lower() == "append" or len(data) == 1:
-        for arr, name in zip(data, cast(List[str], datasetNames)):
+        for arr, name in zip(data, cast(List[str], dataset_names)):
             arr.to_parquet(prefix_path=prefix_path, dataset=name, mode=mode, compression=compression)
     else:
         cast(
@@ -1476,7 +1470,7 @@ def to_parquet(
                 cmd="toParquet_multi",
                 args={
                     "columns": data,
-                    "col_names": datasetNames,
+                    "col_names": dataset_names,
                     "col_objtypes": col_objtypes,
                     "filename": prefix_path,
                     "num_cols": len(data),
@@ -1553,9 +1547,9 @@ def to_hdf(
     if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
 
-    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)
+    dataset_names, pdarrays, _ = _bulk_write_prep(columns, names)
 
-    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+    for arr, name in zip(pdarrays, cast(List[str], dataset_names)):
         arr.to_hdf(
             prefix_path=prefix_path,
             dataset=name,
@@ -1566,20 +1560,24 @@ def to_hdf(
             mode = "append"
 
 
-def _get_hdf_filetype(filename: str) -> str:
+def _get_hdf_filetype(filename: str) -> Literal["single", "distribute"]:
     from arkouda.client import generic_msg
 
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
 
     cmd = "hdffileformat"
-    return cast(
+    result = cast(
         str,
         generic_msg(
             cmd=cmd,
             args={"filename": filename},
         ),
     )
+    if result not in ("single", "distribute"):
+        raise ValueError(f"Unexpected file type: {result!r}")
+
+    return cast(Literal["single", "distribute"], result)
 
 
 def _repack_hdf(prefix_path: str):
@@ -1639,9 +1637,9 @@ def update_hdf(
       creating a copy of the file for each dataset
 
     """
-    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)
+    dataset_names, pdarrays, _ = _bulk_write_prep(columns, names)
 
-    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
+    for arr, name in zip(pdarrays, cast(List[str], dataset_names)):
         # overwrite the data without repacking. Repack done once at end if set
         arr.update_hdf(prefix_path, dataset=name, repack=False)
 
@@ -1708,14 +1706,14 @@ def to_csv(
     """
     from arkouda.client import generic_msg
 
-    datasetNames, pdarrays, _ = _bulk_write_prep(columns, names)  # type: ignore
+    dataset_names, pdarrays, _ = _bulk_write_prep(columns, names)  # type: ignore
     dtypes = [a.dtype.name for a in pdarrays]
 
     generic_msg(
         cmd="writecsv",
         args={
             "datasets": pdarrays,
-            "col_names": datasetNames,
+            "col_names": dataset_names,
             "filename": prefix_path,
             "num_dsets": len(pdarrays),
             "col_delim": col_delim,
@@ -2407,6 +2405,7 @@ def snapshot(filename):
 
     """
     import inspect
+
     from types import ModuleType
 
     from arkouda.numpy.segarray import SegArray

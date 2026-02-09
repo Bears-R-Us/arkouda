@@ -4,8 +4,10 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.pandas.categorical import Categorical
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equal
+
 
 DTYPES = ["uint64", "uint8", "int64", "float64", "bigint", "bool"]
 
@@ -15,7 +17,7 @@ class TestNumpyManipulationFunctions:
     def test_manipulation_functions_docstrings(self):
         import doctest
 
-        from arkouda import manipulation_functions
+        from arkouda.numpy import manipulation_functions
 
         result = doctest.testmod(
             manipulation_functions,

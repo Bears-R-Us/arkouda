@@ -7,7 +7,9 @@ from IO import COMPRESSIONS, FileFormat, remove_files
 from multiIO import check_correctness, time_ak_read, time_ak_write
 
 import arkouda as ak
+
 from server_util.test.server_test_util import get_default_temp_directory
+
 
 TYPES = ("int64", "float64", "uint64", "str")
 

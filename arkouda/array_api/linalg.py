@@ -1,5 +1,6 @@
 from .array_object import Array
 
+
 __all__ = [
     "matmul",
     "matrix_transpose",
@@ -9,9 +10,7 @@ __all__ = [
 
 
 def matmul(x1: Array, x2: Array, /) -> Array:
-    """
-    Matrix product of two arrays.
-    """
+    """Matrix product of two arrays."""
     from arkouda import matmul as ak_matmul
 
     from .array_object import Array
@@ -20,16 +19,12 @@ def matmul(x1: Array, x2: Array, /) -> Array:
 
 
 def tensordot():
-    """
-    WARNING: not yet implemented.
-    """
+    """WARNING: not yet implemented."""
     raise ValueError("tensordot not implemented")
 
 
 def matrix_transpose(x: Array) -> Array:
-    """
-    Matrix product of two arrays.
-    """
+    """Matrix product of two arrays."""
     from arkouda import transpose as ak_transpose
 
     from .array_object import Array

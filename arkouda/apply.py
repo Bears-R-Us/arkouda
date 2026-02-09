@@ -53,16 +53,18 @@ See Also
 
 import base64
 import sys
+
 from typing import Callable, Optional, Union, cast
 
 import cloudpickle
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.client import get_config
 from arkouda.numpy.dtypes import dtype
 from arkouda.numpy.pdarrayclass import parse_single_value, pdarray
-from arkouda.numpy.pdarraycreation import create_pdarray
+
 
 __all__ = [
     "apply",
@@ -134,6 +136,7 @@ def apply(
 
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import create_pdarray
 
     if getattr(apply, "is_apply_supported", None) is None:
         res = generic_msg("isPythonModuleSupported")
@@ -172,18 +175,18 @@ def apply(
         if result_type != arr.dtype:
             raise TypeError("result_dtype must match the dtype of the input")
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd=f"applyStr<{arr.dtype},{arr.ndim}>",
             args={"x": arr, "funcStr": func},
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
     elif callable(func):
-        pickleData = cloudpickle.dumps(func)
-        pickleDataStr = base64.b64encode(pickleData).decode("utf-8")
-        repMsg = generic_msg(
+        pickle_data = cloudpickle.dumps(func)
+        pickle_data_str = base64.b64encode(pickle_data).decode("utf-8")
+        rep_msg = generic_msg(
             cmd=f"applyPickle<{arr.dtype},{arr.ndim},{result_type}>",
-            args={"x": arr, "pickleData": pickleDataStr},
+            args={"x": arr, "pickleData": pickle_data_str},
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
     else:
         raise TypeError("func must be a string or a callable function")

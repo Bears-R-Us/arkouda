@@ -1,8 +1,10 @@
-from benchmark_utils import calc_num_bytes
 import numpy as np
 import pytest
 
+from benchmark_utils import calc_num_bytes
+
 import arkouda as ak
+
 
 OPS = ("zeros", "ones", "randint")
 TYPES = ("int64", "float64", "uint64")
@@ -41,9 +43,7 @@ def _create_np_array(size, op, dtype, seed):
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_create(benchmark, op, dtype):
-    """
-    Measures array creation performance (Arkouda or NumPy based on flags)
-    """
+    """Measures array creation performance (Arkouda or NumPy based on flags)."""
     N = pytest.N
 
     if dtype in pytest.dtype:

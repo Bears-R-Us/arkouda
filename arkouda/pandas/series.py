@@ -1,44 +1,39 @@
 from __future__ import annotations
 
-from builtins import str as builtin_str
 import json
 import operator
-from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, TypeVar, Union, cast
+
+from builtins import str as builtin_str
+from typing import TYPE_CHECKING, Any, List, Literal, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
 import pandas as pd
+
 from pandas._config import get_option
 from typeguard import typechecked
 
-from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
-from arkouda.alignment import lookup
-from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
-from arkouda.numpy.pdarrayclass import (
-    RegistrationError,
-    any,
-    argmaxk,
-    create_pdarray,
-    pdarray,
-)
-from arkouda.numpy.pdarraycreation import arange, array, full, zeros
-from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
-from arkouda.numpy.strings import Strings
-from arkouda.numpy.util import get_callback, is_float
 import arkouda.pandas.dataframe
-from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
+
+from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
+from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
+from arkouda.numpy.pdarrayclass import RegistrationError, any, argmaxk, create_pdarray, pdarray
+from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
+from arkouda.numpy.util import get_callback, is_float
+from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
+
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
+    from arkouda.numpy.alignment import lookup
+    from arkouda.numpy.pdarraycreation import arange, array, zeros
     from arkouda.numpy.segarray import SegArray
+    from arkouda.numpy.strings import Strings
 else:
-    SegArray = TypeVar("SegArray")
-    akcast = TypeVar("akcast")
-    isnan = TypeVar("isnan")
-    value_counts = TypeVar("value_counts")
     Categorical = TypeVar("Categorical")
-
+    SegArray = TypeVar("SegArray")
+    Strings = TypeVar("Strings")
 
 # pd.set_option("display.max_colwidth", 65) is being called in DataFrame.py. This will resolve BitVector
 # truncation issues. If issues arise, that's where to look for it.
@@ -155,6 +150,9 @@ class Series:
         name=None,
         index: Optional[Union[pdarray, Strings, Tuple, List, Index]] = None,
     ):
+        from arkouda.numpy.pdarraycreation import arange, array
+        from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
 
         if isinstance(data, pd.Categorical):
@@ -187,7 +185,7 @@ class Series:
                 self.values = array(data)
             else:
                 self.values = data
-            self.index = Index.factory(index) if index is not None else Index(arange(self.values.size))
+            self.index = Index.factory(index) if index is not None else Index(arange(len(self.values)))
 
         if self.index.size != self.values.size:
             raise ValueError(
@@ -259,6 +257,9 @@ class Series:
             from the Series
 
         """
+        from arkouda.numpy.pdarraycreation import arange, array
+        from arkouda.numpy.strings import Strings
+
         if isinstance(key, list):
             return self.validate_key(array(key))
         if isinstance(key, tuple):
@@ -330,6 +331,9 @@ class Series:
         Series is accessed, returns a scalar.
 
         """
+        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.strings import Strings
+
         key = self.validate_key(_key)
         if is_supported_scalar(key):
             return self[array([key])]
@@ -369,9 +373,14 @@ class Series:
             Raised if val is not one of the supported types
 
         """
+        from typing import get_args
+
+        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.strings import Strings
+
         if isinstance(val, list):
-            val = array(val)
-        if is_supported_scalar(val):
+            return array(val)
+        if isinstance(val, get_args(supported_scalars)):
             if dtype(type(val)) != self.values.dtype:
                 raise TypeError(
                     "Unexpected value type. Received {} but expected {}".format(
@@ -380,6 +389,7 @@ class Series:
                 )
             if isinstance(val, str):
                 raise TypeError("Cannot modify string type dataframes")
+            return val
         elif isinstance(val, Strings):
             raise TypeError("Cannot modify string type dataframes")
         elif isinstance(val, pdarray):
@@ -389,9 +399,9 @@ class Series:
                         dtype(type(val)), self.values.dtype
                     )
                 )
+            return val
         else:
             raise TypeError("cannot set with unsupported value type: {}".format(type(val)))
-        return val
 
     def __setitem__(
         self,
@@ -417,6 +427,10 @@ class Series:
             entries to set.
 
         """
+        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
+
         val = self.validate_val(val)
         key = self.validate_key(key)
 
@@ -427,7 +441,23 @@ class Series:
         if is_supported_scalar(key):
             indices = self.index == key
         else:
-            indices = in1d(self.index.values, key)
+            # mypy: key may be scalar/SegArray/etc, but in1d only accepts groupables
+            if not isinstance(key, (pdarray, Strings, Categorical, list, tuple)):
+                raise TypeError(f"Unsupported key type for membership test: {type(key)}")
+
+            # If key is a python list/tuple, it will be validated/converted by validate_key in many paths
+            # but if it slips through, convert here.
+            if (
+                isinstance(self.index, MultiIndex)
+                and isinstance(key, tuple)
+                and len(key) == self.index.nlevels
+            ):
+                indices = self.index.lookup(key)  # returns boolean mask
+            else:
+                if isinstance(key, list):
+                    key = array(key)
+                indices = in1d(self.index.values, cast(groupable, key))
+
         tf, counts = GroupBy(indices).size()
         update_count = counts[1] if len(counts) == 2 else 0
         if update_count == 0:
@@ -439,18 +469,18 @@ class Series:
             self.values = concatenate([self.values, array([val])])
             return
         if is_supported_scalar(val):
-            self.values[indices] = val
+            cast(Any, self.values)[indices] = val
             return
         else:
             val_array = cast(Union[pdarray, Strings], val)
             if val_array.size == 1 and is_supported_scalar(key):
-                self.values[indices] = val_array[0]
+                cast(Any, self.values)[indices] = val_array[0]
                 return
             if update_count != val_array.size:
                 raise ValueError(
                     "Cannot set using a list-like indexer with a different length from the value"
                 )
-            self.values[indices] = val
+            cast(Any, self.values)[indices] = val
             return
 
     def memory_usage(self, index: bool = True, unit: Literal["B", "KB", "MB", "GB"] = "B") -> int:
@@ -578,7 +608,7 @@ class Series:
     @property
     def shape(self) -> Tuple[int]:
         # mimic the pandas return of series shape property
-        return (self.values.size,)
+        return (len(self.values),)
 
     @property
     def dtype(self) -> np.dtype:
@@ -601,10 +631,28 @@ class Series:
             and False otherwise.
 
         """
+        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
+
         if isinstance(lst, list):
             lst = array(lst)
 
-        boolean = in1d(self.values, lst)
+        # mypy: lst/self.values can be a wider union (SegArray/Any) at type level.
+        # At runtime, in1d only supports pdarray/Strings/Categorical (or sequences of those).
+        if not isinstance(self.values, (pdarray, Strings, Categorical)):
+            raise TypeError(f"in1d not supported for Series values type: {type(self.values)}")
+
+        if not isinstance(lst, (pdarray, Strings, Categorical, list, tuple)):
+            raise TypeError(f"in1d not supported for list type: {type(lst)}")
+
+        if isinstance(lst, (list, tuple)):
+            lst = array(lst)
+
+        boolean = in1d(
+            cast(groupable_element_type, self.values),
+            cast(groupable_element_type, lst),
+        )
         return Series(data=boolean, index=self.index)
 
     @typechecked
@@ -772,6 +820,7 @@ class Series:
             A new Series sorted by its values.
 
         """
+        values_any = cast(Any, self.values)
         if not ascending:
             if isinstance(self.values, pdarray) and self.values.dtype in (
                 int64,
@@ -782,9 +831,9 @@ class Series:
             else:
                 # For non-numeric values, need the descending arange because reverse slicing
                 # is not supported
-                idx = argsort(self.values)[arange(self.values.size - 1, -1, -1)]
+                idx = argsort(values_any)[arange(self.values.size - 1, -1, -1)]
         else:
-            idx = argsort(self.values)
+            idx = argsort(values_any)
         return self._reindex(idx)
 
     @typechecked
@@ -808,6 +857,8 @@ class Series:
         from arkouda.pandas.categorical import Categorical
 
         idx = self.index.to_pandas()
+
+        val: Any
 
         if isinstance(self.values, Categorical):
             val = self.values.to_pandas()
@@ -1060,7 +1111,7 @@ class Series:
                         }
                     )
                     if isinstance(self.values, Categorical)
-                    else self.values.name
+                    else cast(Any, self.values).name
                 ),
                 "val_type": self.values.objType,
             },
@@ -1131,7 +1182,7 @@ class Series:
 
     @classmethod
     @typechecked
-    def from_return_msg(cls, repMsg: builtin_str) -> Series:
+    def from_return_msg(cls, rep_msg: builtin_str) -> Series:
         """
         Return a Series instance pointing to components created by the arkouda server.
 
@@ -1139,7 +1190,7 @@ class Series:
 
         Parameters
         ----------
-        repMsg : builtin_str
+        rep_msg : builtin_str
             + delimited string containing the values and indexes.
 
         Returns
@@ -1153,14 +1204,17 @@ class Series:
             Raised if a server-side error is thrown in the process of creating
             the Series instance.
         """
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical
 
-        data = json.loads(repMsg)
+        values: Union[pdarray, Strings, Categorical]
+
+        data = json.loads(rep_msg)
         val_comps = data["value"].split("+|+")
         if val_comps[0] == Categorical.objType.upper():
             values = Categorical.from_return_msg(val_comps[1])
         elif val_comps[0] == Strings.objType.upper():
-            values = Strings.from_return_msg(val_comps[1])  # type: ignore
+            values = Strings.from_return_msg(val_comps[1])
         else:
             values = create_pdarray(val_comps[1])
 
@@ -1221,6 +1275,8 @@ class Series:
             - If axis=1: a new DataFrame
 
         """
+        from arkouda.numpy.alignment import lookup
+
         if len(arrays) == 0:
             raise IndexError("Array length must be non-zero")
 
@@ -1316,11 +1372,16 @@ class Series:
         2    b
         3    d
         4    a
-        dtype: object
+        dtype: ...
 
         """
         from arkouda import Series
+        from arkouda.categorical import Categorical
+        from arkouda.numpy.strings import Strings
         from arkouda.numpy.util import map
+
+        if not isinstance(self.values, (pdarray, Strings, Categorical)):
+            raise TypeError("Series values must be of type pdarray, Categorical, or Strings to use map")
 
         return Series(map(self.values, arg), index=self.index)
 
@@ -1354,6 +1415,11 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+        from arkouda.numpy.pdarraycreation import full
+        from arkouda.numpy.segarray import SegArray
+
+        if isinstance(self.values, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed Series")
 
         if not is_float(self.values):
             return Series(full(self.values.size, False, dtype=bool), index=self.index)
@@ -1423,6 +1489,11 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+        from arkouda.numpy.pdarraycreation import full
+        from arkouda.numpy.segarray import SegArray
+
+        if isinstance(self.values, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed Series")
 
         if not is_float(self.values):
             return Series(full(self.values.size, True, dtype=bool), index=self.index)
@@ -1489,6 +1560,10 @@ class Series:
 
         """
         from arkouda.numpy import isnan
+        from arkouda.numpy.segarray import SegArray
+
+        if isinstance(self.values, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed Series")
 
         if is_float(self.values):
             result = any(isnan(self.values))
@@ -1559,11 +1634,15 @@ class Series:
         """
         from arkouda.numpy import isnan, where
 
+        value_: Union[supported_scalars, pdarray, Strings, Categorical, SegArray]
+
         if isinstance(value, Series):
-            value = value.values
+            value_ = value.values
+        else:
+            value_ = value  # scalar or pdarray
 
         if isinstance(self.values, pdarray) and is_float(self.values):
-            return Series(where(isnan(self.values), value, self.values), index=self.index)
+            return Series(where(isnan(self.values), value_, self.values), index=self.index)
         else:
             return Series(self.values, index=self.index)
 
@@ -1643,6 +1722,8 @@ class _iLocIndexer:
         self.series = series
 
     def validate_key(self, key) -> Union[pdarray, int]:
+        from arkouda.numpy.pdarraycreation import arange, array
+
         if isinstance(key, list):
             key = array(key)
         if isinstance(key, tuple):
@@ -1683,6 +1764,8 @@ class _iLocIndexer:
         return self.series.validate_val(val)
 
     def __getitem__(self, key):
+        from arkouda.numpy.pdarraycreation import array
+
         key = self.validate_key(key)
         if is_supported_scalar(key):
             key = array([key])

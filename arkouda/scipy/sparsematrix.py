@@ -1,20 +1,22 @@
 from __future__ import annotations
 
-from typing import Union, cast
+from typing import Union
+from typing import cast as type_cast
 
 import numpy as np
+
 from typeguard import typechecked
 
-from arkouda.logger import getArkoudaLogger
-from arkouda.numpy.dtypes import NumericDTypes
+from arkouda.logger import get_arkouda_logger
+from arkouda.numpy.dtypes import NumericDTypes, int64
 from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.numpy.dtypes import int64
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.scipy.sparrayclass import create_sparray, sparray
 
+
 __all__ = ["random_sparse_matrix", "sparse_matrix_matrix_mult", "create_sparse_matrix"]
 
-logger = getArkoudaLogger(name="sparsematrix")
+logger = get_arkouda_logger(name="sparsematrix")
 
 
 @typechecked
@@ -55,7 +57,7 @@ def random_sparse_matrix(
     if layout not in ["CSR", "CSC"]:
         raise ValueError("layout must be 'CSR' or 'CSC'")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"random_sparse_matrix<{akdtype(dtype)},{layout}>",
         args={
             "shape": tuple([size, size]),
@@ -63,7 +65,7 @@ def random_sparse_matrix(
         },
     )
 
-    return create_sparray(repMsg)
+    return create_sparray(rep_msg)
 
 
 @typechecked
@@ -89,12 +91,12 @@ def sparse_matrix_matrix_mult(A, B: sparray) -> sparray:
         raise TypeError("A and B must be sparrays for sparse_matrix_matrix_mult")
     if not A.dtype == B.dtype:
         raise ValueError("A and B must have the same dtype for sparse matrix multiplication")
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sparse_matrix_matrix_mult<{A.dtype}>",
         args={"arg1": A.name, "arg2": B.name},
     )
 
-    return create_sparray(repMsg)
+    return create_sparray(rep_msg)
 
 
 def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray, layout: str) -> sparray:
@@ -130,15 +132,15 @@ def create_sparse_matrix(size: int, rows: pdarray, cols: pdarray, vals: pdarray,
     if layout not in ["CSR", "CSC"]:
         raise ValueError("layout must be 'CSR' or 'CSC'")
 
-    vals_dtype_name = cast(np.dtype, vals.dtype).name
+    vals_dtype_name = type_cast(np.dtype, vals.dtype).name
     # check dtype for error
     if vals_dtype_name not in NumericDTypes:
         raise TypeError(f"unsupported dtype {vals.dtype}")
 
     shape = (size, size)
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sparse_matrix_from_pdarrays<{vals.dtype},{layout}>",
         args={"rows": rows.name, "cols": cols.name, "vals": vals.name, "shape": shape},
     )
 
-    return create_sparray(repMsg)
+    return create_sparray(rep_msg)

@@ -1,0 +1,86 @@
+[flake8]
+max-line-length = 105
+application-import-names = arkouda
+extend-select = F403
+
+# E203 whitespace before ':': intentionally ignored to prevent conflicts with ruff/black
+extend-ignore =
+    E203,E712
+per-file-ignores =
+    tests/operator_test.py: E501
+    tests/symbol_table_test.py: F841
+    #   Remove below per/file ignores when the errors are resolved:
+    installers.py: DOC105,DOC106,DOC107,DOC203,DOC502
+    server_util/test/parallel_start_test.py: DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
+    arkouda/alignment.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
+    arkouda/apply.py: DOC501,DOC503
+    arkouda/array_api/creation_functions.py: DOC101,DOC103,DOC105,DOC201,DOC203,DOC501,DOC503
+    arkouda/array_api/indexing_functions.py: DOC105,DOC201,DOC203,DOC501,DOC503
+    arkouda/array_api/manipulation_functions.py: DOC103,DOC105,DOC203,DOC502,DOC503
+    arkouda/array_api/searching_functions.py: DOC105,DOC201,DOC203,DOC501,DOC503
+    arkouda/array_api/sorting_functions.py: DOC201,DOC203,DOC501,DOC503
+    arkouda/array_api/statistical_functions.py: DOC105,DOC503
+    arkouda/array_api/utility_functions.py: DOC101,DOC103,DOC103,DOC105,DOC107,DOC201,DOC203,DOC501,DOC503
+    arkouda/client.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC201,DOC203,DOC301,DOC501,DOC502,DOC503
+    arkouda/client_dtypes.py: DOC105,DOC106,DOC107,DOC201,DOC203,DOC302,DOC501,DOC503,DOC601,DOC603
+    arkouda/comm_diagnostics.py: DOC105,DOC106,DOC107,DOC203
+    arkouda/history.py: DOC102,DOC103,DOC105,DOC110,DOC201,DOC203,DOC501,DOC503
+    arkouda/infoclass.py: DOC203,DOC502
+    arkouda/logger.py: DOC101,DOC103,DOC105,DOC203,DOC301,DOC502,DOC503
+    arkouda/message.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC110,DOC203,DOC301,DOC501,DOC503
+    arkouda/numpy/alignment.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
+    arkouda/numpy/char.py: DOC101,DOC103,DOC106,DOC107,DOC503
+    arkouda/numpy/dtypes.py: DOC001,DOC101,DOC103,DOC105,DOC106,DOC107,DOC201,DOC203
+    arkouda/numpy/err.py: DOC101,DOC103,DOC105,DOC203,DOC501,DOC503
+    arkouda/numpy/manipulation_functions.py: DOC105,DOC203,DOC503
+    arkouda/numpy/numeric.py: DOC105,DOC203,DOC501,DOC502,DOC503
+    arkouda/numpy/pdarrayclass.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC109,DOC110,DOC203,DOC501,DOC502,DOC503,DOC601,DOC603
+    arkouda/numpy/pdarraycreation.py: DOC101,DOC102,DOC103,DOC105,DOC106,DOC107,DOC203,DOC502,DOC503
+    arkouda/numpy/pdarraymanipulation.py: DOC001,DOC101,DOC103,DOC105,DOC201,DOC203,DOC501,DOC503
+    arkouda/numpy/pdarraysetops.py: DOC105,DOC203,DOC503
+    arkouda/numpy/random/generator.py: DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
+    arkouda/numpy/random/legacy.py: DOC103,DOC105,DOC106,DOC107,DOC203,DOC502,DOC503
+    arkouda/numpy/segarray.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC502,DOC503
+    arkouda/numpy/sorting.py: DOC105,DOC203,DOC503
+    arkouda/numpy/strings.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC301,DOC501,DOC502,DOC503,DOC601,DOC603
+    arkouda/numpy/timeclass.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC502,DOC503,DOC601,DOC603
+    arkouda/numpy/util.py: DOC103,DOC105,DOC106,DOC107,DOC203,DOC502,
+    arkouda/numpy/utils.py: DOC105,DOC501,DOC503,
+    arkouda/pandas/accessor.py: DOC105,DOC106,DOC107,DOC203
+    arkouda/pandas/categorical.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC502,DOC503,DOC601,DOC603
+    arkouda/pandas/dataframe.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC109,DOC110,DOC201,DOC203,DOC501,DOC502,DOC503,DOC601,DOC603,
+    arkouda/pandas/extension/_arkouda_extension_array.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203
+    arkouda/pandas/extension/_dtypes.py: DOC203,DOC601,DOC603
+    arkouda/pandas/groupbyclass.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC502,DOC503,DOC601,DOC603
+    arkouda/pandas/index.py: DOC001,DOC101,DOC103,DOC105,DOC106,DOC107,DOC110,DOC203,DOC501,DOC502,DOC503,DOC601,DOC603
+    arkouda/pandas/io.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC110,DOC201,DOC203,DOC501,DOC502,DOC503
+    arkouda/pandas/io_util.py: DOC101,DOC103,DOC203,DOC502,DOC503
+    arkouda/pandas/join.py: DOC105,DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
+    arkouda/pandas/match.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC501,DOC502,DOC503
+    arkouda/pandas/matcher.py: DOC101,DOC103,DOC501,DOC503,DOC603
+    arkouda/scipy/sparrayclass.py: DOC101,DOC103,DOC107,DOC503
+    arkouda/pandas/series.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC203,DOC201,DOC501,DOC502,DOC503,DOC601,DOC603
+    arkouda/plotting.py: DOC105,DOC203,DOC503,DOC501
+    arkouda/scipy/_stats_py.py: DOC105,DOC106,DOC107,DOC203,DOC501,DOC503
+    arkouda/scipy/sparsematrix.py: DOC107,DOC101,DOC103,DOC105,DOC501,DOC503
+    arkouda/scipy/special/_math.py: DOC105,DOC203
+    arkouda/testing/_asserters.py: DOC101,DOC103,DOC105,DOC106,DOC107,DOC501,DOC503
+    arkouda/testing/_equivalence_asserters.py: DOC105,DOC106,DOC107,DOC203,DOC502
+
+exclude =
+    toys
+    tests/deprecated
+    src/registry/register_commands.py
+    src/parseServerConfig.py
+    runs
+    dep
+    examples
+    benchmarks
+    arkouda/_version.py
+    converter/*
+    pydoc/_ext/generic_linkcode_resolve_for_sphinx.py
+    versioneer.py
+    *.ini
+    *.toml
+    *.ipynb
+

@@ -2,7 +2,9 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.pandas import join
+
 
 """
 Encapsulates a variety of arkouda join_on_eq_with_dt test cases.
@@ -26,12 +28,14 @@ class TestJoin:
         result = doctest.testmod(join, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "JoinEqWithDTMsg"])
     @pytest.mark.parametrize("dt_type", ["true_dt", "abs_dt", "pos_dt"])
     def test_join_on_eq_by_dt(self, dt_type):
         x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, self.dt, dt_type)
         assert self.size // pytest.nl == x.size
         assert self.size // pytest.nl == y.size
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "JoinEqWithDTMsg"])
     def test_join_on_eq_with_true_dt_with_result_limit(self):
         lim = (self.size + pytest.nl) * self.size
         res_size = self.size * self.size
@@ -40,18 +44,16 @@ class TestJoin:
         )
         assert res_size == x.size == y.size
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "JoinEqWithDTMsg"])
     def test_join_on_eq_with_abs_dt_outside_window(self):
-        """
-        Should get 0 answers because N^2 matches but 0 within dt window
-        """
+        """Should get 0 answers because N^2 matches but 0 within dt window."""
         for arr in self.a1, self.a2:
             x, y = ak.join_on_eq_with_dt(arr, self.a1, self.t1, self.t2, dt=8, pred="abs_dt")
             assert 0 == x.size == y.size
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "JoinEqWithDTMsg"])
     def test_join_on_eq_with_pos_dt_outside_window(self):
-        """
-        Should get 0 answers because N matches but 0 within dt window
-        """
+        """Should get 0 answers because N matches but 0 within dt window."""
         for dt in 8, np.int64(8):
             x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt")
             assert 0 == x.size == y.size
@@ -60,6 +62,7 @@ class TestJoin:
         x, y = ak.join_on_eq_with_dt(self.a2, self.a1, self.t1, self.t2, dt, "pos_dt", int(0))
         assert 0 == x.size == y.size
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_gen_ranges(self):
         start = ak.array([0, 10, 20])
         end = ak.array([10, 20, 30])
@@ -71,6 +74,7 @@ class TestJoin:
         with pytest.raises(ValueError):
             segs, ranges = ak.join.gen_ranges(ak.array([11, 12, 41]), end)
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "In1dMsg"])
     def test_inner_join(self):
         left = ak.arange(10)
         right = ak.array([0, 5, 3, 3, 4, 6, 7, 9, 8, 1])
@@ -92,6 +96,7 @@ class TestJoin:
             with pytest.raises(ValueError):
                 l, r = ak.join.inner_join(left, right, wherefunc=ak.intersect1d, whereargs=where_args)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_multi_array_inner_join(self):
         size = 1000
         a = ak.randint(-size // 10, size // 10, size, seed=pytest.seed)
@@ -129,6 +134,7 @@ class TestJoin:
             l_ind, r_ind = ak.join.inner_join(left, right, where_func, (left, right))
             assert where_func([lf[l_ind] for lf in left], [rt[r_ind] for rt in right]).all()
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "In1dMsg"])
     def test_str_inner_join(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
@@ -164,6 +170,7 @@ class TestJoin:
         assert sl.tolist() == il.tolist()
         assert sr.tolist() == ir.tolist()
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "In1dMsg"])
     def test_cat_inner_join(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
@@ -181,6 +188,7 @@ class TestJoin:
         )
         assert cat_left[cat_l_where].tolist() == cat_right[cat_r_where].tolist()
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "In1dMsg"])
     def test_mixed_inner_join_where(self):
         int_left = ak.arange(50)
         int_right = ak.randint(0, 50, 50)
@@ -189,18 +197,24 @@ class TestJoin:
         cat_left = ak.Categorical(str_left)
         cat_right = ak.Categorical(str_right)
 
+        # int_left vs int_right using Categorical codes for whereargs
         left, right = ak.join.inner_join(
-            int_left, int_right, wherefunc=join_where, whereargs=(cat_left, str_right)
+            int_left, int_right, wherefunc=join_where, whereargs=(cat_left.codes, str_right)
         )
         assert cat_left[left].tolist() == cat_right[right].tolist()
 
+        # str_left vs str_right using Categorical codes for whereargs
         left, right = ak.join.inner_join(
-            str_left, str_right, wherefunc=join_where, whereargs=(cat_left, int_right)
+            str_left, str_right, wherefunc=join_where, whereargs=(cat_left.codes, int_right)
         )
         assert cat_left[left].tolist() == cat_right[right].tolist()
 
+        # cat_left vs cat_right using Categorical codes for whereargs
         left, right = ak.join.inner_join(
-            cat_left, cat_right, wherefunc=join_where, whereargs=(str_left, int_right)
+            cat_left,
+            cat_right,
+            wherefunc=join_where,
+            whereargs=(ak.Categorical(str_left).codes, int_right),
         )
         assert cat_left[left].tolist() == cat_right[right].tolist()
 
@@ -211,10 +225,10 @@ class TestJoin:
         ans = [-1, 30, 10, 40, 20, 30, 10, 0]
         # Simple lookup with int keys
         # Also test shortcut for unique-ordered keys
-        res = ak.lookup(keys, values, args, fillvalue=-1)
+        res = ak.numpy.alignment.lookup(keys, values, args, fillvalue=-1)
         assert res.tolist() == ans
         # Compound lookup with (str, int) keys
-        res2 = ak.lookup(
+        res2 = ak.numpy.alignment.lookup(
             (ak.cast(keys, ak.str_), keys),
             values,
             (ak.cast(args, ak.str_), args),
@@ -222,18 +236,16 @@ class TestJoin:
         )
         assert res2.tolist() == ans
         # Keys not in uniqued order
-        res3 = ak.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
+        res3 = ak.numpy.alignment.lookup(keys[::-1], values[::-1], args, fillvalue=-1)
         assert res3.tolist() == ans
         # Non-unique keys should raise error
         with pytest.warns(UserWarning):
             keys = ak.arange(10) % 5
             values = 10 * keys
-            ak.lookup(keys, values, args)
+            ak.numpy.alignment.lookup(keys, values, args)
 
     def test_error_handling(self):
-        """
-        Tests error TypeError and ValueError handling
-        """
+        """Tests error TypeError and ValueError handling."""
         with pytest.raises(TypeError):
             ak.join_on_eq_with_dt([list(range(0, 11))], self.a1, self.t1, self.t2, 8, "pos_dt")
         with pytest.raises(TypeError):

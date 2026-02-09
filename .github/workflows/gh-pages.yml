@@ -1,10 +1,15 @@
 name: docs
 
-# Only publish docs when master changes
+# Only publish docs when main changes
 on:
   push:
-    branches:
-      - master
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: gh-pages-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   ARKOUDA_QUICK_COMPILE: true
@@ -13,23 +18,20 @@ jobs:
   docs:
     if: github.repository == 'Bears-R-Us/arkouda'
     runs-on: ubuntu-latest
-    env:
-      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.6.0:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1  
-        python3 -m ensurepip --default-pip    
-    - name: Set Chapel version to 2.5.0
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        python3 -m ensurepip --default-pip
     - name: check chpldoc version
-      run: |  
+      run: |
         chpldoc --version
     - name: Install dependencies
       run: |
@@ -38,10 +40,12 @@ jobs:
       run: |
         make doc
     - name: Install rsync (needed by deploy action)
+      if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
       run: |
         apt-get update
         apt-get install -y rsync
     - name: publish-docs
+      if: github.repository_owner == 'Bears-R-Us' && ((github.event.pull_request.head.repo.full_name == github.repository) || (github.event_name == 'push'))
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages # This is the branch we'll deploy to

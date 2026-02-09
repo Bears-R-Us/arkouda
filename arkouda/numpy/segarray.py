@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Optional, Sequence, Tuple, TypeVar
-from typing import cast as type_cast
+
+from typing import Literal, Optional, Sequence, Tuple
 
 import numpy as np
 
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, isSupportedInt, str_
+from arkouda.numpy.dtypes import int_scalars, is_supported_int, str_
 from arkouda.numpy.dtypes import uint64 as akuint64
 from arkouda.numpy.pdarrayclass import (
     RegistrationError,
@@ -23,6 +23,7 @@ from arkouda.numpy.strings import Strings
 from arkouda.pandas.groupbyclass import GroupBy, broadcast
 from arkouda.pandas.join import gen_ranges
 
+
 __all__ = [
     "SegArray",
 ]
@@ -31,13 +32,6 @@ __all__ = [
 SEG_SUFFIX = "_segments"
 VAL_SUFFIX = "_values"
 LEN_SUFFIX = "_lengths"
-
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-    from arkouda.numpy import cumsum
-else:
-    generic_msg = TypeVar("generic_msg")
-    cumsum = TypeVar("cumsum")
 
 
 def _aggregator(func):
@@ -68,7 +62,7 @@ class SegArray:
     objType = "SegArray"
 
     def __init__(self, segments, values, lengths=None, grouping=None):
-        self.logger = getArkoudaLogger(name=__class__.__name__)
+        self.logger = get_arkouda_logger(name=__class__.__name__)
         self.registered_name: Optional[str] = None
 
         # validate inputs
@@ -201,7 +195,7 @@ class SegArray:
             return concatenate((self.segments[1:], array([self.valsize]))) - self.segments
 
     def __getitem__(self, i):
-        if isSupportedInt(i):
+        if is_supported_int(i):
             start = self.segments[i]
             end = self.segments[i] + self.lengths[i]
             return self.values[start:end]
@@ -286,9 +280,7 @@ class SegArray:
             )
 
     def copy(self):
-        """
-        Return a deep copy.
-        """
+        """Return a deep copy."""
         return SegArray(self.segments[:], self.values[:])
 
     def __eq__(self, other):
@@ -446,7 +438,7 @@ class SegArray:
             return ngrams
 
     def _normalize_index(self, j):
-        if not isSupportedInt(j):
+        if not is_supported_int(j):
             raise TypeError(f"index must be integer, not {type(j)}")
         if j >= 0:
             longenough = self.lengths > j
@@ -794,7 +786,7 @@ class SegArray:
             x = self.values
         return self.grouping.aggregate(x, op)
 
-    def unique(self, x=None):
+    def unique(self, x=None) -> SegArray:
         """
         Return sub-arrays of unique values.
 
@@ -830,27 +822,24 @@ class SegArray:
         """
         from arkouda.client import generic_msg
 
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd="segmentedHash",
-                args={
-                    "objType": self.objType,
-                    "values": self.values,
-                    "segments": self.segments,
-                    "valObjType": self.values.objType,
-                },
-            ),
+        rep_msg = generic_msg(
+            cmd="segmentedHash",
+            args={
+                "objType": self.objType,
+                "values": self.values,
+                "segments": self.segments,
+                "valObjType": self.values.objType,
+            },
         )
-        h1, h2 = repMsg.split("+")
+        h1, h2 = rep_msg.split("+")
         return create_pdarray(h1), create_pdarray(h2)
 
     def to_hdf(
         self,
         prefix_path,
-        dataset="segarray",
-        mode="truncate",
-        file_type="distribute",
+        dataset: str = "segarray",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """
         Save the SegArray to HDF5. The result is a collection of HDF5 files, one file
@@ -862,10 +851,10 @@ class SegArray:
             Directory and filename prefix that all output files will share
         dataset : str
             Name prefix for saved data within the HDF5 file
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', add data as a new column to existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single", "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
@@ -882,21 +871,18 @@ class SegArray:
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
-        return type_cast(
-            str,
-            generic_msg(
-                cmd="tohdf",
-                args={
-                    "values": self.values.name,
-                    "segments": self.segments.name,
-                    "dset": dataset,
-                    "write_mode": _mode_str_to_int(mode),
-                    "filename": prefix_path,
-                    "dtype": self.dtype,
-                    "objType": self.objType,
-                    "file_format": _file_type_to_int(file_type),
-                },
-            ),
+        return generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self.values.name,
+                "segments": self.segments.name,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int(mode),
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "objType": self.objType,
+                "file_format": _file_type_to_int(file_type),
+            },
         )
 
     def update_hdf(
@@ -969,7 +955,11 @@ class SegArray:
             _repack_hdf(prefix_path)
 
     def to_parquet(
-        self, prefix_path, dataset="segarray", mode: str = "truncate", compression: Optional[str] = None
+        self,
+        prefix_path,
+        dataset="segarray",
+        mode: Literal["truncate", "append"] = "truncate",
+        compression: Optional[str] = None,
     ):
         """
         Save the SegArray object to Parquet. The result is a collection of files,
@@ -983,7 +973,7 @@ class SegArray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in files (must not already exist)
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             Deprecated.
             Parameter kept to maintain functionality of other calls. Only Truncate
             supported.
@@ -1024,20 +1014,17 @@ class SegArray:
         if mode.lower() == "append":
             raise ValueError("Append mode is not supported for SegArray.")
 
-        return type_cast(
-            str,
-            generic_msg(
-                "writeParquet",
-                {
-                    "values": self.values.name,
-                    "segments": self.segments.name,
-                    "dset": dataset,
-                    "mode": _mode_str_to_int(mode),
-                    "prefix": prefix_path,
-                    "objType": self.objType,
-                    "compression": compression,
-                },
-            ),
+        return generic_msg(
+            "writeParquet",
+            {
+                "values": self.values.name,
+                "segments": self.segments.name,
+                "dset": dataset,
+                "mode": _mode_str_to_int(mode),
+                "prefix": prefix_path,
+                "objType": self.objType,
+                "compression": compression,
+            },
         )
 
     @classmethod

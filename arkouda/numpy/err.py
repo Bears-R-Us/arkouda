@@ -56,12 +56,14 @@ from __future__ import annotations
 
 import contextlib
 import sys
-from typing import Callable, Dict, Iterator, Literal, Optional
 
 # --- add near the top of arkouda/err.py ---
 import warnings
 
-from arkouda.logger import getArkoudaLogger
+from typing import Callable, Dict, Iterator, Literal, Optional
+
+from arkouda.logger import get_arkouda_logger
+
 
 __all__ = [
     "geterr",
@@ -86,7 +88,7 @@ _ak_errstate: Dict[str, _ErrorMode] = dict(_default_errstate)
 _ak_errcall: Optional[Callable[[str, str], None]] = None  # (errtype, message) -> None
 
 
-_logger = getArkoudaLogger("arkouda.err")
+_logger = get_arkouda_logger("arkouda.err")
 
 
 def _dispatch(kind: str, message: str) -> None:
@@ -116,9 +118,7 @@ def _dispatch(kind: str, message: str) -> None:
 
 
 def handle(kind: str, message: str) -> None:
-    """
-    Public hook so other modules (or users) can route an error through the policy.
-    """
+    """Public hook so other modules (or users) can route an error through the policy."""
     if kind not in _default_errstate:
         raise ValueError(f"Unknown error type: {kind!r}")
     _dispatch(kind, message)

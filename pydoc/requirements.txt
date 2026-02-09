@@ -37,7 +37,6 @@ linkify-it-py
 flake8
 mypy>=0.931
 black
-isort
 pytest-json-report
 pytest-benchmark
 mathjax

@@ -5,9 +5,11 @@ docstrings, finds their "Examples" sections, and flags any doctest prompt lines 
 call ``ak.connect``. Failures report file, line number, and a small context block.
 """
 
-from pathlib import Path
 import re
+
+from pathlib import Path
 from typing import Generator, List, Tuple
+
 
 # --- Heuristics that mirror the stripper script ---
 TRIPLE_QUOTE_RE = re.compile(r'(?P<q>"""|\'\'\')(?P<body>.*?)(?P=q)', re.DOTALL)
@@ -96,7 +98,7 @@ def find_offenses_with_lines(text: str) -> List[Tuple[int, str, str]]:
 
     Returns
     -------
-    list[tuple[int, str, str]]
+    List[Tuple[int, str, str]]
         A list of ``(line_number, matched_line, context_block)`` tuples for each
         offending line inside an Examples section. ``context_block`` contains the
         offending line plus one line of context above and below.
@@ -153,11 +155,6 @@ def test_no_ak_connect_doctest():
     paths), parses triple-quoted docstrings, and checks their "Examples" sections
     for doctest prompt lines calling ``ak.connect``. If any such lines are found,
     the test fails and reports the file, line number, and a small context block.
-
-    Raises
-    ------
-    AssertionError
-        If one or more offending lines are found inside Examples sections.
     """
     repo_root = Path(__file__).resolve().parents[1]
     offenders: List[Tuple[Path, int, str, str]] = []  # (path, line, matched_line, context)

@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import Optional, Tuple, Union
 
 import arkouda as ak
+
 from arkouda.numpy.pdarrayclass import create_pdarray
 from arkouda.numpy.pdarraycreation import scalar_array
 
 from .array_object import Array
 from .manipulation_functions import reshape
 from .statistical_functions import sum
+
 
 __all__ = [
     "all",

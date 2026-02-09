@@ -4,13 +4,14 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.client import get_array_ranks, get_max_array_rank
-from arkouda.dtypes import bigint
+from arkouda.dtypes import bigint, uint8
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
-from arkouda.testing import assert_arkouda_array_equivalent
+from arkouda.testing import assert_arkouda_array_equivalent, assert_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
-from arkouda.testing import assert_equivalent
 from arkouda.testing import assert_equivalent as ak_assert_equivalent
+
 
 seed = 314159  # this hardcoded seed is retained because the sorted tests
 # require known results
@@ -79,6 +80,7 @@ def _limbs_needed(val: int, limb_bits: int) -> int:
 
 
 class TestPdarrayClass:
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg", "KExtremeMsg"])
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_pdarrayclass_docstrings(self):
         import doctest
@@ -94,7 +96,22 @@ class TestPdarrayClass:
     @pytest.mark.parametrize("dtype", DTYPES)
     def test_reshape(self, dtype):
         a = ak.arange(4, dtype=dtype)
-        r = a.reshape((2, 2))
+        r = a.reshape(2, 2)  # test sequence
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)  # test integer
+        assert ak.all(a == b)
+        r = a.reshape((2, 2))  # test tuple
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)
+        assert ak.all(a == b)
+        r = a.reshape(np.array([2, 2]))  # test ndarray
+        assert r.shape == (2, 2)
+        assert isinstance(r, ak.pdarray)
+        b = r.reshape(4)
+        assert ak.all(a == b)
+        r = a.reshape(ak.array([2, 2]))  # test pdarray
         assert r.shape == (2, 2)
         assert isinstance(r, ak.pdarray)
         b = r.reshape(4)
@@ -141,7 +158,7 @@ class TestPdarrayClass:
     def test_flatten_multidim(self, size, dtype):
         size = size - (size % 4)
         a = ak.arange(size, dtype=dtype)
-        b = a.reshape((2, 2, size / 4))
+        b = a.reshape((2, 2, size // 4))
         ak_assert_equal(b.flatten(), a)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -154,8 +171,9 @@ class TestPdarrayClass:
         b = ak.flip(a)
         assert not ak.is_sorted(b, axis=axis)
 
-        c = ak.randint(0, size // 10, size, seed=seed)
-        assert not ak.is_sorted(c, axis=axis)
+        if size > 99:
+            c = ak.randint(0, size // 10, size, seed=seed)
+            assert not ak.is_sorted(c, axis=axis)
 
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("dtype", list(set(DTYPES) - set(["bool"])))
@@ -186,8 +204,9 @@ class TestPdarrayClass:
 
         assert not is_locally_sorted(ak.flip(a), axis=axis)
 
-        b = ak.randint(0, size // 10, size)
-        assert not is_locally_sorted(b, axis=axis)
+        if size > 99:
+            b = ak.randint(0, size // 10, size, seed=pytest.seed)
+            assert not is_locally_sorted(b, axis=axis)
 
     @pytest.mark.skip_if_nl_greater_than(2)
     @pytest.mark.skip_if_nl_less_than(2)
@@ -265,6 +284,7 @@ class TestPdarrayClass:
         ak_result = ak_op(pda, axis=axis)
         ak_assert_equivalent(ak_result, np_op(nda, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", DTYPES)
@@ -275,6 +295,7 @@ class TestPdarrayClass:
         pda = arry_gen(size, dtype=dtype)
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("size", pytest.prob_size)
@@ -286,12 +307,14 @@ class TestPdarrayClass:
         pda = arry_gen((size, size, size), dtype=dtype)
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("axis", [0, (0,), None])
     def test_reductions_match_numpy_1D_TF(self, op, axis):
         pda = ak.array([True, True, False, True, True, True, True, True])
         self.assert_reduction_ops_match(op, pda, axis=axis)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("op", REDUCTION_OPS)
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 2), (0, 1, 2)])
@@ -317,6 +340,7 @@ class TestPdarrayClass:
         assert_arkouda_array_equivalent(ak.dot(pda1, factor), np.dot(nda1, factor))
         assert_arkouda_array_equivalent(ak.dot(factor, pda2), np.dot(factor, nda2))
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
@@ -331,6 +355,7 @@ class TestPdarrayClass:
         pda2 = ak.array(nda2)
         assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
+    @pytest.mark.requires_chapel_module(["StatsMsg", "LinalgMsg"])
     @pytest.mark.skip_if_rank_not_compiled([2, 3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
@@ -364,6 +389,7 @@ class TestPdarrayClass:
             pda2 = ak.array(nda2)
             assert_arkouda_array_equivalent(ak.dot(pda1, pda2), np.dot(nda1, nda2))
 
+    @pytest.mark.requires_chapel_module("UtilMsg")
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_diff_1d(self, dtype, size):
@@ -381,6 +407,7 @@ class TestPdarrayClass:
         anp_d = np.diff(anp, n=5)
         assert_arkouda_array_equivalent(a_d, anp_d)
 
+    @pytest.mark.requires_chapel_module("UtilMsg")
     @pytest.mark.parametrize("dtype", DTYPES)
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("axis", [None, 0, 1, 2])
@@ -400,6 +427,7 @@ class TestPdarrayClass:
             anp_d = np.diff(anp, n=n)
         assert_arkouda_array_equivalent(a_d, anp_d)
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
     def test_mean_1D(self, size, dtype):
@@ -408,6 +436,7 @@ class TestPdarrayClass:
         ak_assert_almost_equivalent(np.mean(nda), pda.mean())
         ak.assert_almost_equivalent(np.mean(nda), ak.mean(pda))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -420,6 +449,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.mean(nda, axis=axis), pda.mean(axis=axis))
             ak.assert_almost_equivalent(np.mean(nda, axis=axis), ak.mean(pda, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -435,6 +465,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.mean(nda, axis=axis), pda.mean(axis=axis))
             ak.assert_almost_equivalent(np.mean(nda, axis=axis), ak.mean(pda, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
     def test_var_1D(self, size, dtype):
@@ -445,6 +476,7 @@ class TestPdarrayClass:
         ak_assert_almost_equivalent(np.var(nda, ddof=1), pda.var(ddof=1))
         ak.assert_almost_equivalent(np.var(nda, ddof=1), ak.var(pda, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -459,6 +491,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), pda.var(axis=axis, ddof=1))
             ak.assert_almost_equivalent(np.var(nda, axis=axis, ddof=1), ak.var(pda, axis=axis, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -476,6 +509,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.var(nda, ddof=1, axis=axis), pda.var(ddof=1, axis=axis))
             ak.assert_almost_equivalent(np.var(nda, ddof=1, axis=axis), ak.var(pda, ddof=1, axis=axis))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
     def test_std_1D(self, size, dtype):
@@ -486,6 +520,7 @@ class TestPdarrayClass:
         ak_assert_almost_equivalent(np.std(nda, ddof=1), pda.std(ddof=1))
         ak.assert_almost_equivalent(np.std(nda, ddof=1), ak.std(pda, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([2])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -500,6 +535,7 @@ class TestPdarrayClass:
             ak_assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), pda.std(axis=axis, ddof=1))
             ak.assert_almost_equivalent(np.std(nda, axis=axis, ddof=1), ak.std(pda, axis=axis, ddof=1))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUMERIC_TYPES_NO_BOOL)
@@ -606,7 +642,7 @@ class TestPdarrayClass:
 
             assert_equivalent(b, np_b)
 
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES + [uint8])
     def test_copy(self, dtype):
         fixed_size = 100
         a = ak.arange(fixed_size, dtype=dtype)
@@ -616,7 +652,7 @@ class TestPdarrayClass:
         ak_assert_equal(a, a_cpy)
 
     @pytest.mark.skip_if_max_rank_less_than(3)
-    @pytest.mark.parametrize("dtype", DTYPES)
+    @pytest.mark.parametrize("dtype", DTYPES + [uint8])
     def test_copy_multidim(self, dtype):
         a = ak.arange(1000, dtype=dtype).reshape((10, 10, 10))
         a_cpy = a.copy()
@@ -689,3 +725,117 @@ class TestPdarrayClass:
 
         expected_delta = (4 - 2) * N * limb_bytes
         assert (bytes_a - bytes_b) == expected_delta
+
+    def test_invert_bool(self):
+        a = ak.array([True, False, True])
+        got = ~a
+        exp = ak.array([False, True, False])
+        assert (got == exp).all()
+
+    def test_invert_int64_matches_numpy_semantics(self):
+        a = ak.array([0, 1, 2, -1], dtype=ak.int64)
+        got = ~a
+        # NumPy semantics: ~x == -x - 1 for signed integers
+        exp = (-a) - 1
+        assert (got == exp).all()
+
+    def test_invert_uint64_matches_numpy_semantics(self):
+        a = ak.array([0, 1, 2, 2**63], dtype=ak.uint64)
+        got = ~a
+        # For unsigned ints: ~x == max_uint - x
+        max_u64 = (2**64) - 1
+        exp = ak.array([max_u64, max_u64 - 1, max_u64 - 2, max_u64 - (2**63)], dtype=ak.uint64)
+        assert (got == exp).all()
+
+    def test_invert_float_raises(self):
+        a = ak.array([0.0, 1.0], dtype=ak.float64)
+        with pytest.raises(TypeError):
+            _ = ~a
+
+    def test_invert_strings_raises(self):
+        s = ak.array(["a", "b"])
+        with pytest.raises(TypeError):
+            _ = ~s
+
+    def test_invert_bigint_roundtrip_small_values(self):
+        """Invert not yet supported for bigint."""
+        a = ak.array([0, 1, 2, 123456789], dtype=ak.bigint)
+
+        with pytest.raises(TypeError):
+            _ = ~a
+
+    @pytest.mark.parametrize(
+        "vals",
+        [
+            [0, 1, -2, 3],
+            [-1, -2, -3, 0],
+            [5, 0, 7, 8],
+        ],
+    )
+    @pytest.mark.parametrize("dtype", ["int64", "float64"])
+    def test_abs_int64_float64(self, vals, dtype):
+        a = ak.array(vals, dtype=dtype)
+        got = abs(a)
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize(
+        "vals",
+        [
+            [[0, 1], [-2, 3]],
+            [[-1, -2], [-3, 0]],
+            [[5, 0], [7, 8]],
+        ],
+    )
+    @pytest.mark.parametrize("dtype", ["int64", "float64"])
+    def test_abs_int64_float64_multidim(self, vals, dtype):
+        a = ak.array(vals, dtype=dtype)
+        got = abs(a)
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()
+
+    def test_abs_uint64_is_identity(self):
+        a = ak.array([0, 1, 2, 2**63], dtype="uint64")
+        got = abs(a)
+        assert (got == a).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_abs_uint64_is_identity_multidim(self):
+        a = ak.array([[0, 1], [2, 2**63]], dtype="uint64")
+        got = abs(a)
+        assert (got == a).all()
+
+    def test_abs_bool_is_identity(self):
+        a = ak.array([True, False, True])
+        got = abs(a)
+        assert (got == a).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_abs_bool_is_identity_multidim(self):
+        a = ak.array([[True, False], [True, False]])
+        got = abs(a)
+        assert (got == a).all()
+
+    def test_abs_bigint(self):
+        a = ak.array([0, 1, -2, 3, -123456789], dtype=ak.bigint)
+        got = abs(a)
+
+        #   where is not implemented for bigint, so cast to int64
+        a = a.astype("int64")
+        got = got.astype("int64")
+
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    def test_abs_bigint_multidim(self):
+        a = ak.array([[0, 1], [3, -123456789]], dtype=ak.bigint)
+        got = abs(a)
+
+        #   where is not implemented for bigint, so cast to int64
+        a = a.astype("int64")
+        got = got.astype("int64")
+
+        exp = ak.where(a < 0, -a, a)
+        assert (got == exp).all()

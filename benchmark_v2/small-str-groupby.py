@@ -1,7 +1,9 @@
-from benchmark_utils import calc_num_bytes
 import pytest
 
+from benchmark_utils import calc_num_bytes
+
 import arkouda as ak
+
 
 SIZES = {"small": 6, "medium": 12, "big": 24}
 

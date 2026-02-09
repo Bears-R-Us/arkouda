@@ -1,7 +1,9 @@
-from benchmark_utils import calc_num_bytes
 import pytest
 
+from benchmark_utils import calc_num_bytes
+
 import arkouda as ak
+
 
 OPS = ("intersect1d", "union1d", "setxor1d", "setdiff1d")
 DTYPES = ("int64", "uint64")

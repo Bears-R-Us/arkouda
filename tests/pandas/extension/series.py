@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 import arkouda as ak
+
 from arkouda.pandas.extension._arkouda_array import ArkoudaArray
 
 

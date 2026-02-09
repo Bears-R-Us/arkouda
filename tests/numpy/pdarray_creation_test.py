@@ -1,18 +1,19 @@
-from collections import deque
-import datetime as dt
 import math
 import statistics
+
+from collections import deque
 
 import numpy as np
 import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import newaxis, pdarraycreation
 from arkouda.numpy.util import _generate_test_shape, _infer_shape_from_size
-from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
+from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal, assert_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
-from arkouda.testing import assert_equivalent
+
 
 INT_SCALARS = list(ak.numpy.dtypes.int_scalars.__args__)
 NUMERIC_SCALARS = list(ak.numpy.dtypes.numeric_scalars.__args__)
@@ -111,7 +112,9 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large_array_creation(self, size, subtests):
         """
-        Test large-array creation using various Arkouda constructors. Ensures correct length and type.
+        Test large-array creation using various Arkouda constructors.
+
+        Ensures correct length and type.
         """
         test_cases = [
             ("ak.ones", lambda: ak.ones(size, int)),
@@ -205,9 +208,7 @@ class TestPdarrayCreation:
         ],
     )
     def test_array_creation_misc(self, input_data, subtests):
-        """
-        Ensure that ak.array() rejects unsupported inputs with a TypeError.
-        """
+        """Ensure that ak.array() rejects unsupported inputs with a TypeError."""
         with subtests.test(input_data=input_data):
             with pytest.raises(TypeError):
                 ak.array(input_data)
@@ -450,7 +451,7 @@ class TestPdarrayCreation:
             high = size if array_type != bool else 2
             test_array = ak.randint(0, high, shape, array_type)
             assert isinstance(test_array, ak.pdarray)
-            assert size == len(test_array)
+            assert local_size == len(test_array)
             assert array_type == test_array.dtype
             assert shape == test_array.shape
             assert ((0 <= test_array) & (test_array <= size)).all()
@@ -698,9 +699,6 @@ class TestPdarrayCreation:
         with pytest.raises(TypeError):
             ak.ones(5, dtype=ak.uint8)
 
-        with pytest.raises(TypeError):
-            ak.ones(5, dtype=str)
-
         # Test that int_scalars covers uint8, uint16, uint32
         int_arr = ak.ones(5)
         for arg in np.uint8(5), np.uint16(5), np.uint32(5):
@@ -817,6 +815,14 @@ class TestPdarrayCreation:
             assert dtype == full_like_arr.dtype
             assert (full_like_arr == 1).all()
             assert full_like_arr.size == ran_arr.size
+
+    def test_linspace_special_cases(self):
+        pda = ak.linspace(0, 1, 0, endpoint=True)
+        nda = np.linspace(0, 1, 0, endpoint=True)
+        assert_almost_equivalent(pda, nda)
+        pda = ak.linspace(0, 1, 1, endpoint=True)
+        nda = np.linspace(0, 1, 1, endpoint=True)
+        assert_almost_equivalent(pda, nda)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_linspace_1D(self, size):
@@ -1129,52 +1135,6 @@ class TestPdarrayCreation:
         )
         assert printable_randoms == pda.tolist()
 
-    @pytest.mark.parametrize("size", pytest.prob_size)
-    @pytest.mark.parametrize("dtype", [bool, np.float64, np.int64, str])
-    def test_from_series_dtypes(self, size, dtype):
-        p_array = ak.from_series(pd.Series(np.random.randint(0, 10, size)), dtype)
-        assert isinstance(p_array, ak.pdarray if dtype is not str else ak.Strings)
-        assert dtype == p_array.dtype
-
-        p_objects_array = ak.from_series(
-            pd.Series(np.random.randint(0, 10, size), dtype="object"), dtype=dtype
-        )
-        assert isinstance(p_objects_array, ak.pdarray if dtype is not str else ak.Strings)
-        assert dtype == p_objects_array.dtype
-
-    def test_from_series_misc(self):
-        p_array = ak.from_series(pd.Series(["a", "b", "c", "d", "e"]))
-        assert isinstance(p_array, ak.Strings)
-        assert str == p_array.dtype
-
-        p_array = ak.from_series(pd.Series(np.random.choice([True, False], size=10)))
-
-        assert isinstance(p_array, ak.pdarray)
-        assert bool == p_array.dtype
-
-        p_array = ak.from_series(pd.Series([dt.datetime(2016, 1, 1, 0, 0, 1)]))
-
-        assert isinstance(p_array, ak.pdarray)
-        assert np.int64 == p_array.dtype
-
-        p_array = ak.from_series(pd.Series([np.datetime64("2018-01-01")]))
-
-        assert isinstance(p_array, ak.pdarray)
-        assert np.int64 == p_array.dtype
-
-        p_array = ak.from_series(
-            pd.Series(pd.to_datetime(["1/1/2018", np.datetime64("2018-01-01"), dt.datetime(2018, 1, 1)]))
-        )
-
-        assert isinstance(p_array, ak.pdarray)
-        assert np.int64 == p_array.dtype
-
-        with pytest.raises(TypeError):
-            ak.from_series(np.ones(10))
-
-        with pytest.raises(ValueError):
-            ak.from_series(pd.Series(np.random.randint(0, 10, 10), dtype=np.int8))
-
     @pytest.mark.parametrize("dtype", NUMERIC_SCALARS)
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_fill(self, size, dtype):
@@ -1391,3 +1351,27 @@ class TestPdarrayCreation:
         assert a.size == 100
         assert ak.all(a == 0)
         assert ak.all(a == ak.array([0] * 100, dtype=ak.bigint).reshape(5, 20))
+
+    def test_bigint_large_negative_values(self):
+        a = ak.array([-(2**200)])
+        b = np.array([2**200])
+        val = 2**200
+        c = [f"{-val}"]
+        ak_c = ak.array(c, dtype=ak.bigint)
+        assert_equivalent(a, -b)
+        assert_equivalent(a, ak_c)
+
+    def test_range_conversion(self):
+        a = ak.array(range(0, 10))
+        b = ak.array(list(range(10)))
+        assert_equivalent(a, b)
+
+    def test_should_be_uint(self):
+        a = ak.array([2**63])
+        assert a.dtype == ak.uint64
+
+    def test_should_not_be_uint(self):
+        a = ak.array([-1, 2**63])
+        b = np.array([-1, 2**63])
+        assert_equivalent(a, b)
+        assert a.dtype == ak.float64

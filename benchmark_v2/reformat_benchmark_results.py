@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This is a driver script to automatically run the Arkouda benchmarks in this
+Automatically run the Arkouda benchmarks in this
 directory and optionally graph the results. Graphing requires that $CHPL_HOME
 points to a valid Chapel directory. This will start and stop the Arkouda server
 automatically.
@@ -8,14 +8,16 @@ automatically.
 
 import argparse
 import csv
-from datetime import datetime
 import json
 import logging
 import os
 import re
 import subprocess
 import sys
+
+from datetime import datetime
 from typing import Union
+
 
 benchmark_dir = os.path.dirname(__file__)
 util_dir = os.path.join(benchmark_dir, "..", "server_util", "test")
@@ -85,9 +87,7 @@ def get_chpl_util_dir():
 
 
 def generate_graphs(args):
-    """
-    Generate graphs using the existing .dat files and graph infrastructure.
-    """
+    """Generate graphs using the existing .dat files and graph infrastructure."""
     genGraphs = os.path.join(get_chpl_util_dir(), "genGraphs")
     cmd = [
         genGraphs,
@@ -189,7 +189,7 @@ def get_header_fields_from_directory(directory_path):
                     key = re.search(r"([\w\-_]+).perfkeys", filename)[1]
                     file_contents[key] = lines
             except Exception as e:
-                print(f"Error reading file {filename}: {str(e)}")
+                raise TypeError(f"Error reading file {filename}: {str(e)}")
 
     return file_contents
 
@@ -237,7 +237,7 @@ def get_value(field: str, benchmark_name: str, field_lookup_map: dict, benchmark
                 value = get_nested_value(benchmark, lookup_path)
                 return get_float_value(value)
 
-    print(f"Could not get value for {field} in {benchmark_name} data.")
+    sys.stdout.write(f"Could not get value for {field} in {benchmark_name} data.")
     return -1.0
 
 
@@ -299,7 +299,7 @@ def main():
 
     for benchmark_name in BENCHMARKS:
         if benchmark_name not in headers.keys():
-            print(f"Could could not find headers for {benchmark_name}.")
+            sys.stdout.write(f"Could could not find headers for {benchmark_name}.")
         else:
             header = headers[benchmark_name]
             row = [
@@ -314,7 +314,7 @@ def main():
     #   Write the outputs to .dat files
     for benchmark_name in BENCHMARKS:
         if benchmark_name not in out_data.keys():
-            print(f"Could not generate {benchmark_name}.dat\nskipping....")
+            sys.stdout.write(f"Could not generate {benchmark_name}.dat\nskipping....")
             continue
 
         data_file = args.dat_dir + f"/{benchmark_name}.dat"

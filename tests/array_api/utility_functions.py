@@ -4,6 +4,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
+
 seed = pytest.seed
 
 DTYPES = [ak.int64, ak.float64, ak.uint64, ak.uint8]
@@ -16,6 +17,7 @@ def randArr(shape, dtype):
     return xp.asarray(ak.randint(0, 100, shape, dtype=ak.int64, seed=seed), dtype=dtype)
 
 
+@pytest.mark.requires_chapel_module("UtilMsg")
 class TestUtilFunctions:
     @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_utility_functions_docstrings(self):

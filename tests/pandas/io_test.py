@@ -3,20 +3,24 @@ import glob
 import os
 import shutil
 import tempfile
+
 from typing import List, Mapping, Union
 
 import h5py
 import numpy as np
 import pandas as pd
-from pandas.testing import assert_series_equal
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
+from pandas.testing import assert_series_equal
+
 import arkouda as ak
+
 from arkouda import read_zarr, to_zarr
 from arkouda.pandas import io_util
 from arkouda.testing import assert_frame_equal
+
 
 NUMERIC_TYPES = ["int64", "float64", "bool", "uint64"]
 NUMERIC_AND_STR_TYPES = NUMERIC_TYPES + ["str"]
@@ -230,13 +234,14 @@ def make_multi_dtype_dict():
     }
 
 
+@pytest.mark.requires_chapel_module("ParquetMsg")
 class TestParquet:
     COMPRESSIONS = [None, "snappy", "gzip", "brotli", "zstd", "lz4"]
 
     def test_io_docstrings(self, par_test_base_tmp):
         import doctest
 
-        from arkouda import io
+        from arkouda.pandas import io
 
         with tempfile.TemporaryDirectory(dir=par_test_base_tmp) as tmp_dirname:
             old_cwd = os.getcwd()
@@ -956,6 +961,7 @@ class TestParquet:
                 assert "File bogus does not exist" in str(err)
 
 
+@pytest.mark.requires_chapel_module("HDF5Msg")
 class TestHDF5:
     @pytest.fixture(autouse=True)
     def set_attributes(self):
@@ -1848,9 +1854,7 @@ class TestHDF5:
                 assert (arr == ret_arr).all()
 
     def test_uint64_to_from_HDF5(self, hdf_test_base_tmp):
-        """
-        Test our ability to read/write uint64 to HDF5
-        """
+        """Test our ability to read/write uint64 to HDF5."""
         npa1 = np.array(
             [18446744073709551500, 18446744073709551501, 18446744073709551502],
             dtype=np.uint64,
@@ -1866,7 +1870,9 @@ class TestHDF5:
 
     def test_uint64_to_from_array(self, hdf_test_base_tmp):
         """
-        Test conversion to and from numpy array / pdarray using unsigned 64bit integer (uint64)
+        Test conversion to and from numpy array / pdarray.
+
+        Uses unsigned 64bit integer (uint64).
         """
         npa1 = np.array(
             [18446744073709551500, 18446744073709551501, 18446744073709551502],
@@ -2405,7 +2411,7 @@ class TestHDF5:
             assert df["timedelta"].tolist() == rd_df["timedelta"].tolist()
 
 
-@pytest.mark.skip_if_max_rank_greater_than(1)
+@pytest.mark.requires_chapel_module("CSVMsg")
 class TestCSV:
     def test_csv_read_write(self, csv_test_base_tmp):
         # first test that can read csv with no header not written by Arkouda
@@ -2478,6 +2484,143 @@ class TestCSV:
             assert data["ColB"].tolist() == d["ColB"].tolist()
             assert data["ColC"].tolist() == d["ColC"].tolist()
 
+    @pytest.mark.parametrize("delimiter", [",", "|", ";", "\t", "multichardelim"])
+    def test_csv_quoted_strings_with_delimiters(self, csv_test_base_tmp, delimiter):
+        """Test that column delimiters inside quoted strings are ignored."""
+        cols = ["Name", "Description", '"Experience, in years"']  # Column name with comma
+        expected_cols = ["Name", "Description", "Experience, in years"]
+        # Test data with delimiters inside quoted strings
+        expected_names = ["Smith, John", "Wilson, Bob", "Jane Doe"]
+        expected_descriptions = [
+            "Senior Manager, R&D",
+            "Junior Developer",
+            "CEO, Founder",
+        ]  # Descriptions with commas
+        expected_values = ["3", "2", "5"]
+
+        # Create safe filename by mapping delimiters to names
+        delimiter_names = {",": "comma", "|": "pipe", ";": "semicolon", "\t": "tab"}
+        delimiter_name = delimiter_names.get(delimiter, "unknown")
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/quoted_strings_{delimiter_name}.csv"
+            with open(file_name, "w") as f:
+                f.write(delimiter.join(cols) + "\n")
+                # Create delimiter-specific versions of the expected data for quoted strings
+                delim_names = [name.replace(",", delimiter) for name in expected_names]
+                delim_descriptions = [desc.replace(",", delimiter) for desc in expected_descriptions]
+                for i in range(len(delim_names)):
+                    f.write(
+                        f'"{delim_names[i]}"{delimiter}'
+                        f'"{delim_descriptions[i]}"{delimiter}'
+                        f"{expected_values[i]}\n"
+                    )
+
+            data = ak.read_csv(file_name, column_delim=delimiter)
+            assert list(data.keys()) == expected_cols
+            assert data["Name"].tolist() == delim_names
+            assert data["Description"].tolist() == delim_descriptions
+            assert data["Experience, in years"].tolist() == expected_values
+
+    @pytest.mark.parametrize("delimiter", [",", "|", ";"])
+    def test_csv_escaped_quotes(self, csv_test_base_tmp, delimiter):
+        """Test that escaped quotes within quoted strings are handled correctly."""
+        cols = ["Title", "Quote", "Author"]
+        # Test data with escaped quotes (double quotes to escape)
+        expected_titles = ['Book "One"', 'Article "Two"', 'Paper "Three"']
+        expected_quotes = ['He said "Hello"', 'She replied "Hi there"', 'They shouted "Welcome!"']
+        expected_authors = ["Smith", "Jones", "Brown"]
+
+        # Create safe filename by mapping delimiters to names
+        delimiter_names = {",": "comma", "|": "pipe", ";": "semicolon"}
+        delimiter_name = delimiter_names.get(delimiter, "unknown")
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/escaped_quotes_{delimiter_name}.csv"
+            with open(file_name, "w") as f:
+                f.write(delimiter.join(cols) + "\n")
+                # Using double quotes to escape quotes within quoted strings
+                for i in range(len(expected_titles)):
+                    # Escape quotes by doubling them and wrap in quotes
+                    title = expected_titles[i].replace('"', '""')
+                    quote = expected_quotes[i].replace('"', '""')
+                    f.write(f'"{title}"{delimiter}"{quote}"{delimiter}{expected_authors[i]}\n')
+
+            data = ak.read_csv(file_name, column_delim=delimiter)
+            assert list(data.keys()) == cols
+            assert data["Title"].tolist() == expected_titles
+            assert data["Quote"].tolist() == expected_quotes
+            assert data["Author"].tolist() == expected_authors
+
+    def test_csv_mixed_escaped_quotes_and_delimiters(self, csv_test_base_tmp):
+        """Test mixed scenarios: escaped quotes and embedded delimiters."""
+        cols = ["Title", "Quote", "Author"]
+        # Test data with both escaped quotes and embedded delimiters
+        expected_titles = ['Title, "Special"', "Normal Title", 'Title "End"']
+        expected_quotes = ['Quote, "with comma"', "Simple quote", 'Quote, says "end"']
+        expected_authors = ["Author1", "Author2", "Author3"]
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/mixed_quotes.csv"
+            with open(file_name, "w") as f:
+                f.write(",".join(cols) + "\n")
+                f.write('"Title, ""Special""","Quote, ""with comma""",Author1\n')
+                f.write('"Normal Title","Simple quote",Author2\n')
+                f.write('"Title ""End""","Quote, says ""end""",Author3\n')
+
+            data = ak.read_csv(file_name)
+            assert list(data.keys()) == cols
+            assert data["Title"].tolist() == expected_titles
+            assert data["Quote"].tolist() == expected_quotes
+            assert data["Author"].tolist() == expected_authors
+
+    @pytest.mark.xfail(
+        reason="Quote escaping in column headers needs investigation - "
+        "JSON serialization escapes quotes. "
+        "https://github.com/Bears-R-Us/arkouda/issues/5083"
+    )
+    def test_csv_mixed_escaped_quotes_in_column_headers(self, csv_test_base_tmp):
+        """Test that escaped quotes and delimiters within column headers are handled correctly."""
+        # Column headers with escaped quotes and delimiters
+        cols = ['"Title, Info"', '"Quote ""Text"""', "Author Name"]
+        expected_cols = ["Title, Info", 'Quote "Text"', "Author Name"]
+        row = ['Book "One"', 'He said "Hello"', "Smith"]
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/escaped_quotes_headers.csv"
+            with open(file_name, "w") as f:
+                f.write(",".join(cols) + "\n")
+                f.write(f'"{row[0]}","{row[1]}","{row[2]}"\n')
+            data = ak.read_csv(file_name)
+            assert list(data.keys()) == expected_cols
+            assert data[cols[0]].tolist() == [row[0]]
+            assert data[cols[1]].tolist() == [row[1]]
+            assert data[cols[2]].tolist() == [row[2]]
+
+    def test_multi_line_headers_and_rows(self, csv_test_base_tmp):
+        """Test that multi-line rows are handled correctly."""
+        cols = ["ID", "Description", "Value"]
+        expected_cols = ["ID", "Description", "Value"]
+        expected_ids = ["1", "2"]
+        expected_descriptions = [
+            "This is a description\nthat spans \nmultiple lines.",
+            "Another description\nwith line breaks.",
+        ]
+        expected_values = ["3.14", "5.56"]
+
+        with tempfile.TemporaryDirectory(dir=csv_test_base_tmp) as tmp_dirname:
+            file_name = f"{tmp_dirname}/multi_line.csv"
+            with open(file_name, "w") as f:
+                f.write(",".join(cols) + "\n")
+                f.write('1,"This is a description\nthat spans \nmultiple lines.",3.14\n')
+                f.write('2,"Another description\nwith line breaks.",5.56\n')
+
+            data = ak.read_csv(file_name)
+            assert list(data.keys()) == expected_cols
+            assert data["ID"].tolist() == expected_ids
+            assert data["Description"].tolist() == expected_descriptions
+            assert data["Value"].tolist() == expected_values
+
 
 class TestImportExport:
     @classmethod
@@ -2493,6 +2636,7 @@ class TestImportExport:
         )
         cls.akdf = ak.DataFrame(cls.pddf)
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_import_hdf(self, import_export_base_tmp):
         locales = pytest.nl
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
@@ -2532,6 +2676,7 @@ class TestImportExport:
             with pytest.raises(RuntimeError):
                 ak.import_data(f"{file_name}_*.h5", write_file=f"{file_name}_ak_fixed.h5")
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_export_hdf(self, import_export_base_tmp):
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/export_hdf_test"
@@ -2553,6 +2698,7 @@ class TestImportExport:
                     index=True,
                 )
 
+    @pytest.mark.requires_chapel_module("ParquetMsg")
     def test_import_parquet(self, import_export_base_tmp):
         locales = pytest.nl
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
@@ -2565,6 +2711,7 @@ class TestImportExport:
             assert len(glob.glob(f"{file_name}_ak_table*.parquet")) == locales
             assert self.pddf.equals(akdf.to_pandas())
 
+    @pytest.mark.requires_chapel_module("ParquetMsg")
     def test_export_parquet(self, import_export_base_tmp):
         with tempfile.TemporaryDirectory(dir=import_export_base_tmp) as tmp_dirname:
             file_name = f"{tmp_dirname}/export_pq_test"

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Run check.py, automatically starting/stopping the server.
-"""
+"""Run check.py, automatically starting/stopping the server."""
 
 import logging
 import os
@@ -15,6 +13,7 @@ from server_test_util import (
     start_arkouda_server,
     stop_arkouda_server,
 )
+
 
 logging.basicConfig(level=logging.INFO)
 

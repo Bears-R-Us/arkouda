@@ -3,6 +3,7 @@ from __future__ import annotations
 import codecs
 import itertools
 import re
+
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -10,30 +11,33 @@ from typing import (
     Literal,
     Optional,
     Tuple,
-    TypeVar,
     Union,
     cast,
 )
+from typing import cast as type_cast
 
 import numpy as np
+
 from numpy import dtype as npdtype
 from typeguard import typechecked
 
-from arkouda.infoclass import information, list_symbol_table
-from arkouda.logger import ArkoudaLogger, getArkoudaLogger
 import arkouda.numpy.dtypes
-from arkouda.numpy.dtypes import NUMBER_FORMAT_STRINGS, bool_scalars
+
+from arkouda.infoclass import information, list_symbol_table
+from arkouda.logger import ArkoudaLogger, get_arkouda_logger
+from arkouda.numpy.dtypes import (
+    NUMBER_FORMAT_STRINGS,
+    bool_scalars,
+    int_scalars,
+    numeric_scalars,
+    resolve_scalar_dtype,
+    str_scalars,
+)
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_scalars
-from arkouda.numpy.pdarrayclass import RegistrationError
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, parse_single_value, pdarray
 from arkouda.numpy.pdarrayclass import all as akall
-from arkouda.numpy.pdarrayclass import create_pdarray, parse_single_value, pdarray
 from arkouda.pandas.match import Match, MatchType
 
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-else:
-    generic_msg = TypeVar("generic_msg")
 
 if TYPE_CHECKING:
     from arkouda.numpy.sorting import SortingAlgorithm
@@ -238,7 +242,7 @@ class Strings:
         self._bytes: Optional[pdarray] = None
         self._offsets: Optional[pdarray] = None
         self._regex_dict: Dict = dict()
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.logger = get_arkouda_logger(name=__class__.__name__)  # type: ignore
 
     """
     NOTE:
@@ -357,7 +361,7 @@ class Strings:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if key >= 0 and key < self.size:
-                repMsg = generic_msg(
+                rep_msg = generic_msg(
                     cmd="segmentedIndex",
                     args={
                         "subcmd": "intIndex",
@@ -367,14 +371,14 @@ class Strings:
                         "key": key,
                     },
                 )
-                _, value = repMsg.split(maxsplit=1)
+                _, value = rep_msg.split(maxsplit=1)
                 return parse_single_value(value)
             else:
                 raise IndexError(f"[int] {orig_key} is out of bounds with size {self.size}")
         elif isinstance(key, slice):
             (start, stop, stride) = key.indices(self.size)
             self.logger.debug(f"start: {start}; stop: {stop}; stride: {stride}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "sliceIndex",
@@ -384,13 +388,13 @@ class Strings:
                     "key": [start, stop, stride],
                 },
             )
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
         elif isinstance(key, pdarray):
             if key.dtype not in ("bool", "int", "uint"):
                 raise TypeError(f"unsupported pdarray index type {key.dtype}")
             if key.dtype == "bool" and self.size != key.size:
                 raise ValueError(f"size mismatch {self.size} {key.size}")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd="segmentedIndex",
                 args={
                     "subcmd": "pdarrayIndex",
@@ -400,7 +404,7 @@ class Strings:
                     "key": key,
                 },
             )
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
         elif isinstance(key, np.ndarray):
             # convert numpy array to pdarray
             from arkouda.numpy.pdarraycreation import array as ak_array
@@ -411,16 +415,12 @@ class Strings:
 
     @property
     def dtype(self) -> npdtype:
-        """
-        Return the dtype object of the underlying data.
-        """
+        """Return the dtype object of the underlying data."""
         return npdtype("<U")
 
     @property
     def inferred_type(self) -> str:
-        """
-        Return a string of the type inferred from the values.
-        """
+        """Return a string of the type inferred from the values."""
         return "string"
 
     def copy(self) -> Strings:
@@ -1269,16 +1269,12 @@ class Strings:
 
     @typechecked
     def cached_regex_patterns(self) -> List:
-        """
-        Returns the regex patterns for which Match objects have been cached.
-        """
+        """Returns the regex patterns for which Match objects have been cached."""
         return list(self._regex_dict.keys())
 
     @typechecked
     def purge_cached_regex_patterns(self) -> None:
-        """
-        Purges cached regex patterns.
-        """
+        """Purges cached regex patterns."""
         self._regex_dict = dict()
 
     def _empty_pattern_verification(self, pattern):
@@ -1290,9 +1286,7 @@ class Strings:
             )
 
     def _get_matcher(self, pattern: Union[bytes, str_scalars], create: bool = True):
-        """
-        Internal function to fetch cached Matcher objects.
-        """
+        """Internal function to fetch cached Matcher objects."""
         from arkouda.pandas.matcher import Matcher
 
         if isinstance(pattern, bytes):
@@ -1854,7 +1848,7 @@ class Strings:
             return self.regex_split(delimiter, return_segments=return_segments)
         else:
             cmd = "segmentedFlatten"
-            repMsg = cast(
+            rep_msg = cast(
                 str,
                 generic_msg(
                     cmd=cmd,
@@ -1868,10 +1862,10 @@ class Strings:
                 ),
             )
             if return_segments:
-                arrays = repMsg.split("+", maxsplit=2)
+                arrays = rep_msg.split("+", maxsplit=2)
                 return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
             else:
-                return Strings.from_return_msg(repMsg)
+                return Strings.from_return_msg(rep_msg)
 
     @typechecked
     def peel(
@@ -1963,7 +1957,7 @@ class Strings:
                 )
         if times < 1:
             raise ValueError("times must be >= 1")
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedPeel",
             args={
                 "subcmd": "peel",
@@ -1978,7 +1972,7 @@ class Strings:
                 "delim": delimiter,
             },
         )
-        arrays = cast(str, repMsg).split("+", maxsplit=3)
+        arrays = cast(str, rep_msg).split("+", maxsplit=3)
         # first two created are left Strings, last two are right strings
         left_str = Strings.from_return_msg("+".join(arrays[0:2]))
         right_str = Strings.from_return_msg("+".join(arrays[2:4]))
@@ -2201,7 +2195,7 @@ class Strings:
         """
         from arkouda.client import generic_msg
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedSubstring",
@@ -2216,12 +2210,12 @@ class Strings:
             ),
         )
         if return_origins:
-            parts = repMsg.split("+")
+            parts = rep_msg.split("+")
             prefixes = Strings.from_return_msg("+".join(parts[:2]))
             longenough = create_pdarray(parts[2])
             return prefixes, cast(pdarray, longenough)
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
 
     def get_suffixes(
         self, n: int_scalars, return_origins: bool = True, proper: bool = True
@@ -2253,7 +2247,7 @@ class Strings:
         """
         from arkouda.client import generic_msg
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedSubstring",
@@ -2268,12 +2262,12 @@ class Strings:
             ),
         )
         if return_origins:
-            parts = repMsg.split("+")
+            parts = rep_msg.split("+")
             suffixes = Strings.from_return_msg("+".join(parts[:2]))
             longenough = create_pdarray(parts[2])
             return suffixes, cast(pdarray, longenough)
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
 
     def hash(self) -> Tuple[pdarray, pdarray]:
         """
@@ -2295,8 +2289,8 @@ class Strings:
         from arkouda.client import generic_msg
 
         # TODO fix this to return a single pdarray of hashes
-        repMsg = generic_msg(cmd="segmentedHash", args={"objType": self.objType, "obj": self.entry})
-        h1, h2 = cast(str, repMsg).split("+")
+        rep_msg = generic_msg(cmd="segmentedHash", args={"objType": self.objType, "obj": self.entry})
+        h1, h2 = cast(str, rep_msg).split("+")
         return create_pdarray(h1), create_pdarray(h2)
 
     def group(self) -> pdarray:
@@ -2511,7 +2505,7 @@ class Strings:
             else np.frombuffer(rep_msg, dt).copy()
         )
 
-    def astype(self, dtype: Union[np.dtype, str]) -> pdarray:
+    def astype(self, dtype: Union[np.dtype, str]) -> Union[pdarray, Strings]:
         """
         Cast values of Strings object to provided dtype.
 
@@ -2531,7 +2525,7 @@ class Strings:
         """
         from arkouda.numpy import cast as akcast
 
-        return akcast(self, dtype)
+        return type_cast(Union[pdarray, Strings], akcast(self, dtype))
 
     def to_parquet(
         self,
@@ -3068,7 +3062,7 @@ class Strings:
         if self.size == 0:
             return zeros(0, dtype=akint64)  # Strings always maps to int64 indices
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="argsortStrings",
             args={
                 "name": self.entry.name,
@@ -3076,5 +3070,40 @@ class Strings:
             },
         )
 
-        sorted_array = create_pdarray(cast(str, repMsg))
+        sorted_array = create_pdarray(cast(str, rep_msg))
         return sorted_array if ascending else flip(sorted_array)
+
+    def take(self, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> Strings:
+        """
+        Take elements from the array along an axis.
+
+        When axis is not None, this function does the same thing as “fancy” indexing (indexing arrays
+        using arrays); however, it can be easier to use if you need elements along a given axis.
+        A call such as ``np.take(arr, indices, axis=3)`` is equivalent to ``arr[:,:,:,indices,...]``.
+
+        Parameters
+        ----------
+        indices : numeric_scalars or pdarray
+            The indices of the values to extract. Also allow scalars for indices.
+        axis : int, optional
+            The axis over which to select values. By default, the flattened input array is used.
+
+        Returns
+        -------
+        Strings
+             A Strings containing the selected elements.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> a = ak.array(["a","b","c"])
+        >>> indices = [0, 1]
+        >>> a.take(indices)
+        array(['a', 'b'])
+
+        """
+        from arkouda.numpy.numeric import take
+        from arkouda.numpy.pdarraycreation import arange
+
+        idx = arange(self.size)
+        return self[take(idx, indices=indices, axis=axis)]

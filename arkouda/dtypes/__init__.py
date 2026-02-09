@@ -1,5 +1,14 @@
 # flake8: noqa
 
+import warnings
+
+warnings.warn(
+    "arkouda.dtypes is deprecated and will be removed in a future release. "
+    "Please use arkouda.numpy.dtypes instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_DTYPES,
     ARKOUDA_SUPPORTED_INTS,
@@ -62,11 +71,11 @@ from arkouda.numpy.dtypes import (
     int64,
     int_scalars,
     intTypes,
-    isSupportedBool,
-    isSupportedDType,
-    isSupportedFloat,
-    isSupportedInt,
-    isSupportedNumber,
+    is_supported_bool,
+    is_supported_dtype,
+    is_supported_float,
+    is_supported_int,
+    is_supported_number,
     numeric_and_bool_scalars,
     numeric_scalars,
     numpy_scalars,
@@ -77,4 +86,9 @@ from arkouda.numpy.dtypes import (
     uint16,
     uint32,
     uint64,
+    isSupportedInt,
+    isSupportedNumber,
+    isSupportedBool,
+    isSupportedFloat,
+    isSupportedDType
 )

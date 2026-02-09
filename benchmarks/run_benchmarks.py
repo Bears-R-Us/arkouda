@@ -19,6 +19,7 @@ from server_util.test.server_test_util import (
     stop_arkouda_server,
 )
 
+
 benchmark_dir = os.path.dirname(__file__)
 util_dir = os.path.join(benchmark_dir, "..", "server_util", "test")
 sys.path.insert(0, os.path.abspath(util_dir))
@@ -110,9 +111,7 @@ def add_to_dat(benchmark, output, dat_dir, graph_infra):
 
 
 def generate_graphs(args):
-    """
-    Generate graphs using the existing .dat files and graph infrastructure.
-    """
+    """Generate graphs using the existing .dat files and graph infrastructure."""
     genGraphs = os.path.join(get_chpl_util_dir(), "genGraphs")
     cmd = [
         genGraphs,

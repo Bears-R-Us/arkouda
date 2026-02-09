@@ -1,12 +1,15 @@
 import numpy as np
 import pandas as pd
-from pandas.testing import assert_frame_equal as pd_assert_frame_equal
-from pandas.testing import assert_series_equal as pd_assert_series_equal
 import pytest
 
+from pandas.testing import assert_frame_equal as pd_assert_frame_equal
+from pandas.testing import assert_series_equal as pd_assert_series_equal
+
 import arkouda as ak
+
 from arkouda.pandas.series import Series
 from arkouda.testing import assert_series_equal as ak_assert_series_equal
+
 
 DTYPES = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint, ak.str_]
 NO_STRING = [ak.int64, ak.uint64, ak.bool_, ak.float64, ak.bigint]
@@ -15,10 +18,11 @@ INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bool_, ak.bigint]
 
 
 class TestSeries:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_series_docstrings(self):
         import doctest
 
-        from arkouda import series
+        from arkouda.pandas import series
 
         result = doctest.testmod(series, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
@@ -80,6 +84,7 @@ class TestSeries:
                 pd_ser = pd.Series(val.to_ndarray(), idx.to_ndarray())
             pd_assert_series_equal(ak_ser.to_pandas(), pd_ser)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
     @pytest.mark.parametrize("dtype_index", [ak.int64, ak.uint64])
     def test_lookup(self, dtype, dtype_index):
@@ -137,6 +142,7 @@ class TestSeries:
             # we have exactly one False
             assert added.values.sum() == 99
 
+    @pytest.mark.requires_chapel_module("KExtremeMsg")
     @pytest.mark.parametrize("dtype", [ak.int64, ak.uint64, ak.float64])
     def test_topn(self, dtype):
         top = ak.Series(ak.arange(100, dtype=dtype)).topn(50)
@@ -259,6 +265,7 @@ class TestSeries:
         assert s.memory_usage(unit="KB", index=True) == 2 * size * int64_size / 1024
         assert s.memory_usage(unit="B", index=True) == 2 * size * int64_size
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_map(self):
         a = ak.Series(ak.array(["1", "1", "4", "4", "4"]))
         b = ak.Series(ak.array([2, 3, 2, 3, 4]))
@@ -419,6 +426,7 @@ class TestSeries:
         pd_assert_frame_equal(akdf.to_pandas(), pddf)
         pd_assert_series_equal(akdf.to_pandas()["test"], pddf["test"], check_names=False)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_getitem_scalars(self):
         ints = [0, 1, 3, 7, 3]
         floats = [0.0, 1.5, 0.5, 1.5, -1.0]
@@ -480,6 +488,7 @@ class TestSeries:
         assert s3_a2.index.tolist() == _s3_a2.index.tolist()
         assert s3_a2.values.tolist() == _s3_a2.values.tolist()
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_getitem_vectors(self):
         ints = [0, 1, 3, 7, 3]
         floats = [0.0, 1.5, 0.5, 1.5, -1.0]
@@ -793,3 +802,49 @@ class TestSeries:
             _s1.iloc[[True, False, True]]
         with pytest.raises(IndexError):
             s1.iloc[[True, False, True]]
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    def test_series_isin_accepts_list_and_tuple_for_supported_value_types(self):
+        # pdarray values
+        s_int = ak.Series(ak.array([1, 2, 3, 2, 1]))
+        assert s_int.isin([2, 99]).tolist() == [False, True, False, True, False]
+        assert s_int.isin((1, 3)).tolist() == [True, False, True, False, True]
+
+        # Strings values
+        s_str = ak.Series(ak.array(["a", "b", "c", "a"]))
+        assert s_str.isin(["a", "z"]).tolist() == [True, False, False, True]
+        assert s_str.isin(("b",)).tolist() == [False, True, False, False]
+
+        # Categorical values
+        s_cat = ak.Series(ak.Categorical(ak.array(["red", "blue", "red", "green"])))
+        assert s_cat.isin(["red"]).tolist() == [True, False, True, False]
+        assert s_cat.isin(("blue", "green")).tolist() == [False, True, False, True]
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    def test_series_map_multikey_missing_keys_fills_nans_and_nulls(self):
+        # MultiIndex with 2 keys (ensure map works with MultiIndex-backed Series)
+        k1 = ak.array([1, 1, 2, 2, 3])
+        k2 = ak.array(["x", "y", "x", "y", "x"])
+        mi = ak.MultiIndex([k1, k2], names=["k1", "k2"])
+
+        base = ak.Series(ak.array([10, 20, 30, 40, 50]), index=mi)
+
+        # --- Numeric mapping (missing values should become NaN) ---
+        # Map only two of the Series *values*; others should be NaN
+        num_map = {
+            10: 100.0,
+            40: 200.0,
+        }
+        out_num = base.map(num_map)
+
+        out_num_list = out_num.values.to_ndarray().tolist()
+        expected_num = [100.0, np.nan, np.nan, 200.0, np.nan]
+        assert np.allclose(out_num_list, expected_num, equal_nan=True)
+
+        # --- String mapping (missing values should become "null") ---
+        str_map = {
+            20: "A",
+            50: "B",
+        }
+        out_str = base.map(str_map)
+        assert out_str.values.tolist() == ["null", "A", "null", "null", "B"]

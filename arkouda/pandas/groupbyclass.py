@@ -45,10 +45,12 @@ from __future__ import annotations
 
 import enum
 import json
+
 from typing import (
     TYPE_CHECKING,
     Dict,
     List,
+    Literal,
     Optional,
     Sequence,
     Tuple,
@@ -59,37 +61,32 @@ from typing import (
 )
 
 import numpy as np
+
 from typeguard import typechecked
 
-from arkouda.logger import ArkoudaLogger, getArkoudaLogger
-from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint
+from arkouda.logger import ArkoudaLogger, get_arkouda_logger
+from arkouda.numpy.dtypes import _val_isinstance_of_union, bigint, float_scalars, int_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.numpy.pdarrayclass import (
-    RegistrationError,
-    create_pdarray,
-    is_sorted,
-    pdarray,
-)
-from arkouda.numpy.pdarraycreation import arange, full
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, is_sorted, pdarray
 from arkouda.numpy.random import default_rng
 from arkouda.numpy.sorting import argsort, sort
-from arkouda.numpy.strings import Strings
+
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 else:
-    generic_msg = TypeVar("generic_msg")
+    Categorical = TypeVar("Categorical")
+    Strings = TypeVar("Strings")
 
 __all__ = ["unique", "GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES", "groupable"]
 
 groupable_element_type = Union[pdarray, Strings, "Categorical"]
 groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
+
 # Note: we won't be typechecking GroupBy until we can figure out a way to handle
 # the circular import with Categorical
 
@@ -179,24 +176,24 @@ def unique(
     grouping_keys, nkeys = _get_grouping_keys(pda)
     keynames = [k.name for k in grouping_keys]
     keytypes = [k.objType for k in grouping_keys]
-    effectiveKeys = len(grouping_keys)
-    repMsg = generic_msg(
+    effective_keys = len(grouping_keys)
+    rep_msg = generic_msg(
         cmd="unique",
         args={
             "returnGroupStr": return_groups,
             "assumeSortedStr": assume_sorted,
-            "nstr": effectiveKeys,
+            "nstr": effective_keys,
             "keynames": keynames,
             "keytypes": keytypes,
         },
     )
     if return_groups:
-        parts = cast(str, repMsg).split("+")
+        parts = cast(str, rep_msg).split("+")
         permutation = create_pdarray(cast(str, parts[0]))
         segments = create_pdarray(cast(str, parts[1]))
         unique_key_indices = create_pdarray(cast(str, parts[2]))
     else:
-        unique_key_indices = create_pdarray(cast(str, repMsg))
+        unique_key_indices = create_pdarray(cast(str, rep_msg))
 
     if nkeys == 1 and not isinstance(pda, Sequence):
         unique_keys = pda[unique_key_indices]
@@ -223,7 +220,7 @@ class GroupByReductionType(enum.Enum):
     MAX = "max"
     ARGMIN = "argmin"
     ARGMAX = "argmax"
-    NUNUNIQUE = "nunique"
+    NUNIQUE = "nunique"
     ANY = "any"
     ALL = "all"
     OR = "or"
@@ -370,7 +367,7 @@ class GroupBy:
         if not isinstance(assume_sorted, bool):
             raise TypeError("assume_sorted must be of type bool.")
 
-        self.logger = getArkoudaLogger(name=self.__class__.__name__)
+        self.logger = get_arkouda_logger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.dropna = dropna
         if (
@@ -448,6 +445,7 @@ class GroupBy:
             If an unsupported or unknown data type is encountered during reconstruction.
 
         """
+        from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical as Categorical_
 
         data = json.loads(rep_msg)
@@ -472,10 +470,10 @@ class GroupBy:
 
     def to_hdf(
         self,
-        prefix_path,
-        dataset="groupby",
-        mode="truncate",
-        file_type="distribute",
+        prefix_path: str,
+        dataset: str = "groupby",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """
         Save the GroupBy to HDF5.
@@ -489,10 +487,10 @@ class GroupBy:
             Directory and filename prefix that all output files will share
         dataset : str
             Name prefix for saved data within the HDF5 file
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', add data as a new column to existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single", "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.
@@ -509,7 +507,7 @@ class GroupBy:
 
         keys = self.keys if isinstance(self.keys, Sequence) else [self.keys]
 
-        objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
+        obj_types = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
         dtypes = [k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys]
 
         # access the names of the key or names of properties for categorical
@@ -536,7 +534,7 @@ class GroupBy:
                 "num_keys": len(gb_keys),
                 "key_names": gb_keys,
                 "key_dtypes": dtypes,
-                "key_objTypes": objTypes,
+                "key_objTypes": obj_types,
                 "unique_key_idx": self._uki,
                 "permutation": self.permutation,
                 "segments": self.segments,
@@ -591,7 +589,7 @@ class GroupBy:
         if not isinstance(self.keys, Sequence):
             keys = [self.keys]
 
-        objTypes = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
+        obj_types = [k.objType for k in keys]  # pdarray, Strings, and Categorical all have objType prop
         dtypes = [k.categories.dtype if isinstance(k, Categorical_) else k.dtype for k in keys]
 
         # access the names of the key or names of properties for categorical
@@ -618,7 +616,7 @@ class GroupBy:
                 "num_keys": len(gb_keys),
                 "key_names": gb_keys,
                 "key_dtypes": dtypes,
-                "key_objTypes": objTypes,
+                "key_objTypes": obj_types,
                 "unique_key_idx": self._uki,
                 "permutation": self.permutation,
                 "segments": self.segments,
@@ -668,12 +666,12 @@ class GroupBy:
         """
         from arkouda.client import generic_msg
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="sizeReduction",
             args={"segments": cast(pdarray, self.segments), "size": self.length},
         )
-        self.logger.debug(repMsg)
-        return self.unique_keys, create_pdarray(repMsg)
+        self.logger.debug(rep_msg)
+        return self.unique_keys, create_pdarray(rep_msg)
 
     def count(self, values: pdarray) -> Tuple[groupable, pdarray]:
         """
@@ -795,7 +793,7 @@ class GroupBy:
         else:
             permuted_values = cast(pdarray, values)[cast(pdarray, self.permutation)]
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedReduction",
             args={
                 "values": permuted_values,
@@ -805,14 +803,14 @@ class GroupBy:
                 "ddof": ddof,
             },
         )
-        self.logger.debug(repMsg)
+        self.logger.debug(rep_msg)
         if operator.startswith("arg"):
             return (
                 self.unique_keys,
-                cast(pdarray, self.permutation[create_pdarray(repMsg)]),
+                cast(pdarray, self.permutation[create_pdarray(rep_msg)]),
             )
         else:
-            return self.unique_keys, create_pdarray(repMsg)
+            return self.unique_keys, create_pdarray(rep_msg)
 
     def sum(self, values: pdarray, skipna: bool = True) -> Tuple[groupable, pdarray]:
         """
@@ -1376,6 +1374,8 @@ class GroupBy:
         return k, cast(pdarray, v)
 
     def _nested_grouping_helper(self, values: groupable) -> groupable:
+        from arkouda.numpy.pdarraycreation import arange
+
         unique_key_idx = self.broadcast(arange(self.ngroups), permute=True)
         if hasattr(values, "_get_grouping_keys"):
             # All single-array groupable types must have a _get_grouping_keys method
@@ -1717,7 +1717,7 @@ class GroupBy:
         """
         from arkouda.client import generic_msg
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedReduction",
             args={
                 "values": self.permutation,
@@ -1728,9 +1728,9 @@ class GroupBy:
                 "ddof": 1,
             },
         )
-        self.logger.debug(repMsg)
+        self.logger.debug(rep_msg)
 
-        ret_indices = create_pdarray(repMsg)
+        ret_indices = create_pdarray(rep_msg)
         if return_indices is True:
             return self.unique_keys, ret_indices
         else:
@@ -1799,7 +1799,7 @@ class GroupBy:
         """
         from arkouda.client import generic_msg
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedReduction",
             args={
                 "values": self.permutation,
@@ -1810,9 +1810,9 @@ class GroupBy:
                 "ddof": 1,
             },
         )
-        self.logger.debug(repMsg)
+        self.logger.debug(rep_msg)
 
-        ret_indices = create_pdarray(repMsg)
+        ret_indices = create_pdarray(rep_msg)
         if return_indices is True:
             return self.unique_keys, ret_indices
         else:
@@ -1861,6 +1861,8 @@ class GroupBy:
                 The most common value of each group
 
         """
+        from arkouda.numpy.pdarraycreation import arange
+
         togroup = self._nested_grouping_helper(values)
         # Get value counts for each key group
         g = GroupBy(togroup)
@@ -1949,6 +1951,7 @@ class GroupBy:
         from arkouda.client import generic_msg
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import round as akround
+        from arkouda.numpy.pdarraycreation import full
 
         if frac is not None and n is not None:
             raise ValueError("Please enter a value for `frac` OR `n`, not both")
@@ -1996,7 +1999,7 @@ class GroupBy:
             # the below is equivalent to doing `_, weight_sum = self.sum(weights)`, but
             # by calling segmentedReduction directly, we avoid permuting the weights twice.
             # it's unclear if this is worth the additional code complexity
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd="segmentedReduction",
                 args={
                     "values": permuted_weights,
@@ -2006,7 +2009,7 @@ class GroupBy:
                     "ddof": 1,
                 },
             )
-            weight_sum = create_pdarray(repMsg)
+            weight_sum = create_pdarray(rep_msg)
 
             if (weight_sum == 0).any():
                 raise ValueError("All segments must have at least one value of non-zero weight")
@@ -2021,7 +2024,7 @@ class GroupBy:
 
         has_seed = random_state._seed is not None
 
-        repMsg = generic_msg(
+        rep_msg = generic_msg(
             cmd="segmentedSample",
             args={
                 "genName": gen_name,
@@ -2039,9 +2042,9 @@ class GroupBy:
         )
         random_state._state += self.length
 
-        self.logger.debug(repMsg)
+        self.logger.debug(rep_msg)
         # sorting the sample permutation gives the sampled indices
-        sampled_idx = create_pdarray(repMsg) if permute_samples else sort(create_pdarray(repMsg))
+        sampled_idx = create_pdarray(rep_msg) if permute_samples else sort(create_pdarray(rep_msg))
         if return_indices:
             return sampled_idx
         elif not isinstance(values, Sequence):
@@ -2073,7 +2076,9 @@ class GroupBy:
 
         """
         from arkouda import Categorical
+        from arkouda.numpy.pdarraycreation import arange
         from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
 
         if isinstance(values, (Strings, Categorical)) or (
             isinstance(values, Sequence) and any([isinstance(v, (Strings, Categorical)) for v in values])
@@ -2172,15 +2177,19 @@ class GroupBy:
 
         """
         from arkouda.client import generic_msg
+        from arkouda.numpy.pdarraycreation import arange
+        from arkouda.numpy.strings import Strings
 
+        if not isinstance(values, (pdarray, Strings)):
+            raise TypeError("values must be a pdarray or Strings")
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         is_str = isinstance(values, Strings)
         if is_str:
             str_vals = values
             values = arange(str_vals.size)
-        cmd = "broadcast"
-        repMsg = cast(
+        cmd = "gbbroadcast"
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd=cmd,
@@ -2193,7 +2202,7 @@ class GroupBy:
                 },
             ),
         )
-        broadcasted = create_pdarray(repMsg)
+        broadcasted = create_pdarray(rep_msg)
         return str_vals[broadcasted] if is_str else broadcasted
 
     @staticmethod
@@ -2225,17 +2234,17 @@ class GroupBy:
 
             return g
         else:
-            missingKeys = []
+            missing_keys = []
             if "orig_keys" not in kwargs:
-                missingKeys.append("orig_keys")
+                missing_keys.append("orig_keys")
             if "permutation" not in kwargs:
-                missingKeys.append("permutation")
+                missing_keys.append("permutation")
             if "unique_keys" not in kwargs:
-                missingKeys.append("unique_keys")
+                missing_keys.append("unique_keys")
             if "segments" not in kwargs:
-                missingKeys.append("segments")
+                missing_keys.append("segments")
 
-            raise ValueError(f"Can't build GroupBy. kwargs is missing required keys: {missingKeys}.")
+            raise ValueError(f"Can't build GroupBy. kwargs is missing required keys: {missing_keys}.")
 
     def _get_groupby_required_pieces(self) -> Dict:
         """
@@ -2248,9 +2257,9 @@ class GroupBy:
                 Components (keys, permutation)
 
         """
-        requiredPieces = frozenset(["keys", "permutation", "unique_keys", "segments"])
+        required_pieces = frozenset(["keys", "permutation", "unique_keys", "segments"])
 
-        return {piece_name: getattr(self, piece_name) for piece_name in requiredPieces}
+        return {piece_name: getattr(self, piece_name) for piece_name in required_pieces}
 
     @no_type_check
     def register(self, user_defined_name: str) -> GroupBy:
@@ -2290,6 +2299,7 @@ class GroupBy:
         """
         from arkouda import Categorical
         from arkouda.client import generic_msg
+        from arkouda.numpy.strings import Strings
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -2480,6 +2490,8 @@ def broadcast(
 
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarraycreation import arange
+    from arkouda.numpy.strings import Strings
 
     if segments.size != values.size:
         raise ValueError("segments and values arrays must be same size")
@@ -2502,8 +2514,8 @@ def broadcast(
         str_vals = values
         values = arange(str_vals.size)
 
-    cmd = "broadcast"
-    repMsg = cast(
+    cmd = "gbbroadcast"
+    rep_msg = cast(
         str,
         generic_msg(
             cmd=cmd,
@@ -2516,5 +2528,5 @@ def broadcast(
             },
         ),
     )
-    broadcasted = create_pdarray(repMsg)
+    broadcasted = create_pdarray(rep_msg)
     return str_vals[broadcasted] if is_str else broadcasted

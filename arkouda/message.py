@@ -62,14 +62,16 @@ See Also
 
 from __future__ import annotations
 
+import json
+
 from dataclasses import dataclass
 from enum import Enum
-import json
 from typing import Dict, Optional
 
 from typeguard import typechecked
 
-from arkouda.numpy.dtypes import isSupportedNumber, resolve_scalar_dtype
+from arkouda.numpy.dtypes import is_supported_number, resolve_scalar_dtype
+
 
 __all__ = [
     "MessageFormat",
@@ -220,7 +222,7 @@ class ParameterObject:
 
         import numpy as np
 
-        return isinstance(val, (str, np.str_, builtins.bool, np.bool_)) or isSupportedNumber(val)
+        return isinstance(val, (str, np.str_, builtins.bool, np.bool_)) or is_supported_number(val)
 
     @staticmethod
     def _format_param(p):

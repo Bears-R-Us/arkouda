@@ -83,6 +83,7 @@ SipHash.chpl
 SortMsg.chpl
 SparseMatrix.chpl
 SparseMatrixMsg.chpl
+SplitMix64RNG.chpl
 Stats.chpl
 StatsMsg.chpl
 StatusMsg.chpl

@@ -4,6 +4,11 @@ import pytest
 
 import arkouda as ak
 
+from arkouda.numpy.dtypes import bigint
+
+
+NUMERIC_TYPES = ["int64", "uint64", "float64", "bool"]
+
 
 class TestStats:
     @classmethod
@@ -29,6 +34,7 @@ class TestStats:
         cls.nmps = [cls.npx, cls.npy, cls.npu, cls.npb, cls.npf]
         cls.pands = [cls.pdx, cls.pdy, cls.pdu, cls.pdb, cls.pdf]
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_mean_var_and_std(self):
         for ark, npy in zip(self.arks, self.nmps):
             assert ark.var() == pytest.approx(npy.var())
@@ -39,6 +45,7 @@ class TestStats:
             assert ark.var(ddof=1) == pytest.approx(pand.var())
             assert ark.std(ddof=1) == pytest.approx(pand.std())
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_cov_and_corr(self):
         # test that cov and corr variations are equivalent
         for fn in "cov", "corr":
@@ -61,6 +68,53 @@ class TestStats:
                 assert getattr(self.f, fn)(ark) == pytest.approx(getattr(self.pdf, fn)(pand))
                 assert getattr(self.u, fn)(ark) == pytest.approx(getattr(self.pdu, fn)(pand))
 
+    @pytest.mark.requires_chapel_module("StatsMsg")
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.parametrize("dtype1", NUMERIC_TYPES)
+    @pytest.mark.parametrize("dtype2", NUMERIC_TYPES)
+    def test_allclose(self, size, dtype1, dtype2):
+        if dtype1 == "bool" or dtype2 == "bool":
+            size = 2
+
+        a = ak.arange(size, dtype=dtype1)
+        b = ak.arange(size, dtype=dtype2)
+        assert ak.allclose(a, b)
+
+    @pytest.mark.requires_chapel_module("StatsMsg")
+    def test_allclose_edge_cases(self):
+        # Tolerance tests
+        a = ak.array([1.0, 2.0, 3.0])
+        b_close = ak.array([1.0, 2.00001, 2.99999])
+        b_far = ak.array([1.0, 2.1, 3.1])
+        assert ak.allclose(a, b_close, rtol=1e-5, atol=1e-8)
+        assert not ak.allclose(a, b_far, rtol=1e-5, atol=1e-8)
+
+        # Edge cases: zeros and infinities
+        a_zero = ak.array([0.0, 0.0, 0.0])
+        b_zero = ak.array([1e-9, -1e-9, 0.0])
+        assert ak.allclose(a_zero, b_zero, atol=1e-8)
+
+        a_inf = ak.array([np.inf, -np.inf, 1.0])
+        b_inf = ak.array([np.inf, -np.inf, 1.0])
+        b_inf_diff = ak.array([np.inf, np.inf, 1.0])
+        assert ak.allclose(a_inf, b_inf)
+        assert not ak.allclose(a_inf, b_inf_diff)
+
+        # Test bigint is not supported
+        a_big = ak.array([1, 2, 3], dtype=bigint)
+        b_big = ak.array([1, 2, 3], dtype=bigint)
+        with pytest.raises(TypeError, match="bigint is not supported"):
+            ak.allclose(a_big, b_big)
+
+        # Test nan_equal argument
+        a_nan = ak.array([1.0, np.nan, 3.0])
+        assert not ak.allclose(a_nan, a_nan)
+        assert ak.allclose(a_nan, a_nan, equal_nan=True)
+        a_mixed = ak.array([np.nan, 2.0, 3.0])
+        b_mixed = ak.array([1.0, np.nan, 3.0])
+        assert not ak.allclose(a_mixed, b_mixed, equal_nan=True)
+
+    @pytest.mark.requires_chapel_module("StatsMsg")
     def test_corr_matrix(self):
         ak_df = ak.DataFrame({"x": self.x, "y": self.y, "u": self.u, "b": self.b, "f": self.f}).corr()
         pd_df = pd.DataFrame(

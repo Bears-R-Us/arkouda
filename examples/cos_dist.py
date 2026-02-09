@@ -37,6 +37,7 @@ if __name__ == "__main__":
     import time
 
     import numpy as np
+
     from scipy.spatial import distance
 
     parser = argparse.ArgumentParser(description="Example of cosine distance/similarity in arkouda")

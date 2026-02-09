@@ -1,16 +1,23 @@
 import numpy as np
 import numpy.random as np_random
 
+from typeguard import typechecked
+
 from arkouda.client import get_registration_config
-from arkouda.numpy.dtypes import _val_isinstance_of_union
+from arkouda.numpy.dtypes import (
+    _val_isinstance_of_union,
+    dtype_for_chapel,
+    float_scalars,
+    int_scalars,
+    numeric_scalars,
+    uint64,
+)
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import dtype as to_numpy_dtype
-from arkouda.numpy.dtypes import dtype_for_chapel
 from arkouda.numpy.dtypes import float64 as akfloat64
-from arkouda.numpy.dtypes import float_scalars
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, numeric_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+
 
 __all__ = [
     "Generator",
@@ -30,13 +37,11 @@ class Generator:
 
     Parameters
     ----------
-    seed : int
-        Seed to allow for reproducible random number generation.
-
     name_dict: dict
         Dictionary mapping the server side names associated with
         the generators for each dtype.
-
+    seed : int
+        Seed to allow for reproducible random number generation.
     state: int
         The current state we are in the random number generation stream.
         This information makes it so calls to any dtype generator
@@ -63,7 +68,7 @@ class Generator:
         _str += "(PCG64)"
         return _str
 
-    def __del__(self):
+    def __del__(self):  # pragma: no cover
         try:
             if self.handle and not self.handle.closed:
                 self.handle.close()
@@ -936,32 +941,60 @@ class Generator:
 
         """
         from arkouda.client import generic_msg
-        from arkouda.numpy.util import _infer_shape_from_size
+        from arkouda.numpy import cast as akcast
+        from arkouda.numpy.pdarraycreation import array as akarray
+        from arkouda.numpy.util import _infer_shape_from_size, broadcast_to
+
+        # if size == 0, that means return an empty pdarray
+
+        if size == 0:
+            return akarray([], dtype=akint64)
+
+        # if size is None and lam is int, then and only then do we return a scalar
 
         if size is None:
-            # delegate to numpy when return size is 1
-            return self._np_generator.poisson(lam, size)
+            if isinstance(lam, int):
+                return self._np_generator.poisson(lam, size)
+            else:
+                size = 1
+
+        # all remaining cases will involve a pdarray return
 
         shape, ndim, full_size = _infer_shape_from_size(size)
         if full_size < 0:
             raise ValueError("The size parameter must be >= 0")
 
-        is_single_lambda, lam = float_array_or_scalar_helper("poisson", "lam", lam, size)
-        if (lam < 0).any() if isinstance(lam, pdarray) else lam < 0:
+        # lam must be broadcastable to the shape given in the size parameter
+        # server-side poisson generation does not yet handle multi-dim, so we flatten
+        # here, and will reshape the pdarray returned by the server.
+
+        _lam = broadcast_to(lam, shape)
+        if ndim > 1:
+            _lam = _lam.flatten()
+
+        # _lam must be float and non-negative
+
+        if _lam.dtype != akfloat64:
+            _lam = akcast(_lam, akfloat64)
+
+        if (_lam < 0).any():
             raise TypeError("lam must be non-negative.")
 
         rep_msg = generic_msg(
             cmd="poissonGenerator",
             args={
                 "name": self._name_dict[akdtype("float64")],
-                "lam": lam,
-                "is_single_lambda": is_single_lambda,
+                "lam": _lam,
+                "is_single_lambda": False,  # this parameter is temporarily unused
                 "size": full_size,
                 "has_seed": self._seed is not None,
                 "state": self._state,
             },
         )
+
         # we only generate one val using the generator in the symbol table
+        # so we only advance the state by 1.
+
         self._state += 1
         return create_pdarray(rep_msg) if ndim == 1 else create_pdarray(rep_msg).reshape(shape)
 
@@ -982,8 +1015,8 @@ class Generator:
             Upper boundary of the output interval. All values generated will be less than high.
             high must be greater than or equal to low. The default value is 1.0.
 
-        size: numeric_scalars, optional
-            Output shape. Default is None, in which case a single value is returned.
+        size: int, tuple(int), None, optional
+            Output size or shape. Default is None, in which case a single value is returned.
 
         Returns
         -------
@@ -1027,6 +1060,196 @@ class Generator:
         )
         self._state += full_size
         return create_pdarray(rep_msg)
+
+    @typechecked
+    def _fill_with_stateless_u64_from_index(
+        self, x: pdarray, seed: int_scalars, stream: int_scalars, start_idx: int_scalars = 0
+    ) -> None:
+        """
+        Fill an existing uint64 pdarray with stateless, index-based random values.
+
+        Random values are generated as a deterministic function of
+        ``(seed, stream, global_index)`` and written in-place to ``x``.
+        No mutable RNG state is used, and results are invariant to
+        parallelism, chunking, and execution order.
+
+        Parameters
+        ----------
+        x : pdarray
+            Destination array of dtype uint64 to be filled in-place.
+            Currently only 1-dimensional arrays are supported.
+        seed : int_scalars
+            Seed selecting the deterministic randomness universe. Converted
+            internally to uint64.
+        stream : int_scalars
+            Stream identifier used to generate independent random streams
+            from the same seed. Converted internally to uint64.
+        start_idx : int_scalars, optional
+            Global index offset corresponding to ``x[0]``. Converted internally
+            to uint64. Default is 0.
+
+        Notes
+        -----
+        This method is a low-level primitive intended for internal use.
+        It dispatches to a server-side kernel that generates values
+        independently for each global index.
+        """
+        from arkouda.client import generic_msg
+
+        if x.ndim != 1:
+            raise ValueError("Only 1 dimensional arrays supported.")
+
+        # Normalize all scalar parameters to uint64 at the API boundary
+        seed_u64 = uint64(seed)
+        stream_u64 = uint64(stream)
+        start_idx_u64 = uint64(start_idx)
+
+        generic_msg(
+            cmd="fillRandU64<uint64,1>",
+            args={
+                "A": x,
+                "seed": seed_u64,
+                "stream": stream_u64,
+                "startIdx": start_idx_u64,
+            },
+        )
+
+    @typechecked
+    def _stateless_u64_from_index(
+        self, n: int, seed: int_scalars, stream: int_scalars, start_idx: int_scalars = 0
+    ) -> pdarray:
+        """
+        Create a uint64 pdarray of stateless, index-based random values.
+
+        The returned array satisfies::
+
+            out[i] = f(seed, stream, start_idx + i)
+
+        where ``f`` is a deterministic mixing function. Results are
+        reproducible across runs and invariant to distributed execution.
+
+        Parameters
+        ----------
+        n : int
+            Number of elements to generate.
+        seed : int_scalars
+            Seed selecting the deterministic randomness universe. Converted
+            internally to uint64.
+        stream : int_scalars
+            Stream identifier used to generate independent random streams
+            from the same seed. Converted internally to uint64.
+        start_idx : int_scalars, optional
+            Global index offset corresponding to the first element.
+            Converted internally to uint64. Default is 0.
+
+        Returns
+        -------
+        pdarray
+            A uint64 pdarray of length ``n`` containing stateless random values.
+
+        Notes
+        -----
+        This is a fundamental building block for sampling, shuffling,
+        sketching, and other randomized algorithms.
+        """
+        from arkouda.numpy.pdarraycreation import zeros as ak_zeros
+
+        x = ak_zeros(n, dtype=uint64)
+        self._fill_with_stateless_u64_from_index(x, seed, stream, start_idx)
+        return x
+
+    @typechecked
+    def _fill_stateless_uniform_01_from_index(
+        self,
+        x: pdarray,
+        seed: int_scalars,
+        stream: int_scalars,
+        start_idx: int_scalars = 0,
+    ) -> None:
+        """
+        Fill an existing float64 pdarray with stateless uniform random values in [0, 1).
+
+        Each element is generated deterministically from
+        ``(seed, stream, global_index)`` and mapped to a floating-point
+        value uniformly distributed on [0, 1).
+
+        Parameters
+        ----------
+        x : pdarray
+            Destination array of dtype float64 to be filled in-place.
+            Currently only 1-dimensional arrays are supported.
+        seed : int_scalars
+            Seed selecting the deterministic randomness universe. Converted
+            internally to uint64.
+        stream : int_scalars
+            Stream identifier used to generate independent random streams
+            from the same seed. Converted internally to uint64.
+        start_idx : int_scalars, optional
+            Global index offset corresponding to ``x[0]``.
+            Converted internally to uint64. Default is 0.
+
+        Notes
+        -----
+        This method performs all computation server-side and guarantees
+        reproducibility independent of locale count or execution order.
+        """
+        from arkouda.client import generic_msg
+
+        if x.ndim != 1:
+            raise ValueError("Only 1 dimensional arrays supported.")
+
+        seed_u64 = uint64(seed)
+        stream_u64 = uint64(stream)
+        start_idx_u64 = uint64(start_idx)
+
+        generic_msg(
+            cmd="fillUniform01<float64,1>",  # <-- MUST be the float64-uniform kernel
+            args={"A": x, "seed": seed_u64, "stream": stream_u64, "startIdx": start_idx_u64},
+        )
+
+    @typechecked
+    def _stateless_uniform_01_from_index(
+        self, n: int, seed: int_scalars, stream: int_scalars, start_idx: int_scalars = 0
+    ) -> pdarray:
+        """
+        Create a float64 pdarray of stateless uniform random values in [0, 1).
+
+        Random values are a deterministic function of
+        ``(seed, stream, start_idx + i)`` for each element ``i``.
+        Results are reproducible across runs and invariant to
+        distributed execution details.
+
+        Parameters
+        ----------
+        n : int
+            Number of elements to generate.
+        seed : int_scalars
+            Seed selecting the deterministic randomness universe. Converted
+            internally to uint64.
+        stream : int_scalars
+            Stream identifier used to generate independent random streams
+            from the same seed. Converted internally to uint64.
+        start_idx : int_scalars, optional
+            Global index offset corresponding to the first element.
+            Converted internally to uint64. Default is 0.
+
+        Returns
+        -------
+        pdarray
+            A float64 pdarray of length ``n`` with values in the half-open
+            interval [0, 1).
+
+        Notes
+        -----
+        This method is equivalent to generating a stateless uint64 sequence
+        and mapping it to floating-point values, but performs the operation
+        efficiently in a single server-side pass.
+        """
+        from arkouda.numpy.pdarraycreation import zeros as ak_zeros
+
+        x = ak_zeros(n, dtype=akfloat64)
+        self._fill_stateless_uniform_01_from_index(x, seed, stream, start_idx)
+        return x
 
 
 _supported_chapel_types = frozenset(("int", "int(64)", "uint", "uint(64)", "real", "real(64)", "bool"))

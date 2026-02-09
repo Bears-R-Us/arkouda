@@ -3,6 +3,7 @@ import pytest
 
 import arkouda as ak
 
+
 NUM_TYPES = [ak.int64, ak.uint64, ak.float64, ak.bool_, ak.bigint]
 
 

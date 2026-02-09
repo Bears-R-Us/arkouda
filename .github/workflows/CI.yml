@@ -1,10 +1,17 @@
 name: CI
 
-on: [pull_request, merge_group, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
 
 env:
   ARKOUDA_QUICK_COMPILE: true
-  
+  ARKOUDA_SKIP_CHECK_DEPS: true
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -18,72 +25,37 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pydocstyle>=6.3.0
     - name: Check for tabs
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
-    - name: Run linter (pydocstyle)
-      run: |
-        pydocstyle
     - name: Run doc-example check
       run: make check-doc-examples
 
   chpl-lint:
     runs-on: ubuntu-latest
-    env:
-      CHPL_HOME: /opt/chapel-2.5.0
+    strategy:
+      matrix:
+        chpl-version: ['2.7.0']
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
         update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
-    - name: Install dependencies
-      run: |
-        (cd $CHPL_HOME && make chplcheck)
-        update-alternatives --install /usr/bin/chplcheck chplcheck /opt/chapel-2.5.0/tools/chplcheck/chplcheck 1
     - name: Ensure ignore file exists
       # .chplcheckignore should live at your repo root
       run: |
         if [ ! -f .chplcheckignore ]; then
           echo "# add paths/globs to ignore, e.g. src/generated/*" > .chplcheckignore
         fi
-
     - name: Run chplcheck (respecting .chplcheckignore)
       run: |
         make chplcheck
-
-  darglint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install darglint>=1.8.1
-    - name: Check docstrings with darglint
-      run: |
-        #  darglint is a docstring linter that checks whether docstring sections (arguments, returns, raises, etc.) match the function signature or implementation.
-        darglint -v 2 arkouda
-
-  isort:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install isort==5.13.2
-      # Update output format to enable automatic inline annotations.
-      - name: Run isort
-        run: isort --check-only --diff .
 
   ruff-format:
     runs-on: ubuntu-latest
@@ -99,17 +71,18 @@ jobs:
           pip install ruff==0.11.2
       # Update output format to enable automatic inline annotations.
       - name: ruff version
-        run: | 
+        run: |
           ruff --version
       - name: Run Ruff
         run: ruff format --check --diff
 
   mypy:
     runs-on: ubuntu-latest
-    env:
-      CHPL_HOME: /opt/chapel-2.5.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -126,33 +99,6 @@ jobs:
     - name: Arkouda mypy
       run: |
         python3 -m mypy arkouda
-
-  docs:
-    runs-on: ubuntu-latest
-    env:
-      CHPL_HOME: /opt/chapel-2.5.0
-    container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Set Python version to 3.13
-      run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1  
-        python3 -m ensurepip --default-pip    
-    - name: Set Chapel version to 2.5.0
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
-    - name: check chpldoc version
-      run: |  
-        chpldoc --version
-    - name: Install dependencies
-      run: |
-        python3 -m pip install .[dev]
-    - name: Arkouda make doc
-      run: |
-        make doc
 
   docstr-cov:
     runs-on: ubuntu-latest
@@ -171,7 +117,10 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -190,12 +139,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pydoclint[flake8]==0.6.10
     - name: flake8 version
-      run: | 
+      run: |
         python3 -m ensurepip --default-pip
         flake8 --version
     - name: Arkouda flake8
       run: |
-        flake8
+        flake8 --config .flake8 .
 
   arkouda_python_portability:
     runs-on: ubuntu-latest
@@ -203,20 +152,19 @@ jobs:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
     env:
-      CHPL_HOME: /opt/chapel-2.5.0
+      CHPL_HOME: /opt/chapel-2.7.0
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-2.7.0:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     # Check Python version
     - name: Set python version
-      run: |    
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${{ matrix.python-version }} 1    
-    - name: Set Chapel version to 2.5.0
       run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${{ matrix.python-version }} 1
     - name: Check python version
       run: |
         python3 --version
@@ -236,19 +184,23 @@ jobs:
       run: |
         make
         python3 -m pip install .[dev]
+    - name: pip list
+      run: |
+        python3 -m pip list        
     - name: Arkouda unit tests
       run: |
         make test-python size=100
-        
+
   arkouda_makefile_almalinux:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.13']
-    env:
-      CHPL_HOME: /chapel-2.5.0
     container:
-      image: ajpotts/almalinux-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/almalinux-with-arkouda-deps:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -259,6 +211,8 @@ jobs:
         dnf update -y
         dnf install -y zlib-devel gcc gcc-c++ make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl openssl-devel libffi-devel xz-devel zlib-devel
 
+    # TODO: why does this need to build its own Python when the container has its own?
+    # almalinux's python is old, so we build from source. But can we move this into the container build?
     # Download and install Python from source (updated URL for Python 3.13)
     - name: Download Python ${matrix.python-version} source
       run: |
@@ -294,7 +248,7 @@ jobs:
         max_attempts: 2
         retry_wait_seconds: 60
         retry_on: error
-        command: | 
+        command: |
           make install-zmq DEP_BUILD_DIR=/dep/build
     - name: Make install-iconv
       uses: nick-fields/retry@v2
@@ -303,7 +257,7 @@ jobs:
         max_attempts: 2
         retry_wait_seconds: 60
         retry_on: error
-        command: | 
+        command: |
           make install-iconv DEP_BUILD_DIR=/dep/build
     - name: Make install-idn2
       uses: nick-fields/retry@v2
@@ -330,7 +284,7 @@ jobs:
         max_attempts: 2
         retry_wait_seconds: 60
         retry_on: error
-        command: |  
+        command: |
           make install-hdf5 DEP_BUILD_DIR=/dep/build
     - name: Make install-pytables
       uses: nick-fields/retry@v2
@@ -344,21 +298,21 @@ jobs:
 
   arkouda_makefile:
     runs-on: ubuntu-latest
-    env:
-      CHPL_HOME: /opt/chapel-2.5.0
+    strategy:
+      matrix:
+        chpl-version: ['2.7.0']
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4    
+      uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1 
-        python3 -m ensurepip --default-pip     
-    - name: Set Chapel version to 2.5.0
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+        python3 -m ensurepip --default-pip
     - name: Check python version
       run: |
         python3 --version
@@ -370,7 +324,7 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |
-          make install-arrow-quick 
+          make install-arrow-quick
     - name: Make install-arrow
       uses: nick-fields/retry@v2
       with:
@@ -397,7 +351,7 @@ jobs:
         max_attempts: 2
         retry_wait_seconds: 60
         retry_on: error
-        command: | 
+        command: |
           make install-iconv  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-idn2
       uses: nick-fields/retry@v2
@@ -407,7 +361,7 @@ jobs:
         retry_wait_seconds: 60
         retry_on: error
         command: |
-          make install-idn2  DEP_BUILD_DIR=$DEP_BUILD_DIR   
+          make install-idn2  DEP_BUILD_DIR=$DEP_BUILD_DIR
     - name: Make install-blosc
       uses: nick-fields/retry@v2
       with:
@@ -426,36 +380,33 @@ jobs:
         retry_on: error
         command: |
           make install-hdf5  DEP_BUILD_DIR=$DEP_BUILD_DIR
-    - name: Make install-pytables
-      uses: nick-fields/retry@v2
-      with:
-        timeout_seconds: 1200  # or use timeout_minutes
-        max_attempts: 2
-        retry_wait_seconds: 60
-        retry_on: error
-        command: |
-          HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables DEP_BUILD_DIR=$DEP_BUILD_DIR
+#    - name: Make install-pytables
+#      uses: nick-fields/retry@v2
+#      with:
+#        timeout_seconds: 1200  # or use timeout_minutes
+#        max_attempts: 2
+#        retry_wait_seconds: 60
+#        retry_on: error
+#        command: |
+#          HDF5_DIR=$(pwd)/dep/hdf5-install/ make install-pytables DEP_BUILD_DIR=$DEP_BUILD_DIR
 
 
   arkouda_chpl_portability:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.5.0']
-    env:
-      CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
+        chpl-version: ['2.5.0','2.6.0','2.7.0']
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
-    - name: Set Chapel version to ${matrix.chpl-version}
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-${{ matrix.chpl-version }}/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-${{ matrix.chpl-version }}/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -471,12 +422,6 @@ jobs:
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
-    - name: Check chpl version
-      run: |
-        chpl --version
-    - name: Install Chapel frontend bindings
-      run: |
-        (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)
     - name: Build/Install Arkouda
       run: |
         make
@@ -487,14 +432,17 @@ jobs:
 
   arkouda_multi-dim:
     runs-on: ubuntu-latest
+    env:
+      ARKOUDA_CONFIG_FILE: .configs/MultiDimTestServerModules.cfg
     strategy:
       matrix:
-        chpl-version: ['2.0.0','2.1.0','2.2.0','2.3.0','2.4.0','2.5.0']
+        chpl-version: ['2.7.0']
       max-parallel: 3
-    env:
-      CHPL_HOME: /opt/chapel-${{ matrix.chpl-version }}
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Show memory available
       run: |
@@ -506,11 +454,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
-    - name: Set Chapel version to ${matrix.chpl-version}
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-${{ matrix.chpl-version }}/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-${{ matrix.chpl-version }}/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -527,19 +471,9 @@ jobs:
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
-    - name: Check chpl version
-      run: |
-        chpl --version
-    - name: Install Chapel frontend bindings
-      run: |
-        (cd $CHPL_HOME/tools/chapel-py && python3 -m pip install .)    
-    - name: Use MultiDim Configs
-      run: |
-        cp .configs/registration-config-multi-dim.json registration-config.json
-        bash scripts/trim_server_modules.sh
     - name: Build Arkouda
       run: |
-        /usr/bin/time -v make
+        /usr/bin/time -v make ARRAY_ND_MAX=3 
     - name: Install Arkouda
       run: |
         python3 -m pip install .[dev]
@@ -547,23 +481,191 @@ jobs:
       run: |
         make test-python size=100
 
+
+
+  arkouda_multi-dim_test_coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chpl-version: ['2.7.0']
+      max-parallel: 3
+    container:
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+    steps:
+    - name: Show memory available
+      run: |
+        echo "Memory info:"
+        free -h
+        echo "CPU info:"
+        nproc
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Set Python version to 3.13
+      run: |
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+    - name: Check Chapel version
+      run: |
+        chpl --version
+    - name: Install dependencies
+      uses: nick-fields/retry@v2
+      with:
+        timeout_seconds: 1200  # or use timeout_minutes
+        max_attempts: 2
+        retry_wait_seconds: 60
+        retry_on: error
+        command: |
+          apt-get update && apt-get install -y time
+          python3 -m ensurepip --default-pip
+          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
+          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
+    - name: Use MultiDim Configs
+      run: |
+        cp .configs/registration-config-multi-dim.json registration-config.json
+        bash scripts/trim_server_modules.sh
+    - name: Build arkouda_server
+      shell: bash
+      run: |
+        set -euxo pipefail
+        /usr/bin/time -v make
+        echo "$PWD" >> "$GITHUB_PATH"
+        echo "$PWD"
+    - name: Install Arkouda
+      run: |
+        python3 -m pip install .[dev]
+    - name: Run tests with coverage (fail if below threshold)
+      run: |
+        make coverage size=10
+    - name: Sanity check coverage.xml
+      if: always()
+      run: |
+        pwd
+        ls -l
+        [ -f coverage.xml ] && echo "coverage.xml present" || (echo "coverage.xml MISSING"; exit 1)
+        head -n 20 coverage.xml || true
+    - name: Upload coverage artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-artifacts
+        path: |
+          coverage.xml
+          .coverage
+          .pytest/report.html
+        if-no-files-found: warn
+    - name: Upload to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}   # not needed for public repos
+        files: coverage.xml
+        flags: python-coverage
+        fail_ci_if_error: true
+
+#  arkouda_multi-dim_test_coverage:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        chpl-version: ['2.6.0']
+#      max-parallel: 3
+#    container:
+#      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+#      credentials:
+#        username: ${{ github.actor }}
+#        password: ${{ secrets.github_token }}
+#    steps:
+#    - name: Show memory available
+#      run: |
+#        echo "Memory info:"
+#        free -h
+#        echo "CPU info:"
+#        nproc
+#    - name: Checkout Repository
+#      uses: actions/checkout@v4
+#    - name: Set Python version to 3.13
+#      run: |
+#        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
+#    - name: Check Chapel version
+#      run: |
+#        chpl --version
+#    - name: Install dependencies
+#      uses: nick-fields/retry@v2
+#      with:
+#        timeout_seconds: 1200  # or use timeout_minutes
+#        max_attempts: 2
+#        retry_wait_seconds: 60
+#        retry_on: error
+#        command: |
+#          apt-get update && apt-get install -y time
+#          python3 -m ensurepip --default-pip
+#          echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
+#          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
+#          echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
+#    - name: Use MultiDim Configs
+#      run: |
+#        cp .configs/registration-config-multi-dim.json registration-config.json
+#        bash scripts/trim_server_modules.sh
+#    - name: Build arkouda_server
+#      shell: bash
+#      run: |
+#        set -euxo pipefail
+#        /usr/bin/time -v make
+#        echo "$PWD" >> "$GITHUB_PATH"
+#        echo "$PWD"
+#    - name: Install Arkouda
+#      run: |
+#        python3 -m pip install .[dev]
+#    - name: Run tests with coverage (fail if below threshold)
+#      run: |
+#        make coverage size=10
+#    - name: Sanity check coverage.xml
+#      if: always()
+#      run: |
+#        pwd
+#        ls -l
+#        [ -f coverage.xml ] && echo "coverage.xml present" || (echo "coverage.xml MISSING"; exit 1)
+#        head -n 20 coverage.xml || true
+#    - name: Upload coverage artifacts
+#      if: always()
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: coverage-artifacts
+#        path: |
+#          coverage.xml
+#          .coverage
+#          .pytest/report.html
+#        if-no-files-found: warn
+#    - name: Upload to Codecov
+#      uses: codecov/codecov-action@v4
+#      with:
+#        token: ${{ secrets.CODECOV_TOKEN }}   # not needed for public repos
+#        files: coverage.xml
+#        flags: python-coverage
+#        fail_ci_if_error: true
+
+
+
+
   arkouda_tests_linux:
     runs-on: ubuntu-latest
     env:
       CHPL_RT_NUM_THREADS_PER_LOCALE: 2
-      CHPL_HOME: /opt/chapel-2.5.0
+    strategy:
+      matrix:
+        chpl-version: ['2.7.0']
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
-    - name: Set Chapel version to 2.5
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -588,33 +690,31 @@ jobs:
       run: |
         make check
     - name: Arkouda unit tests
-      if: matrix.image != 'chapel-gasnet-smp'
       env:
         ARKOUDA_PYTEST_OPTIONS: "--durations=0 --durations-min=5.0"
       run: |
         make test-python size=100
     - name: Arkouda benchmark --correctness-only
-      if: matrix.image != 'chapel-gasnet-smp'
       run: |
         ARKOUDA_HOME=$(pwd) ./benchmarks/run_benchmarks.py --correctness-only
         ARKOUDA_HOME=$(pwd) ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
-        
+
   arkouda_benchmark_linux:
     runs-on: ubuntu-latest
-    env:
-      CHPL_HOME: /opt/chapel-2.5.0
+    strategy:
+      matrix:
+        chpl-version: ['2.7.0']
     container:
-      image: ajpotts/ubuntu-with-arkouda-deps:1.0.3
+      image: ghcr.io/bears-r-us/ubuntu-with-arkouda-deps-chpl-${{ matrix.chpl-version }}:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
     - name: Set Python version to 3.13
       run: |
-        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1      
-    - name: Set Chapel version to 2.5
-      run: |
-        update-alternatives --install /usr/bin/chpl chpl /opt/chapel-2.5.0/bin/linux64-x86_64/chpl 1
-        update-alternatives --install /usr/bin/chpldoc chpldoc /opt/chapel-2.5.0/bin/linux64-x86_64/chpldoc 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
     - name: Check Chapel version
       run: |
         chpl --version
@@ -640,6 +740,4 @@ jobs:
         make benchmark size_bm=10
     - name: Arkouda benchmark -- Numpy
       run: |
-        python3 -m pytest -c benchmark.ini --size=10 --numpy   
-          
-            
+        python3 -m pytest -c benchmark.ini --size=10 --numpy

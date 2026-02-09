@@ -6,6 +6,7 @@ from ._dtypes import _real_numeric_dtypes
 from .array_object import Array
 from .manipulation_functions import flip
 
+
 __all__ = [
     "argsort",
     "sort",

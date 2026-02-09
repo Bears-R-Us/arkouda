@@ -1,16 +1,20 @@
-from collections import Counter
-from itertools import product
 import math
 import os
 
+from collections import Counter
+from itertools import product
+
 import numpy as np
 import pytest
+
 from scipy import stats as sp_stats
 
 import arkouda as ak
+
 from arkouda.numpy import random
 from arkouda.scipy import chisquare as akchisquare
 from arkouda.testing import assert_almost_equivalent, assert_arkouda_array_equal
+
 
 INT_FLOAT = [ak.int64, ak.float64]
 RANDOM_METHODS = [
@@ -356,15 +360,16 @@ class TestRandom:
         ks = kstest(sample, gamma.cdf, args=(k, 0, 1))
         assert ks.pvalue > 0.05
 
-    def test_poisson(self):
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_poisson(self, size):
         rng = ak.random.default_rng(pytest.seed)
-        num_samples = 5
+        num_samples = size
         # scalar lambda
         scal_lam = 2
         scal_sample = rng.poisson(lam=scal_lam, size=num_samples).tolist()
 
         # array lambda
-        arr_lam = ak.arange(5)
+        arr_lam = ak.arange(num_samples)
         arr_sample = rng.poisson(lam=arr_lam, size=num_samples).tolist()
 
         # reset rng with same seed and ensure we get same results
@@ -372,6 +377,43 @@ class TestRandom:
         assert rng.poisson(lam=scal_lam, size=num_samples).tolist() == scal_sample
         assert rng.poisson(lam=arr_lam, size=num_samples).tolist() == arr_sample
 
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.skip_if_rank_not_compiled(2)
+    def test_poisson_2D(self, size):
+        rng = ak.random.default_rng(pytest.seed)
+        shape = (2, size // 2)
+        # scalar lambda
+        scal_lam = 2
+        scal_sample = rng.poisson(lam=scal_lam, size=shape)
+
+        # array lambda
+        arr_lam = ak.arange(size // 2)
+        arr_sample = rng.poisson(lam=arr_lam, size=shape)
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(pytest.seed)
+        assert_arkouda_array_equal(scal_sample, rng.poisson(lam=scal_lam, size=shape))
+        assert_arkouda_array_equal(arr_sample, rng.poisson(lam=arr_lam, size=shape))
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    @pytest.mark.skip_if_rank_not_compiled(3)
+    def test_poisson_3D(self, size):
+        rng = ak.random.default_rng(pytest.seed)
+        shape = (2, 3, size // 6)
+        # scalar lambda
+        scal_lam = size // 6
+        scal_sample = rng.poisson(lam=scal_lam, size=shape)
+
+        # array lambda
+        arr_lam = ak.arange(2 * (size // 6)).reshape(2, 1, size // 6)
+        arr_sample = rng.poisson(lam=arr_lam, size=shape)
+
+        # reset rng with same seed and ensure we get same results
+        rng = ak.random.default_rng(pytest.seed)
+        assert_arkouda_array_equal(scal_sample, rng.poisson(lam=scal_lam, size=shape))
+        assert_arkouda_array_equal(arr_sample, rng.poisson(lam=arr_lam, size=shape))
+
+    @pytest.mark.requires_chapel_module("ParquetMsg")
     def test_poisson_seed_reproducibility(self):
         # test resolution of issue #3322, same seed gives same result across machines / num locales
         iseed = 11  # retains non pytest.seed because it asserts specific values
@@ -582,22 +624,22 @@ class TestRandom:
         assert_almost_equivalent(known, given)
 
     def test_legacy_randint(self):
-        testArray = ak.random.randint(0, 10, 5)
-        assert isinstance(testArray, ak.pdarray)
-        assert 5 == len(testArray)
-        assert ak.int64 == testArray.dtype
+        test_array = ak.random.randint(0, 10, 5)
+        assert isinstance(test_array, ak.pdarray)
+        assert 5 == len(test_array)
+        assert ak.int64 == test_array.dtype
 
-        testArray = ak.random.randint(np.int64(0), np.int64(10), np.int64(5))
-        assert isinstance(testArray, ak.pdarray)
-        assert 5 == len(testArray)
-        assert ak.int64 == testArray.dtype
+        test_array = ak.random.randint(np.int64(0), np.int64(10), np.int64(5))
+        assert isinstance(test_array, ak.pdarray)
+        assert 5 == len(test_array)
+        assert ak.int64 == test_array.dtype
 
-        testArray = ak.random.randint(np.float64(0), np.float64(10), np.int64(5))
-        assert isinstance(testArray, ak.pdarray)
-        assert 5 == len(testArray)
-        assert ak.int64 == testArray.dtype
+        test_array = ak.random.randint(np.float64(0), np.float64(10), np.int64(5))
+        assert isinstance(test_array, ak.pdarray)
+        assert 5 == len(test_array)
+        assert ak.int64 == test_array.dtype
 
-        test_ndarray = testArray.to_ndarray()
+        test_ndarray = test_array.to_ndarray()
 
         for value in test_ndarray:
             assert 0 <= value <= 10
@@ -710,28 +752,30 @@ class TestRandom:
         ak.random.randint(np.uint8(1), np.uint32(5), np.uint16(10), seed=np.uint8(2))
 
     def test_legacy_uniform(self):
-        testArray = ak.random.uniform(3)
-        assert isinstance(testArray, ak.pdarray)
-        assert 3 == len(testArray)
-        assert ak.float64 == testArray.dtype
+        test_array = ak.random.uniform(3)
+        assert isinstance(test_array, ak.pdarray)
+        assert 3 == len(test_array)
+        assert ak.float64 == test_array.dtype
 
-        testArray = ak.random.uniform(np.int64(3))
-        assert isinstance(testArray, ak.pdarray)
-        assert 3 == len(testArray)
-        assert ak.float64 == testArray.dtype
+        test_array = ak.random.uniform(np.int64(3))
+        assert isinstance(test_array, ak.pdarray)
+        assert 3 == len(test_array)
+        assert ak.float64 == test_array.dtype
 
         #  The next two tests also retain the non pytest.seed, because they assert specific values.
 
-        uArray = ak.random.uniform(size=3, low=0, high=5, seed=0)
+        u_array = ak.random.uniform(size=3, low=0, high=5, seed=0)
         assert np.allclose(
             [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
-            uArray.tolist(),
+            u_array.tolist(),
         )
 
-        uArray = ak.random.uniform(size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0))
+        u_array = ak.random.uniform(
+            size=np.int64(3), low=np.int64(0), high=np.int64(5), seed=np.int64(0)
+        )
         assert np.allclose(
             [0.30013431967121934, 0.47383036230759112, 1.0441791878997098],
-            uArray.tolist(),
+            u_array.tolist(),
         )
 
         with pytest.raises(TypeError):

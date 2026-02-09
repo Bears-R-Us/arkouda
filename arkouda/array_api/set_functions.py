@@ -6,6 +6,7 @@ from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 
 from .array_object import Array
 
+
 __all__ = [
     "UniqueAllResult",
     "UniqueCountsResult",
@@ -112,9 +113,7 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
 
 
 def unique_values(x: Array, /) -> Array:
-    """
-    Return an array containing the unique values from `x`.
-    """
+    """Return an array containing the unique values from `x`."""
     from arkouda.client import generic_msg
 
     return Array._new(

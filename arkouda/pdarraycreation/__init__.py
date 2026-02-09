@@ -1,10 +1,18 @@
 # flake8: noqa
 
+import warnings
+
+warnings.warn(
+    "arkouda.pdarraycreation is deprecated and will be removed in a future release. "
+    "Please use arkouda.numpy.pdarraycreation instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from arkouda.numpy.pdarraycreation import (
     arange,
     array,
     bigint_from_uint_arrays,
-    from_series,
     full,
     full_like,
     linspace,

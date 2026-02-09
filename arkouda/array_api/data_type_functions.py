@@ -20,6 +20,7 @@ from ._dtypes import (
 )
 from .array_object import Array, implements_numpy
 
+
 __all__ = [
     "astype",
     "can_cast",
@@ -37,18 +38,14 @@ if TYPE_CHECKING:
 
 
 def astype(x: Array, dtype: Dtype, /, *, copy: bool = True) -> Array:
-    """
-    Cast an array to a specified data type.
-    """
+    """Cast an array to a specified data type."""
     if not copy and dtype == x.dtype:
         return x
     return Array._new(ak.cast(x._array, dtype))
 
 
 def can_cast(from_: Union[Dtype, Array], to: Dtype, /) -> bool:
-    """
-    Determine whether an array or dtype can be cast to another dtype.
-    """
+    """Determine whether an array or dtype can be cast to another dtype."""
     if isinstance(from_, Array):
         from_ = from_.dtype
     elif from_ not in _all_dtypes:
@@ -101,9 +98,7 @@ def iinfo(type, /) -> iinfo_object:
 
 
 def isdtype(dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]) -> bool:
-    """
-    Return a boolean indicating whether a provided dtype is of a specified data type ``kind``.
-    """
+    """Return a boolean indicating whether a provided dtype is of a specified data type ``kind``."""
     if isinstance(kind, tuple):
         # Disallow nested tuples
         if any(isinstance(k, tuple) for k in kind):
@@ -137,25 +132,29 @@ def isdtype(dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]
 
 @implements_numpy(np.result_type)
 def result_type(*arrays_and_dtypes: Union[Array, Dtype]) -> Dtype:
-    """
-    Compute the result dtype for a group of arrays and/or dtypes.
-    """
-    A = []
-    for a in arrays_and_dtypes:
-        if isinstance(a, Array):
-            a = a.dtype
-        elif isinstance(a, np.ndarray):
-            a = a.dtype
-        elif a not in _all_dtypes:
-            raise TypeError("result_type() inputs must be array_api arrays or dtypes")
-        A.append(a)
+    """Compute the result dtype for a group of arrays and/or dtypes."""
+    dtypes: list[Dtype] = []
 
-    if len(A) == 0:
+    for obj in arrays_and_dtypes:
+        if isinstance(obj, Array):
+            dt: Dtype = obj.dtype
+        elif isinstance(obj, np.ndarray):
+            # If you truly allow numpy arrays here, you may need a mapping step.
+            # If Array.dtype already returns a numpy dtype, this may be fine.
+            dt = obj.dtype  # type: ignore[assignment]
+        else:
+            dt = obj
+            if dt not in _all_dtypes:
+                raise TypeError("result_type() inputs must be array_api arrays or dtypes")
+
+        dtypes.append(dt)
+
+    if len(dtypes) == 0:
         raise ValueError("at least one array or dtype is required")
-    elif len(A) == 1:
-        return A[0]
-    else:
-        t = A[0]
-        for t2 in A[1:]:
-            t = _result_type(t, t2)
-        return t
+    if len(dtypes) == 1:
+        return dtypes[0]
+
+    t = dtypes[0]
+    for t2 in dtypes[1:]:
+        t = _result_type(t, t2)
+    return t

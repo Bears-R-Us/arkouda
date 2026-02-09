@@ -2,14 +2,17 @@ import os
 import tempfile
 
 import numpy as np
-from pandas import Categorical as pd_Categorical
 import pytest
 
+from pandas import Categorical as pd_Categorical
+
 import arkouda as ak
+
 from arkouda.numpy.pdarraycreation import array
 from arkouda.pandas import io, io_util
 from arkouda.pandas.categorical import Categorical
-from arkouda.testing import assert_categorical_equal, assert_equivalent
+from arkouda.testing import assert_categorical_equal, assert_equal, assert_equivalent
+
 
 SEED = 12345
 
@@ -33,7 +36,7 @@ class TestCategorical:
     def test_categorical_docstrings(self):
         import doctest
 
-        from arkouda import categorical
+        from arkouda.pandas import categorical
 
         result = doctest.testmod(
             categorical, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
@@ -339,10 +342,9 @@ class TestCategorical:
         b = ak.Categorical(ak.array(["b"]))
         assert ak.concatenate((a, b), ordered=False).tolist() == ak.array(["a", "b"]).tolist()
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_save_and_load_categorical(self, df_test_base_tmp):
-        """
-        Test to save categorical to hdf5 and read it back successfully
-        """
+        """Test to save categorical to hdf5 and read it back successfully."""
         num_elems = 51  # create_basic_categorical starts counting at 1, so the size is really off by one
         cat = self.create_basic_categorical(size=num_elems)
         with pytest.raises(TypeError):
@@ -383,6 +385,7 @@ class TestCategorical:
             assert cat_from_hdf.permutation is not None
             assert cat_from_hdf.size == num_elems
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_save_and_load_categorical_multi(self, df_test_base_tmp):
         """
         Test to build a pseudo dataframe with multiple
@@ -406,6 +409,7 @@ class TestCategorical:
             assert x["pda1"].tolist() == pda1.tolist()
             assert x["strings1"].tolist() == strings1.tolist()
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_hdf_update(self, df_test_base_tmp):
         num_elems = 51  # create_basic_categorical starts counting at 1, so the size is really off by one
         cat = self.create_basic_categorical(size=num_elems)
@@ -450,20 +454,20 @@ class TestCategorical:
     def test_na(self):
         s = ak.array(["A", "B", "C", "B", "C"])
         # NAval present in categories
-        c = ak.Categorical(s, NAvalue="C")
+        c = ak.Categorical(s, na_value="C")
         assert (c.isna() == (s == "C")).all()
-        assert c.NAvalue == "C"
+        assert c.na_value == "C"
         # Test that NAval survives registration
         c.register("my_categorical")
         c2 = ak.attach("my_categorical")
-        assert c2.NAvalue == "C"
+        assert c2.na_value == "C"
 
         c.unregister()
 
         # default NAval not present in categories
         c = ak.Categorical(s)
         assert not c.isna().any()
-        assert c.NAvalue == "N/A"
+        assert c.na_value == "N/A"
 
     def test_standardize_categories(self):
         c1 = ak.Categorical(ak.array(["A", "B", "C"]))
@@ -477,7 +481,7 @@ class TestCategorical:
         keys = ak.array([1, 2, 3])
         values = ak.Categorical(ak.array(["A", "B", "C"]))
         args = ak.array([3, 2, 1, 0])
-        ret = ak.lookup(keys, values, args)
+        ret = ak.numpy.alignment.lookup(keys, values, args)
         assert ret.tolist() == ["C", "B", "A", "N/A"]
 
     def test_deletion(self):
@@ -550,3 +554,91 @@ class TestCategorical:
         result = cat.argsort()
         sorted_values = strings[result].tolist()
         assert sorted_values == sorted(strings.tolist())
+
+    def basic_cat(self):
+        # categories: ["a", "b", "c"], codes map to labels
+        categories = ak.array(["a", "b", "c"])  # Strings
+        codes = ak.array([0, 1, 2, 1, 0])  # pdarray[int64]
+        return Categorical.from_codes(codes, categories)
+
+    def cat_with_perm_segments(self):
+        # Build a small example with explicit permutation/segments metadata.
+        categories = ak.array(["red", "green", "blue"])
+        codes = ak.array([2, 0, 2, 1, 1, 0])  # labels: blue, red, blue, green, green, red
+        # Example permutation/segments (shape/meaning may vary by impl;
+        # these are just nontrivial, valid-length pdarrays to pass through)
+        permutation = ak.array([1, 5, 3, 4, 0, 2])  # some reordering indices
+        segments = ak.array([0, 2, 4])  # example segment starts
+        return Categorical.from_codes(codes, categories, permutation=permutation, segments=segments)
+
+    def empty_cat(self):
+        return Categorical(ak.array([], dtype="str"))
+
+    # ------------------------------ Basic copy behavior ------------------------------
+
+    def test_copy_returns_new_instance(self):
+        c = self.basic_cat()
+        c2 = c.copy()
+        assert isinstance(c2, Categorical)
+        assert c2 is not c
+        assert len(c2) == len(c)
+        assert_equal(c, c2)
+
+    def test_copy_is_deep_for_internal_arrays(self):
+        c = self.basic_cat()
+        c2 = c.copy()
+
+        # Internals should be distinct objects with equal contents
+        assert c is not c2
+        assert_categorical_equal(c, c2, check_category_order=True)
+
+        # permutation/segments might be None; if present, they should also be deep-copied
+        for name in ("permutation", "segments"):
+            a = getattr(c, name, None)
+            b = getattr(c2, name, None)
+            assert (a is None) == (b is None)
+            if a is not None:
+                assert_equal(b, a)
+
+    # ------------------------------ Metadata preserved ------------------------------
+
+    def test_copy_preserves_metadata_when_present(self):
+        c = self.cat_with_perm_segments()
+        c2 = c.copy()
+
+        # Distinct instances
+        assert c2 is not c
+        assert c2.codes is not c.codes
+        assert c2.categories is not c.categories
+        assert c2.segments is not c.segments
+        assert c2.permutation is not c.permutation
+
+        # Distinct internals; equal contents
+        assert_equal(c2.permutation, c.permutation)
+        assert_equal(c2.segments, c.segments)
+        assert_categorical_equal(c, c2, check_category_order=True)
+
+    # ------------------------------ Empty case ------------------------------
+
+    def test_copy_empty_categorical(self):
+        empty_cat = self.empty_cat()
+        c2 = empty_cat.copy()
+        assert len(c2) == 0
+        assert c2.categories is not empty_cat.categories
+        assert c2.codes is not empty_cat.codes
+
+        assert_categorical_equal(empty_cat, c2, check_category_order=True)
+
+        # permutation/segments may be None or empty; only check distinctness if present
+        for name in ("permutation", "segments"):
+            a = getattr(empty_cat, name, None)
+            b = getattr(c2, name, None)
+            assert (a is None) == (b is None)
+            if a is not None:
+                assert a is not b
+                assert_equal(a, b)
+
+    def test_categorical_NAvalue_deprecated_returns_find_na(self):
+        cat = Categorical(ak.array(["a", "b"]))
+        with pytest.deprecated_call():
+            assert cat.NAvalue == cat.na_value

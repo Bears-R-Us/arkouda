@@ -1,28 +1,48 @@
-from enum import Enum
+from __future__ import annotations
+
 import json
-from typing import TYPE_CHECKING, List, Optional, Sequence, Tuple, TypeVar, Union
+
+from enum import Enum
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    get_args,
+    no_type_check,
+    overload,
+)
+from typing import Union as _Union
 from typing import cast as type_cast
-from typing import no_type_check
 
 import numpy as np
+
 from typeguard import typechecked
 
 from arkouda.groupbyclass import GroupBy, groupable
 from arkouda.numpy.dtypes import (
+    ARKOUDA_SUPPORTED_INTS,
+    _datatype_check,
+    bigint,
     int_scalars,
-    isSupportedNumber,
+    is_supported_number,
     numeric_scalars,
     resolve_scalar_dtype,
+    str_,
 )
-from arkouda.numpy.dtypes import ARKOUDA_SUPPORTED_INTS, _datatype_check, bigint
 from arkouda.numpy.dtypes import bool_ as ak_bool
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import float64 as ak_float64
 from arkouda.numpy.dtypes import int64 as ak_int64
-from arkouda.numpy.dtypes import str_
-from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as ak_uint64
 from arkouda.numpy.pdarrayclass import (
+    _reduces_to_single_value,
     argmax,
     broadcast_if_needed,
     create_pdarray,
@@ -30,12 +50,14 @@ from arkouda.numpy.pdarrayclass import (
     pdarray,
     sum,
 )
-from arkouda.numpy.pdarrayclass import _reduces_to_single_value
 from arkouda.numpy.pdarrayclass import all as ak_all
 from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
+
+from ._typing import ArkoudaNumericTypes, BuiltinNumericTypes, NumericDTypeTypes, StringDTypeTypes
+
 
 NUMERIC_TYPES = [ak_int64, ak_float64, ak_bool, ak_uint64]
 ALLOWED_PERQUANT_METHODS = [
@@ -55,14 +77,11 @@ ALLOWED_PERQUANT_METHODS = [
 
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg, get_array_ranks
     from arkouda.numpy.segarray import SegArray
     from arkouda.pandas.categorical import Categorical
 else:
     Categorical = TypeVar("Categorical")
     SegArray = TypeVar("SegArray")
-    generic_msg = TypeVar("generic_msg")
-    get_array_ranks = TypeVar("get_array_ranks")
 
 __all__ = [
     "cast",
@@ -122,6 +141,8 @@ __all__ = [
     "quantile",
     "percentile",
     "take",
+    "minimum",
+    "maximum",
 ]
 
 
@@ -140,6 +161,78 @@ def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
+
+
+@overload
+def cast(
+    pda: pdarray,
+    dt: StringDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> Strings: ...
+
+
+@overload
+def cast(
+    pda: pdarray,
+    dt: NumericDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> pdarray: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: _Union[ArkoudaNumericTypes, BuiltinNumericTypes, np.dtype[Any], bigint],
+    errors: Literal[ErrorMode.return_validity],
+) -> Tuple[pdarray, pdarray]: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: _Union[ArkoudaNumericTypes, BuiltinNumericTypes, np.dtype[Any], bigint],
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> pdarray: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: StringDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> Strings: ...
+
+
+@overload
+def cast(
+    pda: Strings,
+    dt: type["Categorical"],
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> "Categorical": ...
+
+
+@overload
+def cast(
+    pda: "Categorical",
+    dt: StringDTypeTypes,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> Strings: ...
+
+
+@overload
+def cast(
+    pda: _Union[pdarray, numeric_scalars],
+    dt: _Union[ArkoudaNumericTypes, BuiltinNumericTypes, np.dtype[Any], bigint, None],
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> pdarray: ...
+
+
+@overload
+def cast(
+    pda: _Union[pdarray, Strings, "Categorical", numeric_scalars],
+    dt: str,
+    errors: Literal[ErrorMode.strict, ErrorMode.ignore] = ErrorMode.strict,
+) -> _Union[pdarray, Strings, "Categorical"]: ...
 
 
 @typechecked
@@ -206,11 +299,11 @@ def cast(
         if dt is Strings or akdtype(dt) == str_:
             if pda.ndim > 1:
                 raise ValueError("Cannot cast a multi-dimensional pdarray to Strings")
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"castToStrings<{pda.dtype}>",
                 args={"name": pda},
             )
-            return Strings.from_parts(*(type_cast(str, repMsg).split("+")))
+            return Strings.from_parts(*(type_cast(str, rep_msg).split("+")))
         else:
             dt = akdtype(dt)
             return create_pdarray(
@@ -226,7 +319,7 @@ def cast(
             return Strings(type_cast(pdarray, array([], dtype="int64")), 0) if pda.size == 0 else pda[:]
         else:
             dt = akdtype(dt)
-            repMsg = generic_msg(
+            rep_msg = generic_msg(
                 cmd=f"castStringsTo<{dt}>",
                 args={
                     "name": pda.entry.name,
@@ -234,10 +327,10 @@ def cast(
                 },
             )
             if errors == ErrorMode.return_validity:
-                a, b = type_cast(str, repMsg).split("+")
+                a, b = rep_msg.split("+")
                 return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
             else:
-                return create_pdarray(type_cast(str, repMsg))
+                return create_pdarray(rep_msg)
     elif isinstance(pda, Categorical):  # type: ignore
         if dt is Strings or dt in ["Strings", "str"] or dt == str_:
             return pda.categories[pda.codes]
@@ -278,13 +371,16 @@ def abs(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    if pda.dtype == "uint64" or pda.dtype == "bool":
+        return pda.copy()
+
+    rep_msg = generic_msg(
         cmd=f"abs<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -390,17 +486,16 @@ def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
 
 
 @typechecked
-def round(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
+def round(pda: pdarray, decimals: Optional[int] = None) -> pdarray:
     """
     Return the element-wise rounding of the array.
 
     Parameters
     ----------
     pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
+    decimals: Optional[Union[int, None]], default = None
+        for float pdarrays, the number of decimal places of accuracy for the round.
+        May be None, positive, negative, or zero.  If None, zero is used.
 
     Returns
     -------
@@ -410,16 +505,53 @@ def round(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if the parameter is not a pdarray
+        Raised if the parameter is not a pdarray or if the dtype of the pdarray
+        is other than ak.float64, ak.int64, ak.uint64 or ak.bool.
+
+    Notes
+    -----
+    This function follows numpy's rule of "round to even" when the fractional part
+    of the number equals .5.  For example, 2.5 rounds to 2, but 3.5 rounds to 4.
+    Arkouda's use of decimal is not perfect, as shown in the examples below.
 
     Examples
     --------
     >>> import arkouda as ak
     >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
-    array([1.00000000... 3.00000000... 3.00000000...])
+    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
+    >>> ak.round(ak.array([1.5, 2.5, 3.5]))
+    array([2.00000000000000000 2.00000000000000000 4.00000000000000000])
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=-1)
+    array([-140.00000000000000000 280.00000000000000000])
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=0)
+    array([-143.00000000000000000 280.00000000000000000])
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=2)
+    array([1.54 2.73])
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=3)
+    array([1.5409999999999999 2.7320000000000002])
+
+
     """
-    _datatype_check(pda.dtype, [float], "round")
-    return _general_helper(pda, "round", where)
+    from arkouda.client import generic_msg
+
+    if decimals is None:
+        decimals = 0
+
+    _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "round")
+
+    if pda.dtype in [ak_int64, ak_uint64]:
+        return pda.copy()  # int arguments return copies of the input
+    if pda.dtype == ak_bool:
+        return pda.astype(ak_float64)  # not an exact match to numpy, which uses np.float16
+
+    rep_msg = generic_msg(
+        cmd=f"round<{pda.dtype},{pda.ndim}>",
+        args={
+            "x": pda,
+            "n": decimals,
+        },
+    )
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -487,13 +619,13 @@ def sign(pda: pdarray) -> pdarray:
     from arkouda.client import generic_msg
 
     _datatype_check(pda.dtype, [int, float], "sign")
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sgn<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -526,13 +658,13 @@ def isfinite(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"isfinite<{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -565,13 +697,13 @@ def isinf(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"isinf<{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -594,7 +726,7 @@ def isnan(pda: pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     RuntimeError
-        if the underlying pdarray is not float-based
+        if the underlying pdarray is not one of float, int, uint or bool
 
     Examples
     --------
@@ -603,22 +735,22 @@ def isnan(pda: pdarray) -> pdarray:
     array([False False True])
     """
     from arkouda.client import generic_msg
-    from arkouda.numpy.util import is_float, is_numeric
+    from arkouda.numpy.util import is_float
 
-    if is_numeric(pda) and not is_float(pda):
+    _datatype_check(pda.dtype, NUMERIC_TYPES, "isnan")
+
+    if not is_float(pda):
         from arkouda.numpy.pdarraycreation import full
 
-        return full(pda.size, False, dtype=bool)
-    elif not is_numeric(pda):
-        raise TypeError("isnan only supports pdarray of numeric type.")
+        return full(pda.shape, False, dtype=bool)
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"isnan<{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -664,13 +796,13 @@ def log(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -697,13 +829,13 @@ def log10(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log10<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -730,13 +862,13 @@ def log2(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log2<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -763,13 +895,13 @@ def log1p(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"log1p<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(repMsg)
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -830,14 +962,14 @@ def nextafter(
 
     x1_, x2_, _, _ = broadcast_if_needed(x1_, x2_)
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"nextafter<{x1_.ndim}>",
         args={
             "x1": x1_,
             "x2": x2_,
         },
     )
-    return_array = create_pdarray(repMsg)
+    return_array = create_pdarray(rep_msg)
     if return_scalar:
         return return_array[0]
     return return_array
@@ -875,13 +1007,13 @@ def exp(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"exp<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -916,13 +1048,13 @@ def expm1(pda: pdarray) -> pdarray:
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"expm1<{pda.dtype},{pda.ndim}>",
         args={
             "pda": pda,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1017,7 +1149,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
         if not valid:
             raise IndexError(f"{axis} is not valid for the given array.")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"cumSum<{pda_.dtype},{pda_.ndim}>",
         args={
             "x": pda_,
@@ -1025,7 +1157,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
             "includeInitial": False,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1087,7 +1219,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
         if not valid:
             raise IndexError(f"{axis} is not valid for the given array.")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"cumProd<{pda_.dtype},{pda_.ndim}>",
         args={
             "x": pda_,
@@ -1095,7 +1227,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
             "includeInitial": False,
         },
     )
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(rep_msg)
 
 
 @typechecked
@@ -1350,12 +1482,12 @@ def arctan2(
     """
     from arkouda.client import generic_msg
 
-    if not all(isSupportedNumber(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
+    if not all(is_supported_number(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
         )
-    if isSupportedNumber(num) and isSupportedNumber(denom):
+    if is_supported_number(num) and is_supported_number(denom):
         raise TypeError(
             f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
             "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
@@ -1404,11 +1536,8 @@ def arctan2(
                 raise TypeError(f"{ts} is not an allowed num type for arctan2")
             argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
 
-        repMsg = type_cast(
-            str,
-            generic_msg(cmd=cmdstring, args=argdict),
-        )
-        ret = create_pdarray(repMsg)
+        rep_msg = generic_msg(cmd=cmdstring, args=argdict)
+        ret = create_pdarray(rep_msg)
         if where is True:
             return ret
         else:
@@ -1652,31 +1781,25 @@ def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True)
 
     _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
     if where is True:
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-                args={
-                    "x": pda,
-                },
-            ),
+        rep_msg = generic_msg(
+            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
+            args={
+                "x": pda,
+            },
         )
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
     elif where is False:
         return pda
     else:
         if where.dtype != bool:
             raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-        repMsg = type_cast(
-            str,
-            generic_msg(
-                cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-                args={
-                    "x": pda[where],
-                },
-            ),
+        rep_msg = generic_msg(
+            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
+            args={
+                "x": pda[where],
+            },
         )
-        return _merge_where(pda[:], where, create_pdarray(repMsg))
+        return _merge_where(pda[:], where, create_pdarray(rep_msg))
 
 
 @typechecked
@@ -1775,11 +1898,29 @@ def _hash_helper(a):
         return a.name
 
 
-# this is # type: ignored and doesn't actually do any type checking
-# the type hints are there as a reference to show which types are expected
-# type validation is done within the function
+HashableItems = Union[pdarray, Strings, SegArray, Categorical]
+HashableList = List[HashableItems]
+
+
+@overload
+def hash(pda: HashableItems, full: Literal[True] = True) -> Tuple[pdarray, pdarray]: ...
+
+
+@overload
+def hash(pda: HashableItems, full: Literal[False]) -> pdarray: ...
+
+
+@overload
+def hash(pda: HashableList, full: Literal[True] = True) -> Tuple[pdarray, pdarray]: ...
+
+
+@overload
+def hash(pda: HashableList, full: Literal[False]) -> pdarray: ...
+
+
+@typechecked
 def hash(
-    pda: Union[  # type: ignore
+    pda: Union[
         Union[pdarray, Strings, SegArray, Categorical],
         List[Union[pdarray, Strings, SegArray, Categorical]],
     ],
@@ -1867,17 +2008,14 @@ def hash(
                 expanded_pda.append(a)
         types_list = [a.objType for a in expanded_pda]
         names_list = [_hash_helper(a) for a in expanded_pda]
-        rep_msg = type_cast(
-            str,
-            generic_msg(
-                cmd="hashList",
-                args={
-                    "nameslist": names_list,
-                    "typeslist": types_list,
-                    "length": len(expanded_pda),
-                    "size": len(expanded_pda[0]),
-                },
-            ),
+        rep_msg = generic_msg(
+            cmd="hashList",
+            args={
+                "nameslist": names_list,
+                "typeslist": types_list,
+                "length": len(expanded_pda),
+                "size": len(expanded_pda[0]),
+            },
         )
         hashes = json.loads(rep_msg)
         return create_pdarray(hashes["upperHash"]), create_pdarray(hashes["lowerHash"])
@@ -1896,27 +2034,24 @@ def _hash_single(pda: pdarray, full: bool = True):
         return hash(pda.bigint_to_uint_arrays())
     _datatype_check(pda.dtype, [float, int, ak_uint64], "hash")
     hname = "hash128" if full else "hash64"
-    repMsg = type_cast(
-        str,
-        generic_msg(
-            cmd=f"{hname}<{pda.dtype},{pda.ndim}>",
-            args={
-                "x": pda,
-            },
-        ),
+    rep_msg = generic_msg(
+        cmd=f"{hname}<{pda.dtype},{pda.ndim}>",
+        args={
+            "x": pda,
+        },
     )
     if full:
-        a, b = repMsg.split("+")
+        a, b = rep_msg.split("+")
         return create_pdarray(a), create_pdarray(b)
     else:
-        return create_pdarray(repMsg)
+        return create_pdarray(rep_msg)
 
 
 @no_type_check
 def _str_cat_where(
     condition: pdarray,
-    A: Union[str, Strings, Categorical],
-    B: Union[str, Strings, Categorical],
+    a: Union[str, Strings, Categorical],
+    b: Union[str, Strings, Categorical],
 ) -> Union[Strings, Categorical]:
     # added @no_type_check because mypy can't handle Categorical not being declared
     # sooner, but there are circular dependencies preventing that
@@ -1924,62 +2059,62 @@ def _str_cat_where(
     from arkouda.numpy.pdarraysetops import concatenate
     from arkouda.pandas.categorical import Categorical
 
-    if isinstance(A, str) and isinstance(B, (Categorical, Strings)):
+    if isinstance(a, str) and isinstance(b, (Categorical, Strings)):
         # This allows us to assume if a str is present it is B
-        A, B, condition = B, A, ~condition
+        a, b, condition = b, a, ~condition
 
     # one cat and one str
-    if isinstance(A, Categorical) and isinstance(B, str):
-        is_in_categories = A.categories == B
+    if isinstance(a, Categorical) and isinstance(b, str):
+        is_in_categories = a.categories == b
         if ak_any(is_in_categories):
-            new_categories = A.categories
+            new_categories = a.categories
             b_code = argmax(is_in_categories)
         else:
-            new_categories = concatenate([A.categories, array([B])])
-            b_code = A.categories.size
-        new_codes = where(condition, A.codes, b_code)
-        return Categorical.from_codes(new_codes, new_categories, NAvalue=A.NAvalue).reset_categories()
+            new_categories = concatenate([a.categories, array([b])])
+            b_code = a.categories.size
+        new_codes = where(condition, a.codes, b_code)
+        return Categorical.from_codes(new_codes, new_categories, na_value=a.na_value).reset_categories()
 
     # both cat
-    if isinstance(A, Categorical) and isinstance(B, Categorical):
-        if A.codes.size != B.codes.size:
+    if isinstance(a, Categorical) and isinstance(b, Categorical):
+        if a.codes.size != b.codes.size:
             raise TypeError("Categoricals must be same length")
-        if A.categories.size != B.categories.size or not ak_all(A.categories == B.categories):
-            A, B = A.standardize_categories([A, B])
-        new_codes = where(condition, A.codes, B.codes)
-        return Categorical.from_codes(new_codes, A.categories, NAvalue=A.NAvalue).reset_categories()
+        if a.categories.size != b.categories.size or not ak_all(a.categories == b.categories):
+            a, b = a.standardize_categories([a, b])
+        new_codes = where(condition, a.codes, b.codes)
+        return Categorical.from_codes(new_codes, a.categories, na_value=a.na_value).reset_categories()
 
     # one strings and one str
-    if isinstance(A, Strings) and isinstance(B, str):
-        new_lens = where(condition, A.get_lengths(), len(B))
-        repMsg = generic_msg(
+    if isinstance(a, Strings) and isinstance(b, str):
+        new_lens = where(condition, a.get_lengths(), len(b))
+        rep_msg = generic_msg(
             cmd="segmentedWhere",
             args={
-                "seg_str": A,
-                "other": B,
+                "seg_str": a,
+                "other": b,
                 "is_str_literal": True,
                 "new_lens": new_lens,
                 "condition": condition,
             },
         )
-        return Strings.from_return_msg(repMsg)
+        return Strings.from_return_msg(rep_msg)
 
     # both strings
-    if isinstance(A, Strings) and isinstance(B, Strings):
-        if A.size != B.size:
+    if isinstance(a, Strings) and isinstance(b, Strings):
+        if a.size != b.size:
             raise TypeError("Strings must be same length")
-        new_lens = where(condition, A.get_lengths(), B.get_lengths())
-        repMsg = generic_msg(
+        new_lens = where(condition, a.get_lengths(), b.get_lengths())
+        rep_msg = generic_msg(
             cmd="segmentedWhere",
             args={
-                "seg_str": A,
-                "other": B,
+                "seg_str": a,
+                "other": b,
                 "is_str_literal": False,
                 "new_lens": new_lens,
                 "condition": condition,
             },
         )
-        return Strings.from_return_msg(repMsg)
+        return Strings.from_return_msg(rep_msg)
 
     raise TypeError("ak.where is not supported between Strings and Categorical")
 
@@ -2065,8 +2200,8 @@ def where(
     """
     from arkouda.client import generic_msg
 
-    if (not isSupportedNumber(A) and not isinstance(A, pdarray)) or (
-        not isSupportedNumber(B) and not isinstance(B, pdarray)
+    if (not is_supported_number(A) and not isinstance(A, pdarray)) or (
+        not is_supported_number(B) and not isinstance(B, pdarray)
     ):
         from arkouda.pandas.categorical import Categorical  # type: ignore
 
@@ -2113,7 +2248,7 @@ def where(
             raise TypeError(f"where does not accept scalar type {resolve_scalar_dtype(A)}")
         cmdstring = "wheress_" + ta + "_" + tb + f"<{condition.ndim}>"
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=cmdstring,
         args={
             "condition": condition,
@@ -2122,7 +2257,7 @@ def where(
         },
     )
 
-    return create_pdarray(type_cast(str, repMsg))
+    return create_pdarray(type_cast(str, rep_msg))
 
 
 # histogram helper
@@ -2158,7 +2293,7 @@ def histogram(
     bins : int_scalars, default=10
         The number of equal-size bins to use (default: 10)
 
-    range : (minVal, maxVal), optional
+    range : (min_val, max_val), optional
         The range of the values to count.
         Values outside of this range are dropped.
         By default, all values are counted.
@@ -2212,13 +2347,13 @@ def histogram(
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
 
-    minVal, maxVal = _conv_dim(pda, range)
+    min_val, max_val = _conv_dim(pda, range)
 
-    b = linspace(minVal, maxVal, bins + 1)
-    repMsg = generic_msg(
-        cmd="histogram", args={"array": pda, "bins": bins, "minVal": minVal, "maxVal": maxVal}
+    b = linspace(min_val, max_val, bins + 1)
+    rep_msg = generic_msg(
+        cmd="histogram", args={"array": pda, "bins": bins, "minVal": min_val, "maxVal": max_val}
     )
-    return create_pdarray(type_cast(str, repMsg)), b
+    return create_pdarray(type_cast(str, rep_msg)), b
 
 
 # Typechecking removed due to circular dependencies with arrayview
@@ -2248,7 +2383,7 @@ def histogram2d(
         If [int, int], the number of bins in each dimension (nx, ny = bins).
         Defaults to 10
 
-    range : ((xMin, xMax), (yMin, yMax)), optional
+    range : ((x_min, x_max), (y_min, y_max)), optional
         The ranges of the values in x and y to count.
         Values outside of these ranges are dropped.
         By default, all values are counted.
@@ -2317,26 +2452,26 @@ def histogram2d(
     if x_bins < 1 or y_bins < 1:
         raise ValueError("bins must be 1 or greater")
 
-    xMin, xMax = _conv_dim(x, range[0] if range else None)
-    yMin, yMax = _conv_dim(y, range[1] if range else None)
+    x_min, x_max = _conv_dim(x, range[0] if range else None)
+    y_min, y_max = _conv_dim(y, range[1] if range else None)
 
-    x_bin_boundaries = linspace(xMin, xMax, x_bins + 1)
-    y_bin_boundaries = linspace(yMin, yMax, y_bins + 1)
-    repMsg = generic_msg(
+    x_bin_boundaries = linspace(x_min, x_max, x_bins + 1)
+    y_bin_boundaries = linspace(y_min, y_max, y_bins + 1)
+    rep_msg = generic_msg(
         cmd="histogram2D",
         args={
             "x": x,
             "y": y,
             "xBins": x_bins,
             "yBins": y_bins,
-            "xMin": xMin,
-            "xMax": xMax,
-            "yMin": yMin,
-            "yMax": yMax,
+            "xMin": x_min,
+            "xMax": x_max,
+            "yMin": y_min,
+            "yMax": y_max,
         },
     )
     return (
-        create_pdarray(type_cast(str, repMsg)).reshape(x_bins, y_bins),
+        create_pdarray(type_cast(str, rep_msg)).reshape(x_bins, y_bins),
         x_bin_boundaries,
         y_bin_boundaries,
     )
@@ -2361,7 +2496,7 @@ def histogramdd(
         If [int, int, ...], the number of bins in each dimension (nx, ny, ... = bins).
         Defaults to 10
 
-    range : Sequence[optional (minVal, maxVal)], optional
+    range : Sequence[optional (min_val, max_val)], optional
         The ranges of the values to count for each array in sample.
         Values outside of these ranges are dropped.
         By default, all values are counted.
@@ -2440,7 +2575,7 @@ def histogramdd(
     bin_boundaries = [linspace(r[0], r[1], b + 1) for r, b in zip(range_list, bins)]
     d_curr, d_next = 1, 1
     dim_prod = [(d_curr := d_next, d_next := d_curr * int(v))[0] for v in bins[::-1]][::-1]  # noqa: F841
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="histogramdD",
         args={
             "sample": sample,
@@ -2452,7 +2587,7 @@ def histogramdd(
             "num_samples": sample[0].size,
         },
     )
-    return create_pdarray(type_cast(str, repMsg)).reshape(bins), bin_boundaries
+    return create_pdarray(rep_msg).reshape(bins), bin_boundaries
 
 
 @typechecked
@@ -2498,7 +2633,7 @@ def value_counts(
     >>> ak.value_counts(A)
     (array([0 2 4]), array([3 2 1]))
     """
-    return GroupBy(pda).size()
+    return GroupBy(pda.flatten()).size() if pda.ndim > 1 else GroupBy(pda).size()
 
 
 @typechecked
@@ -2578,16 +2713,16 @@ def clip(
     # If any of the inputs are float, then make everything float.
     # Some type checking is needed, because scalars and pdarrays get cast differently.
 
-    dataFloat = pda.dtype == float
-    minFloat = isinstance(lo, float) or (isinstance(lo, pdarray) and lo.dtype == float)
-    maxFloat = isinstance(hi, float) or (isinstance(hi, pdarray) and hi.dtype == float)
-    forceFloat = dataFloat or minFloat or maxFloat
-    if forceFloat:
-        if not dataFloat:
+    data_float = pda.dtype == float
+    min_float = isinstance(lo, float) or (isinstance(lo, pdarray) and lo.dtype == float)
+    max_float = isinstance(hi, float) or (isinstance(hi, pdarray) and hi.dtype == float)
+    force_float = data_float or min_float or max_float
+    if force_float:
+        if not data_float:
             pda = cast(pda, np.float64)
-        if lo is not None and not minFloat:
+        if lo is not None and not min_float:
             lo = cast(lo, np.float64) if isinstance(lo, pdarray) else float(lo)
-        if hi is not None and not maxFloat:
+        if hi is not None and not max_float:
             hi = cast(hi, np.float64) if isinstance(hi, pdarray) else float(hi)
 
     # Now do the clipping.
@@ -2747,7 +2882,7 @@ def array_equal(pda_a: pdarray, pda_b: pdarray, equal_nan: bool = False) -> bool
     >>> ak.array_equal(a,b,True)
     True
     """
-    if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == akstr_) ^ (pda_b.dtype == akstr_)):
+    if (pda_a.shape != pda_b.shape) or ((pda_a.dtype == str_) ^ (pda_b.dtype == str_)):
         return False
     elif equal_nan:
         return bool(ak_all(where(isnan(pda_a), isnan(pda_b), pda_a == pda_b)))
@@ -2810,7 +2945,7 @@ def putmask(
     """
     from arkouda.client import generic_msg
 
-    ALLOWED_PUTMASK_PAIRS = [
+    allowed_putmask_pairs = [
         (ak_float64, ak_float64),
         (ak_float64, ak_int64),
         (ak_float64, ak_uint64),
@@ -2822,7 +2957,7 @@ def putmask(
         (ak_bool, ak_bool),
     ]
 
-    if (A.dtype, Values.dtype) not in ALLOWED_PUTMASK_PAIRS:
+    if (A.dtype, Values.dtype) not in allowed_putmask_pairs:
         raise RuntimeError(f"Types {A.dtype} and {Values.dtype} are not compatible in putmask.")
     if mask.size != A.size:
         raise RuntimeError("mask and A must be same size in putmask")
@@ -3067,19 +3202,53 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int_scalars, ...]] = None) -> p
     )
 
 
-def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
+def _matmul2d(pda_L: pdarray, pda_R: pdarray) -> pdarray:
+    from arkouda.client import generic_msg
+
+    if pda_L.ndim == 2 and pda_R.ndim == 2:
+        if pda_L.shape[-1] != pda_R.shape[0]:
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pda_L.shape} and {pda_R.shape}"
+            )
+        else:
+            cmd = f"matmul<{pda_L.dtype},{pda_R.dtype},{pda_L.ndim}>"
+            args = {
+                "x1": pda_L,
+                "x2": pda_R,
+            }
+            return create_pdarray(
+                generic_msg(
+                    cmd=cmd,
+                    args=args,
+                )
+            )
+    else:
+        raise ValueError(
+            f"Mismatch in dimensions of arguments for matmul: {pda_L.shape} and {pda_R.shape}"
+        )
+
+
+@typechecked
+def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
     """
     Compute the product of two matrices.
+    If both are 1D, this returns a simple dot product.
+    If both are 2D, it returns a conventional matrix multiplication.
+    If only one is 1D, the result matches the "dot" function, so we use that.
+    If neither is 1D and at least one is > 2D, then broadcasting is involved.
+    If pda_L's shape is [(leftshape),m,n] and pda_R's shape is [(rightshape),n,k],
+    then the result will have shape [(common shape),m,k] where common shape is a
+    shape that both leftshape and rightshape can be broadcast to.
 
     Parameters
     ----------
-    pdaLeft : pdarray
-    pdaRight : pdarray
+    pda_L : pdarray
+    pda_R : pdarray
 
     Returns
     -------
     pdarray
-        the matrix product pdaLeft x pdaRight
+        the matrix product pda_L x pda_R
 
     Examples
     --------
@@ -3095,27 +3264,86 @@ def matmul(pdaLeft: pdarray, pdaRight: pdarray) -> pdarray:
     array([array([1.00000000... 5.00000000... 14.0000000...])
     array([1.10000000... 5.30000000... 14.6000000...])])
 
-    Notes
-    -----
-    Server returns an error if shapes of pdaLeft and pdaRight
-    are incompatible with matrix multiplication.
+    Raises
+    ------
+    ValueError
+        Raised if shapes are incompatible with matrix multiplication.
 
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import dot
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
-    if pdaLeft.ndim != pdaRight.ndim:
-        raise ValueError("matmul requires matrices of matching rank.")
-    cmd = f"matmul<{pdaLeft.dtype},{pdaRight.dtype},{pdaLeft.ndim}>"
-    args = {
-        "x1": pdaLeft,
-        "x2": pdaRight,
-    }
-    return create_pdarray(
-        generic_msg(
-            cmd=cmd,
-            args=args,
-        )
-    )
+    # Disallow scalar arguments.  That's not a matmul thing.
+
+    if pda_L.ndim < 1 or pda_R.ndim < 1:
+        raise ValueError("Scalar arguments not allowed for matmul.")
+
+    # Handle the 1D and 1D case.
+
+    elif pda_L.ndim == 1 and pda_R.ndim == 1:
+        if pda_L.size != pda_R.size:
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pda_L.shape} and {pda_R.shape}"
+            )
+        else:
+            return dot(pda_L, pda_R)
+
+    # Handle the 2D and 2D case.
+
+    elif pda_L.ndim == 2 and pda_R.ndim == 2:
+        return _matmul2d(pda_L, pda_R)
+
+    # Handle both singleton 1D cases (i.e. either left or right is 1D, but not both)
+
+    elif pda_L.ndim == 1:
+        if pda_L.size != pda_R.shape[-2]:
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pda_L.shape} and {pda_R.shape}"
+            )
+        else:
+            return dot(pda_L, pda_R)
+
+    elif pda_R.ndim == 1:
+        if pda_R.size != pda_L.shape[-1]:
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pda_L.shape} and {pda_R.shape}"
+            )
+        else:
+            return dot(pda_L, pda_R)
+
+    # Handle the multi-dim cases.  This involves finding a common shape for broadcast.
+
+    else:
+        left_preshape = pda_L.shape[0:-2]  # pull off all but last 2 dims of
+        right_preshape = pda_R.shape[0:-2]  # both shapes
+        try:
+            tmp_preshape = broadcast_shapes(left_preshape, right_preshape)
+            tmp_pda_lshape = list(tmp_preshape)
+            tmp_pda_lshape.append(pda_L.shape[-2])  # restore the last 2 dims
+            tmp_pda_lshape.append(pda_L.shape[-1])  # of the left shape
+            new_pda_lshape = tuple(tmp_pda_lshape)
+            tmp_pda_rshape = list(tmp_preshape)  # now do the same jiggery-pokery
+            tmp_pda_rshape.append(pda_R.shape[-2])  # with the shape of pda_R
+            tmp_pda_rshape.append(pda_R.shape[-1])
+            new_pda_rshape = tuple(tmp_pda_rshape)
+            new_pda_l = broadcast_to(pda_L, new_pda_lshape)
+            new_pda_r = broadcast_to(pda_R, new_pda_rshape)  # args are now ready
+            cmd = f"multidimmatmul<{pda_L.dtype},{new_pda_l.ndim},{pda_R.dtype},{new_pda_r.ndim}>"
+            args = {
+                "a": new_pda_l,
+                "b": new_pda_r,
+            }
+            return create_pdarray(
+                generic_msg(
+                    cmd=cmd,
+                    args=args,
+                )
+            )
+        except Exception as e:
+            raise ValueError(
+                f"Mismatch in dimensions of arguments for matmul: {pda_L.shape} and {pda_R.shape}"
+            ) from e
 
 
 @typechecked
@@ -3157,15 +3385,14 @@ def vecdot(
     -----
     This matches the behavior of numpy vecdot, but as commented above, it is not the
     behavior of the deprecated vecdot, which calls the chapel-side vecdot function.
-    This function only uses broadcast_dims, broadcast_to_shape, ak.sum, and the
+    This function only uses broadcast_to, broadcast_shapes, ak.sum, and the
     binops pdarray multiplication function.  The last dimension of x1 and x2 must
     match, and it must be possible to broadcast them to a compatible shape.
     The deprecated vecdot can be computed via ak.vecdot(a,b,axis=0) on pdarrays
     of matching shape.
 
     """
-    from arkouda.numpy.pdarrayclass import broadcast_to_shape
-    from arkouda.numpy.util import broadcast_dims
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
     #  axis handling in vecdot is unique, and doesn't use one of the standard
     #  validation functions.
@@ -3186,8 +3413,8 @@ def vecdot(
         else:
             axis = -1
 
-    ns = broadcast_dims(x1.shape, x2.shape)
-    return sum((broadcast_to_shape(x1, ns) * broadcast_to_shape(x2, ns)), axis=axis)
+    ns = broadcast_shapes(x1.shape, x2.shape)
+    return sum((broadcast_to(x1, ns) * broadcast_to(x2, ns)), axis=axis)
 
 
 def quantile(
@@ -3449,7 +3676,11 @@ def percentile(
     return quantile(a, q_ / 100.0, axis, method, keepdims)  # type: ignore
 
 
-def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[int] = None) -> pdarray:
+def take(
+    a: Union[pdarray, Strings],
+    indices: Union[numeric_scalars, pdarray, Iterable[numeric_scalars]],
+    axis: Optional[int] = None,
+) -> pdarray:
     """
     Take elements from an array along an axis.
 
@@ -3459,9 +3690,9 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
 
     Parameters
     ----------
-    a : pdarray
+    a : pdarray or Strings
         The array from which to take elements
-    indices : numeric_scalars or pdarray
+    indices : numeric_scalars or pdarray or Iterable[numeric_scalars]
         The indices of the values to extract. Also allow scalars for indices.
     axis : int, optional
         The axis over which to select values. By default, the flattened input array is used.
@@ -3483,6 +3714,12 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
     from arkouda.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
 
+    if isinstance(a, Strings):
+        from arkouda.numpy.pdarraycreation import arange
+
+        idx = arange(a.size)
+        return a[take(idx, indices=indices, axis=axis)]
+
     if axis is None:
         axis_ = 0
         if a.ndim != 1:
@@ -3495,11 +3732,12 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
     if isinstance(indices, pdarray) and indices.ndim != 1:
         raise ValueError("indices must be 1D")
 
-    if not isinstance(indices, pdarray) and isinstance(indices, list):
-        indices_ = array(indices)
-    elif not isinstance(indices, pdarray):
+    indices_: pdarray
+    if isinstance(indices, Iterable):
+        indices_ = type_cast(pdarray, array(indices))
+    elif isinstance(indices, get_args(numeric_scalars)):
         indices_ = array([indices])
-    else:
+    elif isinstance(indices, pdarray):
         indices_ = indices
 
     result = create_pdarray(
@@ -3514,3 +3752,179 @@ def take(a: pdarray, indices: Union[numeric_scalars, pdarray], axis: Optional[in
     )
 
     return result
+
+
+@typechecked
+def minimum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scalars]) -> pdarray:
+    """
+    Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,
+    else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first
+    broadcast to a mutual shape, if possible.
+
+    Parameters
+    ----------
+    x1 : pdarray, numeric_scalars
+        first argument in comparison.
+    x2 : pdarray, numeric_scalars
+        second argument in comparison.
+
+    Returns
+    -------
+    pdarray, numeric_scalar
+        The element-wise minimum of x1 and x2.  If both are scalars, it invokes
+        numpy minimum, otherwise where either is a nan, the returned pdarray
+        Where neither is a nan, it stores the minimum of x1 and x2.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1.0,2.0,ak.nan])
+    >>> b = ak.array([0.5,2.5,3.5])
+    >>> ak.minimum(a,b)
+    array([0.5 2.00000000000000000 nan])
+    >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
+    >>> d = ak.array([-0.5,2.5])
+    >>> ak.minimum(c,d)
+    array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])
+    """
+    from arkouda.numpy.imports import nan
+    from arkouda.numpy.pdarraycreation import full
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
+
+    tx1 = x1
+    tx2 = x2
+
+    #  if both are scalars, just use numpy
+
+    if np.isscalar(tx1) and np.isscalar(tx2):
+        return np.minimum(tx1, tx2)
+
+    # if tx1 was a scalar, then tx2 isn't (they can't both be, at this point).
+    # if tx1 is nan, then return all nans, otherwise:
+    #       where tx2 isn't nan, return the min of (tx1,tx2),
+    #       and where it is, return tx2
+
+    if np.isscalar(tx1) and isinstance(tx2, pdarray):
+        return (
+            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2))
+        )
+
+    # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
+    # if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,
+    # and if it isn't, return the min of (tx1,tx2).
+
+    # Note about the line marked "nan special case":
+    # Numpy specifies that if both x1 and x2 are nan, then the output is x1.
+    # This is because in numpy, there are different types of nans.
+
+    elif np.isscalar(tx2) and isinstance(tx1, pdarray):
+        if np.isnan(tx2):
+            return where(isnan(tx1), tx1, tx2)  # nan special case
+        else:
+            return where(isnan(tx1), tx1, where(tx1 < tx2, tx1, tx2))
+
+    # if both are pdarrays, broadcasting may be required
+    #    return tx1 where tx1 is a nan, otherwise
+    #    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).
+
+    elif isinstance(tx1, pdarray) and isinstance(tx2, pdarray):
+        if tx1.shape != tx2.shape:
+            try:
+                mutual = broadcast_shapes(tx1.shape, tx2.shape)
+                tx1 = tx1 if mutual == tx1.shape else broadcast_to(tx1, mutual)
+                tx2 = tx2 if mutual == tx2.shape else broadcast_to(tx2, mutual)
+            except Exception as e:
+                raise ValueError(f"Shapes {tx1.shape} and {tx2.shape} incompatible for minimum.") from e
+
+        return where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 < tx2, tx1, tx2)))
+
+    else:
+        raise ValueError("Arguments to minimum must be pdarrays or scalars.")
+
+
+@typechecked
+def maximum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scalars]) -> pdarray:
+    """
+    Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,
+    else the greater of x1, x2.  If x1 and x2 are not the same shape, they are first
+    broadcast to a mutual shape, if possible.
+
+    Parameters
+    ----------
+    x1 : pdarray, numeric_scalars
+        first argument in comparison.
+    x2 : pdarray, numeric_scalars
+        second argument in comparison.
+
+    Returns
+    -------
+    pdarray, numeric_scalar
+        The element-wise maximum of x1 and x2.  If both are scalars, it invokes
+        numpy maximum, otherwise where either is a nan, the returned pdarray
+        Where neither is a nan, it stores the maximum of x1 and x2.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1.0,2.0,ak.nan])
+    >>> b = ak.array([0.5,2.5,3.5])
+    >>> ak.maximum(a,b)
+    array([1.00000000000000000 2.5 nan])
+    >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
+    >>> d = ak.array([-0.5,2.5])
+    >>> ak.maximum(c,d)
+    array([array([0.00000000000000000 2.5]) array([2.00000000000000000 3.00000000000000000])])
+    """
+    from arkouda.numpy.imports import nan
+    from arkouda.numpy.pdarraycreation import full
+    from arkouda.numpy.util import broadcast_shapes, broadcast_to
+
+    tx1 = x1
+    tx2 = x2
+
+    #  if both are scalars, just use numpy
+
+    if np.isscalar(tx1) and np.isscalar(tx2):
+        return np.maximum(tx1, tx2)
+
+    # if tx1 was a scalar, then tx2 isn't (they can't both be, at this point).
+    # if tx1 is nan, then return all nans, otherwise:
+    #       where tx2 isn't nan, return the min of (tx1,tx2),
+    #       and where it is, return tx2
+
+    if np.isscalar(tx1) and isinstance(tx2, pdarray):
+        return (
+            full(tx2.size, nan) if np.isnan(tx1) else where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2))
+        )
+
+    # if tx2 was a scalar, then tx1 isn't (they can't both be, at this point).
+    # if tx2 is a nan, then return tx1 where tx1 is a nan, otherwise tx2,
+    # and if it isn't, return the min of (tx1,tx2).
+
+    # Note about the line marked "nan special case":
+    # Numpy specifies that if both x1 and x2 are nan, then the output is x1.
+    # This is because in numpy, there are different types of nans.
+
+    elif np.isscalar(tx2) and isinstance(tx1, pdarray):
+        if np.isnan(tx2):
+            return where(isnan(tx1), tx1, tx2)  # nan special case
+        else:
+            return where(isnan(tx1), tx1, where(tx1 > tx2, tx1, tx2))
+
+    # if both are pdarrays, broadcasting may be required
+    #    return tx1 where tx1 is a nan, otherwise
+    #    tx2 where tx2 is a nan, otherwise the min of (tx1,tx2).
+
+    elif isinstance(tx1, pdarray) and isinstance(tx2, pdarray):
+        if tx1.shape != tx2.shape:
+            try:
+                mutual = broadcast_shapes(tx1.shape, tx2.shape)
+                tx1 = tx1 if mutual == tx1.shape else broadcast_to(tx1, mutual)
+                tx2 = tx2 if mutual == tx2.shape else broadcast_to(tx2, mutual)
+            except Exception as e:
+                raise ValueError(f"Shapes {tx1.shape} and {tx2.shape} incompatible for maximum.") from e
+
+        return where(isnan(tx1), tx1, where(isnan(tx2), tx2, where(tx1 > tx2, tx1, tx2)))
+
+    else:
+        raise ValueError("Arguments to minimum must be pdarrays or scalars.")

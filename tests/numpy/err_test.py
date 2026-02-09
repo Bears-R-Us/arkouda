@@ -1,10 +1,12 @@
-from collections.abc import Iterator  # or: from typing import Iterator
 import logging
+
+from collections.abc import Iterator  # or: from typing import Iterator
 from typing import Literal
 
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import err as akerr
 
 

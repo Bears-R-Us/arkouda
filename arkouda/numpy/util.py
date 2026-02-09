@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import builtins
 import json
-from math import prod as maprod
 import sys
+
+from math import prod as maprod
 from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union, cast
 
 from typeguard import typechecked
 
-from arkouda.client_dtypes import BitVector, BitVectorizer, IPv4
+from arkouda.client_dtypes import BitVector, IPv4, bit_vectorizer
 from arkouda.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
@@ -18,18 +19,19 @@ from arkouda.numpy.dtypes import (
     numeric_scalars,
 )
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.pdarraysetops import unique
 from arkouda.numpy.sorting import coargsort
-from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GroupBy
+
 
 __all__ = [
     "attach",
     "attach_all",
     "_axis_validation",
     "broadcast_dims",
+    "broadcast_shapes",
+    "broadcast_arrays",
     "convert_bytes",
     "convert_if_categorical",
     "copy",
@@ -56,17 +58,18 @@ __all__ = [
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-    from arkouda.client import generic_msg, get_config, get_mem_used
+    from arkouda.client import get_config, get_mem_used
+    from arkouda.numpy.pdarraycreation import arange
+    from arkouda.numpy.segarray import SegArray
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
 else:
+    Categorical = TypeVar("Categorical")
+    SegArray = TypeVar("SegArray")
+    Strings = TypeVar("Strings")
     Index = TypeVar("Index")
     Series = TypeVar("Series")
-    SegArray = TypeVar("SegArray")
-    generic_msg = TypeVar("generic_msg")
-    get_config = TypeVar("get_config")
-    get_mem_used = TypeVar("get_mem_used")
-    Categorical = TypeVar("Categorical")
 
 
 def identity(x):
@@ -79,7 +82,7 @@ def get_callback(x):
     elif hasattr(x, "_cast"):
         return x._cast
     elif isinstance(x, BitVector):
-        return BitVectorizer(width=x.width, reverse=x.reverse)
+        return bit_vectorizer(width=x.width, reverse=x.reverse)
     else:
         return identity
 
@@ -278,13 +281,26 @@ def attach(name: str):
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.dataframe import DataFrame
     from arkouda.pandas.index import Index, MultiIndex
     from arkouda.pandas.series import Series
 
+    attachable = Union[
+        pdarray,
+        Strings,
+        Datetime,
+        Timedelta,
+        IPv4,
+        SegArray,
+        DataFrame,
+        GroupBy,
+        Categorical,
+    ]
+
     rep_msg = json.loads(cast(str, generic_msg(cmd="attach", args={"name": name})))
-    rtn_obj = None
+    rtn_obj: attachable | None = None
     if rep_msg["objType"].lower() == pdarray.objType.lower():
         rtn_obj = create_pdarray(rep_msg["create"])
     elif rep_msg["objType"].lower() == Strings.objType.lower():
@@ -557,7 +573,7 @@ def sparse_sum_help(
     """
     from arkouda.client import generic_msg
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="sparseSumHelp",
         args={
             "idx1": idx1,
@@ -568,10 +584,160 @@ def sparse_sum_help(
             "percent_transfer_limit": percent_transfer_limit,
         },
     )
-    inds, vals = cast(str, repMsg).split("+", maxsplit=1)
+    inds, vals = cast(str, rep_msg).split("+", maxsplit=1)
     return create_pdarray(inds), create_pdarray(vals)
 
 
+@typechecked
+def broadcast_shapes(*shapes: Tuple[int, ...]) -> Tuple[int, ...]:
+    """
+    Determine a broadcasted shape, given an arbitary number of shapes.
+
+    This function implements the broadcasting rules from the Array API standard
+    to compute the shape resulting from broadcasting two arrays together.
+
+    See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html#algorithm
+
+    Parameters
+    ----------
+    shapes : Tuple[int, ...]
+        a list or tuple of the shapes to be broadcast
+
+    Returns
+    -------
+    Tuple[int, ...]
+        The broadcasted shape
+
+    Raises
+    ------
+    ValueError
+        If the shapes are not compatible for broadcasting.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.broadcast_shapes((1,2,3),(4,1,3),(4,2,1))
+    (4, 2, 3)
+
+    """
+    from numpy import broadcast_shapes as b_shapes
+
+    try:
+        return b_shapes(*shapes)
+    except ValueError:
+        raise ValueError(f"Found no common broadcast shape for: {shapes}")
+
+
+@typechecked
+def broadcast_arrays(*arrays: pdarray) -> List[pdarray]:
+    """
+    Broadcast arrays to a common shape.
+
+    Parameters
+    ----------
+    arrays : pdarray
+        The arrays to broadcast. Must be broadcastable to a common shape.
+
+    Returns
+    -------
+    List
+        A list whose elements are the given Arrays broadcasted to the common shape.
+
+    Raises
+    ------
+    ValueError
+        Raised by broadcast_to if a common shape cannot be determined.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.arange(10).reshape(1,2,5)
+    >>> b = ak.arange(20).reshape(4,1,5)
+    >>> c = ak.broadcast_arrays(a,b)
+    >>> c[0][0,:,:]
+    array([array([0 1 2 3 4]) array([5 6 7 8 9])])
+    >>> c[1][:,0,0]
+    array([0 5 10 15])
+
+    """
+    shapes = [a.shape for a in arrays]
+    bc_shape = broadcast_shapes(*shapes)
+    return [broadcast_to(a, shape=bc_shape) for a in arrays]
+
+
+@typechecked
+def broadcast_to(x: Union[numeric_scalars, pdarray], shape: Union[int, Tuple[int, ...]]) -> pdarray:
+    """
+    Broadcast the array to the specified shape.
+
+    Parameters
+    ----------
+    x: int, pdarray
+        The int or array to be broadcast.
+    shape: int, Tuple[int, ...]
+        The shape to which the array is to be broadcast.
+
+    Notes
+    -----
+    If x and shape are both integers, the result has shape (shape,).
+    If x is an int and shape is a tuple, the result has shape (shape,).
+    if x is a pdarray and shape is an int, then if x.shape == (shape,)
+        x is unchanged.  Otherwise a ValueError is raised.
+    If x is a pdarray and shape is a tuple, then x is broadcast to shape, if possible.
+
+    Returns
+    -------
+    pdarray
+        A new array which is x broadcast to the provided shape.
+
+    Raises
+    ------
+    ValueError
+        Raised server-side if the broadcast fails, or client-side in the case where
+        x is a pdarray, shape is an int, and x.shape != (shape,).
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.arange(5)
+    >>> ak.broadcast_to(a,(2,5))
+    array([array([0 1 2 3 4]) array([0 1 2 3 4])])
+
+
+    """
+    from arkouda.client import generic_msg
+    from arkouda.numpy.dtypes import _val_isinstance_of_union
+    from arkouda.numpy.pdarraycreation import full as akfull
+
+    if _val_isinstance_of_union(x, numeric_scalars):
+        assert not isinstance(x, pdarray)  # Required for mypy
+        return akfull(shape, x, dtype=type(x))
+    elif isinstance(x, pdarray) and isinstance(shape, int):
+        if x.ndim == 1 and x.size == shape:
+            return x
+        else:
+            raise ValueError(f"Operands could not be broadcast together: {x.shape} and {shape}")
+    elif isinstance(x, pdarray) and isinstance(shape, tuple):
+        try:
+            return create_pdarray(
+                cast(
+                    str,
+                    generic_msg(
+                        cmd=f"broadcast<{x.dtype},{x.ndim},{len(shape)}>",
+                        args={
+                            "name": x,
+                            "shape": shape,
+                        },
+                    ),
+                )
+            )
+        except RuntimeError as e:
+            raise ValueError(f"Failed to broadcast array: {e}")
+    else:
+        raise ValueError("Operands could not be broadcast.")
+
+
+@typechecked
 def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     """
     Determine the broadcasted shape of two arrays given their shapes.
@@ -608,31 +774,31 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     >>> broadcast_dims((4,), (3, 1))
     (3, 4)
     """
-    Na = len(sa)
-    Nb = len(sb)
-    N = max(Na, Nb)
-    shapeOut = [0 for i in range(N)]
+    n_a = len(sa)
+    n_b = len(sb)
+    n = max(n_a, n_b)
+    shape_out = [0 for i in range(n)]
 
-    i = N - 1
+    i = n - 1
     while i >= 0:
-        n1 = Na - N + i
-        n2 = Nb - N + i
+        n1 = n_a - n + i
+        n2 = n_b - n + i
 
         d1 = sa[n1] if n1 >= 0 else 1
         d2 = sb[n2] if n2 >= 0 else 1
 
         if d1 == 1:
-            shapeOut[i] = d2
+            shape_out[i] = d2
         elif d2 == 1:
-            shapeOut[i] = d1
+            shape_out[i] = d1
         elif d1 == d2:
-            shapeOut[i] = d1
+            shape_out[i] = d1
         else:
             raise ValueError("Incompatible dimensions for broadcasting")
 
         i -= 1
 
-    return tuple(shapeOut)
+    return tuple(shape_out)
 
 
 def convert_bytes(nbytes: int_scalars, unit: Literal["B", "KB", "MB", "GB"] = "B") -> numeric_scalars:
@@ -826,6 +992,9 @@ def map(
     TypeError
         If `mapping` is not of type `dict` or `Series`.
         If `values` is not of type `pdarray`, `Categorical`, or `Strings`.
+    ValueError
+        If a mapping with tuple keys has inconsistent lengths, or if a MultiIndex
+        mapping has a different number of levels than the GroupBy keys.
 
     Examples
     --------
@@ -845,30 +1014,101 @@ def map(
 
     from arkouda import Series, array, broadcast, full
     from arkouda.numpy.pdarraysetops import in1d
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
+    from arkouda.pandas.index import MultiIndex
 
     keys = values
     gb = GroupBy(keys, dropna=False)
     gb_keys = gb.unique_keys
 
+    # helper: number of unique keys (works for single key or tuple-of-keys)
+    nuniq = gb_keys[0].size if isinstance(gb_keys, tuple) else gb_keys.size
+
+    # Fast-path: empty mapping => everything is missing
+    if (isinstance(mapping, dict) and len(mapping) == 0) or (
+        isinstance(mapping, Series) and len(mapping.index) == 0
+    ):
+        if not isinstance(values, (Strings, Categorical)):
+            return broadcast(gb.segments, full(nuniq, np.nan, values.dtype), permutation=gb.permutation)
+        else:
+            return broadcast(gb.segments, full(nuniq, "null"), permutation=gb.permutation)
+
     if isinstance(mapping, dict):
-        mapping = Series([array(list(mapping.keys())), array(list(mapping.values()))])
+        # Build mapping as a Series with an Index/MultiIndex (avoid rank>1 arrays)
+        m_keys = list(mapping.keys())
+        m_vals = list(mapping.values())
+
+        k0 = m_keys[0]
+        if isinstance(k0, tuple):
+            # validate tuple keys
+            if not all(isinstance(k, tuple) for k in m_keys):
+                raise TypeError("Mixed key types in mapping dict (tuple and non-tuple).")
+            n = len(k0)
+            if not all(len(k) == n for k in m_keys):
+                raise ValueError("All tuple keys in mapping dict must have the same length.")
+
+            cols = list(zip(*m_keys))  # transpose list[tuple] -> list[level]
+            idx = MultiIndex([array(col) for col in cols])
+            mapping = Series(array(m_vals), index=idx)
+        else:
+            mapping = Series(array(m_vals), index=array(m_keys))
 
     if isinstance(mapping, Series):
-        xtra_keys = gb_keys[in1d(gb_keys, mapping.index.values, invert=True)]
+        # Normalize mapping index keys into a "groupable" (single array OR tuple-of-arrays)
+        mindex = mapping.index
+        if isinstance(mindex, MultiIndex):
+            mkeys = tuple(mindex.index)
+        else:
+            mkeys = mindex.values
 
-        if xtra_keys.size > 0:
-            if not isinstance(mapping.values, (Strings, Categorical)):
-                nans = full(xtra_keys.size, np.nan, mapping.values.dtype)
-            else:
-                nans = full(xtra_keys.size, "null")
+        if isinstance(gb_keys, tuple) and isinstance(mkeys, tuple):
+            if len(gb_keys) != len(mkeys):
+                raise ValueError(
+                    f"Mapping MultiIndex has {len(mkeys)} levels but GroupBy has {len(gb_keys)} keys"
+                )
 
-            if isinstance(xtra_keys, Categorical):
-                xtra_keys = xtra_keys.to_strings()
+        # invert=True => mask is True for GroupBy unique keys that are *missing* from the mapping,
+        # i.e., values that should be filled with NaN/"null".
+        mask = in1d(gb_keys, mkeys, invert=True)
 
-            xtra_series = Series(nans, index=xtra_keys)
-            mapping = Series.concat([mapping, xtra_series])
+        # Compute extra keys + extra size without mixing tuple/non-tuple assignments
+        if isinstance(gb_keys, tuple):
+            xtra_keys_t = tuple(k[mask] for k in gb_keys)
+            xtra_size = xtra_keys_t[0].size if len(xtra_keys_t) > 0 else 0
 
+            if xtra_size > 0:
+                nans: Union[pdarray, Strings]  # without this, mypy complains
+                if not isinstance(mapping.values, (Strings, Categorical)):
+                    nans = full(xtra_size, np.nan, mapping.values.dtype)
+                else:
+                    nans = full(xtra_size, "null")
+
+                # Convert any categorical levels to strings, level-by-level
+                xtra_keys_t = tuple(
+                    k.to_strings() if isinstance(k, Categorical) else k for k in xtra_keys_t
+                )
+
+                xtra_series = Series(nans, index=MultiIndex(list(xtra_keys_t)))
+                mapping = Series.concat([mapping, xtra_series])
+
+        else:
+            xtra_keys_s = gb_keys[mask]
+            xtra_size = xtra_keys_s.size
+
+            if xtra_size > 0:
+                if not isinstance(mapping.values, (Strings, Categorical)):
+                    nans = full(xtra_size, np.nan, mapping.values.dtype)
+                else:
+                    nans = full(xtra_size, "null")
+
+                if isinstance(xtra_keys_s, Categorical):
+                    xtra_keys_s = xtra_keys_s.to_strings()
+
+                xtra_series = Series(nans, index=xtra_keys_s)
+                mapping = Series.concat([mapping, xtra_series])
+
+        # Align mapping to gb_keys
         if isinstance(gb_keys, Categorical):
             mapping = mapping[gb_keys.to_strings()]
         else:
@@ -990,6 +1230,8 @@ def copy(a: Union[Strings, pdarray]) -> Union[Strings, pdarray]:
     TypeError
         If the input is not a Strings or pdarray instance.
     """
+    from arkouda.numpy.strings import Strings
+
     if isinstance(a, (Strings, pdarray)):
         return a.copy()
     raise TypeError(f"Unsupported type for copy: {type(a)}")

@@ -1,7 +1,9 @@
-from benchmark_utils import calc_num_bytes
 import pytest
 
+from benchmark_utils import calc_num_bytes
+
 import arkouda as ak
+
 
 TYPES = ("int64", "uint64", "str")
 # Tied to src/In1d.chpl:threshold, which defaults to 2**23
@@ -16,9 +18,7 @@ MAXSTRLEN = 5
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("size", SIZES)
 def bench_in1d(benchmark, dtype, size):
-    """
-    Benchmark ak.in1d. Skips if --numpy is used.
-    """
+    """Benchmark ak.in1d. Skips if --numpy is used."""
     if dtype in pytest.dtype:
         N = pytest.N
         s = SIZES[size]

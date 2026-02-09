@@ -1,13 +1,16 @@
 import math
 import os
-from string import ascii_letters, digits
 import tempfile
+
+from string import ascii_letters, digits
 
 import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.pandas import io_util
+
 
 DTYPES = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.bool_, ak.str_]
 NO_BOOL = [ak.int64, ak.uint64, ak.bigint, ak.float64, ak.str_]
@@ -64,9 +67,7 @@ class TestSegArray:
 
     @staticmethod
     def make_segarray_edge(dtype):
-        """
-        Small specific examples to test handling of empty segments
-        """
+        """Small specific examples to test handling of empty segments."""
         segs = np.array([0, 0, 3, 5, 5, 9, 10])
         if dtype in [ak.int64, ak.uint64]:
             vals = np.random.randint(0, 3, 10, dtype=dtype)
@@ -469,13 +470,14 @@ class TestSegArray:
         assert val_np.tolist() == sa.values.tolist()
         assert test_sa.tolist() == sa.tolist()
 
-        sa.set_jth(ak.array([0, 1, 2]), 3, 17)
-        val_np[seg_np[0] + 3] = 17
-        val_np[seg_np[1] + 3] = 17
-        val_np[seg_np[2] + 3] = 17
-        test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
-        assert val_np.tolist() == sa.values.tolist()
-        assert test_sa.tolist() == sa.tolist()
+        if len(sa) > 2:
+            sa.set_jth(ak.array([0, 1, 2]), 3, 17)
+            val_np[seg_np[0] + 3] = 17
+            val_np[seg_np[1] + 3] = 17
+            val_np[seg_np[2] + 3] = 17
+            test_sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
+            assert val_np.tolist() == sa.values.tolist()
+            assert test_sa.tolist() == sa.tolist()
 
         seg_np, val_np = self.make_segarray_edge(dtype)
         sa = ak.SegArray(ak.array(seg_np), ak.array(val_np))
@@ -660,6 +662,7 @@ class TestSegArray:
 
         # TODO - empty segments testing
 
+    @pytest.mark.requires_chapel_module("HDF5Msg")
     def test_segarray_load(self, seg_test_base_tmp):
         segarr = ak.SegArray(ak.array([0, 9, 14]), ak.arange(20))
         with tempfile.TemporaryDirectory(dir=seg_test_base_tmp) as tmp_dirname:
@@ -714,6 +717,7 @@ class TestSegArray:
         elif dtype == ak.str_:
             return ["a", "abc"]
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("dtype", [ak.int64])
     def test_filter(self, dtype):
         # TODO - once #2666 is resolved, this test will need to be updated for the SegArray

@@ -786,6 +786,12 @@ module RandMsg
         return k - 1;
     }
 
+
+    //   Effective with Issue 5018, the boolean isSingleLam will always be False, because of
+    //   a client-side fix to align array_like lam and/or size to numpy.  The parameter is
+    //   being retained, however, because it's anticipated that a future change will move the
+    //   multi-dim handling server-side, to take advantage of distribution across locales.
+
     @chplcheck.ignore("UnusedFormal")
     proc poissonGeneratorMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
         const name = msgArgs["name"],                                       // generator name
@@ -1715,15 +1721,15 @@ module RandMsg
         const flatLocRanges = [loc in Locales] d.localSubdomain(loc).dim(0);
 
         // ------------------------
-        // Build *per-sender* aligned lists:
-        //   myDestLocales : list(int)         -- destination locale id
-        //   myDestIdx     : list(int)         -- destination global index
-        //   myVals        : list(array_dtype) -- payloads aligned 1:1 with myDestIdx
+        // Build *per-sender* aligned innerArrays:
+        //   myDestLocales : innerArray(int)         -- destination locale id
+        //   myDestIdx     : innerArray(int)         -- destination global index
+        //   myVals        : innerArray(array_dtype) -- payloads aligned 1:1 with myDestIdx
         // Gather them into sender-indexed arrays for the repartitioner.
         // ------------------------
-        var allDestLocales : [PrivateSpace] list(int);
-        var allDestIdx     : [PrivateSpace] list(int);
-        var allVals        : [PrivateSpace] list(array_dtype);
+        var allDestLocales : [PrivateSpace] innerArray(int);
+        var allDestIdx     : [PrivateSpace] innerArray(int);
+        var allVals        : [PrivateSpace] innerArray(array_dtype);
 
         coforall loc in Locales with (ref allDestLocales, ref allDestIdx, ref allVals) do on loc {
 
@@ -1738,11 +1744,16 @@ module RandMsg
             if ! ld.isEmpty() {
 
                 const m = ld.size;
+                
+                // Preallocate simple arrays to avoid unnecessary copies
+                allDestLocales[here.id] = new innerArray({0..#m}, int);
+                allDestIdx[here.id] = new innerArray({0..#m}, int);
+                allVals[here.id] = new innerArray({0..#m}, array_dtype);
 
-                // Preallocate simple arrays to avoid concurrent list appends inside forall
-                var myDestLocalesArr: [0..#m] int;
-                var myDestIdxArr    : [0..#m] int;
-                var myValsArr       : [0..#m] array_dtype;
+                // ref to the inner Arr
+                ref myDestLocalesArr = allDestLocales[here.id].Arr;
+                ref myDestIdxArr = allDestIdx[here.id].Arr;
+                ref myValsArr = allVals[here.id].Arr;
 
                 // Local bulk read of payloads in the same iteration order
                 myValsArr = a[ld];
@@ -1758,15 +1769,8 @@ module RandMsg
                     myDestLocalesArr[i] = ownerOfIndex(destIdx);
                 }
 
-                // Stash sender-local lists in the global arrays (one slot per sender locale)
-                allDestLocales[here.id] = new list(myDestLocalesArr);
-                allDestIdx    [here.id] = new list(myDestIdxArr);
-                allVals       [here.id] = new list(myValsArr);
-            } else {
-                allDestLocales[here.id] = new list(int);
-                allDestIdx[here.id] = new list(int);
-                allVals[here.id] = new list(array_dtype);
             }
+
         }
 
         // ------------------------
@@ -1775,17 +1779,17 @@ module RandMsg
         //   2) payload values (array_dtype)
         // Returns [PrivateSpace] list(eltType), indexed by **receiver** locale ID.
         // ------------------------
-        const recvIdx  = repartitionByLocale(int,         allDestLocales, allDestIdx);
-        const recvVals = repartitionByLocale(array_dtype, allDestLocales, allVals);
+        const recvIdx  = repartitionByLocaleArray(int,         allDestLocales, allDestIdx);
+        const recvVals = repartitionByLocaleArray(array_dtype, allDestLocales, allVals);
 
         // ------------------------
         // Local writes: zip indices with payloads and store into local portion of 'a'
         // ------------------------
         coforall loc in Locales with (ref a) do on loc {
-            const myIdxs  = recvIdx [here.id];
-            const myValsL = recvVals[here.id];
+            const ref myIdxs  = recvIdx [here.id].Arr;
+            const ref myValsL = recvVals[here.id].Arr;
             // Alignment guaranteed because both repartitions used identical routing
-            forall (dstIdx, val) in zip(myIdxs.these(), myValsL.these()) {
+            forall (dstIdx, val) in zip(myIdxs, myValsL) {
                 a[dstIdx] = val;
             }
         }

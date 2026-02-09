@@ -1,8 +1,10 @@
 import datetime
 import json
-from typing import TYPE_CHECKING, Optional, TypeVar, Union
+
+from typing import Literal, Optional, Union
 
 import numpy as np
+
 from pandas import Series as pdSeries
 from pandas import Timedelta as pdTimedelta
 from pandas import Timestamp as pdTimestamp
@@ -10,14 +12,9 @@ from pandas import date_range as pd_date_range
 from pandas import timedelta_range as pd_timedelta_range
 from pandas import to_datetime, to_timedelta
 
-from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
+from arkouda.numpy.dtypes import int64, int_scalars, intTypes, is_supported_int
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import from_series
 
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-else:
-    generic_msg = TypeVar("generic_msg")
 
 __all__ = [
     "Datetime",
@@ -98,6 +95,7 @@ class _AbstractBaseTime(pdarray):
 
     def __init__(self, pda, unit: str = _BASE_UNIT):
         from arkouda.numpy import cast as akcast
+        from arkouda.pandas.conversion import from_series
 
         if isinstance(pda, Datetime) or isinstance(pda, Timedelta):
             self.unit: str = pda.unit
@@ -119,18 +117,10 @@ class _AbstractBaseTime(pdarray):
                 # M = datetime64, m = timedelta64
                 raise TypeError(f"Invalid dtype: {pda.dtype.name}")
             if isinstance(pda, pdSeries):
-                # Pandas Datetime and Timedelta
-                # Get units of underlying numpy datetime64 array
-                self.unit = np.datetime_data(pda.values.dtype)[0]  # type: ignore [arg-type]
-                self._factor = _get_factor(self.unit)
-                # Create pdarray
+                # from_series() already returns int64 nanoseconds for datetime/timedelta
+                self.unit = _BASE_UNIT  # "ns"
+                self._factor = 1
                 self.values = from_series(pda)
-                # Scale if necessary
-                # This is futureproofing; it will not be used unless pandas
-                # changes its Datetime implementation
-                if self._factor != 1:
-                    # Scale inplace because we already created a copy
-                    self.values *= self._factor
             elif isinstance(pda, np.ndarray):
                 # Numpy datetime64 and timedelta64
                 # Force through pandas.Series
@@ -228,37 +218,28 @@ class _AbstractBaseTime(pdarray):
         self,
         prefix_path: str,
         dataset: str = "array",
-        mode: str = "truncate",
-        file_type: str = "distribute",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
-        """
-        Override of the pdarray to_hdf to store the special dtype.
-        """
-        from typing import cast as typecast
-
+        """Override of the pdarray to_hdf to store the special dtype."""
         from arkouda.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
-        return typecast(
-            str,
-            generic_msg(
-                cmd="tohdf",
-                args={
-                    "values": self,
-                    "dset": dataset,
-                    "write_mode": _mode_str_to_int(mode),
-                    "filename": prefix_path,
-                    "dtype": self.dtype,
-                    "objType": self.special_objType,
-                    "file_format": _file_type_to_int(file_type),
-                },
-            ),
+        return generic_msg(
+            cmd="tohdf",
+            args={
+                "values": self,
+                "dset": dataset,
+                "write_mode": _mode_str_to_int(mode),
+                "filename": prefix_path,
+                "dtype": self.dtype,
+                "objType": self.special_objType,
+                "file_format": _file_type_to_int(file_type),
+            },
         )
 
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
-        """
-        Override the pdarray implementation so that the special object type will be used.
-        """
+        """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
@@ -327,7 +308,7 @@ class _AbstractBaseTime(pdarray):
                 otherdata = _Timescalar(other).value
             else:
                 otherdata = other.values
-        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(other):
+        elif (isinstance(other, pdarray) and other.dtype in intTypes) or is_supported_int(other):
             if op not in self.supported_with_pdarray:
                 raise TypeError(f"{op} not supported between {self.__class__.__name__} and integer")
             otherclass = "pdarray"
@@ -366,7 +347,7 @@ class _AbstractBaseTime(pdarray):
                 )
             otherclass = "Timedelta"
             otherdata = _Timescalar(other).value
-        elif isSupportedInt(other):
+        elif is_supported_int(other):
             if op not in self.supported_with_r_pdarray:
                 raise TypeError(f"{op} not supported between int64 and {self.__class__.__name__}")
             otherclass = "pdarray"
@@ -412,7 +393,7 @@ class _AbstractBaseTime(pdarray):
         return key
 
     def __getitem__(self, key):
-        if isSupportedInt(key):
+        if is_supported_int(key):
             # Single integer index will return a pandas scalar
             return self._scalar_callback(self.values[key])
         else:
@@ -904,9 +885,7 @@ class Timedelta(_AbstractBaseTime):
         axis: Optional[Union[None, int, tuple]] = None,
         keepdims: Optional[bool] = False,
     ):
-        """
-        Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std.
-        """
+        """Returns the standard deviation as a pd.Timedelta object, with args compatible with ak.std."""
         return self._scalar_callback(self.values.std(ddof, axis, keepdims))
 
     def sum(self):

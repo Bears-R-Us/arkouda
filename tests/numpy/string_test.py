@@ -6,17 +6,19 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda import Strings
 from arkouda.numpy import strings
 from arkouda.testing import assert_equal as ak_assert_equal
 from arkouda.testing import assert_equivalent
+
 
 ak.verbose = False
 N = 100
 UNIQUE = N // 4
 
 
-@pytest.mark.skip_if_max_rank_greater_than(1)
+@pytest.mark.requires_chapel_module("EncodingMsg")
 class TestString:
     def test_strings_docstrings(self):
         import doctest

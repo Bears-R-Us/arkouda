@@ -3,6 +3,7 @@ import pytest
 import arkouda as ak
 import arkouda.array_api as xp
 
+
 # requires the server to be built with 2D array support
 SHAPE_A = [(1,), (5,), (2, 2), (20, 10), (20, 10), (1, 10), (5, 10), (5, 10)]
 SHAPE_B = [(1,), (5,), (2, 2), (1, 10), (20, 1), (5, 1), (10,), (1,)]

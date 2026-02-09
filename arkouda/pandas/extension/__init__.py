@@ -1,7 +1,27 @@
 # arkouda/pandas/extension/__init__.py
+
+"""
+Experimental pandas extension types backed by Arkouda arrays.
+
+This subpackage provides experimental implementations of
+:pandas:`pandas.api.extensions.ExtensionArray` and corresponding
+extension dtypes that wrap Arkouda distributed arrays.
+
+These classes make it possible to use Arkouda arrays inside pandas
+objects such as ``Series`` and ``DataFrame``. They aim to provide
+familiar pandas semantics while leveraging Arkouda's distributed,
+high-performance backend.
+
+.. warning::
+   This module is **experimental**. The API is not stable and may
+   change without notice between releases. Use with caution in
+   production environments.
+"""
 from ._arkouda_array import ArkoudaArray
 from ._arkouda_categorical_array import ArkoudaCategoricalArray
+from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._arkouda_string_array import ArkoudaStringArray
+from ._dataframe_accessor import ArkoudaDataFrameAccessor
 from ._dtypes import (
     ArkoudaBigintDtype,
     ArkoudaBoolDtype,
@@ -12,6 +32,9 @@ from ._dtypes import (
     ArkoudaUint8Dtype,
     ArkoudaUint64Dtype,
 )
+from ._index_accessor import ArkoudaIndexAccessor
+from ._series_accessor import ArkoudaSeriesAccessor
+
 
 __all__ = [
     "ArkoudaInt64Dtype",
@@ -25,4 +48,8 @@ __all__ = [
     "ArkoudaArray",
     "ArkoudaStringArray",
     "ArkoudaCategoricalArray",
+    "ArkoudaExtensionArray",
+    "ArkoudaIndexAccessor",
+    "ArkoudaDataFrameAccessor",
+    "ArkoudaSeriesAccessor",
 ]

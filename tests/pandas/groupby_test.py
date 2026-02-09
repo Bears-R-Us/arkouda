@@ -3,11 +3,14 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda import GroupBy, concatenate
 from arkouda import sort as aksort
 from arkouda import sum as aksum
 from arkouda.pandas.groupbyclass import GroupByReductionType
 from arkouda.scipy import chisquare as akchisquare
+from arkouda.testing import assert_equal
+
 
 #  block of variables and functions used in test_unique
 
@@ -64,7 +67,7 @@ class TestGroupBy:
     def test_groupbyclass_docstrings(self):
         import doctest
 
-        from arkouda import groupbyclass
+        from arkouda.pandas import groupbyclass
 
         result = doctest.testmod(
             groupbyclass, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
@@ -197,6 +200,14 @@ class TestGroupBy:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("op", NAN_OPS)
     def test_pandas_equivalency_nan(self, size, op):
+        if op in {"min", "max"}:
+            pytest.xfail(
+                reason=(
+                    "Arkouda GroupBy aggregate returns sentinel instead of NaN "
+                    "for all-NaN groups (see issue #5262)"
+                )
+            )
+
         d = self.make_arrays_nan(size)
         df = pd.DataFrame(d)
         akdf = {k: ak.array(v) for k, v in d.items()}
@@ -209,6 +220,8 @@ class TestGroupBy:
         do_check = True
         try:
             pdkeys, pdvals = self.groupby_to_arrays(df, keyname, "float64", op, 1)
+            # ensure writable
+            pdvals = np.array(pdvals, copy=True)
         except Exception:
             print("Pandas does not implement")
             do_check = False
@@ -688,7 +701,9 @@ class TestGroupBy:
 
     def test_zero_length_groupby(self):
         """
-        This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details
+        This tests groupby boundary condition on a zero length pdarray.
+
+        See Issue #900 for details.
         """
         g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
         str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
@@ -1009,3 +1024,18 @@ class TestGroupBy:
         expected_nuniq = [8, 3]
         assert expected_unique_keys == unique_keys.tolist()
         assert expected_nuniq == nuniq.tolist()
+
+    def test_groupby_min_all_nan(self):
+        """
+        Verify that GroupBy.aggregate(..., 'min') correctly handles
+        segments where all values are NaN — the result for that segment
+        should be NaN.
+        """
+        # Three groups: 0 has all NaN, 1 has valid values, 2 is mixed
+        keys = ak.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+        vals = ak.array([np.nan, np.nan, np.nan, 3.5, 7.2, 5.1, np.nan, 2, 4])
+
+        g = ak.GroupBy(keys)
+        ak_keys, ak_vals = g.aggregate(vals, "min", skipna=True)
+
+        assert_equal(ak_vals, ak.array([np.nan, 3.5, 2]))

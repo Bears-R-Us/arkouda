@@ -55,6 +55,230 @@ module BigIntMsg {
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
+    @arkouda.instantiateAndRegister("big_int_creation_one_limb")
+    proc bigIntCreationOneLimbMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                           st: borrowed SymTab, type array_dtype,
+                           param array_nd: int): MsgTuple throws
+        where (array_dtype == int(64) || array_dtype == uint(64)) {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string;
+
+        var shape = msgArgs.get("shape").toScalarTuple(int, array_nd);
+        var arrayName = msgArgs.get("array");
+        var max_bits = msgArgs.get("max_bits").getIntValue();
+
+        var bigIntArray = makeDistArray((...shape), bigint);
+
+        // We are creating a bigint array from uint arrays
+        var entry = st[arrayName]: SymEntry(array_dtype, array_nd);
+        ref uintA = entry.a;
+        forall (uA, bA) in zip(uintA, bigIntArray) {
+            bA = uA;
+        }
+
+        if max_bits != -1 {
+            // modBy should always be non-zero since we start at 1 and left shift
+            var max_size = 1:bigint;
+            max_size <<= max_bits;
+            max_size -= 1;
+            forall bA in bigIntArray with (var local_max_size = max_size) {
+              bA &= local_max_size;
+            }
+        }
+
+        var retname = st.nextName();
+        st.addEntry(retname, createSymEntry(bigIntArray, max_bits));
+        repMsg = "created %s".format(st.attrib(retname));
+        biLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    @arkouda.instantiateAndRegister("big_int_creation_one_limb")
+    proc bigIntCreationOneLimbMsg(cmd: string, msgArgs: borrowed MessageArgs,
+                                st: borrowed SymTab, type array_dtype,
+                                param array_nd: int): MsgTuple throws
+    where array_dtype == real(64)
+    {
+        param pn = Reflection.getRoutineName();
+        var repMsg: string;
+
+        // Same shape / args handling as the int/uint version
+        var shape    = msgArgs.get("shape").toScalarTuple(int, array_nd);
+        var arrayName = msgArgs.get("array");
+        var max_bits  = msgArgs.get("max_bits").getIntValue();
+
+        // Target bigint array
+        var bigIntArray = makeDistArray((...shape), bigint);
+
+        // Source Chapel array of real(64)
+        var entry = st[arrayName]: SymEntry(array_dtype, array_nd);
+        ref realA = entry.a;
+
+        // Convert each real(64) to bigint
+        //
+        // Convention: trunc toward zero
+        //   r: real(64)
+        //   ri = trunc(r)        // real(64) but integer-valued
+        //   bA.set(ri)           // bigint from integer-valued real
+        //
+        // Handle NaN/Inf by throwing errors.
+
+        var problem = false;
+        forall (r, bA) in zip(realA, bigIntArray) with (|| reduce problem) {
+
+            if !isFinite(r) {
+
+                problem = true;
+
+            } else {
+
+                const ri = trunc(r);  // real(64), integral-valued
+                bA.set(ri);
+
+            }
+
+        }
+
+        if problem {
+            const errMsg = "Non-finite real values detected";
+            biLogger.error(getModuleName(), pn, getLineNumber(), errMsg);
+            return MsgTuple.error(errMsg);
+        }
+
+        // Apply max_bits mask if requested (same as int/uint version)
+        if max_bits != -1 {
+            var max_size = 1:bigint;
+            max_size <<= max_bits;
+            max_size -= 1;
+            forall bA in bigIntArray with (var local_max_size = max_size) {
+                bA &= local_max_size;
+            }
+        }
+
+        var retname = st.nextName();
+        st.addEntry(retname, createSymEntry(bigIntArray, max_bits));
+        repMsg = "created %s".format(st.attrib(retname));
+        biLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+
+    @arkouda.instantiateAndRegister("big_int_creation_multi_limb")
+    proc bigIntCreationMultiLimbMsg(cmd: string,
+                                    msgArgs: borrowed MessageArgs,
+                                    st: borrowed SymTab,
+                                    type array_dtype,
+                                    param array_nd: int): MsgTuple throws
+    where (array_dtype == uint(64) && array_nd == 1)
+    {
+        var repMsg: string;
+
+        const num_arrays = msgArgs.get("num_arrays").getIntValue();
+        const shape      = msgArgs.get("shape").toScalarTuple(int, array_nd);
+        const arrayNames = msgArgs.get("arrays").getList(num_arrays);
+        const max_bits   = msgArgs.get("max_bits").getIntValue();
+        const signed  = msgArgs.get("signed").toScalar(bool);
+
+        var bigIntArray = makeDistArray((...shape), bigint);
+        var signs = makeDistArray((...shape), bool);
+
+        // --------------------------------------------------------------------------
+        // (1) Horner-fold limbs into bigIntArray
+        //     limb order: arrayNames[0] = least-significant; fold from MS limb down.
+        // --------------------------------------------------------------------------
+        // Precompute mask (if any) to cap growth during folding.
+        const doMask = (max_bits != -1);
+        var mask: bigint;
+        if doMask {
+            mask = 1:bigint;
+            mask <<= max_bits;
+            mask -= 1;
+        }
+
+        const dom = bigIntArray.domain;
+
+        if signed {
+            var i = num_arrays - 1;
+            const name  = arrayNames[i];
+            const entry = st[name]: SymEntry(array_dtype, array_nd);
+            ref   limbA = entry.a;
+
+            // Per-element fold; keep everything local
+            forall idx in dom {
+                const u = limbA[idx];
+                signs[idx] = (u >> 63): bool;
+                bigIntArray[idx] += (u & ((1 << 63) - 1));
+            }
+        }
+
+
+        // Fold from highest index to 0: b = (b << 64) + limb[i]
+        if num_arrays-(1 + (signed: int)) >= 0 {
+            for i in 0..num_arrays-(1 + (signed: int)) by -1 {
+                const name  = arrayNames[i];
+                const entry = st[name]: SymEntry(array_dtype, array_nd);
+                ref   limbA = entry.a;
+
+                // Per-element fold; keep everything local
+                if doMask {
+                    forall idx in dom with (var tmp: bigint, const ref localMask = mask) {
+                        const u = limbA[idx];              // magnitude limb
+                        ref b = bigIntArray[idx];
+
+                        b <<= 64;
+                        tmp = (u:uint(64)): bigint;
+                        b += tmp;
+                        b &= localMask;
+                    }
+                } else {
+                    forall idx in dom with (var tmp: bigint) {
+                        const u = limbA[idx];
+                        ref b = bigIntArray[idx];
+
+                        b <<= 64;
+                        tmp = (u:uint(64)): bigint;
+                        b += tmp;
+                    }
+                }
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        // (2) Apply signs with per-locale bulk fetch of sign words
+        // --------------------------------------------------------------------------
+
+        if signed {
+            const negAmount = (1: bigint) << (64 * num_arrays - 1);
+
+            if doMask {
+                forall idx in dom with (const ref localMask = mask) {
+                    if signs[idx] {
+                        ref b = bigIntArray[idx];
+                        b -= negAmount;
+                        b &= localMask;
+                    }
+                }
+            } else {
+                forall idx in dom {
+                    if signs[idx] {
+                        ref b = bigIntArray[idx];
+                        b -= negAmount;
+                    }
+                }
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        // (3) Return the created array
+        // --------------------------------------------------------------------------
+        const retname = st.nextName();
+        st.addEntry(retname, createSymEntry(bigIntArray, max_bits));
+        repMsg = "created %s".format(st.attrib(retname));
+        biLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+
     @arkouda.instantiateAndRegister("big_int_creation")
     proc bigIntCreationMsg(cmd: string, msgArgs: borrowed MessageArgs,
                            st: borrowed SymTab, type array_dtype,

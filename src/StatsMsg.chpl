@@ -1,6 +1,6 @@
 module StatsMsg {
     use ServerConfig;
-
+    use BigInteger;
     use AryUtil;
     use Reflection;
     use ServerErrors;
@@ -104,6 +104,35 @@ module StatsMsg {
 
       return (+ reduce ((x:real - mx) * (y:real - my))) / (dx.size - 1):real;
     }
+    
+    @arkouda.registerCommand()
+    proc allclose(const ref a: [?da] ?ta, const ref b: [?db] ?tb,
+                  rtol: real, atol: real, equal_nan: bool = false): bool throws
+      where da.rank == db.rank && ta!=bigint && tb!=bigint
+    {
+      if da.shape != db.shape then
+        throw new Error("a and b must have the same shape");
+
+      // Convert bools to real
+      const ra = if ta == bool then a:int(32):real else a:real;
+      const rb = if tb == bool then b:int(32):real else b:real;
+
+      const a_isnan = isNan(ra);
+      const b_isnan = isNan(rb);
+      const a_isinf = isInf(ra);
+      const b_isinf = isInf(rb);
+
+      // inf handling
+      const inf_ok = (a_isinf & b_isinf) & (((ra > 0.0) == (rb > 0.0)));
+
+      // NaN handling
+      const nan_ok = equal_nan & (a_isnan & b_isnan);
+
+      const finite = !(a_isnan | b_isnan | a_isinf | b_isinf);
+      const close_ok = finite & (abs(ra - rb) <= atol + rtol * abs(rb));
+
+      return && reduce (inf_ok | nan_ok | close_ok);
+    }
 
     @arkouda.registerCommand()
     proc corr(const ref x: [?dx] ?tx, const ref y: [?dy] ?ty): real throws
@@ -119,17 +148,25 @@ module StatsMsg {
     }
 
     @arkouda.registerCommand()
-    proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws {
+    proc cumSum(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
+        where t!= bool { // bool case was already converted to int python-side
+
       if d.rank == 1 {
-        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
-        cs[if includeInitial then 1.. else 0..] = (+ scan x):t;
-        return cs;
+
+          if !includeInitial {
+            return (+ scan x); 
+          } else {
+            var cs = makeDistArray(x.size+1, t);
+            cs[1..] = (+ scan x);
+            return cs;
+          }
+
       } else {
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
           const xSlice = removeDegenRanks(x[slice], 1),
-                csSlice = (+ scan xSlice):t;
+                csSlice = (+ scan xSlice); 
 
           for idx in slice {
             var csIdx = idx;
@@ -143,22 +180,25 @@ module StatsMsg {
 
     @arkouda.registerCommand()
     proc cumProd(const ref x: [?d] ?t, axis: int, includeInitial: bool): [] t throws
-        where t != bool {
+        where t != bool { // bool case was already converted to int python-side
+
       if d.rank == 1 {
-        var cs = makeDistArray(if includeInitial then x.size+1 else x.size, t);
-        if includeInitial {
+
+          if !includeInitial {
+            return (* scan x);
+          } else {
+            var cs = makeDistArray(x.size+1, t);
+            cs[1..] = (* scan x);
             cs[0] = 1:t;
-            cs[1..] = (* scan x):t;
-        } else {
-            cs[0..] = (* scan x):t;
-        }
-        return cs;
+            return cs;
+          }
+
       } else {    // fill with 1s so that if includeInitial is set, answer starts with 1
         var cs = makeDistArray(if includeInitial then expandedDomain(d, axis) else d, 1:t);
 
         forall (slice, _) in axisSlices(d, new list([axis])) {
           const xSlice = removeDegenRanks(x[slice], 1),
-                csSlice = (* scan xSlice):t;
+                csSlice = (* scan xSlice);
 
           for idx in slice {
             var csIdx = idx;
@@ -169,6 +209,7 @@ module StatsMsg {
         return cs;
       }
     }
+
 
     private proc expandedDomain(d: domain(?), axis: int): domain(?) {
       var rngs: d.rank*range;

@@ -14,20 +14,19 @@ stopped atexit or with a call to stop_arkouda_server().
 """
 
 import atexit
-from collections import namedtuple
 import contextlib
-from enum import Enum
 import logging
 import os
 import socket
 import subprocess
 import time
 
+from collections import namedtuple
+from enum import Enum
+
 
 class TestRunningMode(Enum):
-    """
-    Enum indicating the running mode of the test harness
-    """
+    """Enum indicating the running mode of the test harness."""
 
     CLIENT = "CLIENT"
     CLASS_SERVER = "CLASS_SERVER"
@@ -106,9 +105,7 @@ def get_arkouda_server_info_file():
 
 
 def _server_output_to_string(p):
-    """
-    Returns the annotated stdout and stderr, when available from `p`, as a string.
-    """
+    """Returns the annotated stdout and stderr, when available from `p`, as a string."""
 
     def s2s(stream, name):
         return (
@@ -160,9 +157,7 @@ def read_server_and_port_from_file(server_connection_info, process=None, server_
 
 
 def get_default_temp_directory():
-    """
-    Get the default temporary directory for arkouda server and client
-    """
+    """Get the default temporary directory for arkouda server and client."""
     dflt = os.getcwd()
     return os.getenv("ARKOUDA_DEFAULT_TEMP_DIRECTORY", dflt)
 
@@ -222,9 +217,7 @@ def kill_server(server_process):
 
 
 def get_server_launch_cmd(numlocales):
-    """
-    Get an srun command to launch ./arkouda_server_real directly
-    """
+    """Get an srun command to launch ./arkouda_server_real directly."""
     import re
 
     # get the srun command for 'arkouda_server_real'

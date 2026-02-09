@@ -19,7 +19,7 @@ Features
 - Automatic detection of unique category labels
 - Integer-based encoding via `.codes` attribute
 - Efficient groupby-compatible structure (`.permutation` and `.segments`)
-- Support for missing data using a configurable `NAvalue`
+- Support for missing data using a configurable `na_value`
 - Pandas-like API for accessing labels and categories
 
 Typical Use
@@ -47,14 +47,17 @@ See Also
 
 from __future__ import annotations
 
-from collections import defaultdict
 import itertools
 import json
+import warnings
+
+from collections import defaultdict
 from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
     List,
+    Literal,
     Optional,
     Sequence,
     Tuple,
@@ -64,36 +67,33 @@ from typing import (
 from typing import cast as type_cast
 
 import numpy as np
+
 from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from typeguard import typechecked
 
 from arkouda.infoclass import information
-from arkouda.logger import getArkoudaLogger
+from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bool_ as akbool
-from arkouda.numpy.dtypes import bool_scalars
+from arkouda.numpy.dtypes import bool_scalars, int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.numpy.dtypes import dtype as akdtype
 from arkouda.numpy.dtypes import int64 as akint64
-from arkouda.numpy.dtypes import int_scalars, resolve_scalar_dtype, str_, str_scalars
-from arkouda.numpy.pdarrayclass import RegistrationError
+from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 from arkouda.numpy.pdarrayclass import all as akall
-from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import arange, array, ones, zeros, zeros_like
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.numpy.sorting import argsort
 from arkouda.numpy.sorting import sort as pda_sort
-from arkouda.numpy.strings import Strings
-from arkouda.pandas.groupbyclass import GroupBy, unique
+
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-    from arkouda.numpy import cast as akcast
-    from arkouda.numpy import where
+    from arkouda.numpy.pdarraycreation import array
     from arkouda.numpy.sorting import SortingAlgorithm
+    from arkouda.numpy.strings import Strings
+    from arkouda.pandas.groupbyclass import GroupBy
 else:
-    generic_msg = TypeVar("generic_msg")
-    akcast = TypeVar("akcast")
-    where = TypeVar("where")
+    Strings = TypeVar("Strings")
+    GroupBy = TypeVar("GroupBy")
+
     from enum import Enum
 
     class SortingAlgorithm(Enum):
@@ -115,7 +115,7 @@ class Categorical:
     ----------
     values : Strings, Categorical, pd.Categorical
         Values to convert to categories
-    NAvalue : str scalar
+    na_value : str scalar
         The value to use to represent missing/null data
 
     Attributes
@@ -157,8 +157,30 @@ class Categorical:
 
     def __init__(self, values, **kwargs) -> None:
         from arkouda.numpy import cast as akcast
+        from arkouda.numpy.pdarraycreation import arange, array
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.groupbyclass import GroupBy, unique
 
-        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
+        self.logger = get_arkouda_logger(name=__class__.__name__)  # type: ignore
+
+        # --- deprecated kwarg aliases for na_value ---
+        _new = "na_value"
+        _deprecated = [k for k in ("naValue", "NAvalue") if k in kwargs]
+
+        cls_name = type(self).__name__
+
+        if _new in kwargs and _deprecated:
+            raise TypeError(f"{cls_name}() got both '{_new}' and '{_deprecated[0]}'. Use '{_new}'.")
+
+        if _deprecated:
+            old = _deprecated[0]
+            warnings.warn(
+                f"'{old}' is deprecated; use '{_new}' instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            kwargs[_new] = kwargs.pop(old)
+
         if "codes" in kwargs and "categories" in kwargs:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored
@@ -219,15 +241,17 @@ class Categorical:
         if "_akNAcode" in kwargs and kwargs["_akNAcode"] is not None:
             self._akNAcode = kwargs["_akNAcode"]
             self._NAcode: int_scalars = int(self._akNAcode[0])
-            self.NAvalue = self.categories[self._NAcode]
+            self.na_value = self.categories[self._NAcode]
         else:
-            self.NAvalue = kwargs.get("NAvalue", "N/A")
-            findNA = self.categories == self.NAvalue
-            if findNA.any():
-                self._NAcode = int(akcast(findNA, akint64).argmax())
+            self.na_value = kwargs.get("na_value", "N/A")
+            find_na = self.categories == self.na_value
+            if find_na.any():
+                self._NAcode = int(
+                    type_cast(Union[np.uint, np.integer], akcast(find_na, akint64).argmax())
+                )
             else:
                 # Append NA value
-                self.categories = concatenate((self.categories, array([self.NAvalue])))
+                self.categories = concatenate((self.categories, array([self.na_value])))
                 self._NAcode = self.categories.size - 1
             self._akNAcode = array([self._NAcode])
         # Always set these values
@@ -237,6 +261,22 @@ class Categorical:
         self.shape = self.codes.shape
         self.dtype = akdtype(str_)
         self.registered_name: Optional[str] = None
+
+    @property
+    def NAvalue(self):
+        """
+        Deprecated alias for `na_value`.
+
+        Returns
+        -------
+        Same value as `na_value`.
+        """
+        warnings.warn(
+            "Categorical.NAvalue is deprecated; use Categorical.find_na instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.na_value
 
     @property
     def nbytes(self):
@@ -332,6 +372,8 @@ class Categorical:
         This is currently only used when reading a Categorical from HDF5 files.
 
         """
+        from arkouda.numpy.strings import Strings
+
         # parse return json
         eles = json.loads(rep_msg)
         codes = create_pdarray(eles["codes"])
@@ -347,7 +389,7 @@ class Categorical:
         return cls.from_codes(codes, cats, permutation=perm, segments=segments, _akNAcode=na_code)
 
     @classmethod
-    def standardize_categories(cls, arrays, NAvalue="N/A"):
+    def standardize_categories(cls, arrays, na_value="N/A"):
         """
         Standardize an array of Categoricals so that they share the same categories.
 
@@ -355,7 +397,7 @@ class Categorical:
         ----------
         arrays : sequence of Categoricals
             The Categoricals to standardize
-        NAvalue : str scalar
+        na_value : str scalar
             The value to use to represent missing/null data
 
         Returns
@@ -364,15 +406,17 @@ class Categorical:
             A list of the original Categoricals remapped to the shared categories.
 
         """
+        from arkouda.pandas.groupbyclass import unique
+
         for arr in arrays:
             if not isinstance(arr, cls):
                 raise TypeError(f"All arguments must be {cls.__name__}")
         new_categories = unique(concatenate([arr.categories for arr in arrays], ordered=False))
-        findNA = new_categories == NAvalue
-        if not findNA.any():
+        find_na = new_categories == na_value
+        if not find_na.any():
             # Append NA value
-            new_categories = concatenate((new_categories, array([NAvalue])))
-        return [arr.set_categories(new_categories, NAvalue=NAvalue) for arr in arrays]
+            new_categories = concatenate((new_categories, array([na_value])))
+        return [arr.set_categories(new_categories, na_value=na_value) for arr in arrays]
 
     def equals(self, other) -> bool_scalars:
         """
@@ -411,7 +455,7 @@ class Categorical:
 
         return False
 
-    def set_categories(self, new_categories, NAvalue=None):
+    def set_categories(self, new_categories, na_value=None):
         """
         Set categories to user-defined values.
 
@@ -419,7 +463,7 @@ class Categorical:
         ----------
         new_categories : Strings
             The array of new categories to use. Must be unique.
-        NAvalue : str scalar
+        na_value : str scalar
             The value to use to represent missing/null data
 
         Returns
@@ -432,18 +476,20 @@ class Categorical:
         """
         from arkouda.numpy import cast as akcast
         from arkouda.numpy import where
+        from arkouda.numpy.pdarraycreation import arange, array, ones, zeros
+        from arkouda.pandas.groupbyclass import GroupBy
 
-        if NAvalue is None:
-            NAvalue = self.NAvalue
-        findNA = new_categories == NAvalue
-        if not findNA.any():
+        if na_value is None:
+            na_value = self.na_value
+        find_na = new_categories == na_value
+        if not find_na.any():
             # Append NA value
-            new_categories = concatenate((new_categories, array([NAvalue])))
-            NAcode = new_categories.size - 1
+            new_categories = concatenate((new_categories, array([na_value])))
+            na_code = new_categories.size - 1
         else:
-            NAcode = int(akcast(findNA, akint64).argmax())
+            na_code = int(akcast(find_na, akint64).argmax())
         code_mapping = zeros(self.categories.size, dtype=akint64)
-        code_mapping.fill(NAcode)
+        code_mapping.fill(na_code)
         # Concatenate old and new categories and unique codes
         bothcats = concatenate((self.categories, new_categories), ordered=False)
         bothcodes = concatenate(
@@ -472,7 +518,7 @@ class Categorical:
         code_mapping[scatterinds] = arange(new_categories.size)[gatherinds]
         # Apply the lookup to map old codes to new codes
         new_codes = code_mapping[self.codes]
-        return self.__class__.from_codes(new_codes, new_categories, NAvalue=NAvalue)
+        return self.__class__.from_codes(new_codes, new_categories, na_value=na_value)
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -771,8 +817,23 @@ class Categorical:
             # Initialization now determines which categories are used
             return Categorical.from_codes(self.codes[key], self.categories)
 
+    def copy(self) -> Categorical:
+        """
+        Return an copy of the given Categorical.
+
+        Returns
+        -------
+        Categorical
+            A deep copy of the Categorical.
+        """
+        perm = self.permutation.copy() if self.permutation is not None else None
+        segs = self.segments.copy() if self.segments is not None else None
+        return Categorical.from_codes(
+            self.codes.copy(), self.categories.copy(), permutation=perm, segments=segs
+        )
+
     def isna(self):
-        """Find where values are missing or null (as defined by self.NAvalue)."""
+        """Find where values are missing or null (as defined by self.na_value)."""
         return self.codes == self._NAcode
 
     def reset_categories(self) -> Categorical:
@@ -790,11 +851,14 @@ class Categorical:
             A Categorical object generated from the current instance
 
         """
+        from arkouda.numpy.pdarraycreation import arange
+        from arkouda.pandas.groupbyclass import GroupBy
+
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
         newvals = g.broadcast(arange(idx.size), permute=True)
         return Categorical.from_codes(
-            newvals, idx, permutation=g.permutation, segments=g.segments, NAvalue=self.NAvalue
+            newvals, idx, permutation=g.permutation, segments=g.segments, na_value=self.na_value
         )
 
     @typechecked
@@ -992,9 +1056,11 @@ class Categorical:
             A new Categorical containing only the unique category labels in use.
 
         """
+        from arkouda.numpy.pdarraycreation import arange
+
         # __doc__ = unique.__doc__
         return Categorical.from_codes(
-            arange(self._categories_used.size), self._categories_used, NAvalue=self.NAvalue
+            arange(self._categories_used.size), self._categories_used, na_value=self.na_value
         )
 
     def hash(self) -> Tuple[pdarray, pdarray]:
@@ -1097,15 +1163,15 @@ class Categorical:
 
         >>> cat = ak.Categorical(ak.array(['dog', 'cat', 'dog', 'bird']))
         >>> cat.argsort()
-        array([3, 1, 0, 2])  # 'bird' < 'cat' < 'dog'
+        array([3 1 0 2])
 
         >>> cat.argsort(ascending=False)
-        array([2, 0, 1, 3])
+        array([2 0 1 3])
 
         The result can be used to reorder the Categorical:
         >>> sorted_cat = cat[cat.argsort()]
         >>> sorted_cat
-        Categorical(['bird', 'cat', 'dog', 'dog'])
+        array(['bird', 'cat', 'dog', 'dog'])
 
         """
         from arkouda import arange, zeros_like
@@ -1134,6 +1200,8 @@ class Categorical:
             A new Categorical with values sorted by category.
 
         """
+        from arkouda.numpy.pdarraycreation import arange, zeros_like
+
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
@@ -1191,19 +1259,19 @@ class Categorical:
             )
             return Categorical.from_codes(newvals, self.categories)
         else:
-            new_arrays = self.standardize_categories([self] + list(others), NAvalue=self.NAvalue)
+            new_arrays = self.standardize_categories([self] + list(others), na_value=self.na_value)
             new_categories = new_arrays[0].categories
             new_codes = type_cast(
                 pdarray, concatenate([arr.codes for arr in new_arrays], ordered=ordered)
             )
-            return Categorical.from_codes(new_codes, new_categories, NAvalue=self.NAvalue)
+            return Categorical.from_codes(new_codes, new_categories, na_value=self.na_value)
 
     def to_hdf(
         self,
-        prefix_path,
-        dataset="categorical_array",
-        mode="truncate",
-        file_type="distribute",
+        prefix_path: str,
+        dataset: str = "categorical_array",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
     ):
         """
         Save the Categorical to HDF5.
@@ -1217,10 +1285,10 @@ class Categorical:
             Directory and filename prefix that all output files will share
         dataset : str
             Name prefix for saved data within the HDF5 file
-        mode : str {'truncate' | 'append'}
+        mode : {'truncate', 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', add data as a new column to existing files.
-        file_type: str ("single" | "distribute")
+        file_type: {"single", "distribute"}
             Default: "distribute"
             When set to single, dataset is written to a single file.
             When distribute, dataset is written on a file per locale.

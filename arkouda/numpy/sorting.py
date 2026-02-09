@@ -1,21 +1,18 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, Sequence, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Literal, Sequence, Union, cast
+from typing import cast as type_cast
 
 from typeguard import check_type, typechecked
 
 from arkouda.numpy.dtypes import bigint, dtype, float64, int64, int_scalars, uint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
-from arkouda.numpy.pdarraycreation import array, zeros
-from arkouda.numpy.strings import Strings
+
 
 if TYPE_CHECKING:
-    from arkouda.client import generic_msg
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
-else:
-    generic_msg = TypeVar("generic_msg")
-    Categorical = TypeVar("Categorical")
 
 
 numeric_dtypes = {dtype(int64), dtype(uint64), dtype(float64)}
@@ -85,10 +82,13 @@ def argsort(
 
     """
     from arkouda.numpy.dtypes import int64
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.numpy.strings import Strings
     from arkouda.numpy.util import _integer_axis_validation
     from arkouda.pandas.categorical import Categorical
 
-    check_type("argsort", pda, Union[pdarray, Strings, Categorical])
+    check_type("argsort", value=pda, expected_type=Union[pdarray, Strings, Categorical])
 
     ndim = pda.ndim
     valid, axis_ = _integer_axis_validation(axis, ndim)
@@ -176,13 +176,12 @@ def coargsort(
     """
     from arkouda.client import generic_msg
     from arkouda.numpy import cast as akcast
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import zeros
+    from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
 
-    check_type(
-        argname="coargsort",
-        value=arrays,
-        expected_type=Sequence[Union[pdarray, Strings, Categorical]],
-    )
+    check_type("coargsort", value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
 
     size: int_scalars = -1
     anames, atypes, expanded_arrays = [], [], []
@@ -202,7 +201,7 @@ def coargsort(
             else:
                 expanded_arrays.append(a)
         else:
-            expanded_arrays.append(a)
+            expanded_arrays.append(type_cast(pdarray, a))
 
     for a in expanded_arrays:
         if isinstance(a, pdarray):
@@ -226,7 +225,7 @@ def coargsort(
         dtype = int if isinstance(arrays[0], (Strings, Categorical)) else arrays[0].dtype
         return zeros(0, dtype=dtype)
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="coargsort",
         args={
             "algoName": algorithm.name,
@@ -236,7 +235,7 @@ def coargsort(
         },
     )
 
-    sorted_array = create_pdarray(cast(str, repMsg))
+    sorted_array = create_pdarray(cast(str, rep_msg))
 
     if ascending or max_dim > 1:
         return sorted_array
@@ -298,6 +297,8 @@ def sort(
     array([0 1 1 4 5 5 5 7 8 9])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import create_pdarray
+    from arkouda.numpy.pdarraycreation import zeros
     from arkouda.numpy.util import _integer_axis_validation
 
     valid, axis_ = _integer_axis_validation(axis, pda.ndim)
@@ -310,11 +311,11 @@ def sort(
         raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sort<{pda.dtype.name},{pda.ndim}>",
         args={"alg": algorithm.name, "array": pda, "axis": axis_},
     )
-    return create_pdarray(cast(str, repMsg))
+    return create_pdarray(cast(str, rep_msg))
 
 
 @typechecked
@@ -374,6 +375,8 @@ def searchsorted(
     array([0 1 2 5])
     """
     from arkouda.client import generic_msg
+    from arkouda.numpy.pdarrayclass import pdarray
+    from arkouda.numpy.pdarraycreation import array
 
     if a.ndim > 1:
         raise ValueError(f"a must be one dimensional, but has {a.ndim} dimensions.")
@@ -392,7 +395,7 @@ def searchsorted(
     if a.dtype != v_.dtype:
         raise TypeError(f"The dtype of a ({a.dtype}) and v ({v_.dtype}) must match.")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"searchSorted<{a.dtype},{a.ndim},{v_.ndim}>",
         args={
             "x1": a,
@@ -402,7 +405,7 @@ def searchsorted(
         },
     )
 
-    out = create_pdarray(cast(str, repMsg))
+    out = create_pdarray(cast(str, rep_msg))
 
     if scalar_input:
         return int(out[0])

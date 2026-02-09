@@ -3,7 +3,9 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+
 from arkouda.testing import assert_arkouda_array_equivalent
+
 
 OPS = ["in1d", "intersect1d", "union1d", "setxor1d", "setdiff1d"]
 INTEGRAL_TYPES = [ak.int64, ak.uint64, ak.bigint]
@@ -11,6 +13,7 @@ NUMERIC_TYPES = [ak.int64, ak.uint64, ak.bigint, ak.bool_]
 
 
 class TestSetOps:
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_pdarraysetops_docstrings(self):
         import doctest
 
@@ -84,6 +87,7 @@ class TestSetOps:
 
         return a, b, c, d
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
     @pytest.mark.parametrize("op", OPS)
@@ -233,6 +237,43 @@ class TestSetOps:
         stringsOne = ak.Categorical(ak.array(["String {}".format(i % 3) for i in range(10)]))
         stringsTwo = ak.Categorical(ak.array(["String {}".format(i % 2) for i in range(10)]))
         assert [(x % 3) < 2 for x in range(10)] == ak.in1d(stringsOne, stringsTwo).tolist()
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    def test_in1d_symmetric(self):
+        # Duplicates to exercise assume_unique=False (GroupBy/broadcast path)
+        a = ak.array([1, 2, 2, 3, 4])
+        b = ak.array([2, 4, 4, 5])
+
+        def exp_in(x, y):
+            yset = set(y)
+            return [xi in yset for xi in x]
+
+        a_list = a.to_ndarray().tolist()
+        b_list = b.to_ndarray().tolist()
+
+        # assume_unique=False path (duplicates allowed; should match membership semantics)
+        am2, bm2 = ak.in1d(a, b, assume_unique=False, symmetric=True, invert=False)
+        assert am2.tolist() == exp_in(a_list, b_list)
+        assert bm2.tolist() == exp_in(b_list, a_list)
+
+        am2_i, bm2_i = ak.in1d(a, b, assume_unique=False, symmetric=True, invert=True)
+        assert am2_i.tolist() == [not v for v in exp_in(a_list, b_list)]
+        assert bm2_i.tolist() == [not v for v in exp_in(b_list, a_list)]
+
+        # assume_unique=True path (inputs must be unique for this branch to be valid)
+        au = ak.array([1, 2, 3, 4])
+        bu = ak.array([2, 4, 5])
+
+        au_list = au.to_ndarray().tolist()
+        bu_list = bu.to_ndarray().tolist()
+
+        am, bm = ak.in1d(au, bu, assume_unique=True, symmetric=True, invert=False)
+        assert am.tolist() == exp_in(au_list, bu_list)
+        assert bm.tolist() == exp_in(bu_list, au_list)
+
+        am_i, bm_i = ak.in1d(au, bu, assume_unique=True, symmetric=True, invert=True)
+        assert am_i.tolist() == [not v for v in exp_in(au_list, bu_list)]
+        assert bm_i.tolist() == [not v for v in exp_in(bu_list, au_list)]
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
@@ -716,6 +757,7 @@ class TestSetOps:
         with pytest.raises(TypeError):
             ak.pdarraysetops.multiarray_setop_validation(x, y)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_index_of(self):
         # index of nan (reproducer from #3009)
         s = ak.Series(ak.array([1, 2, 3]), index=ak.array([1, 2, np.nan]))
@@ -757,12 +799,15 @@ class TestSetOps:
                 if all_unique:
                     # ensure we match find
                     if not are_pdarrays_equal(
-                        idx_of_first_in_second, ak.find(arr1, arr2, remove_missing=True)
+                        idx_of_first_in_second, ak.numpy.alignment.find(arr1, arr2, remove_missing=True)
                     ):
                         print("failed to match find")
                         print("second array all unique: ", all_unique)
                         print(seeds)
-                    assert (idx_of_first_in_second == ak.find(arr1, arr2, remove_missing=True)).all()
+                    assert (
+                        idx_of_first_in_second
+                        == ak.numpy.alignment.find(arr1, arr2, remove_missing=True)
+                    ).all()
 
                     # if an element of arr1 is found in arr2, return the index of that item in arr2
                     if not are_pdarrays_equal(arr2[idx_of_first_in_second], arr1[found_in_second]):

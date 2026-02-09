@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Literal, NoReturn, cast
 
 import numpy as np
+
 from pandas.api.types import is_bool, is_number
 from pandas.io.formats.printing import pprint_thing  # type: ignore
 
@@ -21,6 +22,7 @@ from arkouda import (
 )
 from arkouda.numpy.pdarrayclass import sum as aksum
 from arkouda.numpy.util import is_numeric
+
 
 DEBUG = True
 

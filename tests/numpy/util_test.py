@@ -2,18 +2,23 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+
 from arkouda.numpy import util
 from arkouda.numpy.util import may_share_memory, shares_memory
+from arkouda.testing import assert_arkouda_array_equivalent
 from arkouda.util import is_float, is_int, is_numeric, map
 
 
 class TestUtil:
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    @pytest.mark.skip_if_rank_not_compiled([1, 2, 3])
     def test_util_docstrings(self):
         import doctest
 
         result = doctest.testmod(util, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
+    @pytest.mark.requires_chapel_module("KExtremeMsg")
     def test_sparse_sum_helper(self):
         cfg = ak.get_config()
         N = (10**4) * cfg["numLocales"]
@@ -94,6 +99,7 @@ class TestUtil:
         for item in [floats, Index(floats), Series(floats)]:
             assert is_float(item)
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
     def test_map(self):
         a = ak.array(["1", "1", "4", "4", "4"])
         b = ak.array([2, 3, 2, 3, 4])
@@ -144,6 +150,47 @@ class TestUtil:
 
         assert a is not b
         ak_assert_equal(a, b)
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_broadcast_shapes(self, size):
+        chop = size // 4
+        a = ak.arange(chop).reshape(1, 1, chop)
+        b = ak.arange(2 * chop).reshape(1, 2, chop)
+        c = ak.arange(2 * chop).reshape(2, 1, chop)
+        bigshape = ak.broadcast_shapes(a.shape, b.shape, c.shape)
+        assert bigshape == (2, 2, chop)
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_broadcast_to(self, size):
+        pd = ak.broadcast_to(1, size)
+        nd = np.broadcast_to(1, size)
+        assert_arkouda_array_equivalent(pd, nd)
+        chop = size // 4
+        pd = ak.broadcast_to(1, (2, chop))
+        nd = np.broadcast_to(1, (2, chop))
+        assert_arkouda_array_equivalent(pd, nd)
+        a = ak.arange(chop).reshape(1, 1, chop)
+        b = ak.arange(2 * chop).reshape(1, 2, chop)
+        c = ak.arange(2 * chop).reshape(2, 1, chop)
+        bigshape = ak.broadcast_shapes(a.shape, b.shape, c.shape)
+        pd = ak.broadcast_to(c, bigshape)
+        nd = np.broadcast_to(c.to_ndarray(), bigshape)
+        assert_arkouda_array_equivalent(pd, nd)
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_broadcast_arrays(self, size):
+        chop = size // 4
+        a = ak.arange(chop).reshape(1, 1, chop)
+        b = ak.arange(2 * chop).reshape(1, 2, chop)
+        c = ak.arange(2 * chop).reshape(2, 1, chop)
+        pe = ak.broadcast_arrays(a, b, c)
+        ne = np.broadcast_arrays(a.to_ndarray(), b.to_ndarray(), c.to_ndarray())
+        assert_arkouda_array_equivalent(pe[0], ne[0])
+        assert_arkouda_array_equivalent(pe[1], ne[1])
+        assert_arkouda_array_equivalent(pe[2], ne[2])
 
 
 @pytest.mark.parametrize("n", [0, 1, 5, 1024])

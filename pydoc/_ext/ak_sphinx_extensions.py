@@ -1,6 +1,4 @@
-"""
-Custom Sphinx extensions.
-"""
+"""Custom Sphinx extensions."""
 
 from typing import List
 
@@ -9,14 +7,10 @@ from sphinx.directives.code import CodeBlock
 
 
 class SubstitutionCodeBlock(CodeBlock):
-    """
-    Similar to CodeBlock but replaces placeholders with variables.
-    """
+    """Similar to CodeBlock but replaces placeholders with variables."""
 
     def run(self) -> List:
-        """
-        Replace placeholders with given variables.
-        """
+        """Replace placeholders with given variables."""
         app = self.state.document.settings.env.app
         new_content = []
         self.content = self.content  # type: List[str]
@@ -34,8 +28,6 @@ class SubstitutionCodeBlock(CodeBlock):
 
 
 def setup(app: Sphinx) -> None:
-    """
-    Add the custom directives to Sphinx.
-    """
+    """Add the custom directives to Sphinx."""
     app.add_config_value("substitutions", [], "html")
     app.add_directive("substitution-code-block", SubstitutionCodeBlock)

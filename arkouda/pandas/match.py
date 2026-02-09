@@ -40,16 +40,13 @@ arkouda.client.regexMaxCaptures
 
 """
 
-from enum import Enum
 import json
-from typing import TYPE_CHECKING, TypeVar, cast
+
+from enum import Enum
+from typing import cast
 
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
-if TYPE_CHECKING:
-    from arkouda.client import generic_msg
-else:
-    generic_msg = TypeVar("generic_msg")
 
 __all__ = ["Match"]
 
@@ -279,7 +276,7 @@ class Match:
         from arkouda.client import generic_msg
         from arkouda.numpy.strings import Strings
 
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedFindAll",
@@ -295,10 +292,10 @@ class Match:
             ),
         )
         if return_match_origins:
-            arrays = repMsg.split("+", maxsplit=2)
+            arrays = rep_msg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
 
     def group(self, group_num: int = 0, return_group_origins: bool = False):
         r"""
@@ -348,7 +345,7 @@ class Match:
             raise ValueError(e)
 
         # We don't cache the locations of groups, find the location info and call findAll
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedFindLoc",
@@ -360,7 +357,7 @@ class Match:
                 },
             ),
         )
-        created_map = json.loads(repMsg)
+        created_map = json.loads(rep_msg)
         global_starts = create_pdarray(created_map["Starts"])
         global_lengths = create_pdarray(created_map["Lens"])
         global_indices = create_pdarray(created_map["Indices"])
@@ -377,7 +374,7 @@ class Match:
             raise ValueError(f"{self._match_type} is not a MatchType")
         starts = global_starts[global_indices[matched]]
         lengths = global_lengths[global_indices[matched]]
-        repMsg = cast(
+        rep_msg = cast(
             str,
             generic_msg(
                 cmd="segmentedFindAll",
@@ -393,7 +390,7 @@ class Match:
             ),
         )
         if return_group_origins:
-            arrays = repMsg.split("+", maxsplit=2)
+            arrays = rep_msg.split("+", maxsplit=2)
             return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            return Strings.from_return_msg(repMsg)
+            return Strings.from_return_msg(rep_msg)
