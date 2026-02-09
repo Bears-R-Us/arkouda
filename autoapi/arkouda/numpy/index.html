@@ -15457,15 +15457,14 @@ discarding values from left that do not appear in right.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.round">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/numeric.html#round"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.round" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">round</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/numeric.html#round"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.round" title="Link to this definition">¶</a></dt>
 <dd><p>Return the element-wise rounding of the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em> or </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is applied over the input. At locations where the condition is True, the
-corresponding value will be acted on by the function. Elsewhere, it will retain its
-original value. Default set to True.</p></li>
+<li><p><strong>decimals</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em><em>]</em><em>, </em><em>default = None</em>) – for float pdarrays, the number of decimal places of accuracy for the round.
+May be None, positive, negative, or zero.  If None, zero is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -15475,13 +15474,28 @@ original value. Default set to True.</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray or if the dtype of the pdarray
+is other than ak.float64, ak.int64, ak.uint64 or ak.bool.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function follows numpy’s rule of “round to even” when the fractional part
+of the number equals .5.  For example, 2.5 rounds to 2, but 3.5 rounds to 4.
+Arkouda’s use of decimal is not perfect, as shown in the examples below.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.14159</span><span class="p">]))</span>
-<span class="go">array([1.00000000... 3.00000000... 3.00000000...])</span>
+<span class="go">array([1.00000000000000000 2.00000000000000000 3.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]))</span>
+<span class="go">array([2.00000000000000000 2.00000000000000000 4.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">143.1</span><span class="p">,</span> <span class="mf">279.8</span><span class="p">]),</span><span class="n">decimals</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([-140.00000000000000000 280.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">143.1</span><span class="p">,</span> <span class="mf">279.8</span><span class="p">]),</span><span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([-143.00000000000000000 280.00000000000000000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.541</span><span class="p">,</span> <span class="mf">2.732</span><span class="p">]),</span><span class="n">decimals</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">array([1.54 2.73])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.541</span><span class="p">,</span> <span class="mf">2.732</span><span class="p">]),</span><span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([1.5409999999999999 2.7320000000000002])</span>
 </pre></div>
 </div>
 </dd></dl>

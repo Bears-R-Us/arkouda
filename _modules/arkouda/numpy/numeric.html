@@ -878,17 +878,16 @@
 <div class="viewcode-block" id="round">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.round">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">decimals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the element-wise rounding of the array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray</span>
-<span class="sd">    where : bool or pdarray, default=True</span>
-<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
-<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
-<span class="sd">        original value. Default set to True.</span>
+<span class="sd">    decimals: Optional[Union[int, None]], default = None</span>
+<span class="sd">        for float pdarrays, the number of decimal places of accuracy for the round.</span>
+<span class="sd">        May be None, positive, negative, or zero.  If None, zero is used.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -898,16 +897,53 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if the parameter is not a pdarray</span>
+<span class="sd">        Raised if the parameter is not a pdarray or if the dtype of the pdarray</span>
+<span class="sd">        is other than ak.float64, ak.int64, ak.uint64 or ak.bool.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function follows numpy&#39;s rule of &quot;round to even&quot; when the fractional part</span>
+<span class="sd">    of the number equals .5.  For example, 2.5 rounds to 2, but 3.5 rounds to 4.</span>
+<span class="sd">    Arkouda&#39;s use of decimal is not perfect, as shown in the examples below.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; ak.round(ak.array([1.1, 2.5, 3.14159]))</span>
-<span class="sd">    array([1.00000000... 3.00000000... 3.00000000...])</span>
+<span class="sd">    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.round(ak.array([1.5, 2.5, 3.5]))</span>
+<span class="sd">    array([2.00000000000000000 2.00000000000000000 4.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.round(ak.array([-143.1, 279.8]),decimals=-1)</span>
+<span class="sd">    array([-140.00000000000000000 280.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.round(ak.array([-143.1, 279.8]),decimals=0)</span>
+<span class="sd">    array([-143.00000000000000000 280.00000000000000000])</span>
+<span class="sd">    &gt;&gt;&gt; ak.round(ak.array([1.541, 2.732]),decimals=2)</span>
+<span class="sd">    array([1.54 2.73])</span>
+<span class="sd">    &gt;&gt;&gt; ak.round(ak.array([1.541, 2.732]),decimals=3)</span>
+<span class="sd">    array([1.5409999999999999 2.7320000000000002])</span>
+
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;round&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+    <span class="k">if</span> <span class="n">decimals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">decimals</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_int64</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s2">&quot;round&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ak_int64</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># int arguments return copies of the input</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak_bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">ak_float64</span><span class="p">)</span>  <span class="c1"># not an exact match to numpy, which uses np.float16</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;round&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">,</span>
+            <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">decimals</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span></div>
 
 
 

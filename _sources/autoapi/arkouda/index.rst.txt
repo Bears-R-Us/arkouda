@@ -15617,27 +15617,43 @@ Package Contents
    array([0 512 512 384 256 160 96 56 32 18])
 
 
-.. py:function:: round(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: round(pda: arkouda.numpy.pdarrayclass.pdarray, decimals: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the element-wise rounding of the array.
 
    :param pda:
    :type pda: pdarray
-   :param where: This condition is applied over the input. At locations where the condition is True, the
-                 corresponding value will be acted on by the function. Elsewhere, it will retain its
-                 original value. Default set to True.
-   :type where: bool or pdarray, default=True
+   :param decimals: for float pdarrays, the number of decimal places of accuracy for the round.
+                    May be None, positive, negative, or zero.  If None, zero is used.
+   :type decimals: Optional[Union[int, None]], default = None
 
    :returns: A pdarray containing input array elements rounded to the nearest integer
    :rtype: pdarray
 
-   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises TypeError: Raised if the parameter is not a pdarray or if the dtype of the pdarray
+       is other than ak.float64, ak.int64, ak.uint64 or ak.bool.
+
+   .. rubric:: Notes
+
+   This function follows numpy's rule of "round to even" when the fractional part
+   of the number equals .5.  For example, 2.5 rounds to 2, but 3.5 rounds to 4.
+   Arkouda's use of decimal is not perfect, as shown in the examples below.
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
    >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
-   array([1.00000000... 3.00000000... 3.00000000...])
+   array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
+   >>> ak.round(ak.array([1.5, 2.5, 3.5]))
+   array([2.00000000000000000 2.00000000000000000 4.00000000000000000])
+   >>> ak.round(ak.array([-143.1, 279.8]),decimals=-1)
+   array([-140.00000000000000000 280.00000000000000000])
+   >>> ak.round(ak.array([-143.1, 279.8]),decimals=0)
+   array([-143.00000000000000000 280.00000000000000000])
+   >>> ak.round(ak.array([1.541, 2.732]),decimals=2)
+   array([1.54 2.73])
+   >>> ak.round(ak.array([1.541, 2.732]),decimals=3)
+   array([1.5409999999999999 2.7320000000000002])
 
 
 .. py:function:: scalar_array(value: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.dtypes.bool_scalars], dtype: Optional[Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint]] = None) -> arkouda.numpy.pdarrayclass.pdarray
