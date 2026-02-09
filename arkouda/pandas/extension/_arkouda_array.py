@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar
 from typing import cast as type_cast
 
 import numpy as np
 
 from numpy import ndarray
+from numpy.typing import NDArray
 from pandas.api.extensions import ExtensionArray
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
@@ -120,48 +121,273 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # If scalars is already a numpy array, we can preserve its dtype
         return cls(ak_array(scalars, dtype=dtype, copy=copy))
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any) -> Any:
+        """
+        Retrieve one or more values using a pandas/NumPy-style indexer.
+
+        Parameters
+        ----------
+        key : Any
+            A valid indexer for 1D array-like data. This may be:
+            - A scalar integer position (e.g. ``1``)
+            - A Python ``slice`` (e.g. ``1:3``)
+            - A list-like of integer positions
+            - A boolean mask (NumPy array, pandas Series, or Arkouda ``pdarray``)
+            - A NumPy array, pandas Index/Series, or Arkouda ``pdarray``/``Strings``.
+
+        Returns
+        -------
+        Any
+            A scalar value for scalar indexers, or an ``ArkoudaArray`` for sequence-like
+            indexers.
+
+        Raises
+        ------
+        TypeError
+            If ``key`` is not a supported indexer type, or if a NumPy array or
+            list-like indexer has an unsupported dtype.
+        NotImplementedError
+            If a list-like indexer contains mixed element dtypes (e.g. a mixture
+            of booleans and integers), which is not supported.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> data = ak.arange(5)
+        >>> arr = ArkoudaArray(data)
+
+        Scalar integer index returns a Python scalar:
+
+        >>> arr[1]
+        np.int64(1)
+
+        Slicing returns another ArkoudaArray:
+
+        >>> arr[1:4]
+        ArkoudaArray([1 2 3])
+
+        List-like integer positions:
+
+        >>> arr[[0, 2, 4]]
+        ArkoudaArray([0 2 4])
+
+        Boolean mask (NumPy array):
+
+        >>> import numpy as np
+        >>> mask = np.array([True, False, True, False, True])
+        >>> arr[mask]
+        ArkoudaArray([0 2 4])
+        """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
 
-        # Convert numpy boolean mask to arkouda pdarray
+        # Normalize NumPy ndarray indexers
         if isinstance(key, np.ndarray):
-            if key.dtype == bool:
-                key = ak_array(key)
-            elif key.dtype.kind in {"i"}:
+            if key.dtype == bool or key.dtype == np.bool_:
+                key = ak_array(key, dtype=bool)
+            elif np.issubdtype(key.dtype, np.integer):
                 key = ak_array(key, dtype="int64")
-            elif key.dtype.kind in {"u"}:
+            elif np.issubdtype(key.dtype, np.unsignedinteger):
                 key = ak_array(key, dtype="uint64")
             else:
-                raise TypeError(f"Unsupported numpy index type {key.dtype}")
+                raise TypeError(f"Unsupported NumPy index type {key.dtype}")
 
-        result = self._data[key]
-        if np.isscalar(key):
-            if isinstance(result, pdarray):
-                return result[0]
+        # Normalize Python lists
+        elif isinstance(key, list):
+            if len(key) == 0:
+                # Empty selection -> empty ArkoudaArray of same dtype
+                empty = ak_array([], dtype=self._data.dtype)
+                return self.__class__(empty)
+
+            first = key[0]
+            first_dtype = ak_dtype(first)
+            for item in key:
+                item_dtype = ak_dtype(item)
+                if first_dtype != item_dtype:
+                    raise NotImplementedError(
+                        f"Mixed dtypes are not supported: {item_dtype} vs {first_dtype}"
+                    )
+
+            if isinstance(first, (bool, np.bool_)):
+                key = ak_array(np.array(key, dtype=bool))
+            elif isinstance(first, (int, np.integer)):
+                key = ak_array(np.array(key, dtype=np.int64))
             else:
-                return result
+                raise TypeError(f"Unsupported list index type: {type(first)}")
+
+        # Perform the indexing operation
+        result = self._data[key]
+
+        # Scalar key → return Python scalar
+        if np.isscalar(key):
+            # If server returned a pdarray of length 1, extract scalar
+            if isinstance(result, pdarray) and result.size == 1:
+                return result[0]
+            return result
+
+        # All other cases → wrap result in same class
         return self.__class__(result)
 
-    #   TODO:  Simplify to use underlying array setter
-    def __setitem__(self, key, value):
-        from arkouda.numpy.dtypes import isSupportedInt
+    def __setitem__(self, key: Any, value: Any) -> None:
+        """
+        Assign one or more values to the underlying Arkouda array in-place.
+
+        Parameters
+        ----------
+        key : Any
+            A positional indexer selecting the locations to modify. Supported forms include:
+
+            - Scalar integer position (e.g. ``arr[3] = ...``)
+            - Slice (e.g. ``arr[1:4] = ...``)
+            - Boolean mask (NumPy ``ndarray`` of bools, or Python ``list`` of bools)
+            - Integer indexer (NumPy ``ndarray`` of integers, Python ``list`` of ints)
+            - Arkouda ``pdarray`` indexer (integer index array or boolean mask)
+
+            For Python ``list`` indexers, all elements must be of a single supported type:
+            all-bool or all-int. Mixed bool/int lists are rejected. Boolean-mask lists
+            must have length equal to ``len(self)``.
+
+        value : Any
+            The value(s) to assign.
+
+            - If a scalar (NumPy scalar or Python scalar), it is broadcast to all selected
+              positions.
+            - If an ``ArkoudaArray`` or Arkouda ``pdarray``, it is assigned directly.
+            - Otherwise, array-like inputs (e.g. Python lists, NumPy arrays) are converted
+              to an Arkouda ``pdarray`` and must be aligned with ``key``.
+
+        Raises
+        ------
+        TypeError
+            If a Python list indexer contains unsupported element types.
+        NotImplementedError
+            If a Python list indexer mixes boolean and integer elements.
+        IndexError
+            If a Python list boolean mask has length different from ``len(self)``.
+
+        Notes
+        -----
+        This operation mutates the underlying server-side array in-place.
+
+        Empty indexers (e.g. an empty Python list, or an empty NumPy integer indexer
+        after normalization) are treated as a no-op.
+
+        Examples
+        --------
+        Basic scalar assignment by position:
+
+        >>> import arkouda as ak
+        >>> import numpy as np
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> arr[0] = 42
+        >>> arr
+        ArkoudaArray([42 1 2 3 4])
+
+        Assigning with a Python list of integer positions:
+
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> arr[[1, 3]] = 99
+        >>> arr
+        ArkoudaArray([0 99 2 99 4])
+
+        Assigning with a NumPy boolean mask:
+
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> mask = arr.to_ndarray() % 2 == 0
+        >>> arr[mask] = -1
+        >>> arr
+        ArkoudaArray([-1 1 -1 3 -1])
+
+        Assigning with a NumPy integer indexer:
+
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> idx = np.array([1, 3], dtype=np.int64)
+        >>> arr[idx] = 7
+        >>> arr
+        ArkoudaArray([0 7 2 7 4])
+
+        Assigning from another ArkoudaArray:
+
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> other = ArkoudaArray(ak.arange(10, 15))
+        >>> idx = [1, 3, 4]
+        >>> arr[idx] = other[idx]
+        >>> arr
+        ArkoudaArray([0 11 2 13 14])
+
+        Python list boolean masks must match the array length:
+
+        >>> arr = ArkoudaArray(ak.arange(5))
+        >>> arr[[True, False, True]] = 0
+        Traceback (most recent call last):
+        ...
+        IndexError: Boolean indexer has wrong length: 3 instead of 5
+        """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
 
-        # Convert numpy mask to pdarray if necessary
-        if isinstance(key, np.ndarray) and key.dtype == bool:
-            key = ak_array(key)
-        elif isinstance(key, np.ndarray) and isSupportedInt(key.dtype):
-            key = ak_array(key)
+        if isinstance(key, list):
+            if len(key) == 0:
+                return  # empty list => noop
+
+            # validate element types + detect mixed
+            has_bool = False
+            has_int = False
+            for k in key:
+                if isinstance(k, (bool, np.bool_)):
+                    has_bool = True
+                elif isinstance(k, (int, np.integer)) and not isinstance(k, (bool, np.bool_)):
+                    has_int = True
+                else:
+                    raise TypeError(
+                        "Only lists of ints or bools are supported for __setitem__ indexers."
+                    )
+
+                if has_bool and has_int:
+                    raise NotImplementedError("Mixed index list dtypes (bool + int) are not supported.")
+
+            if has_bool:
+                # boolean mask must match array length
+                if len(key) != len(self):
+                    raise IndexError(
+                        f"Boolean indexer has wrong length: {len(key)} instead of {len(self)}"
+                    )
+                key = np.array(key, dtype=bool)
+            else:
+                key = np.array(key, dtype=np.int64)
+
+        # Normalize NumPy / Python indexers into Arkouda pdarrays where needed
+        if isinstance(key, np.ndarray):
+            # NumPy bool mask or integer indexer
+            if key.dtype == bool or key.dtype == np.bool_ or np.issubdtype(key.dtype, np.integer):
+                key = ak_array(key)
+        elif isinstance(key, list):
+            # Python list of bools or ints - convert to NumPy then to pdarray
+            if key and isinstance(key[0], (bool, np.bool_)):
+                key = ak_array(np.array(key, dtype=bool))
+            elif key and isinstance(key[0], (int, np.integer)):
+                key = ak_array(np.array(key, dtype=np.int64))
+
+        if _is_empty_indexer(key):
+            # Setting nothing is a no-op, consistent with numpy/pandas
+            return
+
+        # Normalize the value into something the underlying pdarray understands
         if isinstance(value, ArkoudaArray):
             value = value._data
         elif isinstance(value, pdarray):
+            # already an Arkouda pdarray; nothing to do
             pass
-        elif isinstance(value, (int, float, bool)):  # Add scalar check
-            self._data[key] = value  # assign scalar to scalar position
+        elif np.isscalar(value):
+            # Fast path for scalar assignment
+
+            self._data[key] = value
             return
         else:
+            # Convert generic array-likes (Python lists, NumPy arrays, etc.)
+            # into Arkouda pdarrays.
             value = ak_array(value)
 
         self._data[key] = value
@@ -188,15 +414,17 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         # Fallback: local cast
         return self.to_ndarray().astype(npdt, copy=copy)
 
-    def isna(self) -> ExtensionArray | ndarray[Any, Any]:
+    def isna(self) -> NDArray[np.bool_]:
         from arkouda.numpy import isnan
         from arkouda.numpy.pdarraycreation import full as ak_full
         from arkouda.numpy.util import is_float
 
         if not is_float(self._data):
-            return ak_full(self._data.size, False, dtype=bool)
+            return (
+                ak_full(self._data.size, False, dtype=bool).to_ndarray().astype(dtype=bool, copy=False)
+            )
 
-        return isnan(self._data)
+        return isnan(self._data).to_ndarray().astype(dtype=bool, copy=False)
 
     @property
     def dtype(self):
@@ -224,21 +452,95 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return False
         return self._data.equals(other._data)
 
-    def _reduce(self, name, skipna=True, **kwargs):
-        if name == "all":
-            return self._data.all()
-        elif name == "any":
-            return self._data.any()
-        elif name == "sum":
-            return self._data.sum()
-        elif name == "prod":
-            return self._data.prod()
-        elif name == "min":
-            return self._data.min()
-        elif name == "max":
-            return self._data.max()
+    def _reduce(self, name: str, skipna: bool = True, **kwargs: Any) -> Any:
+        """
+        Reduce the array to a single value (or a small array result) using a named reduction.
+
+        This implements the pandas ExtensionArray reduction protocol and is called by pandas
+        for operations like ``Series.sum()`` and ``Series.min()``.
+
+        Parameters
+        ----------
+        name : str
+            Name of the reduction to perform (e.g., ``"sum"``, ``"min"``, ``"std"``).
+        skipna : bool
+            Whether to ignore missing values. Accepted for pandas compatibility.
+            Default is True.
+
+            NOTE
+            ----
+            ``skipna`` semantics are **not fully supported** for Arkouda-backed arrays.
+            Except where explicitly implemented (e.g., ``count`` for float64),
+            reductions are delegated directly to Arkouda operations, which typically
+            propagate ``NaN`` values rather than skipping them.
+
+            As a result, reductions such as ``sum``, ``mean``, ``min``, and ``max`` on
+            float arrays may return ``NaN`` even when ``skipna=True``.
+        **kwargs : Any
+            Additional keyword arguments forwarded by pandas. Currently unused unless
+            explicitly supported.
+
+        Returns
+        -------
+        Any
+            A scalar result for scalar reductions (e.g., ``sum``, ``min``, ``mean``), or an
+            ``ArkoudaArray`` for array-returning reductions such as ``mode``.
+
+        Raises
+        ------
+        TypeError
+            If ``name`` is not a recognized reduction.
+        """
+        from arkouda.numpy import isnan
+
+        ddof = int(kwargs.get("ddof", 1))
+
+        op = name.lower()
+        data = self._data
+
+        def _count_nonmissing() -> int:
+            # Minimal NA handling: treat NaN as missing only for float64.
+            if data.dtype == "float64":
+                return int((~isnan(data)).sum())
+            return int(data.size)
+
+        def _first() -> Any:
+            if data.size == 0:
+                # Throw an error for now; pandas often raises or returns NA depending on context.
+                raise ValueError("Reduction 'first' requires at least one element")
+            return data[0]
+
+        def _var() -> Any:
+            return data.var(ddof=ddof)
+
+        def _std() -> Any:
+            return data.std(ddof=ddof)
+
+        # All listed reductions are guaranteed to exist on pdarray for all dtypes
+        scalar_fns: dict[str, Callable[[], Any]] = {
+            "sum": data.sum,
+            "count": _count_nonmissing,
+            "prod": data.prod,
+            "min": data.min,
+            "max": data.max,
+            "mean": data.mean,
+            "var": _var,
+            "std": _std,
+            "argmin": data.argmin,
+            "argmax": data.argmax,
+            "first": _first,
+            "any": data.any,
+            "or": data.any,  # "any" and "or" are the same op
+            "all": data.all,
+            "and": data.all,  # "all" and "and" are the same op
+        }
+
+        fn = scalar_fns.get(op)
+        if fn is not None:
+            return fn()
         else:
-            raise TypeError(f"'ArkoudaArray' with dtype arkouda does not support reduction '{name}'")
+            #   op was not in the keys of scalar_fns:
+            raise TypeError(f"Unknown reduction '{name}'")
 
     def __eq__(self, other):
         """
@@ -369,3 +671,29 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         boolean-reduction calls.
         """
         return bool(self._data.any())
+
+
+def _is_empty_indexer(key) -> bool:
+    from arkouda.numpy.pdarrayclass import pdarray
+
+    # Python containers
+    if isinstance(key, (list, tuple)):
+        return len(key) == 0
+
+    # NumPy arrays
+    if isinstance(key, np.ndarray):
+        return key.size == 0
+
+    # Arkouda arrays
+    if isinstance(key, pdarray):
+        return key.size == 0
+
+    # Pandas Index/Series often implement __len__ and are safe here,
+    # but we keep it conservative (optional):
+    if isinstance(key, Sequence) and not isinstance(key, (str, bytes)):
+        try:
+            return len(key) == 0
+        except TypeError:
+            return False
+
+    return False

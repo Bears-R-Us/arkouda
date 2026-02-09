@@ -2,7 +2,7 @@ from typing import Iterable, Tuple, Union
 
 from numpy import ndarray
 
-from arkouda.numpy.dtypes import all_scalars, isSupportedDType
+from arkouda.numpy.dtypes import all_scalars, is_supported_dtype
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.strings import Strings
 
@@ -46,7 +46,7 @@ def shape(a: Union[pdarray, Strings, all_scalars]) -> Tuple:
 
             result = array(a).shape
         return result
-    elif isSupportedDType(a):
+    elif is_supported_dtype(a):
         return ()
     else:
         raise TypeError("shape requires type pdarray, ndarray, Iterable, or numeric scalar.")

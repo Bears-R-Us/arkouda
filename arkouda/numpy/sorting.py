@@ -225,7 +225,7 @@ def coargsort(
         dtype = int if isinstance(arrays[0], (Strings, Categorical)) else arrays[0].dtype
         return zeros(0, dtype=dtype)
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="coargsort",
         args={
             "algoName": algorithm.name,
@@ -235,7 +235,7 @@ def coargsort(
         },
     )
 
-    sorted_array = create_pdarray(cast(str, repMsg))
+    sorted_array = create_pdarray(cast(str, rep_msg))
 
     if ascending or max_dim > 1:
         return sorted_array
@@ -311,11 +311,11 @@ def sort(
         raise ValueError(f"ak.sort supports int64, uint64, or float64, not {pda.dtype}")
     if pda.size == 0:
         return zeros(0, dtype=pda.dtype)
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"sort<{pda.dtype.name},{pda.ndim}>",
         args={"alg": algorithm.name, "array": pda, "axis": axis_},
     )
-    return create_pdarray(cast(str, repMsg))
+    return create_pdarray(cast(str, rep_msg))
 
 
 @typechecked
@@ -395,7 +395,7 @@ def searchsorted(
     if a.dtype != v_.dtype:
         raise TypeError(f"The dtype of a ({a.dtype}) and v ({v_.dtype}) must match.")
 
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd=f"searchSorted<{a.dtype},{a.ndim},{v_.ndim}>",
         args={
             "x1": a,
@@ -405,7 +405,7 @@ def searchsorted(
         },
     )
 
-    out = create_pdarray(cast(str, repMsg))
+    out = create_pdarray(cast(str, rep_msg))
 
     if scalar_input:
         return int(out[0])

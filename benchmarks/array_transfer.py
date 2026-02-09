@@ -37,9 +37,14 @@ def time_ak_array_transfer(N, trials, dtype, seed, max_bits=-1):
         npa = a.to_ndarray()
         end = time.time()
         to_ndarray_times.append(end - start)
-        start = time.time()
-        aka = ak.array(npa, max_bits=max_bits)
-        end = time.time()
+        if dtype == ak.bigint.name:
+            start = time.time()
+            aka = ak.array(npa, max_bits=max_bits, dtype=dtype, unsafe=True, num_bits=128, any_neg=False)
+            end = time.time()
+        else:
+            start = time.time()
+            aka = ak.array(npa, max_bits=max_bits, dtype=dtype)
+            end = time.time()
         to_pdarray_times.append(end - start)
         gc.collect()
     avgnd = sum(to_ndarray_times) / trials

@@ -1,5 +1,14 @@
 # flake8: noqa
 
+import warnings
+
+warnings.warn(
+    "arkouda.util is deprecated and will be removed in a future release. "
+    "Please use arkouda.numpy.util instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
 from arkouda.numpy.util import (
     attach,
     attach_all,

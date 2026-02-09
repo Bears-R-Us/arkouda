@@ -344,7 +344,7 @@ class ArkoudaDataFrameAccessor:
         >>> df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
         >>> akdf = df.ak.to_ak()
         >>> type(akdf)
-        <class 'pandas.core.frame.DataFrame'>
+         <class 'pandas...DataFrame'>
 
         The columns are now Arkouda ExtensionArrays:
 

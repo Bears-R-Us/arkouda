@@ -66,4 +66,13 @@ CLEANALL_TARGETS += tags-clean
 .PHONY: tags-clean
 tags-clean:
 	$(RM) $(ARKOUDA_SOURCE_DIR)/TAGS
+	
+.PHONY: 2d 3d
+
+2d:
+	$(MAKE) ARRAY_ND_MAX=2 $(DEFAULT_TARGET)
+
+3d:
+	$(MAKE) ARRAY_ND_MAX=3 $(DEFAULT_TARGET) instantiate_max=1024
+
 

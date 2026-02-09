@@ -80,9 +80,9 @@ def flip(
     from arkouda.client import generic_msg
     from arkouda.numpy.strings import Strings
 
-    axisList = []
+    axis_list = []
     if axis is not None:
-        axisList = list(axis) if isinstance(axis, tuple) else [axis]
+        axis_list = list(axis) if isinstance(axis, tuple) else [axis]
 
     if isinstance(x, pdarray):
         try:
@@ -97,8 +97,8 @@ def flip(
                         ),
                         args={
                             "name": x,
-                            "nAxes": len(axisList),
-                            "axis": axisList,
+                            "nAxes": len(axis_list),
+                            "axis": axis_list,
                         },
                     ),
                 )
@@ -333,16 +333,16 @@ def squeeze(
                 _axis.pop()
             axis = tuple(_axis)
 
-        nAxes = len(axis) if isinstance(axis, tuple) else 1
+        n_axes = len(axis) if isinstance(axis, tuple) else 1
         try:
             return create_pdarray(
                 cast(
                     str,
                     generic_msg(
-                        cmd=f"squeeze<{x.dtype},{x.ndim},{x.ndim - nAxes}>",
+                        cmd=f"squeeze<{x.dtype},{x.ndim},{x.ndim - n_axes}>",
                         args={
                             "name": x,
-                            "nAxes": nAxes,
+                            "nAxes": n_axes,
                             "axes": list(axis) if isinstance(axis, tuple) else [axis],
                         },
                     ),
@@ -411,11 +411,11 @@ Thus for an A of shape (2, 3, 4, 5), a reps of (2, 2) is treated as (1, 1, 2, 2)
         reps_2 = list(cast(tuple, reps))
         l_reps = len(reps)
 
-    A_shape = A.shape
-    dim_difference = abs(len(A_shape) - l_reps)
-    if len(A_shape) < l_reps:
-        A = A.reshape((1,) * dim_difference + A_shape)
-    elif len(A_shape) > l_reps:
+    a_shape = A.shape
+    dim_difference = abs(len(a_shape) - l_reps)
+    if len(a_shape) < l_reps:
+        A = A.reshape((1,) * dim_difference + a_shape)  # noqa: N806
+    elif len(a_shape) > l_reps:
         reps_2 = [1] * dim_difference + reps_2
 
     # Construct the command to send to the server

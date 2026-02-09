@@ -18,7 +18,7 @@ from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import concatenate, in1d
 from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.groupbyclass import GroupBy, broadcast
+from arkouda.pandas.groupbyclass import GroupBy, broadcast, groupable_element_type
 
 
 if TYPE_CHECKING:
@@ -109,7 +109,7 @@ def join_on_eq_with_dt(
     # groupby on a2
     g2 = GroupBy(a2)
     # pass result into server joinEqWithDT operation
-    repMsg = generic_msg(
+    rep_msg = generic_msg(
         cmd="joinEqWithDT",
         args={
             "a1": a1,
@@ -124,10 +124,10 @@ def join_on_eq_with_dt(
         },
     )
     # create pdarrays for results
-    resIAttr, resJAttr = cast(str, repMsg).split("+")
-    resI = create_pdarray(resIAttr)
-    resJ = create_pdarray(resJAttr)
-    return resI, resJ
+    res_i_attr, res_j_attr = cast(str, rep_msg).split("+")
+    res_i = create_pdarray(res_i_attr)
+    res_j = create_pdarray(res_j_attr)
+    return res_i, res_j
 
 
 def gen_ranges(starts, ends, stride=1, return_lengths=False):
@@ -198,8 +198,8 @@ def compute_join_size(a: pdarray, b: pdarray) -> Tuple[int, int]:
     ua, asize = bya.size()
     byb = GroupBy(b)
     ub, bsize = byb.size()
-    afact = asize[in1d(ua, ub)]
-    bfact = bsize[in1d(ub, ua)]
+    afact = asize[in1d(cast(groupable_element_type, ua), cast(groupable_element_type, ub))]
+    bfact = bsize[in1d(cast(groupable_element_type, ub), cast(groupable_element_type, ua))]
     nelem = (afact * bfact).sum()
     nbytes = 3 * 8 * nelem
     return nelem, nbytes
@@ -235,17 +235,17 @@ def inner_join(
     Returns
     -------
     Tuple[pdarray, pdarray]
-        leftInds : pdarray(int64)
+        left_inds : pdarray(int64)
             The left indices of pairs that meet the join condition
-        rightInds : pdarray(int64)
+        right_inds : pdarray(int64)
             The right indices of pairs that meet the join condition
 
     Notes
     -----
     The return values satisfy the following assertions
 
-    `assert (left[leftInds] == right[rightInds]).all()`
-    `assert wherefunc(whereargs[0][leftInds], whereargs[1][rightInds]).all()`
+    `assert (left[left_inds] == right[right_inds]).all()`
+    `assert wherefunc(whereargs[0][left_inds], whereargs[1][right_inds]).all()`
 
     """
     from inspect import signature
@@ -298,23 +298,23 @@ def inner_join(
             raise ValueError("Error evaluating wherefunc") from e
 
     # Need dense 0-up right index, to filter out left not in right
-    keep, (denseLeft, denseRight) = right_align(left, right)
+    keep, (dense_left, dense_right) = right_align(left, right)
     if keep.sum() == 0:
         # Intersection is empty
         return zeros(0, dtype=akint64), zeros(0, dtype=akint64)
     keep = arange(keep.size)[keep]
     # GroupBy right
-    byRight = GroupBy(denseRight)
+    by_right = GroupBy(dense_right)
     # Get segment boundaries (starts, ends) of right for each left item
-    rightSegs = concatenate((byRight.segments, array([denseRight.size])))
-    starts = rightSegs[denseLeft]
-    ends = rightSegs[denseLeft + 1]
+    right_segs = concatenate((by_right.segments, array([dense_right.size])))
+    starts = right_segs[dense_left]
+    ends = right_segs[dense_left + 1]
     # gen_ranges for gather of right items
-    fullSegs, ranges = gen_ranges(starts, ends)
+    full_segs, ranges = gen_ranges(starts, ends)
     # Evaluate where clause
     if wherefunc is None:
-        filtRanges = ranges
-        filtSegs = fullSegs
+        filt_ranges = ranges
+        filt_segs = full_segs
         keep12 = keep
     else:
         if whereargs is not None:
@@ -323,32 +323,32 @@ def inner_join(
             left = whereargs[0]
             if not isinstance(right, Sequence) and not isinstance(left, Sequence):
                 # Gather right whereargs
-                rightWhere = right[byRight.permutation][ranges]
+                right_where = right[by_right.permutation][ranges]
                 # Expand left whereargs
                 keep_where = left[keep]
                 keep_where = keep_where.codes if isinstance(keep_where, Categorical) else keep_where
-                leftWhere = broadcast(fullSegs, keep_where, ranges.size)
+                left_where = broadcast(full_segs, keep_where, ranges.size)
             else:
                 # Gather right whereargs
-                rightWhere = [wa[byRight.permutation][ranges] for wa in whereargs[1]]
+                right_where = [wa[by_right.permutation][ranges] for wa in whereargs[1]]
                 # Expand left whereargs
                 keep_where = [wa[keep] for wa in whereargs[0]]
-                leftWhere = [broadcast(fullSegs, kw, ranges.size) for kw in keep_where]
+                left_where = [broadcast(full_segs, kw, ranges.size) for kw in keep_where]
             # Evaluate wherefunc and filter ranges, recompute segments
-            whereSatisfied = wherefunc(leftWhere, rightWhere)
-            filtRanges = ranges[whereSatisfied]
-            scan = cumsum(whereSatisfied) - whereSatisfied
-            filtSegsWithZeros = scan[fullSegs]
-            filtSegSizes = concatenate(
+            where_satisfied = wherefunc(left_where, right_where)
+            filt_ranges = ranges[where_satisfied]
+            scan = cumsum(where_satisfied) - where_satisfied
+            filt_segs_with_zeros = scan[full_segs]
+            filt_seg_sizes = concatenate(
                 (
-                    filtSegsWithZeros[1:] - filtSegsWithZeros[:-1],
-                    array([whereSatisfied.sum() - filtSegsWithZeros[-1]]),
+                    filt_segs_with_zeros[1:] - filt_segs_with_zeros[:-1],
+                    array([where_satisfied.sum() - filt_segs_with_zeros[-1]]),
                 )
             )
-            keep2 = filtSegSizes > 0
-            filtSegs = filtSegsWithZeros[keep2]
+            keep2 = filt_seg_sizes > 0
+            filt_segs = filt_segs_with_zeros[keep2]
             keep12 = keep[keep2]
     # Gather right inds and expand left inds
-    rightInds = byRight.permutation[filtRanges]
-    leftInds = broadcast(filtSegs, arange(left_size)[keep12], filtRanges.size)
-    return leftInds, rightInds
+    right_inds = by_right.permutation[filt_ranges]
+    left_inds = broadcast(filt_segs, arange(left_size)[keep12], filt_ranges.size)
+    return left_inds, right_inds

@@ -12,7 +12,7 @@ from pandas import date_range as pd_date_range
 from pandas import timedelta_range as pd_timedelta_range
 from pandas import to_datetime, to_timedelta
 
-from arkouda.numpy.dtypes import int64, int_scalars, intTypes, isSupportedInt
+from arkouda.numpy.dtypes import int64, int_scalars, intTypes, is_supported_int
 from arkouda.numpy.pdarrayclass import RegistrationError, create_pdarray, pdarray
 
 
@@ -117,18 +117,10 @@ class _AbstractBaseTime(pdarray):
                 # M = datetime64, m = timedelta64
                 raise TypeError(f"Invalid dtype: {pda.dtype.name}")
             if isinstance(pda, pdSeries):
-                # Pandas Datetime and Timedelta
-                # Get units of underlying numpy datetime64 array
-                self.unit = np.datetime_data(pda.values.dtype)[0]  # type: ignore [arg-type]
-                self._factor = _get_factor(self.unit)
-                # Create pdarray
+                # from_series() already returns int64 nanoseconds for datetime/timedelta
+                self.unit = _BASE_UNIT  # "ns"
+                self._factor = 1
                 self.values = from_series(pda)
-                # Scale if necessary
-                # This is futureproofing; it will not be used unless pandas
-                # changes its Datetime implementation
-                if self._factor != 1:
-                    # Scale inplace because we already created a copy
-                    self.values *= self._factor
             elif isinstance(pda, np.ndarray):
                 # Numpy datetime64 and timedelta64
                 # Force through pandas.Series
@@ -316,7 +308,7 @@ class _AbstractBaseTime(pdarray):
                 otherdata = _Timescalar(other).value
             else:
                 otherdata = other.values
-        elif (isinstance(other, pdarray) and other.dtype in intTypes) or isSupportedInt(other):
+        elif (isinstance(other, pdarray) and other.dtype in intTypes) or is_supported_int(other):
             if op not in self.supported_with_pdarray:
                 raise TypeError(f"{op} not supported between {self.__class__.__name__} and integer")
             otherclass = "pdarray"
@@ -355,7 +347,7 @@ class _AbstractBaseTime(pdarray):
                 )
             otherclass = "Timedelta"
             otherdata = _Timescalar(other).value
-        elif isSupportedInt(other):
+        elif is_supported_int(other):
             if op not in self.supported_with_r_pdarray:
                 raise TypeError(f"{op} not supported between int64 and {self.__class__.__name__}")
             otherclass = "pdarray"
@@ -401,7 +393,7 @@ class _AbstractBaseTime(pdarray):
         return key
 
     def __getitem__(self, key):
-        if isSupportedInt(key):
+        if is_supported_int(key):
             # Single integer index will return a pandas scalar
             return self._scalar_callback(self.values[key])
         else:

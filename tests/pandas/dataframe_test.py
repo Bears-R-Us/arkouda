@@ -1,6 +1,7 @@
 import itertools
 import os
 import tempfile
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -604,13 +605,13 @@ class TestDataFrame:
 
     def test_groupby_standard(self):
         df = self.build_ak_df()
-        gb = df.GroupBy("userName")
+        gb = df._build_groupby("userName")
         keys, count = gb.size()
         assert keys.tolist() == ["Bob", "Alice", "Carol"]
         assert count.tolist() == [2, 3, 1]
         assert gb.permutation.tolist() == [1, 4, 0, 2, 5, 3]
 
-        gb = df.GroupBy(["userName", "userID"])
+        gb = df._build_groupby(["userName", "userID"])
         keys, count = gb.size()
         assert len(keys) == 2
         assert keys[0].tolist() == ["Bob", "Alice", "Carol"]
@@ -639,7 +640,7 @@ class TestDataFrame:
     def test_gb_series(self):
         df = self.build_ak_df()
 
-        gb = df.GroupBy("userName", use_series=True)
+        gb = df._build_groupby("userName", use_series=True)
 
         c = gb.size(as_series=True)
         assert isinstance(c, ak.Series)
@@ -717,24 +718,22 @@ class TestDataFrame:
         ak_df = self.build_ak_df_example2()
         pd_df = ak_df.to_pandas(retain_index=True)
 
-        pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False).sum("count").drop(["nums"], axis=1)
+        pd_result1 = pd_df.groupby(["key1", "key2"], as_index=False)[["count"]].sum()
         ak_result1 = ak_df.groupby(["key1", "key2"]).sum("count")
         assert_frame_equal(pd_result1, ak_result1.to_pandas(retain_index=True))
         assert isinstance(ak_result1, ak.dataframe.DataFrame)
 
-        pd_result2 = (
-            pd_df.groupby(["key1", "key2"], as_index=False).sum(["count"]).drop(["nums"], axis=1)
-        )
+        pd_result2 = pd_df.groupby(["key1", "key2"], as_index=False)[["count"]].sum()
         ak_result2 = ak_df.groupby(["key1", "key2"]).sum(["count"])
         assert_frame_equal(pd_result2, ak_result2.to_pandas(retain_index=True))
         assert isinstance(ak_result2, ak.dataframe.DataFrame)
 
-        pd_result3 = pd_df.groupby(["key1", "key2"], as_index=False).sum(["count", "nums"])
+        pd_result3 = pd_df.groupby(["key1", "key2"], as_index=False)[["count", "nums"]].sum()
         ak_result3 = ak_df.groupby(["key1", "key2"]).sum(["count", "nums"])
         assert_frame_equal(pd_result3, ak_result3.to_pandas(retain_index=True))
         assert isinstance(ak_result3, ak.dataframe.DataFrame)
 
-        pd_result4 = pd_df.groupby(["key1", "key2"], as_index=False).sum().drop(["key3"], axis=1)
+        pd_result4 = pd_df.groupby(["key1", "key2"], as_index=False).sum(numeric_only=True)
         ak_result4 = ak_df.groupby(["key1", "key2"]).sum()
         assert_frame_equal(pd_result4, ak_result4.to_pandas(retain_index=True))
         assert isinstance(ak_result4, ak.dataframe.DataFrame)
@@ -1281,7 +1280,7 @@ class TestDataFrame:
                 if isinstance(ak_merge[col], ak.pdarray):
                     assert np.allclose(np.sort(from_ak), np.sort(from_pd), equal_nan=True)
                 elif isinstance(ak_merge[col], ak.Categorical):
-                    na = ak_merge[col].NAvalue
+                    na = ak_merge[col].na_value
                     from_ak = np.where(from_ak == na, "nan", from_ak)
                     from_ak = np.sort(from_ak)
                     from_pd = np.sort(from_pd.astype(str))
@@ -1589,8 +1588,8 @@ class TestDataFrame:
                             np.allclose(previous2["vals"].tolist(), current2["vals"].tolist())
                         )
                         if not res:
-                            print(f"\nnum locales: {cfg['numLocales']}")
-                            print(f"Failure with seed:\n{iseed}")
+                            warnings.warn(f"\nnum locales: {cfg['numLocales']}")
+                            warnings.warn(f"Failure with seed:\n{iseed}")
                         assert res
 
     @pytest.mark.parametrize("size", pytest.prob_size)

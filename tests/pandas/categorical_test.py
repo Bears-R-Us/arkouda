@@ -36,7 +36,7 @@ class TestCategorical:
     def test_categorical_docstrings(self):
         import doctest
 
-        from arkouda import categorical
+        from arkouda.pandas import categorical
 
         result = doctest.testmod(
             categorical, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
@@ -454,20 +454,20 @@ class TestCategorical:
     def test_na(self):
         s = ak.array(["A", "B", "C", "B", "C"])
         # NAval present in categories
-        c = ak.Categorical(s, NAvalue="C")
+        c = ak.Categorical(s, na_value="C")
         assert (c.isna() == (s == "C")).all()
-        assert c.NAvalue == "C"
+        assert c.na_value == "C"
         # Test that NAval survives registration
         c.register("my_categorical")
         c2 = ak.attach("my_categorical")
-        assert c2.NAvalue == "C"
+        assert c2.na_value == "C"
 
         c.unregister()
 
         # default NAval not present in categories
         c = ak.Categorical(s)
         assert not c.isna().any()
-        assert c.NAvalue == "N/A"
+        assert c.na_value == "N/A"
 
     def test_standardize_categories(self):
         c1 = ak.Categorical(ak.array(["A", "B", "C"]))
@@ -637,3 +637,8 @@ class TestCategorical:
             if a is not None:
                 assert a is not b
                 assert_equal(a, b)
+
+    def test_categorical_NAvalue_deprecated_returns_find_na(self):
+        cat = Categorical(ak.array(["a", "b"]))
+        with pytest.deprecated_call():
+            assert cat.NAvalue == cat.na_value

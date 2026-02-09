@@ -31,18 +31,9 @@
     //  prototype deep copy function
 
     @arkouda.registerCommand()
-    proc deepcopy(x : [?d] ?t) : [d] t throws
-        where (t==int || t==real || t==uint || t==bigint || t==bool) {
+    proc deepcopy(x : [?d] ?t) : [d] t throws {
         var retVal = makeDistArray(d, t);
-        if numLocales == 1 {
-            forall (x_, r_) in zip (x, retVal) { r_ = x_ ; }
-            return retVal;
-        } else {
-            coforall loc in Locales do on loc {
-                var xLD = x.localSubdomain() ;
-                retVal[xLD] = x[xLD];
-            }
-        }
+        retVal = x;
         return retVal;
     }
 
