@@ -20,7 +20,7 @@ def _make_np_array(dtype, shape, seed: int):
     rng = np.random.default_rng(seed)
     if dtype == np.float64:
         # Avoid NaNs/Infs for clean alignment expectations
-        x = rng.normal(size=shape).astype(np.float64)
+        x = rng.normal(size=shape)
         return x
     if dtype == np.int64:
         return rng.integers(-50, 50, size=shape, dtype=np.int64)
@@ -43,20 +43,8 @@ def test_sort_matches_numpy(dtype, shape, axis):
     a_np = _make_np_array(dtype, shape, seed=123)
     a_ak = ak.array(a_np)
 
-    # Arkouda normalizes axis, so compute the equivalent for NumPy
-    ndim = a_np.ndim
-    axis_np = axis if axis >= 0 else (ndim + axis)
-
-    if ndim == 1:
-        axis_np = 0  # both should treat axis=0 for 1D
-
-    if (axis_np < 0) or (axis_np >= ndim):
-        with pytest.raises(IndexError):
-            ak.sort(a_ak, axis=axis)
-        return
-
     got = ak.sort(a_ak, axis=axis).to_ndarray()
-    exp = np.sort(a_np, axis=axis_np)
+    exp = np.sort(a_np, axis=axis)
 
     assert got.dtype == exp.dtype
     assert np.array_equal(got, exp)
@@ -71,31 +59,20 @@ def test_argsort_matches_numpy(dtype, shape, axis, ascending):
     a_np = _make_np_array(dtype, shape, seed=321)
     a_ak = ak.array(a_np)
 
-    ndim = a_np.ndim
-    axis_np = axis if axis >= 0 else (ndim + axis)
-
-    if ndim == 1:
-        axis_np = 0
-
-    if (axis_np < 0) or (axis_np >= ndim):
-        with pytest.raises(IndexError):
-            ak.argsort(a_ak, axis=axis, ascending=ascending)
-        return
-
     got = ak.argsort(a_ak, axis=axis, ascending=ascending).to_ndarray()
 
     if ascending:
-        exp = np.argsort(a_np, axis=axis_np, kind="stable")
+        exp = np.argsort(a_np, axis=axis, kind="stable")
     else:
-        exp = _np_argsort_desc(a_np, axis=axis_np)
+        exp = _np_argsort_desc(a_np, axis=axis)
 
     assert got.dtype == exp.dtype
     assert np.array_equal(got, exp)
 
     # Also validate that applying the permutation actually sorts
     # (NumPy-based expectation)
-    got_sorted = np.take_along_axis(a_np, got, axis=axis_np)
-    exp_sorted = np.take_along_axis(a_np, exp, axis=axis_np)
+    got_sorted = np.take_along_axis(a_np, got, axis=axis)
+    exp_sorted = np.take_along_axis(a_np, exp, axis=axis)
     assert np.array_equal(got_sorted, exp_sorted)
 
 
