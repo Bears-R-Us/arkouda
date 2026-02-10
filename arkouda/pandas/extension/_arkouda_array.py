@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar, Union, overload
 from typing import cast as type_cast
 
 import numpy as np
@@ -8,6 +8,7 @@ import numpy as np
 from numpy import ndarray
 from numpy.typing import NDArray
 from pandas.api.extensions import ExtensionArray
+from pandas.core.dtypes.dtypes import ExtensionDtype
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
 
@@ -392,39 +393,112 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         self._data[key] = value
 
-    def astype(self, dtype, copy: bool = False):
-        # Always hand back a real object-dtype ndarray when object is requested
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: np.dtype[Any], copy: bool = True) -> NDArray[Any]: ...
+
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: ExtensionDtype, copy: bool = True) -> ExtensionArray: ...
+
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: Any, copy: bool = True) -> Union[ExtensionArray, NDArray[Any]]: ...
+
+    def astype(
+        self,
+        dtype: Any,
+        copy: bool = True,
+    ) -> Union[ExtensionArray, NDArray[Any]]:
+        """
+        Cast the array to a specified dtype.
+
+        Casting rules:
+
+        * If ``dtype`` requests ``object``, returns a NumPy ``NDArray[Any]`` of
+          dtype ``object`` containing the array values.
+        * Otherwise, the target dtype is normalized using Arkouda's dtype
+          resolution rules.
+        * If the normalized dtype matches the current dtype and ``copy=False``,
+          returns ``self``.
+        * In all other cases, casts the underlying Arkouda array to the target
+          dtype and returns an Arkouda-backed ``ArkoudaExtensionArray``.
+
+        Parameters
+        ----------
+        dtype : Any
+            Target dtype. May be a NumPy dtype, pandas dtype, Arkouda dtype,
+            or any dtype-like object accepted by Arkouda.
+        copy : bool
+            Whether to force a copy when the target dtype matches the current dtype.
+            Default is True.
+
+        Returns
+        -------
+        Union[ExtensionArray, NDArray[Any]]
+            The cast result. Returns a NumPy array only when casting to ``object``;
+            otherwise returns an Arkouda-backed ExtensionArray.
+
+        Examples
+        --------
+        Basic numeric casting returns an Arkouda-backed array:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        >>> a.astype("float64").to_ndarray()
+        array([1., 2., 3.])
+
+        Casting to the same dtype with ``copy=False`` returns the original object:
+
+        >>> b = a.astype("int64", copy=False)
+        >>> b is a
+        True
+
+        Forcing a copy when the dtype is unchanged returns a new array:
+
+        >>> c = a.astype("int64", copy=True)
+        >>> c is a
+        False
+        >>> c.to_ndarray()
+        array([1, 2, 3])
+
+        Casting to ``object`` materializes the data to a NumPy array:
+
+        >>> a.astype(object)
+        array([1, 2, 3], dtype=object)
+
+        NumPy and pandas dtype objects are also accepted:
+
+        >>> import numpy as np
+        >>> a.astype(np.dtype("bool")).to_ndarray()
+        array([ True,  True,  True])
+        """
+        from arkouda.numpy.dtypes import dtype as ak_dtype
+
+        # --- 1) ExtensionDtype branch (satisfies overload #2) ---
+        if isinstance(dtype, ExtensionDtype):
+            # pandas extension dtypes typically have .numpy_dtype
+            if hasattr(dtype, "numpy_dtype"):
+                dtype = dtype.numpy_dtype
+
+            if copy is False and self.dtype.numpy_dtype == dtype:
+                return self
+
+            casted = self._data.astype(dtype)
+            return type_cast(ExtensionArray, ArkoudaExtensionArray._from_sequence(casted))
+
+        # --- 2) object -> numpy (satisfies overload #1 / general) ---
         if dtype in (object, np.object_, "object", np.dtype("O")):
-            return self.to_ndarray().astype(object, copy=copy)
+            return self.to_ndarray().astype(object, copy=False)
 
-        if isinstance(dtype, _ArkoudaBaseDtype):
-            dtype = dtype.numpy_dtype
+        dtype = ak_dtype(dtype)
 
-        # Server-side cast for numeric/bool
-        try:
-            npdt = np.dtype(dtype)
-        except Exception:
-            return self.to_ndarray().astype(dtype, copy=copy)
+        if copy is False and self.dtype.numpy_dtype == dtype:
+            return self
 
-        from arkouda.numpy.numeric import cast as ak_cast
-
-        if npdt.kind in {"i", "u", "f", "b"}:
-            return type(self)(ak_cast(self._data, ak_dtype(npdt.name)))
-
-        # Fallback: local cast
-        return self.to_ndarray().astype(npdt, copy=copy)
-
-    def isna(self) -> NDArray[np.bool_]:
-        from arkouda.numpy import isnan
-        from arkouda.numpy.pdarraycreation import full as ak_full
-        from arkouda.numpy.util import is_float
-
-        if not is_float(self._data):
-            return (
-                ak_full(self._data.size, False, dtype=bool).to_ndarray().astype(dtype=bool, copy=False)
-            )
-
-        return isnan(self._data).to_ndarray().astype(dtype=bool, copy=False)
+        casted = self._data.astype(dtype)
+        return ArkoudaExtensionArray._from_sequence(casted)
 
     @property
     def dtype(self):
@@ -671,6 +745,53 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         boolean-reduction calls.
         """
         return bool(self._data.any())
+
+    def isna(self) -> np.ndarray:
+        """
+        Return a boolean mask indicating missing values.
+
+        This method implements the pandas ExtensionArray.isna contract
+        and always returns a NumPy ndarray of dtype ``bool`` with the
+        same length as the array.
+
+        Returns
+        -------
+        np.ndarray
+            A boolean mask where ``True`` marks elements considered missing.
+
+        Raises
+        ------
+        TypeError
+            If the underlying data buffer does not support missing-value
+            detection or cannot produce a boolean mask.
+        """
+        from arkouda.categorical import Categorical
+        from arkouda.numpy import isnan
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import full
+        from arkouda.numpy.segarray import SegArray
+
+        data = self._data
+
+        # SegArray
+        if isinstance(data, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed ArkoudaArray")
+
+        # Categorical
+        if isinstance(data, Categorical):
+            return (data.codes == -1).to_ndarray()
+        # pdarray
+        if isinstance(data, pdarray):
+            if data.dtype in ("float64", "float32"):
+                return (isnan(data)).to_ndarray()
+
+            return (full(data.size, False, dtype=bool)).to_ndarray()
+
+        return NotImplemented
+
+    def isnull(self):
+        """Alias for isna()."""
+        return self.isna()
 
 
 def _is_empty_indexer(key) -> bool:
