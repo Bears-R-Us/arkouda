@@ -219,9 +219,10 @@ Module Contents
 
 
 .. py:function:: full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: arkouda.numpy.dtypes.str_scalars, dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
-                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: str, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
-                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars], dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
-                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Union[numpy.dtype, type, arkouda.numpy.dtypes.bigint], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: arkouda.numpy.dtypes.numeric_and_bool_scalars, dtype: None = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Union[numpy.dtype[Any], arkouda.numpy._typing._typing.BuiltinNumericTypes, arkouda.numpy._typing._typing.ArkoudaNumericTypes, arkouda.numpy.dtypes.bigint, type[arkouda.numpy.dtypes.bigint]], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 full(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], fill_value: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.dtypes.str_scalars], dtype: Literal['bigint', 'float64', 'int8', 'int64', 'uint8', 'uint64', 'bool', 'bool_'], max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray filled with fill_value.
 
@@ -424,7 +425,8 @@ Module Contents
        array([16.00000000000000000 64.00000000000000000])])
 
 
-.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings]
+.. py:function:: ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> arkouda.numpy.strings.Strings
+                 ones(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[arkouda.numpy._typing._typing.NumericDTypeTypes, type[arkouda.numpy.dtypes.bigint]] = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
 
    Create a pdarray filled with ones.
 
@@ -734,7 +736,8 @@ Module Contents
    array([0.30013431967121934 0.47383036230759112 1.0441791878997098])
 
 
-.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[numpy.dtype, type, str, arkouda.numpy.dtypes.bigint] = float64, max_bits: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: Union[arkouda.numpy._typing._typing.NumericDTypeTypes, type[arkouda.numpy.dtypes.bigint]] = ..., max_bits: Optional[int] = ...) -> arkouda.numpy.pdarrayclass.pdarray
+                 zeros(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis], str], dtype: arkouda.numpy._typing._typing.StringDTypeTypes, max_bits: Optional[int] = ...) -> Never
 
    Create a pdarray filled with zeros.
 
