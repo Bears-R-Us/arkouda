@@ -6,8 +6,14 @@ import arkouda as ak
 
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaCategoricalDtype
-from arkouda.testing import assert_equivalent
+from arkouda.pandas.extension import (
+    ArkoudaArray,
+    ArkoudaCategoricalArray,
+    ArkoudaCategoricalDtype,
+    ArkoudaExtensionArray,
+    ArkoudaStringArray,
+)
+from arkouda.testing import assert_equal, assert_equivalent
 
 
 class TestArkoudaCategoricalExtension:
@@ -137,6 +143,79 @@ class TestArkoudaCategoricalExtension:
         s = pd.Series(pda.to_ndarray())
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data.to_strings(), s.take(idx1.to_ndarray()).to_numpy())
+
+
+class TestArkoudaCategoricalArrayAsType:
+    def test_categorical_array_astype_category_stays_extension(
+        self,
+    ):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype("category")
+        assert isinstance(out, ArkoudaCategoricalArray)
+        assert_equal(out._data, c._data)
+
+    def test_categorical_array_astype_object_returns_numpy_labels(
+        self,
+    ):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(object)
+        assert isinstance(out, np.ndarray)
+        assert out.dtype == object
+        assert out.tolist() == ["x", "y", "x"]
+
+    @pytest.mark.parametrize("dtype", ["string", "str", "str_"])
+    def test_categorical_array_astype_string_targets_return_string_array(self, dtype):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(dtype)
+        assert isinstance(out, ArkoudaStringArray)
+        assert out.to_ndarray().tolist() == ["x", "y", "x"]
+
+    def test_categorical_array_astype_other_returns_extension_array_not_numpy(self):
+        # New behavior: does NOT fall back to NumPy; returns an Arkouda-backed EA
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["1", "2", "3"])))
+        out = c.astype("int64")
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+
+        # Values should match numeric cast of labels
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
+
+    def test_categorical_array_astype_other_uses_labels_once(self):
+        # (Optional sanity) ensure it is casting labels, not codes/categories
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["10", "20", "10"])))
+        out = c.astype("int64")
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([10, 20, 10], dtype=np.int64))
+
+    def test_categorical_array_astype_extensiondtype_categoricaldtype_copy_false_returns_self(self):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(pd.CategoricalDtype(), copy=False)
+        assert out is c
+
+    def test_categorical_array_astype_extensiondtype_categoricaldtype_copy_true_returns_new_array(self):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(pd.CategoricalDtype(), copy=True)
+
+        assert isinstance(out, ArkoudaCategoricalArray)
+        assert out is not c
+        assert out.to_ndarray().tolist() == ["x", "y", "x"]
+
+    def test_categorical_array_astype_extensiondtype_stringdtype_returns_string_array(self):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(pd.StringDtype())  # ExtensionDtype path
+
+        assert isinstance(out, ArkoudaStringArray)
+        assert out.to_ndarray().tolist() == ["x", "y", "x"]
+
+    def test_categorical_array_astype_extensiondtype_numeric_casts_labels_and_returns_extension_array(
+        self,
+    ):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["1", "2", "3"])))
+        out = c.astype(pd.Int64Dtype())  # ExtensionDtype path
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
 
 
 class TestArkoudaCategoricalArrayEq:
