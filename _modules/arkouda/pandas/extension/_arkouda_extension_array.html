@@ -715,9 +715,7 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_categorical_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalArray</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_string_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaStringArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span><span class="p">,</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">,</span> <span class="n">ArkoudaStringArray</span>
 
         <span class="c1"># Fast path: already an Arkouda column. Pick the matching subclass.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>

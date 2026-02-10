@@ -556,63 +556,68 @@ Package Contents
 
 
 
-   .. py:method:: astype(dtype, copy: bool = False)
+   .. py:method:: astype(dtype: numpy.dtype[Any], copy: bool = True) -> numpy.typing.NDArray[Any]
+                  astype(dtype: pandas.core.dtypes.dtypes.ExtensionDtype, copy: bool = True) -> pandas.api.extensions.ExtensionArray
+                  astype(dtype: Any, copy: bool = True) -> Union[pandas.api.extensions.ExtensionArray, numpy.typing.NDArray[Any]]
 
-      Cast to a NumPy array or ExtensionArray with 'dtype'.
+      Cast the array to a specified dtype.
 
-      :param dtype: Typecode or data-type to which the array is cast.
-      :type dtype: str or dtype
-      :param copy: Whether to copy the data, even if not necessary. If False,
-                   a copy is made only if the old dtype does not match the
-                   new dtype.
-      :type copy: bool, default True
+      Casting rules:
 
-      :returns: An ``ExtensionArray`` if ``dtype`` is ``ExtensionDtype``,
-                otherwise a Numpy ndarray with ``dtype`` for its dtype.
-      :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
+      * If ``dtype`` requests ``object``, returns a NumPy ``NDArray[Any]`` of
+        dtype ``object`` containing the array values.
+      * Otherwise, the target dtype is normalized using Arkouda's dtype
+        resolution rules.
+      * If the normalized dtype matches the current dtype and ``copy=False``,
+        returns ``self``.
+      * In all other cases, casts the underlying Arkouda array to the target
+        dtype and returns an Arkouda-backed ``ArkoudaExtensionArray``.
 
-      .. seealso::
+      :param dtype: Target dtype. May be a NumPy dtype, pandas dtype, Arkouda dtype,
+                    or any dtype-like object accepted by Arkouda.
+      :type dtype: Any
+      :param copy: Whether to force a copy when the target dtype matches the current dtype.
+                   Default is True.
+      :type copy: bool
 
-         :py:obj:`Series.astype`
-             Cast a Series to a different dtype.
-
-         :py:obj:`DataFrame.astype`
-             Cast a DataFrame to a different dtype.
-
-         :py:obj:`api.extensions.ExtensionArray`
-             Base class for ExtensionArray objects.
-
-         :py:obj:`core.arrays.DatetimeArray._from_sequence`
-             Create a DatetimeArray from a sequence.
-
-         :py:obj:`core.arrays.TimedeltaArray._from_sequence`
-             Create a TimedeltaArray from a sequence.
+      :returns: The cast result. Returns a NumPy array only when casting to ``object``;
+                otherwise returns an Arkouda-backed ExtensionArray.
+      :rtype: Union[ExtensionArray, NDArray[Any]]
 
       .. rubric:: Examples
 
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
+      Basic numeric casting returns an Arkouda-backed array:
 
-      Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
-
-      >>> arr1 = arr.astype("Float64")
-      >>> arr1
-      <FloatingArray>
-      [1.0, 2.0, 3.0]
-      Length: 3, dtype: Float64
-      >>> arr1.dtype
-      Float64Dtype()
-
-      Otherwise, we will get a Numpy ndarray:
-
-      >>> arr2 = arr.astype("float64")
-      >>> arr2
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaArray
+      >>> a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+      >>> a.astype("float64").to_ndarray()
       array([1., 2., 3.])
-      >>> arr2.dtype
-      dtype('float64')
+
+      Casting to the same dtype with ``copy=False`` returns the original object:
+
+      >>> b = a.astype("int64", copy=False)
+      >>> b is a
+      True
+
+      Forcing a copy when the dtype is unchanged returns a new array:
+
+      >>> c = a.astype("int64", copy=True)
+      >>> c is a
+      False
+      >>> c.to_ndarray()
+      array([1, 2, 3])
+
+      Casting to ``object`` materializes the data to a NumPy array:
+
+      >>> a.astype(object)
+      array([1, 2, 3], dtype=object)
+
+      NumPy and pandas dtype objects are also accepted:
+
+      >>> import numpy as np
+      >>> a.astype(np.dtype("bool")).to_ndarray()
+      array([ True,  True,  True])
 
 
 
@@ -924,65 +929,69 @@ Package Contents
    .. py:method:: as_unordered(*args, **kwargs)
 
 
-   .. py:method:: astype(x, dtype)
-      :abstractmethod:
+   .. py:method:: astype(dtype: numpy.dtype[Any], copy: bool = True) -> numpy.typing.NDArray[Any]
+                  astype(dtype: pandas.core.dtypes.dtypes.ExtensionDtype, copy: bool = True) -> pandas.api.extensions.ExtensionArray
+                  astype(dtype: Any, copy: bool = True) -> Union[pandas.api.extensions.ExtensionArray, numpy.typing.NDArray[Any]]
 
+      Cast to a specified dtype.
 
-      Cast to a NumPy array or ExtensionArray with 'dtype'.
+      * If ``dtype`` is categorical (pandas ``category`` / ``CategoricalDtype`` /
+        ``ArkoudaCategoricalDtype``), returns an Arkouda-backed
+        ``ArkoudaCategoricalArray`` (optionally copied).
+      * If ``dtype`` requests ``object``, returns a NumPy ``ndarray`` of dtype object
+        containing the category labels (materialized to the client).
+      * If ``dtype`` requests a string dtype, returns an Arkouda-backed
+        ``ArkoudaStringArray`` containing the labels as strings.
+      * Otherwise, casts the labels (as strings) to the requested dtype and returns an
+        Arkouda-backed ExtensionArray.
 
-      :param dtype: Typecode or data-type to which the array is cast.
-      :type dtype: str or dtype
-      :param copy: Whether to copy the data, even if not necessary. If False,
-                   a copy is made only if the old dtype does not match the
-                   new dtype.
-      :type copy: bool, default True
+      :param dtype: Target dtype.
+      :type dtype: Any
+      :param copy: Whether to force a copy when possible. If categorical-to-categorical and
+                   ``copy=True``, attempts to copy the underlying Arkouda ``Categorical`` (if
+                   supported). Default is True.
+      :type copy: bool
 
-      :returns: An ``ExtensionArray`` if ``dtype`` is ``ExtensionDtype``,
-                otherwise a Numpy ndarray with ``dtype`` for its dtype.
-      :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
-
-      .. seealso::
-
-         :py:obj:`Series.astype`
-             Cast a Series to a different dtype.
-
-         :py:obj:`DataFrame.astype`
-             Cast a DataFrame to a different dtype.
-
-         :py:obj:`api.extensions.ExtensionArray`
-             Base class for ExtensionArray objects.
-
-         :py:obj:`core.arrays.DatetimeArray._from_sequence`
-             Create a DatetimeArray from a sequence.
-
-         :py:obj:`core.arrays.TimedeltaArray._from_sequence`
-             Create a TimedeltaArray from a sequence.
+      :returns: The cast result. Returns a NumPy array only when casting to ``object``;
+                otherwise returns an Arkouda-backed ExtensionArray.
+      :rtype: Union[ExtensionArray, NDArray[Any]]
 
       .. rubric:: Examples
 
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
+      Casting to ``category`` returns an Arkouda-backed categorical array:
 
-      Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
+      >>> c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+      >>> out = c.astype("category")
+      >>> out is c
+      False
 
-      >>> arr1 = arr.astype("Float64")
-      >>> arr1
-      <FloatingArray>
-      [1.0, 2.0, 3.0]
-      Length: 3, dtype: Float64
-      >>> arr1.dtype
-      Float64Dtype()
+      Forcing a copy when casting to the same categorical dtype returns a new array:
 
-      Otherwise, we will get a Numpy ndarray:
+      >>> out2 = c.astype("category", copy=True)
+      >>> out2 is c
+      False
+      >>> out2.to_ndarray()
+      array(['x', 'y', 'x'], dtype='<U...')
 
-      >>> arr2 = arr.astype("float64")
-      >>> arr2
-      array([1., 2., 3.])
-      >>> arr2.dtype
-      dtype('float64')
+      Casting to ``object`` materializes the category labels to a NumPy object array:
+
+      >>> c.astype(object)
+      array(['x', 'y', 'x'], dtype=object)
+
+      Casting to a string dtype returns an Arkouda-backed string array of labels:
+
+      >>> s = c.astype("string")
+      >>> s.to_ndarray()
+      array(['x', 'y', 'x'], dtype='<U1')
+
+      Casting to another dtype casts the labels-as-strings and returns an Arkouda-backed array:
+
+      >>> c_num = ArkoudaCategoricalArray(ak.Categorical(ak.array(["1", "2", "3"])))
+      >>> a = c_num.astype("int64")
+      >>> a.to_ndarray()
+      array([1, 2, 3])
 
 
 
@@ -1419,63 +1428,71 @@ Package Contents
    .. py:method:: argpartition(*args, **kwargs)
 
 
-   .. py:method:: astype(dtype, copy: bool = False)
+   .. py:method:: astype(dtype: numpy.dtype[Any], copy: bool = True) -> numpy.typing.NDArray[Any]
+                  astype(dtype: pandas.core.dtypes.dtypes.ExtensionDtype, copy: bool = True) -> pandas.api.extensions.ExtensionArray
+                  astype(dtype: Any, copy: bool = True) -> Union[pandas.api.extensions.ExtensionArray, numpy.typing.NDArray[Any]]
 
-      Cast to a NumPy array or ExtensionArray with 'dtype'.
+      Cast to a specified dtype.
 
-      :param dtype: Typecode or data-type to which the array is cast.
-      :type dtype: str or dtype
-      :param copy: Whether to copy the data, even if not necessary. If False,
-                   a copy is made only if the old dtype does not match the
-                   new dtype.
-      :type copy: bool, default True
+      Casting rules:
 
-      :returns: An ``ExtensionArray`` if ``dtype`` is ``ExtensionDtype``,
-                otherwise a Numpy ndarray with ``dtype`` for its dtype.
-      :rtype: np.ndarray or pandas.api.extensions.ExtensionArray
+      * If ``dtype`` requests ``object``, returns a NumPy ``NDArray[Any]`` of dtype
+        ``object`` containing the string values.
+      * If ``dtype`` is a string dtype (e.g. pandas ``StringDtype``, NumPy unicode,
+        or Arkouda string dtype), returns an ``ArkoudaStringArray``. If ``copy=True``,
+        attempts to copy the underlying Arkouda ``Strings`` data.
+      * For all other dtypes, casts the underlying Arkouda ``Strings`` using
+        ``Strings.astype`` and returns an Arkouda-backed ``ArkoudaExtensionArray``
+        constructed from the result.
 
-      .. seealso::
+      :param dtype: Target dtype. May be a NumPy dtype, pandas dtype, or Arkouda dtype.
+      :type dtype: Any
+      :param copy: Whether to force a copy when the result is an ``ArkoudaStringArray``.
+                   Default is True.
+      :type copy: bool
 
-         :py:obj:`Series.astype`
-             Cast a Series to a different dtype.
-
-         :py:obj:`DataFrame.astype`
-             Cast a DataFrame to a different dtype.
-
-         :py:obj:`api.extensions.ExtensionArray`
-             Base class for ExtensionArray objects.
-
-         :py:obj:`core.arrays.DatetimeArray._from_sequence`
-             Create a DatetimeArray from a sequence.
-
-         :py:obj:`core.arrays.TimedeltaArray._from_sequence`
-             Create a TimedeltaArray from a sequence.
+      :returns: The cast result. Returns a NumPy array only when casting to ``object``;
+                otherwise returns an Arkouda-backed ExtensionArray.
+      :rtype: Union[ExtensionArray, NDArray[Any]]
 
       .. rubric:: Examples
 
-      >>> arr = pd.array([1, 2, 3])
-      >>> arr
-      <IntegerArray>
-      [1, 2, 3]
-      Length: 3, dtype: Int64
+      Casting to a string dtype returns an Arkouda-backed string array:
 
-      Casting to another ``ExtensionDtype`` returns an ``ExtensionArray``:
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaStringArray
+      >>> s = ArkoudaStringArray(ak.array(["a", "b", "c"]))
+      >>> out = s.astype("string")
+      >>> out is s
+      False
 
-      >>> arr1 = arr.astype("Float64")
-      >>> arr1
-      <FloatingArray>
-      [1.0, 2.0, 3.0]
-      Length: 3, dtype: Float64
-      >>> arr1.dtype
-      Float64Dtype()
+      Forcing a copy when casting to a string dtype returns a new array:
 
-      Otherwise, we will get a Numpy ndarray:
+      >>> out2 = s.astype("string", copy=True)
+      >>> out2 is s
+      False
+      >>> out2.to_ndarray()
+      array(['a', 'b', 'c'], dtype='<U1')
 
-      >>> arr2 = arr.astype("float64")
-      >>> arr2
+      Casting to ``object`` materializes the data to a NumPy array:
+
+      >>> s.astype(object)
+      array(['a', 'b', 'c'], dtype=object)
+
+      Casting to a non-string dtype uses Arkouda to cast the underlying strings
+      and returns an Arkouda-backed ExtensionArray:
+
+      >>> s_num = ArkoudaStringArray(ak.array(["1", "2", "3"]))
+      >>> a = s_num.astype("int64")
+      >>> a.to_ndarray()
+      array([1, 2, 3])
+
+      NumPy and pandas dtype objects are also accepted:
+
+      >>> import numpy as np
+      >>> a = s_num.astype(np.dtype("float64"))
+      >>> a.to_ndarray()
       array([1., 2., 3.])
-      >>> arr2.dtype
-      dtype('float64')
 
 
 

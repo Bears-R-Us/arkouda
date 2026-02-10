@@ -372,13 +372,16 @@
           <h1>Source code for arkouda.pandas.extension._arkouda_string_array</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringDtype</span> <span class="k">as</span> <span class="n">pd_StringDtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.dtypes.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionDtype</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
@@ -552,13 +555,124 @@
         <span class="c1"># materialize via ak.array and wrap again as Strings.</span>
         <span class="k">return</span> <span class="n">ArkoudaStringArray</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
 
+    <span class="c1"># docstr-coverage:excused `typing-only overload stub`</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span> <span class="o">...</span>
+
+    <span class="c1"># docstr-coverage:excused `typing-only overload stub`</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">ExtensionDtype</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExtensionArray</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="c1"># docstr-coverage:excused `typing-only overload stub`</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span> <span class="o">...</span>
+
 <div class="viewcode-block" id="ArkoudaStringArray.astype">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaStringArray.astype">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cast to a specified dtype.</span>
+
+<span class="sd">        Casting rules:</span>
+
+<span class="sd">        * If ``dtype`` requests ``object``, returns a NumPy ``NDArray[Any]`` of dtype</span>
+<span class="sd">          ``object`` containing the string values.</span>
+<span class="sd">        * If ``dtype`` is a string dtype (e.g. pandas ``StringDtype``, NumPy unicode,</span>
+<span class="sd">          or Arkouda string dtype), returns an ``ArkoudaStringArray``. If ``copy=True``,</span>
+<span class="sd">          attempts to copy the underlying Arkouda ``Strings`` data.</span>
+<span class="sd">        * For all other dtypes, casts the underlying Arkouda ``Strings`` using</span>
+<span class="sd">          ``Strings.astype`` and returns an Arkouda-backed ``ArkoudaExtensionArray``</span>
+<span class="sd">          constructed from the result.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dtype : Any</span>
+<span class="sd">            Target dtype. May be a NumPy dtype, pandas dtype, or Arkouda dtype.</span>
+<span class="sd">        copy : bool</span>
+<span class="sd">            Whether to force a copy when the result is an ``ArkoudaStringArray``.</span>
+<span class="sd">            Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[ExtensionArray, NDArray[Any]]</span>
+<span class="sd">            The cast result. Returns a NumPy array only when casting to ``object``;</span>
+<span class="sd">            otherwise returns an Arkouda-backed ExtensionArray.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Casting to a string dtype returns an Arkouda-backed string array:</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaStringArray</span>
+<span class="sd">        &gt;&gt;&gt; s = ArkoudaStringArray(ak.array([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]))</span>
+<span class="sd">        &gt;&gt;&gt; out = s.astype(&quot;string&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; out is s</span>
+<span class="sd">        False</span>
+
+<span class="sd">        Forcing a copy when casting to a string dtype returns a new array:</span>
+
+<span class="sd">        &gt;&gt;&gt; out2 = s.astype(&quot;string&quot;, copy=True)</span>
+<span class="sd">        &gt;&gt;&gt; out2 is s</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; out2.to_ndarray()</span>
+<span class="sd">        array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], dtype=&#39;&lt;U1&#39;)</span>
+
+<span class="sd">        Casting to ``object`` materializes the data to a NumPy array:</span>
+
+<span class="sd">        &gt;&gt;&gt; s.astype(object)</span>
+<span class="sd">        array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], dtype=object)</span>
+
+<span class="sd">        Casting to a non-string dtype uses Arkouda to cast the underlying strings</span>
+<span class="sd">        and returns an Arkouda-backed ExtensionArray:</span>
+
+<span class="sd">        &gt;&gt;&gt; s_num = ArkoudaStringArray(ak.array([&quot;1&quot;, &quot;2&quot;, &quot;3&quot;]))</span>
+<span class="sd">        &gt;&gt;&gt; a = s_num.astype(&quot;int64&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; a.to_ndarray()</span>
+<span class="sd">        array([1, 2, 3])</span>
+
+<span class="sd">        NumPy and pandas dtype objects are also accepted:</span>
+
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; a = s_num.astype(np.dtype(&quot;float64&quot;))</span>
+<span class="sd">        &gt;&gt;&gt; a.to_ndarray()</span>
+<span class="sd">        array([1., 2., 3.])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy._typing._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_string_dtype_hint</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">dtype</span> <span class="k">as</span> <span class="n">ak_dtype</span>
+
+        <span class="c1"># --- 1) ExtensionDtype branch first (satisfies overload #2) ---</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ExtensionDtype</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;numpy_dtype&quot;</span><span class="p">):</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pd_StringDtype</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_string_dtype_hint</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">copy</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="s2">&quot;copy&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+                <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">data</span><span class="p">))</span>
+
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">ak_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">casted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">casted</span><span class="p">))</span>
+
+        <span class="c1"># --- 2) object -&gt; numpy (satisfies overload #1 / general) ---</span>
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
-        <span class="c1"># Let pandas do the rest locally</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># string targets -&gt; stay string EA</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pd_StringDtype</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_string_dtype_hint</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">copy</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="s2">&quot;copy&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+            <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">ak_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">casted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">casted</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaStringArray.isna">

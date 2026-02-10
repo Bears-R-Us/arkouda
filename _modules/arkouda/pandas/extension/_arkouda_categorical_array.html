@@ -372,18 +372,24 @@
           <h1>Source code for arkouda.pandas.extension._arkouda_categorical_array</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>  <span class="c1"># new</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">CategoricalDtype</span> <span class="k">as</span> <span class="n">pd_CategoricalDtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringDtype</span> <span class="k">as</span> <span class="n">pd_StringDtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.dtypes.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionDtype</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_extension_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_string_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaStringArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalDtype</span>
 
 
@@ -582,10 +588,127 @@
             <span class="n">scalars</span> <span class="o">=</span> <span class="n">Categorical</span><span class="p">(</span><span class="n">array</span><span class="p">(</span><span class="n">scalars</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
 
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">ExtensionDtype</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExtensionArray</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span> <span class="o">...</span>
+
 <div class="viewcode-block" id="ArkoudaCategoricalArray.astype">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray.astype">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;array_api.astype is not implemented in Arkouda yet&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cast to a specified dtype.</span>
+
+<span class="sd">        * If ``dtype`` is categorical (pandas ``category`` / ``CategoricalDtype`` /</span>
+<span class="sd">          ``ArkoudaCategoricalDtype``), returns an Arkouda-backed</span>
+<span class="sd">          ``ArkoudaCategoricalArray`` (optionally copied).</span>
+<span class="sd">        * If ``dtype`` requests ``object``, returns a NumPy ``ndarray`` of dtype object</span>
+<span class="sd">          containing the category labels (materialized to the client).</span>
+<span class="sd">        * If ``dtype`` requests a string dtype, returns an Arkouda-backed</span>
+<span class="sd">          ``ArkoudaStringArray`` containing the labels as strings.</span>
+<span class="sd">        * Otherwise, casts the labels (as strings) to the requested dtype and returns an</span>
+<span class="sd">          Arkouda-backed ExtensionArray.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dtype : Any</span>
+<span class="sd">            Target dtype.</span>
+<span class="sd">        copy : bool</span>
+<span class="sd">            Whether to force a copy when possible. If categorical-to-categorical and</span>
+<span class="sd">            ``copy=True``, attempts to copy the underlying Arkouda ``Categorical`` (if</span>
+<span class="sd">            supported). Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[ExtensionArray, NDArray[Any]]</span>
+<span class="sd">            The cast result. Returns a NumPy array only when casting to ``object``;</span>
+<span class="sd">            otherwise returns an Arkouda-backed ExtensionArray.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Casting to ``category`` returns an Arkouda-backed categorical array:</span>
+
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaCategoricalArray</span>
+<span class="sd">        &gt;&gt;&gt; c = ArkoudaCategoricalArray(ak.Categorical(ak.array([&quot;x&quot;, &quot;y&quot;, &quot;x&quot;])))</span>
+<span class="sd">        &gt;&gt;&gt; out = c.astype(&quot;category&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; out is c</span>
+<span class="sd">        False</span>
+
+<span class="sd">        Forcing a copy when casting to the same categorical dtype returns a new array:</span>
+
+<span class="sd">        &gt;&gt;&gt; out2 = c.astype(&quot;category&quot;, copy=True)</span>
+<span class="sd">        &gt;&gt;&gt; out2 is c</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; out2.to_ndarray()</span>
+<span class="sd">        array([&#39;x&#39;, &#39;y&#39;, &#39;x&#39;], dtype=&#39;&lt;U...&#39;)</span>
+
+<span class="sd">        Casting to ``object`` materializes the category labels to a NumPy object array:</span>
+
+<span class="sd">        &gt;&gt;&gt; c.astype(object)</span>
+<span class="sd">        array([&#39;x&#39;, &#39;y&#39;, &#39;x&#39;], dtype=object)</span>
+
+<span class="sd">        Casting to a string dtype returns an Arkouda-backed string array of labels:</span>
+
+<span class="sd">        &gt;&gt;&gt; s = c.astype(&quot;string&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; s.to_ndarray()</span>
+<span class="sd">        array([&#39;x&#39;, &#39;y&#39;, &#39;x&#39;], dtype=&#39;&lt;U1&#39;)</span>
+
+<span class="sd">        Casting to another dtype casts the labels-as-strings and returns an Arkouda-backed array:</span>
+
+<span class="sd">        &gt;&gt;&gt; c_num = ArkoudaCategoricalArray(ak.Categorical(ak.array([&quot;1&quot;, &quot;2&quot;, &quot;3&quot;])))</span>
+<span class="sd">        &gt;&gt;&gt; a = c_num.astype(&quot;int64&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; a.to_ndarray()</span>
+<span class="sd">        array([1, 2, 3])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy._typing._typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_string_dtype_hint</span>
+
+        <span class="c1"># --- 1) ExtensionDtype branch first: proves overload #2 returns ExtensionArray ---</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ExtensionDtype</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;numpy_dtype&quot;</span><span class="p">):</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">ArkoudaCategoricalDtype</span><span class="p">,</span> <span class="n">pd_CategoricalDtype</span><span class="p">))</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="s2">&quot;category&quot;</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">copy</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="s2">&quot;copy&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+                <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">data</span><span class="p">))</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pd_StringDtype</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_string_dtype_hint</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">ArkoudaStringArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+            <span class="n">casted</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">type_cast</span><span class="p">(</span><span class="n">ExtensionArray</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">casted</span><span class="p">))</span>
+
+        <span class="c1"># --- 2) object -&gt; numpy ---</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">ArkoudaCategoricalDtype</span><span class="p">,</span> <span class="n">pd_CategoricalDtype</span><span class="p">))</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">,):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">copy</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="s2">&quot;copy&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+            <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">to_strings</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">pd_StringDtype</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_string_dtype_hint</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ArkoudaStringArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">casted</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">casted</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaCategoricalArray.isna">
