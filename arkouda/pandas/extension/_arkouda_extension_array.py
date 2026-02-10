@@ -54,6 +54,7 @@ import numpy as np
 from numpy.typing import NDArray
 from pandas.api.extensions import ExtensionArray
 from pandas.core.arraylike import OpsMixin
+from pandas.core.dtypes.base import ExtensionDtype
 from typing_extensions import Self
 
 from arkouda.numpy.dtypes import all_scalars
@@ -264,38 +265,48 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
         copy: bool = False,
     ) -> "ArkoudaExtensionArray":
         """
-        Construct an Arkouda-backed ExtensionArray from Arkouda objects or
-        Python/NumPy scalars.
+        Construct an Arkouda-backed pandas ExtensionArray from Arkouda objects
+        or Python/NumPy scalars.
 
-        This factory inspects ``scalars`` and returns an instance of the
-        appropriate concrete subclass:
+        This method acts as a **factory and dispatcher** for Arkouda-backed
+        ExtensionArray implementations. It inspects ``scalars``—or, when needed,
+        the result of converting ``scalars`` to an Arkouda server-side object—
+        and returns an instance of the appropriate concrete subclass:
 
-        * :class:`ArkoudaArray` for :class:`pdarray`
+        * :class:`ArkoudaArray` for numeric :class:`pdarray`
         * :class:`ArkoudaStringArray` for :class:`Strings`
-        * :class:`ArkoudaCategoricalArray` for :class:`Categorical`
+        * :class:`ArkoudaCategoricalArray` for pandas-style
+          :class:`~arkouda.pandas.categorical.Categorical`
 
-        If ``scalars`` is **not** already an Arkouda server-side array, it is
-        interpreted as a sequence of Python/NumPy scalars, converted into a
-        server-side ``pdarray`` via :func:`arkouda.numpy.pdarraycreation.array`,
-        and wrapped in :class:`ArkoudaArray`.
+        This method is the primary construction hook used by pandas when creating
+        Arkouda-backed arrays via ``pd.array(..., dtype="ak")``.
 
         Parameters
         ----------
         scalars : object
-            Either an Arkouda array type (``pdarray``, ``Strings``,
-            or ``Categorical``) or a sequence of Python/NumPy scalars.
+            Either an Arkouda server-side object (``pdarray``, ``Strings``, or
+            ``Categorical``) or a sequence of Python/NumPy scalars.
         dtype : object, optional
-            Ignored. Present for pandas API compatibility.
+            Pandas-provided dtype argument. The generic Arkouda dtype
+            (``"ak"`` or :class:`ArkoudaDtype`) is interpreted as a request for
+            backend inference and is ignored during server-side construction.
+            Concrete Arkouda dtypes are not interpreted here.
         copy : bool, default False
-            Ignored. Present for pandas API compatibility.
+            Present for pandas API compatibility. Currently ignored; Arkouda
+            array construction semantics determine copying behavior.
 
         Returns
         -------
         ArkoudaExtensionArray
             An instance of :class:`ArkoudaArray`,
             :class:`ArkoudaStringArray`, or
-            :class:`ArkoudaCategoricalArray`, depending on the type of
-            ``scalars``.
+            :class:`ArkoudaCategoricalArray`, depending on the type of the
+            resulting Arkouda server-side object.
+
+        Raises
+        ------
+        TypeError
+            If conversion produces an unsupported Arkouda object type.
 
         Examples
         --------
@@ -315,7 +326,7 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
         >>> ea
         ArkoudaStringArray(['red', 'green', 'blue'])
 
-        From Python scalars:
+        From Python scalars (type inferred server-side):
 
         >>> ea = ArkoudaExtensionArray._from_sequence([10, 20, 30])
         >>> ea
@@ -328,24 +339,52 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
         >>> ea
         ArkoudaArray([1 2 3])
         """
-        # Local imports to avoid circular dependencies at module import time.
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
         from arkouda.numpy.strings import Strings
-        from arkouda.pandas.categorical import Categorical
-        from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
+        from arkouda.pandas.categorical import Categorical as ak_Categorical
+        from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
+        from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
+        from arkouda.pandas.extension._dtypes import ArkoudaCategoricalDtype, ArkoudaDtype
 
-        # Fast path: already an Arkouda column. Pick the matching subclass.
-        if isinstance(scalars, pdarray):
-            return ArkoudaArray(scalars)
-        if isinstance(scalars, Strings):
-            return ArkoudaStringArray(scalars)
-        if isinstance(scalars, Categorical):
-            return ArkoudaCategoricalArray(scalars)
+        # dtype may be:
+        #   - None
+        #   - a string like "ak" or "ak_int64"
+        #   - an ExtensionDtype instance (e.g. ArkoudaDtype())
 
-        # Fallback: treat as a sequence of scalars and build a pdarray.
-        data = ak_array(scalars)
-        return ArkoudaArray(data)
+        if dtype == "ak" or isinstance(dtype, ArkoudaDtype):
+            dtype = None
+
+        if (
+            isinstance(dtype, ExtensionDtype)
+            and not isinstance(dtype, ArkoudaCategoricalDtype)
+            and hasattr(dtype, "_numpy_dtype")
+        ):
+            dtype = dtype._numpy_dtype
+
+        # ---------------------------------------------------------------------
+        # Convert to Arkouda once, then dispatch on result type
+        # TODO: streamline Categorical handling
+        if not isinstance(scalars, ak_Categorical):
+            if isinstance(dtype, ArkoudaCategoricalDtype):
+                ak_obj = ak_Categorical(ak_array(scalars, dtype="str_"))
+            else:
+                ak_obj = ak_array(scalars, dtype=dtype)
+        else:
+            if dtype is None or isinstance(dtype, ArkoudaCategoricalDtype):
+                ak_obj = scalars
+            else:
+                ak_obj = ak_array(scalars.to_strings(), dtype=dtype)
+
+        if isinstance(ak_obj, pdarray):
+            return ArkoudaArray(ak_obj)
+        if isinstance(ak_obj, Strings):
+            return ArkoudaStringArray(ak_obj)
+        if isinstance(ak_obj, ak_Categorical):
+            return ArkoudaCategoricalArray(ak_obj)
+
+        raise TypeError(f"Unsupported Arkouda construction result: {type(ak_obj).__name__}")
 
     def _fill_missing(self, mask, fill_value):
         raise NotImplementedError("Subclasses must implement _fill_missing")
