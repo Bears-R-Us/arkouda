@@ -246,38 +246,25 @@ Package Contents
 
 
 
-   .. py:method:: isna() -> numpy.typing.NDArray[numpy.bool_]
+   .. py:method:: isna() -> numpy.ndarray
 
-      A 1-D array indicating if each value is missing.
+      Return a boolean mask indicating missing values.
 
-      :returns: In most cases, this should return a NumPy ndarray. For
-                exceptional cases like ``SparseArray``, where returning
-                an ndarray would be expensive, an ExtensionArray may be
-                returned.
-      :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
+      This method implements the pandas ExtensionArray.isna contract
+      and always returns a NumPy ndarray of dtype ``bool`` with the
+      same length as the array.
 
-      .. seealso::
+      :returns: A boolean mask where ``True`` marks elements considered missing.
+      :rtype: np.ndarray
 
-         :py:obj:`ExtensionArray.dropna`
-             Return ExtensionArray without NA values.
+      :raises TypeError: If the underlying data buffer does not support missing-value
+          detection or cannot produce a boolean mask.
 
-         :py:obj:`ExtensionArray.fillna`
-             Fill NA/NaN values using the specified method.
 
-      .. rubric:: Notes
 
-      If returning an ExtensionArray, then
+   .. py:method:: isnull()
 
-      * ``na_values._is_boolean`` should be True
-      * ``na_values`` should implement :func:`ExtensionArray._reduce`
-      * ``na_values`` should implement :func:`ExtensionArray._accumulate`
-      * ``na_values.any`` and ``na_values.all`` should be implemented
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, np.nan, np.nan])
-      >>> arr.isna()
-      array([False, False,  True,  True])
+      Alias for isna().
 
 
 

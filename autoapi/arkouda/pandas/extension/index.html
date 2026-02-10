@@ -667,42 +667,29 @@ considered equal (in contrast with normal equality).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaArray.isna">
-<span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.typing.NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.bool_</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaArray.isna" title="Link to this definition">¶</a></dt>
-<dd><p>A 1-D array indicating if each value is missing.</p>
+<span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaArray.isna" title="Link to this definition">¶</a></dt>
+<dd><p>Return a boolean mask indicating missing values.</p>
+<p>This method implements the pandas ExtensionArray.isna contract
+and always returns a NumPy ndarray of dtype <code class="docutils literal notranslate"><span class="pre">bool</span></code> with the
+same length as the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>In most cases, this should return a NumPy ndarray. For
-exceptional cases like <code class="docutils literal notranslate"><span class="pre">SparseArray</span></code>, where returning
-an ndarray would be expensive, an ExtensionArray may be
-returned.</p>
+<dd class="field-odd"><p>A boolean mask where <code class="docutils literal notranslate"><span class="pre">True</span></code> marks elements considered missing.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>numpy.ndarray or pandas.api.extensions.ExtensionArray</p>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – If the underlying data buffer does not support missing-value
+detection or cannot produce a boolean mask.</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.dropna</span></code></dt><dd><p>Return ExtensionArray without NA values.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtensionArray.fillna</span></code></dt><dd><p>Fill NA/NaN values using the specified method.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Notes</p>
-<p>If returning an ExtensionArray, then</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">na_values._is_boolean</span></code> should be True</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._reduce()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">na_values</span></code> should implement <code class="xref py py-func docutils literal notranslate"><span class="pre">ExtensionArray._accumulate()</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">na_values.any</span></code> and <code class="docutils literal notranslate"><span class="pre">na_values.all</span></code> should be implemented</p></li>
-</ul>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
-<span class="go">array([False, False,  True,  True])</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaArray.isnull">
+<span class="sig-name descname"><span class="pre">isnull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.isnull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaArray.isnull" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for isna().</p>
 </dd></dl>
 
 <dl class="py property">
@@ -3853,6 +3840,7 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.dtype"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.dtype</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.equals"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.isna"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.isna()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.isnull"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.isnull()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.nbytes"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.nbytes</span></code></a></li>
 </ul>
 </li>
