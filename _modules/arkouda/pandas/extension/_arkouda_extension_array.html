@@ -426,6 +426,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.arraylike</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpsMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.dtypes.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionDtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">all_scalars</span>
@@ -646,38 +647,48 @@
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ArkoudaExtensionArray&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Construct an Arkouda-backed ExtensionArray from Arkouda objects or</span>
-<span class="sd">        Python/NumPy scalars.</span>
+<span class="sd">        Construct an Arkouda-backed pandas ExtensionArray from Arkouda objects</span>
+<span class="sd">        or Python/NumPy scalars.</span>
 
-<span class="sd">        This factory inspects ``scalars`` and returns an instance of the</span>
-<span class="sd">        appropriate concrete subclass:</span>
+<span class="sd">        This method acts as a **factory and dispatcher** for Arkouda-backed</span>
+<span class="sd">        ExtensionArray implementations. It inspects ``scalars``—or, when needed,</span>
+<span class="sd">        the result of converting ``scalars`` to an Arkouda server-side object—</span>
+<span class="sd">        and returns an instance of the appropriate concrete subclass:</span>
 
-<span class="sd">        * :class:`ArkoudaArray` for :class:`pdarray`</span>
+<span class="sd">        * :class:`ArkoudaArray` for numeric :class:`pdarray`</span>
 <span class="sd">        * :class:`ArkoudaStringArray` for :class:`Strings`</span>
-<span class="sd">        * :class:`ArkoudaCategoricalArray` for :class:`Categorical`</span>
+<span class="sd">        * :class:`ArkoudaCategoricalArray` for pandas-style</span>
+<span class="sd">          :class:`~arkouda.pandas.categorical.Categorical`</span>
 
-<span class="sd">        If ``scalars`` is **not** already an Arkouda server-side array, it is</span>
-<span class="sd">        interpreted as a sequence of Python/NumPy scalars, converted into a</span>
-<span class="sd">        server-side ``pdarray`` via :func:`arkouda.numpy.pdarraycreation.array`,</span>
-<span class="sd">        and wrapped in :class:`ArkoudaArray`.</span>
+<span class="sd">        This method is the primary construction hook used by pandas when creating</span>
+<span class="sd">        Arkouda-backed arrays via ``pd.array(..., dtype=&quot;ak&quot;)``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        scalars : object</span>
-<span class="sd">            Either an Arkouda array type (``pdarray``, ``Strings``,</span>
-<span class="sd">            or ``Categorical``) or a sequence of Python/NumPy scalars.</span>
+<span class="sd">            Either an Arkouda server-side object (``pdarray``, ``Strings``, or</span>
+<span class="sd">            ``Categorical``) or a sequence of Python/NumPy scalars.</span>
 <span class="sd">        dtype : object, optional</span>
-<span class="sd">            Ignored. Present for pandas API compatibility.</span>
+<span class="sd">            Pandas-provided dtype argument. The generic Arkouda dtype</span>
+<span class="sd">            (``&quot;ak&quot;`` or :class:`ArkoudaDtype`) is interpreted as a request for</span>
+<span class="sd">            backend inference and is ignored during server-side construction.</span>
+<span class="sd">            Concrete Arkouda dtypes are not interpreted here.</span>
 <span class="sd">        copy : bool, default False</span>
-<span class="sd">            Ignored. Present for pandas API compatibility.</span>
+<span class="sd">            Present for pandas API compatibility. Currently ignored; Arkouda</span>
+<span class="sd">            array construction semantics determine copying behavior.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ArkoudaExtensionArray</span>
 <span class="sd">            An instance of :class:`ArkoudaArray`,</span>
 <span class="sd">            :class:`ArkoudaStringArray`, or</span>
-<span class="sd">            :class:`ArkoudaCategoricalArray`, depending on the type of</span>
-<span class="sd">            ``scalars``.</span>
+<span class="sd">            :class:`ArkoudaCategoricalArray`, depending on the type of the</span>
+<span class="sd">            resulting Arkouda server-side object.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If conversion produces an unsupported Arkouda object type.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -697,7 +708,7 @@
 <span class="sd">        &gt;&gt;&gt; ea</span>
 <span class="sd">        ArkoudaStringArray([&#39;red&#39;, &#39;green&#39;, &#39;blue&#39;])</span>
 
-<span class="sd">        From Python scalars:</span>
+<span class="sd">        From Python scalars (type inferred server-side):</span>
 
 <span class="sd">        &gt;&gt;&gt; ea = ArkoudaExtensionArray._from_sequence([10, 20, 30])</span>
 <span class="sd">        &gt;&gt;&gt; ea</span>
@@ -710,24 +721,52 @@
 <span class="sd">        &gt;&gt;&gt; ea</span>
 <span class="sd">        ArkoudaArray([1 2 3])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Local imports to avoid circular dependencies at module import time.</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span><span class="p">,</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">,</span> <span class="n">ArkoudaStringArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">ak_Categorical</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_categorical_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_string_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaStringArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">,</span> <span class="n">ArkoudaDtype</span>
 
-        <span class="c1"># Fast path: already an Arkouda column. Pick the matching subclass.</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">ArkoudaStringArray</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
+        <span class="c1"># dtype may be:</span>
+        <span class="c1">#   - None</span>
+        <span class="c1">#   - a string like &quot;ak&quot; or &quot;ak_int64&quot;</span>
+        <span class="c1">#   - an ExtensionDtype instance (e.g. ArkoudaDtype())</span>
 
-        <span class="c1"># Fallback: treat as a sequence of scalars and build a pdarray.</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;ak&quot;</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaDtype</span><span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ExtensionDtype</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;_numpy_dtype&quot;</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">_numpy_dtype</span>
+
+        <span class="c1"># ---------------------------------------------------------------------</span>
+        <span class="c1"># Convert to Arkouda once, then dispatch on result type</span>
+        <span class="c1"># TODO: streamline Categorical handling</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">ak_Categorical</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">):</span>
+                <span class="n">ak_obj</span> <span class="o">=</span> <span class="n">ak_Categorical</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;str_&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ak_obj</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">):</span>
+                <span class="n">ak_obj</span> <span class="o">=</span> <span class="n">scalars</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ak_obj</span> <span class="o">=</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">scalars</span><span class="o">.</span><span class="n">to_strings</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ArkoudaStringArray</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">,</span> <span class="n">ak_Categorical</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported Arkouda construction result: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fill_missing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">):</span>

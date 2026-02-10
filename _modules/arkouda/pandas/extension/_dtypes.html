@@ -604,6 +604,35 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">)&quot;</span>
 
 
+<span class="c1"># ---- Generic dtype -------------------------------------------------------------</span>
+
+
+<span class="nd">@register_extension_dtype</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaDtype</span><span class="p">(</span><span class="n">ExtensionDtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic Arkouda-backed dtype for pandas construction.</span>
+
+<span class="sd">    Using dtype=&quot;ak&quot; triggers ArkoudaExtensionArray._from_sequence, which</span>
+<span class="sd">    dispatches to ArkoudaArray / ArkoudaStringArray / ArkoudaCategoricalArray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;ak&quot;</span>
+    <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>  <span class="c1"># pandas requires something</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;O&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">construct_from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">string</span> <span class="o">==</span> <span class="s2">&quot;ak&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot construct a &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; from &#39;</span><span class="si">{</span><span class="n">string</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">construct_array_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Important: return the base class that implements factory dispatch.</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_extension_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
+
+        <span class="k">return</span> <span class="n">ArkoudaExtensionArray</span>
+
+
 <span class="c1"># ---- Concrete dtypes --------------------------------------------------------</span>
 
 
