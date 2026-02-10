@@ -232,6 +232,35 @@ class _ArkoudaBaseDtype(ExtensionDtype):
         return f"{self.__class__.__name__}({self.name!r})"
 
 
+# ---- Generic dtype -------------------------------------------------------------
+
+
+@register_extension_dtype
+class ArkoudaDtype(ExtensionDtype):
+    """
+    Generic Arkouda-backed dtype for pandas construction.
+
+    Using dtype="ak" triggers ArkoudaExtensionArray._from_sequence, which
+    dispatches to ArkoudaArray / ArkoudaStringArray / ArkoudaCategoricalArray.
+    """
+
+    name = "ak"
+    type = object  # pandas requires something
+    kind = "O"
+
+    @classmethod
+    def construct_from_string(cls, string):
+        if string == "ak":
+            return cls()
+        raise TypeError(f"Cannot construct a '{cls.__name__}' from '{string}'")
+
+    def construct_array_type(self):
+        # Important: return the base class that implements factory dispatch.
+        from arkouda.pandas.extension._arkouda_extension_array import ArkoudaExtensionArray
+
+        return ArkoudaExtensionArray
+
+
 # ---- Concrete dtypes --------------------------------------------------------
 
 
