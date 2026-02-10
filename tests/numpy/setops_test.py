@@ -238,6 +238,43 @@ class TestSetOps:
         stringsTwo = ak.Categorical(ak.array(["String {}".format(i % 2) for i in range(10)]))
         assert [(x % 3) < 2 for x in range(10)] == ak.in1d(stringsOne, stringsTwo).tolist()
 
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    def test_in1d_symmetric(self):
+        # Duplicates to exercise assume_unique=False (GroupBy/broadcast path)
+        a = ak.array([1, 2, 2, 3, 4])
+        b = ak.array([2, 4, 4, 5])
+
+        def exp_in(x, y):
+            yset = set(y)
+            return [xi in yset for xi in x]
+
+        a_list = a.to_ndarray().tolist()
+        b_list = b.to_ndarray().tolist()
+
+        # assume_unique=False path (duplicates allowed; should match membership semantics)
+        am2, bm2 = ak.in1d(a, b, assume_unique=False, symmetric=True, invert=False)
+        assert am2.tolist() == exp_in(a_list, b_list)
+        assert bm2.tolist() == exp_in(b_list, a_list)
+
+        am2_i, bm2_i = ak.in1d(a, b, assume_unique=False, symmetric=True, invert=True)
+        assert am2_i.tolist() == [not v for v in exp_in(a_list, b_list)]
+        assert bm2_i.tolist() == [not v for v in exp_in(b_list, a_list)]
+
+        # assume_unique=True path (inputs must be unique for this branch to be valid)
+        au = ak.array([1, 2, 3, 4])
+        bu = ak.array([2, 4, 5])
+
+        au_list = au.to_ndarray().tolist()
+        bu_list = bu.to_ndarray().tolist()
+
+        am, bm = ak.in1d(au, bu, assume_unique=True, symmetric=True, invert=False)
+        assert am.tolist() == exp_in(au_list, bu_list)
+        assert bm.tolist() == exp_in(bu_list, au_list)
+
+        am_i, bm_i = ak.in1d(au, bu, assume_unique=True, symmetric=True, invert=True)
+        assert am_i.tolist() == [not v for v in exp_in(au_list, bu_list)]
+        assert bm_i.tolist() == [not v for v in exp_in(bu_list, au_list)]
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", INTEGRAL_TYPES)
     def test_intersect1d_multiarray_numeric_types(self, size, dtype):

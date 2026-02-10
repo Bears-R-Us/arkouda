@@ -109,16 +109,22 @@ def array(
     *,
     copy: bool = ...,
     max_bits: int = ...,
+    unsafe: bool = ...,
+    any_neg: Optional[bool] = ...,
+    num_bits: Optional[int] = ...,
 ) -> Strings: ...
 
 
 @overload
 def array(
     a: Union[pdarray, Strings, Iterable[Any], NDArray[Any]],
-    dtype: _NumericLikeDType = ...,  # object covers np.dtype, type, int/float/bool dtypes, etc.
+    dtype: _NumericLikeDType = ...,
     *,
     copy: bool = ...,
     max_bits: int = ...,
+    unsafe: bool = ...,
+    any_neg: Optional[bool] = ...,
+    num_bits: Optional[int] = ...,
 ) -> pdarray: ...
 
 
@@ -129,7 +135,14 @@ def array(
     *,
     copy: bool = ...,
     max_bits: int = ...,
+    unsafe: bool = ...,
+    any_neg: Optional[bool] = ...,
+    num_bits: Optional[int] = ...,
 ) -> Union[pdarray, Strings]: ...
+
+
+# The remaining overloads can stay as-is, but it's nicer to add the kwargs there too
+# so tooling doesn't complain in those call patterns. Minimal version:
 
 
 @overload
@@ -138,6 +151,10 @@ def array(
     dtype: Union[_StringDType, _NumericLikeDType, None] = None,
     copy: bool = False,
     max_bits: int = -1,
+    *,
+    unsafe: bool = ...,
+    any_neg: Optional[bool] = ...,
+    num_bits: Optional[int] = ...,
 ) -> pdarray: ...
 
 
@@ -147,6 +164,10 @@ def array(
     dtype: Union[_StringDType, _NumericLikeDType, None] = None,
     copy: bool = False,
     max_bits: int = -1,
+    *,
+    unsafe: bool = ...,
+    any_neg: Optional[bool] = ...,
+    num_bits: Optional[int] = ...,
 ) -> Strings: ...
 
 
@@ -156,6 +177,10 @@ def array(
     dtype: Union[_StringDType, _NumericLikeDType, None] = None,
     copy: bool = False,
     max_bits: int = -1,
+    *,
+    unsafe: bool = ...,
+    any_neg: Optional[bool] = ...,
+    num_bits: Optional[int] = ...,
 ) -> Union[pdarray, Strings]: ...
 
 
@@ -164,10 +189,30 @@ def array(
     dtype: Union[np.dtype, type, str, None] = None,
     copy: bool = False,
     max_bits: int = -1,
+    *,
+    unsafe: bool = False,
+    any_neg: Optional[bool] = None,
+    num_bits: Optional[int] = None,
 ) -> Union[pdarray, Strings]:
     """
     Convert a Python, NumPy, or Arkouda array-like into a `pdarray` or `Strings` object,
     transferring data to the Arkouda server.
+
+    Bigint fast path
+    ----------------
+    When `dtype` is `bigint` (or ``"bigint"``) and the input is a NumPy ``dtype=object`` array,
+    building the bigint representation may require Python-level passes over the data to infer
+    sign and required bit width.
+
+    Set ``unsafe=True`` to enable optional performance shortcuts for trusted inputs:
+
+    * If both ``any_neg`` and ``num_bits`` are provided, Arkouda will trust these hints and
+      skip inference passes, proceeding directly to limb extraction.
+    * If hints are not provided, Arkouda may still perform a single-pass inference step
+      for ``dtype=object`` inputs (implementation-dependent).
+
+    .. warning::
+       If ``unsafe=True`` and the provided hints are incorrect, results may be incorrect.
 
     Parameters
     ----------
@@ -186,6 +231,21 @@ def array(
 
     max_bits : int, optional
         The maximum number of bits for bigint arrays. Ignored for other dtypes.
+
+    unsafe : bool, default=False
+        Enable performance-oriented shortcuts for bigint creation from dtype=object arrays.
+        When True, the caller may supply trusted hints (any_neg, num_bits) to skip Python-level
+        full-array scans. If hints are not supplied, Arkouda will still do a single-pass scan
+        (rather than multiple scans) for dtype=object.
+
+        WARNING: If unsafe=True and provided hints are wrong, results may be incorrect.
+
+    any_neg : Optional[bool], default=None
+        Bigint hint: whether any value is negative. Only used when dtype=bigint and a is numeric/object.
+
+    num_bits : Optional[int], default=None
+        Bigint hint: required bit-width for values (including sign bit if signed).
+        If provided with unsafe=True, Arkouda can compute number of limbs without scanning.
 
     Returns
     -------
@@ -267,7 +327,6 @@ def array(
         a = list(a)
 
     # If a is not already a numpy.ndarray, convert it
-
     if not isinstance(a, np.ndarray):
         try:
             if dtype is not None and dtype != bigint:
@@ -287,8 +346,13 @@ def array(
                 a = np.array(a)
         except (RuntimeError, TypeError, ValueError):
             raise TypeError("a must be a pdarray, np.ndarray, or convertible to a numpy array")
+
     if dtype is not None and dtype not in [bigint, "bigint"]:
         a = a.astype(dtype)
+
+    # If numpy gave us an object array of integers and dtype was not specified, default to bigint.
+    # NOTE: This scan can be expensive for very large arrays; callers who already know they want
+    # bigint should pass dtype=bigint to avoid this inference.
     if a.dtype == object and dtype is None and all(isinstance(x, (int, np.integer)) for x in a.flat):
         dtype = bigint
 
@@ -297,11 +361,18 @@ def array(
 
     # Return multi-dimensional pdarray if a.ndim in get_array_ranks()
     # otherwise raise an error
-
     if a.ndim not in get_array_ranks():
         raise ValueError(f"array rank {a.ndim} not in compiled ranks {get_array_ranks()}")
+
+    # Bigint conversion path (including dtype=object numeric inputs)
     if a.dtype.kind in ("i", "u", "f", "O") and (dtype == bigint or dtype == "bigint"):
-        return _bigint_from_numpy(a, max_bits)
+        return _bigint_from_numpy(
+            a,
+            max_bits,
+            unsafe=unsafe,
+            any_neg=any_neg,
+            num_bits=num_bits,
+        )
     elif not (
         np.issubdtype(a.dtype, np.str_)
         or (a.dtype == np.object_ and a.size > 0 and isinstance(a[0], str))
@@ -332,7 +403,6 @@ def array(
         return strings if dtype is None else type_cast(Union[pdarray, Strings], akcast(strings, dtype))
 
     # If not strings, then check that dtype is supported in arkouda
-
     from arkouda.numpy.util import _infer_shape_from_size
 
     shape, ndim, full_size = _infer_shape_from_size(a.shape)
@@ -376,7 +446,33 @@ def array(
     )
 
 
-def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
+def _bigint_from_numpy(
+    np_a: np.ndarray,
+    max_bits: int,
+    *,
+    unsafe: bool = False,
+    any_neg: Optional[bool] = None,
+    num_bits: Optional[int] = None,
+) -> pdarray:
+    """
+    Create a bigint pdarray from a NumPy ndarray.
+
+    Fast paths:
+    - Empty arrays return an empty bigint with shape preserved.
+    - Non-object numeric arrays (int/uint/float) use a single-limb transfer.
+    - dtype=object arrays of Python ints are split into uint64 limbs client-side.
+
+    Performance notes:
+    - dtype=object requires Python-level work. To reduce overhead:
+      * this implementation uses a SINGLE PASS over the data to validate and infer sizing
+        (instead of multiple passes), unless the caller provides trusted hints.
+      * if unsafe=True and both any_neg and num_bits are provided, we skip all scans
+        and proceed directly to limb extraction.
+
+    WARNING:
+    - If unsafe=True and provided hints are wrong (e.g., num_bits too small or any_neg incorrect),
+      results may be incorrect.
+    """
     from arkouda.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
@@ -388,18 +484,13 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
     if a.size == 0:
         return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
 
-    # Only ints/object should reach here (strings handled upstream)
+    # Only ints/uints/floats/object should reach here (strings handled upstream)
     if a.dtype.kind not in ("i", "u", "f", "O"):
         raise TypeError(f"bigint requires numeric input, got dtype={a.dtype}")
 
-    if a.dtype.kind == "O":
-        # Only allow Python ints and floats
-        if not all(isinstance(x, (int, float)) for x in a.flat):
-            raise TypeError("bigint requires numeric input, got non-numeric object")
-        if any(isinstance(x, float) for x in a.flat):
-            a = a.astype(np.float64, copy=False)
-
-    # Fast all-zero path or single limb path
+    # ------------------------------------------------------------
+    # Fast path for non-object numeric dtypes: send a single limb.
+    # ------------------------------------------------------------
     if a.dtype.kind in ("i", "u", "f"):
         if not np.any(a):
             return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
@@ -411,7 +502,6 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
         else:
             ak_a = array(a.astype(np.float64, copy=False))
 
-        # Send a single limb array
         return create_pdarray(
             generic_msg(
                 cmd=f"big_int_creation_one_limb<{ak_a.dtype},{ak_a.ndim}>",
@@ -422,31 +512,102 @@ def _bigint_from_numpy(np_a: np.ndarray, max_bits: int) -> pdarray:
                 },
             )
         )
-    else:
-        if all(int(x) == 0 for x in a.flat):
+
+    # ----------------------------------------------------------------
+    # dtype=object path (typically Python ints, sometimes floats/other):
+    # ----------------------------------------------------------------
+
+    # If caller supplied trusted sizing hints, skip all validation/scans.
+    # This is intended for benchmarking or trusted pipelines where the caller
+    # already knows whether the data are signed and how many bits are needed.
+    if unsafe and any_neg is not None and num_bits is not None:
+        if num_bits <= 0:
             return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
-    any_neg = np.any(flat < 0)
-    req_bits: int
-    if any_neg:
-        req_bits = max(flat.max().bit_length(), (-flat.min()).bit_length()) + 1
+
+        req_bits = int(num_bits)
+        req_limbs = (req_bits + 63) >> 6  # == ceil(req_bits / 64)
     else:
-        req_bits = flat.max().bit_length()
-    req_limbs = (req_bits + 63) // 64
-    mask = (1 << 64) - 1
+        # Single-pass scan:
+        # - validate types (unless unsafe)
+        # - detect floats (fallback to float64 one-limb path)
+        # - detect all-zero (fast path)
+        # - infer any_neg and required bits
+        has_float = False
+        any_nonzero = False
+        inferred_any_neg = False
+        max_mag_bits = 0
+
+        # Iterate once over Python objects.
+        for x in a.flat:
+            if unsafe:
+                # Caller asserts objects are numeric (typically Python ints).
+                pass
+            else:
+                if not isinstance(x, (int, float, np.integer, np.floating)):
+                    raise TypeError("bigint requires numeric input, got non-numeric object")
+
+            # Handle floats: bigint-from-float behaves like existing code (cast to float64).
+            # Note: we only need to know *that* a float exists, not which values.
+            if isinstance(x, (float, np.floating)):
+                has_float = True
+                break
+
+            # Integers (Python int or numpy integer)
+            xi = int(x)
+            if xi != 0:
+                any_nonzero = True
+                if xi < 0:
+                    inferred_any_neg = True
+                    mag_bits = (-xi).bit_length()
+                else:
+                    mag_bits = xi.bit_length()
+                max_mag_bits = max(max_mag_bits, mag_bits)
+
+        if has_float:
+            # Match previous behavior: object array containing floats becomes float64
+            # and uses the single-limb float path above.
+            a = a.astype(np.float64, copy=False)
+            if not np.any(a):
+                return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+            ak_a = array(a)
+            return create_pdarray(
+                generic_msg(
+                    cmd=f"big_int_creation_one_limb<{ak_a.dtype},{ak_a.ndim}>",
+                    args={
+                        "array": ak_a,
+                        "shape": ak_a.shape,
+                        "max_bits": max_bits,
+                    },
+                )
+            )
+
+        if not any_nonzero:
+            return zeros(size=a.shape, dtype=bigint, max_bits=max_bits)
+
+        any_neg = inferred_any_neg
+        # For signed representation reserve a sign bit (+1).
+        req_bits = max_mag_bits + (1 if any_neg else 0)
+        req_limbs = (req_bits + 63) >> 6  # == ceil(req_bits / 64)
+
+    mask = 0xFFFFFFFFFFFFFFFF  # 2**64 - 1
     uint_arrays: List[Union[pdarray, Strings]] = []
-    # attempt to break bigint into multiple uint64 arrays
+
+    # Attempt to break bigint into multiple uint64 limb arrays.
+    # NOTE: This loop is inherently heavy for dtype=object inputs (Python big ints),
+    # but we minimize overhead by avoiding extra pre-scans of the data.
     for _ in range(req_limbs):
         low = flat & mask
         flat = flat >> 64  # type: ignore
-        # low, flat = flat & mask, flat >> 64
         uint_arrays.append(array(np.array(low, dtype=np.uint), dtype=akuint64))
+
+    # Server expects shape of the resulting bigint array (original shape).
     return create_pdarray(
         generic_msg(
             cmd=f"big_int_creation_multi_limb<{uint_arrays[0].dtype},1>",
             args={
                 "arrays": uint_arrays,
                 "num_arrays": len(uint_arrays),
-                "signed": any_neg,
+                "signed": bool(any_neg),
                 "shape": flat.shape,
                 "max_bits": max_bits,
             },
@@ -1510,6 +1671,17 @@ def linspace(
 
     start_ = start
     stop_ = stop
+
+    #   Handle the special cases of num
+
+    if num == 0:
+        return array([], dtype=float64)
+
+    if num == 1:
+        if isinstance(start_, pdarray):
+            return start_.reshape((1,) + start_.shape)
+        else:
+            return array([start_], dtype=float64)
 
     if isinstance(start_, pdarray):
         start_ = start_.astype(float64)

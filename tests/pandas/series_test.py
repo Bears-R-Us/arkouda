@@ -802,3 +802,49 @@ class TestSeries:
             _s1.iloc[[True, False, True]]
         with pytest.raises(IndexError):
             s1.iloc[[True, False, True]]
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    def test_series_isin_accepts_list_and_tuple_for_supported_value_types(self):
+        # pdarray values
+        s_int = ak.Series(ak.array([1, 2, 3, 2, 1]))
+        assert s_int.isin([2, 99]).tolist() == [False, True, False, True, False]
+        assert s_int.isin((1, 3)).tolist() == [True, False, True, False, True]
+
+        # Strings values
+        s_str = ak.Series(ak.array(["a", "b", "c", "a"]))
+        assert s_str.isin(["a", "z"]).tolist() == [True, False, False, True]
+        assert s_str.isin(("b",)).tolist() == [False, True, False, False]
+
+        # Categorical values
+        s_cat = ak.Series(ak.Categorical(ak.array(["red", "blue", "red", "green"])))
+        assert s_cat.isin(["red"]).tolist() == [True, False, True, False]
+        assert s_cat.isin(("blue", "green")).tolist() == [False, True, False, True]
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    def test_series_map_multikey_missing_keys_fills_nans_and_nulls(self):
+        # MultiIndex with 2 keys (ensure map works with MultiIndex-backed Series)
+        k1 = ak.array([1, 1, 2, 2, 3])
+        k2 = ak.array(["x", "y", "x", "y", "x"])
+        mi = ak.MultiIndex([k1, k2], names=["k1", "k2"])
+
+        base = ak.Series(ak.array([10, 20, 30, 40, 50]), index=mi)
+
+        # --- Numeric mapping (missing values should become NaN) ---
+        # Map only two of the Series *values*; others should be NaN
+        num_map = {
+            10: 100.0,
+            40: 200.0,
+        }
+        out_num = base.map(num_map)
+
+        out_num_list = out_num.values.to_ndarray().tolist()
+        expected_num = [100.0, np.nan, np.nan, 200.0, np.nan]
+        assert np.allclose(out_num_list, expected_num, equal_nan=True)
+
+        # --- String mapping (missing values should become "null") ---
+        str_map = {
+            20: "A",
+            50: "B",
+        }
+        out_str = base.map(str_map)
+        assert out_str.values.tolist() == ["null", "A", "null", "null", "B"]
