@@ -10,23 +10,24 @@ import arkouda as ak
 TYPES = ("int64", "float64", "bigint")
 
 
-def create_ak_array(N, dtype):
+def create_ak_array(N, dtype, max_bits=pytest.max_bits):
     if dtype == ak.bigint.name:
         u1 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
         u2 = ak.randint(0, 2**32, N, dtype=ak.uint64, seed=pytest.seed)
-        a = ak.bigint_from_uint_arrays([u1, u2], max_bits=pytest.max_bits)
+        a = ak.bigint_from_uint_arrays([u1, u2], max_bits=max_bits)
+        num_bytes = a.size * 8 if max_bits != -1 and max_bits <= 64 else a.size * 8 * 2
     else:
         a = ak.randint(0, 2**32, N, dtype=dtype, seed=pytest.seed)
-    return a
+        num_bytes = a.size * a.itemsize
+    return a, num_bytes
 
 
 @pytest.mark.benchmark(group="ArrayTransfer_tondarray")
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_to_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        n = pytest.N
-        a = create_ak_array(n, dtype)
-        num_bytes = calc_num_bytes(a)
+        n = pytest.prob_size # use the per-locale problem size, not N
+        a, num_bytes = create_ak_array(n, dtype)
         ak.client.maxTransferBytes = num_bytes
 
         def setup():
@@ -58,9 +59,8 @@ def bench_array_transfer_to_ndarray(benchmark, dtype):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_from_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        n = pytest.N
-        a = create_ak_array(n, dtype)
-        num_bytes = calc_num_bytes(a)
+        n = pytest.prob_size # use the per-locale problem size, not N
+        a, num_bytes = create_ak_array(n, dtype)
         ak.client.maxTransferBytes = num_bytes
         npa = a.to_ndarray()
 
