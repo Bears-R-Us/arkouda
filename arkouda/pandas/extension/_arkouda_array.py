@@ -545,6 +545,9 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     # Comparison dunders (elementwise, return ArkoudaArray[bool])
     # -------------------------------------------------------------------------
 
+    def __eq__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a == b)
+
     def __ne__(self, other: Any):
         return self._binary_op(other, lambda a, b: a != b)
 
@@ -568,6 +571,12 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
     def __rand__(self, other: Any):
         return self._rbinary_op(other, lambda a, b: a & b, require_bool=True)
+
+    def __or__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a | b, require_bool=True)
+
+    def __ror__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a | b, require_bool=True)
 
     def __xor__(self, other: Any):
         return self._binary_op(other, lambda a, b: a ^ b, require_bool=True)
@@ -804,95 +813,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         else:
             #   op was not in the keys of scalar_fns:
             raise TypeError(f"Unknown reduction '{name}'")
-
-    def __eq__(self, other):
-        """
-        Elementwise equality with correct pandas ExtensionArray semantics.
-        Returns an ArkoudaArray of booleans.
-        """
-        from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.numpy.pdarraycreation import array as ak_array
-
-        # Case 1: comparing with another ArkoudaArray
-        if isinstance(other, ArkoudaArray):
-            if len(self) != len(other):
-                raise ValueError("Lengths must match for elementwise comparison")
-            return ArkoudaArray(self._data == other._data)
-
-        # Case 2: comparing with an arkouda pdarray
-        if isinstance(other, pdarray):
-            if other.size != 1 and len(other) != len(self):
-                raise ValueError("Lengths must match for elementwise comparison")
-            return ArkoudaArray(self._data == other)
-
-        # Case 3: scalar broadcasting
-        if np.isscalar(other):
-            return ArkoudaArray(self._data == other)
-
-        # Case 4: Python iterable / numpy array comparison
-        if isinstance(other, (list, tuple, np.ndarray)):
-            other_ak = ak_array(other)
-            if other_ak.size not in (1, len(self)):
-                raise ValueError("Lengths must match for elementwise comparison")
-            return ArkoudaArray(self._data == other_ak)
-
-        return NotImplemented
-
-    def __or__(self, other):
-        """
-        Elementwise boolean OR.
-
-        This is only defined for boolean ArkoudaArray instances and returns
-        an ArkoudaArray[bool]. For unsupported operand types or dtypes,
-        returns NotImplemented so Python can fall back appropriately.
-        """
-        from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.numpy.pdarraycreation import array as ak_array
-
-        # Only defined for boolean arrays
-        if self._data.dtype != "bool":
-            return NotImplemented
-
-        # ArkoudaArray | ArkoudaArray
-        if isinstance(other, ArkoudaArray):
-            if other._data.dtype != "bool":
-                return NotImplemented
-            if len(self) != len(other):
-                raise ValueError("Lengths must match for elementwise boolean operations")
-            return ArkoudaArray(self._data | other._data)
-
-        # ArkoudaArray | pdarray
-        if isinstance(other, pdarray):
-            if other.dtype != "bool":
-                return NotImplemented
-            if other.size not in (1, len(self)):
-                raise ValueError("Lengths must match for elementwise boolean operations")
-            return ArkoudaArray(self._data | other)
-
-        # ArkoudaArray | scalar bool
-        if isinstance(other, (bool, np.bool_)):
-            return ArkoudaArray(self._data | other)
-
-        # ArkoudaArray | numpy array / Python sequence
-        if isinstance(other, (list, tuple, np.ndarray)):
-            other_ak = ak_array(other, dtype=bool)
-            if other_ak.size not in (1, len(self)):
-                raise ValueError("Lengths must match for elementwise boolean operations")
-            return ArkoudaArray(self._data | other_ak)
-
-        return NotImplemented
-
-    def __ror__(self, other):
-        """
-        Elementwise boolean OR with reversed operands.
-
-        This allows expressions like `pdarray | ArkoudaArray` to be handled
-        by ArkoudaArray when appropriate.
-        """
-        result = self.__or__(other)
-        if result is NotImplemented:
-            return NotImplemented
-        return result
 
     def __repr__(self):
         return f"ArkoudaArray({self._data})"
