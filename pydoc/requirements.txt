@@ -38,7 +38,7 @@ flake8
 mypy>=0.931
 black
 pytest-json-report
-pytest-benchmark
+pytest-benchmark>=4.0.0
 mathjax
 pandas-stubs
 types-python-dateutil

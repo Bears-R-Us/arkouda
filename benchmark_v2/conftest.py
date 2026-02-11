@@ -51,7 +51,7 @@ def pytest_addoption(parser):
         "If Arkouda is not configured for multi_locale, 1 locale is used.",
     )
 
-    default_running_mode = os.getenv("ARKOUDA_RUNNING_MODE", "CLASS_SERVER")
+    default_running_mode = os.getenv("ARKOUDA_RUNNING_MODE", "GLOBAL_SERVER")
     parser.addoption(
         "--running_mode",
         action="store",
@@ -90,10 +90,11 @@ def pytest_addoption(parser):
         default="10**8",
         help="Benchmark only option. Problem size: length of array to use for benchmarks.",
     )
+    default_trials = os.getenv("ARKOUDA_NUM_PERF_TRIALS", "5")
     parser.addoption(
         "--trials",
         action="store",
-        default="5",
+        default=default_trials,
         help="Benchmark only option. Problem size: length of array to use for benchmarks. "
         "For tests that run as many trials as possible in a given time, "
         "will be treated as number of seconds to run for.",
