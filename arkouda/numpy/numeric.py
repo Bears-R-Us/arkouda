@@ -166,15 +166,6 @@ def _merge_where(new_pda, where, ret):
     return new_pda
 
 
-# _normalize_scalar is needed in arctan2 to handle broadcasts of np.bool_ scalars
-
-
-def _normalize_scalar(x):
-    if isinstance(x, np.generic):
-        return x.item()
-    return x
-
-
 @overload
 def cast(
     pda: pdarray,
