@@ -64,6 +64,19 @@ def alternate(L, R, n):
     return v
 
 
+def random_scalar(dtype):
+    if dtype is np.float64:
+        return np.float64(np.random.random())
+    elif dtype is np.int64:
+        return np.random.randint(-100, 100, dtype=np.int64)
+    elif dtype is np.uint64:
+        return np.random.randint(0, 100, dtype=np.uint64)
+    elif dtype is np.bool_:
+        return np.random.randint(2, dtype=np.bool_)
+    else:
+        raise TypeError(f"Unsupported dtype: {dtype}")
+
+
 #  The following tuples support a simplification of the trigonometric
 #  and hyperbolic testing.
 
