@@ -1,3 +1,5 @@
+import gc
+
 import pytest
 
 from benchmark_utils import calc_num_bytes
@@ -22,18 +24,30 @@ def create_ak_array(N, dtype):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_to_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        N = pytest.N
-        a = create_ak_array(N, dtype)
+        n = pytest.N
+        a = create_ak_array(n, dtype)
         num_bytes = calc_num_bytes(a)
         ak.client.maxTransferBytes = num_bytes
+
+        def setup():
+            gc.collect()
+            return (), {}
+
+        def teardown():
+            gc.collect()
 
         def to_nd():
             a.to_ndarray()
 
-        benchmark.pedantic(to_nd, rounds=pytest.trials)
+        benchmark.pedantic(
+            to_nd,
+            setup=setup,
+            teardown=teardown,
+            rounds=pytest.trials,
+        )
 
         benchmark.extra_info["description"] = "Measures the performance of pdarray.to_ndarray"
-        benchmark.extra_info["problem_size"] = N
+        benchmark.extra_info["problem_size"] = n
         benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
         benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)
@@ -44,11 +58,18 @@ def bench_array_transfer_to_ndarray(benchmark, dtype):
 @pytest.mark.parametrize("dtype", TYPES)
 def bench_array_transfer_from_ndarray(benchmark, dtype):
     if dtype in pytest.dtype:
-        N = pytest.N
-        a = create_ak_array(N, dtype)
+        n = pytest.N
+        a = create_ak_array(n, dtype)
         num_bytes = calc_num_bytes(a)
         ak.client.maxTransferBytes = num_bytes
         npa = a.to_ndarray()
+
+        def setup():
+            gc.collect()
+            return (), {}
+
+        def teardown():
+            gc.collect()
 
         def from_np():
             ak.array(npa, max_bits=pytest.max_bits)
@@ -57,12 +78,22 @@ def bench_array_transfer_from_ndarray(benchmark, dtype):
             ak.array(npa, max_bits=-1, dtype=dtype, unsafe=True, num_bits=128, any_neg=False)
 
         if dtype == "bigint":
-            benchmark.pedantic(from_np_bigint, rounds=pytest.trials)
+            benchmark.pedantic(
+                from_np_bigint,
+                setup=setup,
+                teardown=teardown,
+                rounds=pytest.trials,
+            )
         else:
-            benchmark.pedantic(from_np, rounds=pytest.trials)
+            benchmark.pedantic(
+                from_np,
+                setup=setup,
+                teardown=teardown,
+                rounds=pytest.trials,
+            )
 
         benchmark.extra_info["description"] = "Measures the performance of ak.array"
-        benchmark.extra_info["problem_size"] = N
+        benchmark.extra_info["problem_size"] = n
         benchmark.extra_info["num_bytes"] = num_bytes
         #   units are GiB/sec:
         benchmark.extra_info["transfer_rate"] = float((num_bytes / benchmark.stats["mean"]) / 2**30)

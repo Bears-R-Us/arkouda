@@ -678,7 +678,7 @@ jobs:
         retry_on: error
         command: |
           python3 -m ensurepip --default-pip
-          python3 -m pip install pytest-benchmark==3.2.2 py
+          python3 -m pip install pytest-benchmark>=4.0.0 py
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths
@@ -727,7 +727,7 @@ jobs:
         retry_on: error
         command: |
           python3 -m ensurepip --default-pip
-          python3 -m pip install pytest-benchmark==3.2.2 py
+          python3 -m pip install pytest-benchmark>=4.0.0 py
           echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/arrow-install/))" >> Makefile.paths
           echo "\$(eval \$(call add-path,$DEP_INSTALL_DIR/libiconv-install/))" >> Makefile.paths

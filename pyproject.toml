@@ -39,7 +39,7 @@ dev = [
   "pytest-env",
   "pytest-timeout",
   "pytest-html",
-  "pytest-benchmark",
+  "pytest-benchmark>=4.0.0",
   "pytest-json-report",
   "pytest-subtests",
   "Sphinx>=5.1.1",
