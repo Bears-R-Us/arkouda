@@ -30,8 +30,11 @@ from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_INTS,
     _datatype_check,
     bigint,
+    bool_scalars,
     int_scalars,
+    is_supported_bool,
     is_supported_number,
+    numeric_and_bool_scalars,
     numeric_scalars,
     resolve_scalar_dtype,
     str_,
@@ -52,7 +55,7 @@ from arkouda.numpy.pdarrayclass import (
 )
 from arkouda.numpy.pdarrayclass import all as ak_all
 from arkouda.numpy.pdarrayclass import any as ak_any
-from arkouda.numpy.pdarraycreation import array, linspace, scalar_array
+from arkouda.numpy.pdarraycreation import array, linspace
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
 
@@ -154,7 +157,7 @@ class ErrorMode(Enum):
 
 # TODO: standardize error checking in python interface
 
-# merge_where comes in handy in various functions.
+# merge_where will be phased out as more functions are converted to the ufunc interface.
 
 
 def _merge_where(new_pda, where, ret):
@@ -427,75 +430,7 @@ def fabs(pda: pdarray) -> pdarray:
 
 
 @typechecked
-def ceil(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise ceiling of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing ceiling values of the input array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.ceil(ak.linspace(1.1,5.5,5))
-    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])
-
-    """
-    _datatype_check(pda.dtype, [float], "ceil")
-    return _general_helper(pda, "ceil", where)
-
-
-@typechecked
-def floor(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise floor of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing floor values of the input array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.floor(ak.linspace(1.1,5.5,5))
-    array([1.00000000... 2.00000000... 3.00000000...
-    4.00000000... 5.00000000...])
-    """
-    _datatype_check(pda.dtype, [float], "floor")
-    return _general_helper(pda, "floor", where)
-
-
-@typechecked
-def round(pda: pdarray, decimals: Optional[int] = None) -> pdarray:
+def round(pda: pdarray, decimals: Optional[Union[int, None]] = None) -> pdarray:
     """
     Return the element-wise rounding of the array.
 
@@ -563,39 +498,6 @@ def round(pda: pdarray, decimals: Optional[int] = None) -> pdarray:
     return create_pdarray(rep_msg)
 
 
-@typechecked
-def trunc(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise truncation of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing input array elements truncated to the nearest integer
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
-    array([1.00000000... 2.00000000... 3.00000000...])
-    """
-    _datatype_check(pda.dtype, [float], "trunc")
-    return _general_helper(pda, "trunc", where)
-
-
 #   Noted during Sept 2024 rewrite of EfuncMsg.chpl -- although it's "sign" here, inside the
 #   chapel code, it's "sgn"
 
@@ -613,8 +515,6 @@ def sign(pda: pdarray) -> pdarray:
     -------
     pdarray
         A pdarray containing sign values of the input array elements
-
-    Raises
     ------
     TypeError
         Raised if the parameter is not a pdarray
@@ -1441,120 +1341,6 @@ def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
     array([-1.47760906... -1.30221689... 1.28737507... 1.47584462...])
     """
     return _general_helper(pda, "arctan", where)
-
-
-@typechecked
-def arctan2(
-    num: Union[pdarray, numeric_scalars],
-    denom: Union[pdarray, numeric_scalars],
-    where: Union[bool, pdarray] = True,
-) -> pdarray:
-    """
-    Return the element-wise inverse tangent of the array pair. The result chosen is the
-    signed angle in radians between the ray ending at the origin and passing through the
-    point (1,0), and the ray ending at the origin and passing through the point (denom, num).
-    The result is between -pi and pi.
-
-    Parameters
-    ----------
-    num : pdarray or numeric_scalars
-        Numerator of the arctan2 argument.
-    denom : pdarray or numeric_scalars
-        Denominator of the arctan2 argument.
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing inverse tangent for each corresponding element pair
-        of the original pdarray, using the signed values or the numerator and
-        denominator to get proper placement on unit circle.
-
-    Raises
-    ------
-    TypeError
-        | Raised if any parameter fails the typechecking
-        | Raised if any element of pdarrays num and denom is not a supported type
-        | Raised if both num and denom are scalars
-        | Raised if where is neither boolean nor a pdarray of boolean
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> x = ak.array([1,-1,-1,1])
-    >>> y = ak.array([1,1,-1,-1])
-    >>> ak.arctan2(y,x)
-    array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])
-    """
-    from arkouda.client import generic_msg
-
-    if not all(is_supported_number(arg) or isinstance(arg, pdarray) for arg in [num, denom]):
-        raise TypeError(
-            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
-        )
-    if is_supported_number(num) and is_supported_number(denom):
-        raise TypeError(
-            f"Unsupported types {type(num)} and/or {type(denom)}. Supported "
-            "types are numeric scalars and pdarrays. At least one argument must be a pdarray."
-        )
-    # TODO: handle shape broadcasting for multidimensional arrays
-
-    if where is True:
-        pass
-    elif where is False:
-        return num / denom  # type: ignore
-    elif where.dtype != bool:
-        raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-
-    if isinstance(num, pdarray) or isinstance(denom, pdarray):
-        ndim = num.ndim if isinstance(num, pdarray) else denom.ndim  # type: ignore[union-attr]
-
-        #   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based
-        #   on a and b.
-
-        if isinstance(num, pdarray) and isinstance(denom, pdarray):
-            cmdstring = f"arctan2vv<{num.dtype},{ndim},{denom.dtype}>"
-            if where is True:
-                argdict = {
-                    "a": num,
-                    "b": denom,
-                }
-            elif where is False:
-                return num / denom  # type: ignore
-            else:
-                argdict = {
-                    "a": num[where],
-                    "b": denom[where],
-                }
-        elif not isinstance(denom, pdarray):
-            ts = resolve_scalar_dtype(denom)
-            if ts in ["float64", "int64", "uint64", "bool"]:
-                cmdstring = "arctan2vs_" + ts + f"<{num.dtype},{ndim}>"  # type: ignore[union-attr]
-            else:
-                raise TypeError(f"{ts} is not an allowed denom type for arctan2")
-            argdict = {"a": num if where is True else num[where], "b": denom}  # type: ignore
-        elif not isinstance(num, pdarray):
-            ts = resolve_scalar_dtype(num)
-            if ts in ["float64", "int64", "uint64", "bool"]:
-                cmdstring = "arctan2sv_" + ts + f"<{denom.dtype},{ndim}>"
-            else:
-                raise TypeError(f"{ts} is not an allowed num type for arctan2")
-            argdict = {"a": num, "b": denom if where is True else denom[where]}  # type: ignore
-
-        rep_msg = generic_msg(cmd=cmdstring, args=argdict)
-        ret = create_pdarray(rep_msg)
-        if where is True:
-            return ret
-        else:
-            new_pda = num / denom  # type : ignore
-            return _merge_where(new_pda, where, ret)
-
-    else:
-        return scalar_array(arctan2(num, denom) if where else num / denom)
 
 
 @typechecked
@@ -3937,3 +3723,584 @@ def maximum(x1: Union[pdarray, numeric_scalars], x2: Union[pdarray, numeric_scal
 
     else:
         raise ValueError("Arguments to minimum must be pdarrays or scalars.")
+
+
+#   New implementation of arctan2 using ufunc tools.
+
+
+@typechecked
+def arctan2(
+    x1: Union[pdarray, numeric_and_bool_scalars],
+    x2: Union[pdarray, numeric_and_bool_scalars],
+    /,
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Union[bool_scalars, pdarray]] = None,
+) -> Union[pdarray, numeric_scalars]:
+    """
+    Return the element-wise inverse tangent of the array pair. The result chosen is the
+    signed angle in radians between the ray ending at the origin and passing through the
+    point (1,0), and the ray ending at the origin and passing through the point (denom, num).
+    The result is between -pi and pi.
+
+    Parameters
+    ----------
+    x1 : pdarray or numeric_scalars
+        Numerator of the arctan2 argument.
+    x2 : pdarray or numeric_scalars
+        Denominator of the arctan2 argument.
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse tangent for each corresponding element pair
+        of the original pdarray, using the signed values or the numerator and
+        denominator to get proper placement on unit circle.
+
+    Raises
+    ------
+    TypeError
+        | Raised if any parameter fails the typechecking
+        | Raised if any element of pdarrays num and denom is not a supported type
+        | Raised if both num and denom are scalars
+        | Raised if where is neither boolean nor a pdarray of boolean
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> x = ak.array([1,-1,-1,1])
+    >>> y = ak.array([1,1,-1,-1])
+    >>> ak.arctan2(y,x)
+    array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])
+
+    Notes
+    -----
+    Unlike numpy, arkouda requires out if where is used.
+    """
+    #  arctan2-specific checking
+
+    def _is_supported(arg):
+        return is_supported_number(arg) or is_supported_bool(arg)
+
+    def handle_bools(x):
+        if np.isscalar(x):
+            if type(x) in (bool, np.bool_, ak_bool):
+                return float(x)
+            else:
+                return x
+        if isinstance(x, pdarray):
+            if x.dtype == "bool":
+                return x.astype(ak_float64)
+            else:
+                return x
+
+    #  arctan2 allows bools, but treats them as floats.
+
+    x1 = handle_bools(x1)
+    x2 = handle_bools(x2)
+
+    #   for arctan2, out must be float.  Any other specification is an error.
+
+    if out is not None and out.dtype != ak_float64:
+        raise TypeError(f"Cannot return arctan2 result as type {out.dtype}")
+
+    if not all(_is_supported(arg) or isinstance(arg, pdarray) for arg in [x1, x2]):
+        raise TypeError(
+            f"Unsupported types {type(x1)} and/or {type(x2)}. Supported "
+            "types are numeric scalars and pdarrays."
+        )
+
+    # end of arctan2-specific checking.  Now use ufunc style call.
+
+    return _apply_where_out(
+        _arctan2_impl,  # the actual function
+        x1,
+        x2,
+        where=where,
+        out=out,
+        dtype=ak_float64,
+        scalar_op=np.arctan2,
+    )
+
+
+# ------------------------------------------------------------
+# arctan2 implementation helpers
+# ------------------------------------------------------------
+
+
+@typechecked
+def _arctan2_impl(
+    x1: Union[pdarray, numeric_and_bool_scalars],
+    x2: Union[pdarray, numeric_and_bool_scalars],
+    out=None,
+    dtype=None,
+) -> pdarray:
+    from arkouda.client import generic_msg
+
+    # Require at least one pdarray argument
+
+    if not (isinstance(x1, pdarray) or isinstance(x2, pdarray)):
+        raise TypeError("_arctan2_ helper function called with no pdarray arguments.")
+
+    # Determine ndim from the pdarray argument
+
+    if isinstance(x1, pdarray):
+        ndim = x1.ndim
+    elif isinstance(x2, pdarray):
+        ndim = x2.ndim
+
+    argdict = {"a": x1, "b": x2}
+
+    # Build command string
+
+    if isinstance(x1, pdarray) and isinstance(x2, pdarray):
+        cmdstring = f"arctan2vv<{x1.dtype},{ndim},{x2.dtype}>"
+
+    elif isinstance(x1, pdarray) and not isinstance(x2, pdarray):
+        ts = resolve_scalar_dtype(x2)
+        if ts in ["float64", "int64", "uint64", "bool"]:
+            cmdstring = "arctan2vs_" + ts + f"<{x1.dtype},{ndim}>"
+        else:
+            raise TypeError(f"{ts} is not an allowed x2 type for arctan2")
+
+    elif not isinstance(x1, pdarray) and isinstance(x2, pdarray):
+        ts = resolve_scalar_dtype(x1)
+        if ts in ["float64", "int64", "uint64", "bool"]:
+            cmdstring = "arctan2sv_" + ts + f"<{x2.dtype},{ndim}>"
+        else:
+            raise TypeError(f"{ts} is not an allowed x1 type for arctan2")
+
+    rep_msg = generic_msg(cmd=cmdstring, args=argdict)
+    res = create_pdarray(rep_msg)
+
+    if out is None:
+        return res
+    out[:] = res
+    return out
+
+
+#   New implementation of floor using ufunc tools.
+
+
+@typechecked
+def floor(
+    pda: Union[pdarray, numeric_and_bool_scalars],
+    /,
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Union[bool_scalars, pdarray]] = None,
+) -> Union[pdarray, numeric_scalars]:
+    """
+    Return the element-wise floor of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing floor values of the input array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.floor(ak.linspace(1.1,5.5,5))
+    array([1.00000000... 2.00000000... 3.00000000...
+    4.00000000... 5.00000000...])
+
+    Notes
+    -----
+    Unlike numpy, arkouda requires out if where is used.
+    """
+    dtype = (
+        pda.dtype
+        if isinstance(pda, pdarray)
+        else resolve_scalar_dtype(pda)
+        if np.isscalar(pda)
+        else ak_float64
+    )
+    _datatype_check(dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "floor")
+    return _apply_where_out(
+        _floor_impl,  # the actual function
+        pda,
+        where=where,
+        out=out,
+        dtype=ak_float64,
+        scalar_op=np.floor,
+    )
+
+
+def _floor_impl(pda: pdarray, out=None, dtype=None):
+    from arkouda.client import generic_msg
+
+    # floor is a no-op for integer/uint/bool
+    if pda.dtype.kind in "iub":
+        if out is None:
+            return pda.copy()
+        out[:] = pda
+        return out
+
+    rep_msg = generic_msg(
+        cmd=f"floor<{pda.dtype},{pda.ndim}>",
+        args={"x": pda},
+    )
+    res = create_pdarray(rep_msg)
+
+    if out is None:
+        return res
+    out[:] = res
+    return out
+
+
+#   New implementation of ceil using ufunc tools.
+
+
+@typechecked
+def ceil(
+    pda: Union[pdarray, numeric_and_bool_scalars],
+    /,
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Union[bool_scalars, pdarray]] = None,
+) -> Union[pdarray, numeric_scalars]:
+    """
+    Return the element-wise ceiling of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing ceiling values of the input array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.ceil(ak.linspace(1.1,5.5,5))
+    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])
+
+    Notes
+    -----
+    Unlike numpy, arkouda requires out if where is used.
+    """
+    dtype = pda.dtype if isinstance(pda, pdarray) else type(pda) if np.isscalar(pda) else ak_float64
+    _datatype_check(dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "ceil")
+    return _apply_where_out(
+        _ceil_impl,  # the actual function
+        pda,
+        where=where,
+        out=out,
+        dtype=ak_float64,
+        scalar_op=np.ceil,
+    )
+
+
+def _ceil_impl(pda: pdarray, out=None, dtype=None):
+    from arkouda.client import generic_msg
+
+    # ceil is a no-op for integer/uint/bool
+    if pda.dtype.kind in "iub":
+        if out is None:
+            return pda.copy()
+        out[:] = pda
+        return out
+
+    rep_msg = generic_msg(
+        cmd=f"ceil<{pda.dtype},{pda.ndim}>",
+        args={"x": pda},
+    )
+    res = create_pdarray(rep_msg)
+
+    if out is None:
+        return res
+    out[:] = res
+    return out
+
+
+#   New implementation of trunc using ufunc tools.
+
+
+@typechecked
+def trunc(
+    pda: Union[pdarray, numeric_and_bool_scalars],
+    /,
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Union[bool_scalars, pdarray]] = None,
+) -> Union[pdarray, numeric_scalars]:
+    """
+    Return the element-wise truncation of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing input array elements truncated to the nearest integer
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
+    array([1.00000000... 2.00000000... 3.00000000...])
+
+    Notes
+    -----
+    Unlike numpy, arkouda requires out if where is used.
+    """
+    dtype = pda.dtype if isinstance(pda, pdarray) else type(pda) if np.isscalar(pda) else ak_float64
+    _datatype_check(dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "trunc")
+    return _apply_where_out(
+        _trunc_impl,  # the actual function
+        pda,
+        where=where,
+        out=out,
+        dtype=ak_float64,
+        scalar_op=np.trunc,
+    )
+
+
+def _trunc_impl(pda: pdarray, out=None, dtype=None):
+    from arkouda.client import generic_msg
+
+    # trunc is a no-op for integer/uint/bool: return copy or fill out
+    if pda.dtype.kind in "iub":
+        if out is None:
+            return pda.copy()
+        out[:] = pda
+        return out
+
+    rep_msg = generic_msg(
+        cmd=f"trunc<{pda.dtype},{pda.ndim}>",
+        args={"x": pda},
+    )
+    res = create_pdarray(rep_msg)
+
+    if out is None:
+        return res
+    out[:] = res
+    return out
+
+
+#  Helper functions for ufuncs (things that implement "out" and "where").
+
+# ============================================================
+# scalar normalization
+# ============================================================
+
+
+def _normalize_scalar(x):
+    """
+    Convert NumPy scalar types (np.bool_, np.int64, etc.)
+    into Python scalars so broadcasting behaves sanely.
+    """
+    if isinstance(x, np.generic):
+        return x.item()
+    return x
+
+
+# ============================================================
+# "where: normalization and policy enforcement
+# ============================================================
+
+
+def _normalize_where(where):
+    """Treat None as True (no mask), normalize NumPy scalars."""
+    where = _normalize_scalar(where)
+
+    if isinstance(where, pdarray) and where.dtype != bool:
+        raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
+
+    if np.isscalar(where) and type(where) is not bool:
+        raise TypeError(f"where must have dtype bool, got {type(where)} instead")
+
+    return True if where is None else where
+
+
+def _validate_out(out):
+    if out is None:
+        return None
+    if isinstance(out, pdarray):
+        return out
+    raise TypeError("out must be a pdarray or None")
+
+
+def _require_out_for_mask(where, out):
+    """Arkouda policy: if where is anything other than True/None, out must be provided."""
+    if out is None and where is not True:
+        raise ValueError("out must be provided when where is not None/True")
+
+
+# ============================================================
+# minimal dispatcher abstraction
+# ============================================================
+
+
+def _dispatch(op, *ops, out=None, dtype=None):
+    """
+    op: server-side implementation callable.
+
+    Convention:
+      - if out is None: return a new pdarray
+      - if out is provided: fill it and return it
+    """
+    if out is None:
+        return op(*ops, dtype=dtype)
+    else:
+        op(*ops, out=out, dtype=dtype)
+        return out
+
+
+# ============================================================
+# Helpers
+# ============================================================
+
+
+def _scalar_to_bool(where_scalar):
+    """Strict-ish conversion for scalar where values."""
+    if isinstance(where_scalar, bool):
+        return where_scalar
+    # after _normalize_scalar, np.bool_ becomes bool, but keep this safe:
+    raise TypeError("where must be None/True, bool, or pdarray[bool]")
+
+
+# ============================================================
+# unified where/out utility
+# ============================================================
+
+
+def _apply_where_out(
+    op,  # the arkouda function
+    *operands,
+    where=None,
+    out=None,
+    dtype=None,
+    scalar_op=None,  # Python/NumPy scalar implementation
+):
+    from arkouda.numpy.numeric import where as ak_where
+    from arkouda.numpy.util import broadcast_shapes as bcast_shapes
+    from arkouda.numpy.util import broadcast_to as bcast_to
+
+    # --- normalize scalars ---
+    ops = tuple(_normalize_scalar(x) for x in operands)
+    where_n = _normalize_where(where)
+    out_n = _validate_out(out)
+    # out_n = _normalize_scalar(out)
+
+    # --------------------------------------------------------
+    # Scalar-only fast path: return scalar
+    # Only when out is None and where is "no mask"
+    # --------------------------------------------------------
+    if out_n is None and where_n is True and all(np.isscalar(x) for x in ops):
+        if scalar_op is None:
+            raise RuntimeError("scalar_op required for scalar-only inputs")
+        return scalar_op(*ops)
+
+    # --------------------------------------------------------
+    # Enforce where/out policy (unlike numpy, arkouda requires out if where is used).
+    # --------------------------------------------------------
+    _require_out_for_mask(where_n, out_n)
+
+    # --------------------------------------------------------
+    # Determine target shape
+    #
+    # - If out is a pdarray, out.shape is THE target shape to which everything is broadcast.
+    # - Otherwise (no out pdarray), broadcast operand(s) (and where pdarray) to find shape.
+    # --------------------------------------------------------
+    out_pd = out_n if isinstance(out_n, pdarray) else None
+
+    if out_pd is not None:
+        shape = out_pd.shape
+    else:
+        shape_args = [x.shape if isinstance(x, pdarray) else () for x in ops]
+        if isinstance(where_n, pdarray):
+            shape_args.append(where_n)
+        shape = bcast_shapes(*shape_args)
+
+    # --------------------------------------------------------
+    # Broadcast operand(s) (and where) to target shape
+    # --------------------------------------------------------
+    b_ops = tuple(bcast_to(x, shape) for x in ops)
+
+    # --------------------------------------------------------
+    # FAST PATH: no mask
+    # --------------------------------------------------------
+    if where_n is True:
+        if out_pd is None:
+            return _dispatch(op, *b_ops, out=None, dtype=dtype)
+
+        _dispatch(op, *b_ops, out=out_pd, dtype=dtype)
+        return out_pd
+
+    # --------------------------------------------------------
+    # MASKED PATH (out required, by policy)
+    # --------------------------------------------------------
+    if out_pd is None:
+        # out could be a scalar here; policy requires out be provided,
+        # but caller may pass scalar. To match numpy, if inputs are scalar and out is provided,
+        # out must be >=1-element pdarray.
+        raise ValueError("out must be a pdarray when where is not None/True")
+
+    # Normalize where to pdarray mask of target shape
+    if isinstance(where_n, pdarray):
+        cond = bcast_to(where_n, shape)
+    else:
+        cond = bcast_to(_scalar_to_bool(where_n), shape)
+
+    # Compute full temporary result (server-side)
+    tmp = _dispatch(op, *b_ops, out=None, dtype=dtype)
+
+    # Merge
+    merged = ak_where(cond, tmp, out_pd)
+
+    # Write into out in place and return it
+    out_pd[:] = merged
+    return out_pd
