@@ -13190,34 +13190,7 @@ Package Contents
    :raises ValueError: Raised if shapes are incompatible with matrix multiplication.
 
 
-.. py:function:: maximum(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> arkouda.numpy.pdarrayclass.pdarray
-
-   Return the element-wise maximum of x1 and x2.  Where either is a nan, return nan,
-   else the greater of x1, x2.  If x1 and x2 are not the same shape, they are first
-   broadcast to a mutual shape, if possible.
-
-   :param x1: first argument in comparison.
-   :type x1: pdarray, numeric_scalars
-   :param x2: second argument in comparison.
-   :type x2: pdarray, numeric_scalars
-
-   :returns: The element-wise maximum of x1 and x2.  If both are scalars, it invokes
-             numpy maximum, otherwise where either is a nan, the returned pdarray
-             Where neither is a nan, it stores the maximum of x1 and x2.
-   :rtype: pdarray, numeric_scalar
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> a = ak.array([1.0,2.0,ak.nan])
-   >>> b = ak.array([0.5,2.5,3.5])
-   >>> ak.maximum(a,b)
-   array([1.00000000000000000 2.5 nan])
-   >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
-   >>> d = ak.array([-0.5,2.5])
-   >>> ak.maximum(c,d)
-   array([array([0.00000000000000000 2.5]) array([2.00000000000000000 3.00000000000000000])])
-
+.. py:function:: maximum(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]
 
 .. py:function:: maxk(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
 
@@ -13288,33 +13261,25 @@ Package Contents
    np.float64(2.5)
 
 
-.. py:function:: minimum(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: minimum(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]
 
-   Return the element-wise minimum of x1 and x2.  Where either is a nan, return nan,
-   else the lesser of x1, x2.  If x1 and x2 are not the same shape, they are first
-   broadcast to a mutual shape, if possible.
+   Return the element-wise minimum of ``x1`` and ``x2``.
 
-   :param x1: first argument in comparison.
-   :type x1: pdarray, numeric_scalars
-   :param x2: second argument in comparison.
-   :type x2: pdarray, numeric_scalars
+   Where either value is NaN, return NaN; otherwise return the lesser of the two.
+   If ``x1`` and ``x2`` are not the same shape, they are broadcast to a mutual
+   shape when possible.
 
-   :returns: The element-wise minimum of x1 and x2.  If both are scalars, it invokes
-             numpy minimum, otherwise where either is a nan, the returned pdarray
-             Where neither is a nan, it stores the minimum of x1 and x2.
-   :rtype: pdarray, numeric_scalar
+   :param x1: First argument in comparison.
+   :type x1: pdarray or numeric_scalars
+   :param x2: Second argument in comparison.
+   :type x2: pdarray or numeric_scalars
 
-   .. rubric:: Examples
+   :returns: The element-wise minimum of ``x1`` and ``x2``. If both inputs are scalars,
+             returns a scalar (via ``numpy.minimum``). Otherwise returns a ``pdarray``
+             (after broadcasting as needed).
+   :rtype: Union[pdarray, numeric_scalars]
 
-   >>> import arkouda as ak
-   >>> a = ak.array([1.0,2.0,ak.nan])
-   >>> b = ak.array([0.5,2.5,3.5])
-   >>> ak.minimum(a,b)
-   array([0.5 2.00000000000000000 nan])
-   >>> c = ak.arange(4,dtype=ak.float64).reshape(2,2)
-   >>> d = ak.array([-0.5,2.5])
-   >>> ak.minimum(c,d)
-   array([array([-0.5 1.00000000000000000]) array([-0.5 2.5])])
+   :raises ValueError: Raised if ``x1`` and ``x2`` cannot be broadcast to a mutual shape.
 
 
 .. py:function:: mink(pda: pdarray, k: arkouda.numpy.dtypes.int_scalars) -> pdarray
@@ -17839,71 +17804,36 @@ Package Contents
    array([array([1]) array([2]) array([3]) array([4]) array([5]) array([6])])
 
 
-.. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], B: Union[str, arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]
+.. py:function:: where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray], B: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray]) -> arkouda.numpy.pdarrayclass.pdarray
+                 where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.strings.Strings], B: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.strings.Strings]) -> arkouda.numpy.strings.Strings
+                 where(condition: arkouda.numpy.pdarrayclass.pdarray, A: arkouda.pandas.categorical.Categorical, B: arkouda.pandas.categorical.Categorical) -> arkouda.pandas.categorical.Categorical
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: arkouda.numpy.dtypes.numeric_and_bool_scalars, B: arkouda.numpy.dtypes.numeric_and_bool_scalars) -> arkouda.numpy.dtypes.numeric_and_bool_scalars
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: arkouda.numpy.pdarrayclass.pdarray, B: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray]) -> arkouda.numpy.pdarrayclass.pdarray
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: Union[arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray], B: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: arkouda.numpy.dtypes.str_scalars, B: arkouda.numpy.dtypes.str_scalars) -> arkouda.numpy.dtypes.str_scalars
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: arkouda.numpy.strings.Strings, B: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.strings.Strings]) -> arkouda.numpy.strings.Strings
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.strings.Strings], B: arkouda.numpy.strings.Strings) -> arkouda.numpy.strings.Strings
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: arkouda.pandas.categorical.Categorical, B: arkouda.pandas.categorical.Categorical) -> arkouda.pandas.categorical.Categorical
+                 where(condition: arkouda.numpy.pdarrayclass.pdarray, A: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], B: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]) -> Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]
+                 where(condition: arkouda.numpy.dtypes.bool_scalars, A: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical], B: Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]) -> Union[arkouda.numpy.dtypes.str_scalars, arkouda.numpy.dtypes.numeric_and_bool_scalars, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]
 
-   Return an array with elements chosen from A and B based upon a
-   conditioning array. As is the case with numpy.where, the return array
-   consists of values from the first array (A) where the conditioning array
-   elements are True and from the second array (B) where the conditioning
-   array elements are False.
+   Return values chosen from ``x`` and ``y`` depending on ``condition``.
 
-   :param condition: Used to choose values from A or B
-   :type condition: pdarray
-   :param A: Value(s) used when condition is True
-   :type A: str, numeric_scalars, pdarray, Strings, or Categorical
-   :param B: Value(s) used when condition is False
-   :type B: str, numeric_scalars, pdarray, Strings, or Categorical
-
-   :returns: Values chosen from A where the condition is True and B where
-             the condition is False
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
-       an int, np.int64, float, np.float64, bool, pdarray, str, Strings, Categorical
-       if pdarray dtypes are not supported or do not match, or multiple
-       condition clauses (see Notes section) are applied
-   :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal
-
-   .. rubric:: Examples
-
-   >>> import arkouda as ak
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = ak.ones(9, dtype=np.int64)
-   >>> cond = a1 < 5
-   >>> ak.where(cond,a1,a2)
-   array([1 2 3 4 1 1 1 1 1])
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = ak.ones(9, dtype=np.int64)
-   >>> cond = a1 == 5
-   >>> ak.where(cond,a1,a2)
-   array([1 1 1 1 5 1 1 1 1])
-
-   >>> a1 = ak.arange(1,10)
-   >>> a2 = 10
-   >>> cond = a1 < 5
-   >>> ak.where(cond,a1,a2)
-   array([1 2 3 4 10 10 10 10 10])
-
-   >>> s1 = ak.array([f'str {i}' for i in range(10)])
-   >>> s2 = 'str 21'
-   >>> cond = (ak.arange(10) % 2 == 0)
-   >>> ak.where(cond,s1,s2)
-   array(['str 0', 'str 21', 'str 2', 'str 21', 'str 4',
-   'str 21', 'str 6', 'str 21', 'str 8', 'str 21'])
-
-   >>> c1 = ak.Categorical(ak.array([f'str {i}' for i in range(10)]))
-   >>> c2 = ak.Categorical(ak.array([f'str {i}' for i in range(9, -1, -1)]))
-   >>> cond = (ak.arange(10) % 2 == 0)
-   >>> ak.where(cond,c1,c2)
-   array(['str 0', 'str 8', 'str 2', 'str 6', 'str 4',
-   'str 4', 'str 6', 'str 2', 'str 8', 'str 0'])
+   Broadcasting rules (NumPy-style):
+   - If ``condition`` is a boolean ``pdarray``, the output shape is the broadcasted
+     shape of ``condition`` and any array-like operands among ``x`` and ``y``.
+   - If ``condition`` is a scalar bool:
+       * if any operand is array-like, broadcast the condition to the broadcasted
+         shape of the array-like operands and return an array-like result
+       * if both operands are scalars, return a scalar
 
    .. rubric:: Notes
 
-   A and B must have the same dtype and only one conditional clause
-   is supported e.g., n < 5, n > 1, which is supported in numpy
-   is not currently supported in Arkouda
+   * For numeric/bool ``pdarray`` inputs, Arkouda requires matching dtypes between
+     array operands (server-side constraint).
+   * Broadcasting is performed for ``pdarray`` operands via ``broadcast_to``.
+   * ``Strings`` and ``Categorical`` are treated as 1D; we validate broadcast
+     compatibility but do not currently broadcast these objects.
 
 
 .. py:function:: write_log(log_msg: str, tag: str = 'ClientGeneratedLog', log_lvl: LogLevel = LogLevel.INFO)
