@@ -43,7 +43,7 @@ def time_ak_array_create(N_per_locale, trials, dtype, random, seed):
     print(">>> arkouda {} array creation".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
-    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
 
     timings = {op: [] for op in OPS}
     for i in range(trials):

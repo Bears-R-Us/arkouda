@@ -12,7 +12,7 @@ def time_ak_stream(N_per_locale, trials, alpha, max_bits, random, seed):
     print(">>> arkouda bigint stream")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
-    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
     # default tot_bytes to ones case
     tot_bytes = N * 8 * 3
     if random or seed is not None:

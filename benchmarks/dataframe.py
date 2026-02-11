@@ -41,7 +41,7 @@ def time_ak_df_display(N_per_locale, trials, seed):
     print(">>> arkouda dataframe display")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
-    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
 
     pd.set_option("display.max_rows", 100)
     pd.set_option("display.min_rows", 10)

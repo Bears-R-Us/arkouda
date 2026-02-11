@@ -10,7 +10,7 @@ def time_substring_search(N_per_locale, trials, seed):
     print(">>> arkouda substring search")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
-    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
 
     start = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
     end = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)

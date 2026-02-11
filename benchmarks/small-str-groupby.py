@@ -12,7 +12,7 @@ SIZES = {"small": 6, "medium": 12, "big": 24}
 def time_ak_groupby(N_per_locale, trials, seed):
     cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
-    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
     for k, v in SIZES.items():
         a = ak.random_strings_uniform(1, v, N, seed=seed)
         totalbytes = a.nbytes * a.entry.itemsize

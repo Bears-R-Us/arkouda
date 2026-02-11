@@ -16,7 +16,7 @@ def time_ak_scan(N_per_locale, trials, dtype, random, seed):
     print(">>> arkouda {} scan".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numNodes"]
-    print("numNodes = {}, N = {:,}".format(cfg["numNodes"], N))
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
     if random or args.seed is not None:
         if dtype == "int64":
             a = ak.randint(1, N, N, seed=seed)
