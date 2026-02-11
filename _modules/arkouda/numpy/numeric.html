@@ -402,8 +402,11 @@
     <span class="n">ARKOUDA_SUPPORTED_INTS</span><span class="p">,</span>
     <span class="n">_datatype_check</span><span class="p">,</span>
     <span class="n">bigint</span><span class="p">,</span>
+    <span class="n">bool_scalars</span><span class="p">,</span>
     <span class="n">int_scalars</span><span class="p">,</span>
+    <span class="n">is_supported_bool</span><span class="p">,</span>
     <span class="n">is_supported_number</span><span class="p">,</span>
+    <span class="n">numeric_and_bool_scalars</span><span class="p">,</span>
     <span class="n">numeric_scalars</span><span class="p">,</span>
     <span class="n">resolve_scalar_dtype</span><span class="p">,</span>
     <span class="n">str_</span><span class="p">,</span>
@@ -424,7 +427,7 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">all</span> <span class="k">as</span> <span class="n">ak_all</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="nb">any</span> <span class="k">as</span> <span class="n">ak_any</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">scalar_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">linspace</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">sort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 
@@ -529,22 +532,13 @@
 
 <span class="c1"># TODO: standardize error checking in python interface</span>
 
-<span class="c1"># merge_where comes in handy in various functions.</span>
+<span class="c1"># merge_where will be phased out as more functions are converted to the ufunc interface.</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_merge_where</span><span class="p">(</span><span class="n">new_pda</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">ret</span><span class="p">):</span>
     <span class="n">new_pda</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">new_pda</span><span class="p">,</span> <span class="n">ret</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">new_pda</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span>
     <span class="k">return</span> <span class="n">new_pda</span>
-
-
-<span class="c1"># _normalize_scalar is needed in arctan2 to handle broadcasts of np.bool_ scalars</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_scalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">x</span>
 
 
 <span class="nd">@overload</span>
@@ -810,84 +804,10 @@
 
 
 
-<div class="viewcode-block" id="ceil">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.ceil">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the element-wise ceiling of the array.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">    where : bool or pdarray, default=True</span>
-<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
-<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
-<span class="sd">        original value. Default set to True.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pdarray</span>
-<span class="sd">        A pdarray containing ceiling values of the input array elements</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if the parameter is not a pdarray</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.ceil(ak.linspace(1.1,5.5,5))</span>
-<span class="sd">    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;ceil&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;ceil&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="floor">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.floor">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the element-wise floor of the array.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">    where : bool or pdarray, default=True</span>
-<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
-<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
-<span class="sd">        original value. Default set to True.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pdarray</span>
-<span class="sd">        A pdarray containing floor values of the input array elements</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if the parameter is not a pdarray</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.floor(ak.linspace(1.1,5.5,5))</span>
-<span class="sd">    array([1.00000000... 2.00000000... 3.00000000...</span>
-<span class="sd">    4.00000000... 5.00000000...])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;floor&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;floor&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="round">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.round">[docs]</a>
 <span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">decimals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">decimals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the element-wise rounding of the array.</span>
 
@@ -956,42 +876,6 @@
 
 
 
-<div class="viewcode-block" id="trunc">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.trunc">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">trunc</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the element-wise truncation of the array.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    pda : pdarray</span>
-<span class="sd">    where : bool or pdarray, default=True</span>
-<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
-<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
-<span class="sd">        original value. Default set to True.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pdarray</span>
-<span class="sd">        A pdarray containing input array elements truncated to the nearest integer</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        Raised if the parameter is not a pdarray</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.trunc(ak.array([1.1, 2.5, 3.14159]))</span>
-<span class="sd">    array([1.00000000... 2.00000000... 3.00000000...])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="s2">&quot;trunc&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;trunc&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
-
-
-
 <span class="c1">#   Noted during Sept 2024 rewrite of EfuncMsg.chpl -- although it&#39;s &quot;sign&quot; here, inside the</span>
 <span class="c1">#   chapel code, it&#39;s &quot;sgn&quot;</span>
 
@@ -1011,8 +895,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
 <span class="sd">        A pdarray containing sign values of the input array elements</span>
-
-<span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
 <span class="sd">        Raised if the parameter is not a pdarray</span>
@@ -1896,123 +1778,6 @@
 <span class="sd">    array([-1.47760906... -1.30221689... 1.28737507... 1.47584462...])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_general_helper</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="s2">&quot;arctan&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="arctan2">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arctan2">[docs]</a>
-<span class="nd">@typechecked</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">arctan2</span><span class="p">(</span>
-    <span class="n">num</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span>
-    <span class="n">denom</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">],</span>
-    <span class="n">where</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the element-wise inverse tangent of the array pair. The result chosen is the</span>
-<span class="sd">    signed angle in radians between the ray ending at the origin and passing through the</span>
-<span class="sd">    point (1,0), and the ray ending at the origin and passing through the point (denom, num).</span>
-<span class="sd">    The result is between -pi and pi.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    num : pdarray or numeric_scalars</span>
-<span class="sd">        Numerator of the arctan2 argument.</span>
-<span class="sd">    denom : pdarray or numeric_scalars</span>
-<span class="sd">        Denominator of the arctan2 argument.</span>
-<span class="sd">    where : bool or pdarray, default=True</span>
-<span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
-<span class="sd">        the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain</span>
-<span class="sd">        its original value. Default set to True.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pdarray</span>
-<span class="sd">        A pdarray containing inverse tangent for each corresponding element pair</span>
-<span class="sd">        of the original pdarray, using the signed values or the numerator and</span>
-<span class="sd">        denominator to get proper placement on unit circle.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError</span>
-<span class="sd">        | Raised if any parameter fails the typechecking</span>
-<span class="sd">        | Raised if any element of pdarrays num and denom is not a supported type</span>
-<span class="sd">        | Raised if both num and denom are scalars</span>
-<span class="sd">        | Raised if where is neither boolean nor a pdarray of boolean</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; x = ak.array([1,-1,-1,1])</span>
-<span class="sd">    &gt;&gt;&gt; y = ak.array([1,1,-1,-1])</span>
-<span class="sd">    &gt;&gt;&gt; ak.arctan2(y,x)</span>
-<span class="sd">    array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">is_supported_number</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">]):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
-            <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">is_supported_number</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_supported_number</span><span class="p">(</span><span class="n">denom</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
-            <span class="s2">&quot;types are numeric scalars and pdarrays. At least one argument must be a pdarray.&quot;</span>
-        <span class="p">)</span>
-    <span class="c1"># TODO: handle shape broadcasting for multidimensional arrays</span>
-
-    <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type: ignore</span>
-    <span class="k">elif</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where must have dtype bool, got </span><span class="si">{</span><span class="n">where</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> instead&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-        <span class="n">ndim</span> <span class="o">=</span> <span class="n">num</span><span class="o">.</span><span class="n">ndim</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">denom</span><span class="o">.</span><span class="n">ndim</span>  <span class="c1"># type: ignore[union-attr]</span>
-
-        <span class="c1">#   The code below will create the command string for arctan2vv, arctan2vs or arctan2sv, based</span>
-        <span class="c1">#   on a and b.</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;arctan2vv&lt;</span><span class="si">{</span><span class="n">num</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">denom</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-            <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span>
-                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">,</span>
-                <span class="p">}</span>
-            <span class="k">elif</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type: ignore</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
-                    <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">],</span>
-                <span class="p">}</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">denom</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">ts</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">denom</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
-                <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2vs_&quot;</span> <span class="o">+</span> <span class="n">ts</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">num</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>  <span class="c1"># type: ignore[union-attr]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2"> is not an allowed denom type for arctan2&quot;</span><span class="p">)</span>
-            <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span> <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">num</span><span class="p">[</span><span class="n">where</span><span class="p">],</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span><span class="p">}</span>  <span class="c1"># type: ignore</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">ts</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
-                <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2sv_&quot;</span> <span class="o">+</span> <span class="n">ts</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">denom</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2"> is not an allowed num type for arctan2&quot;</span><span class="p">)</span>
-            <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">denom</span> <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">denom</span><span class="p">[</span><span class="n">where</span><span class="p">]}</span>  <span class="c1"># type: ignore</span>
-
-        <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">argdict</span><span class="p">)</span>
-        <span class="n">ret</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ret</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_pda</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>  <span class="c1"># type : ignore</span>
-            <span class="k">return</span> <span class="n">_merge_where</span><span class="p">(</span><span class="n">new_pda</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">scalar_array</span><span class="p">(</span><span class="n">arctan2</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span> <span class="k">if</span> <span class="n">where</span> <span class="k">else</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span></div>
 
 
 
@@ -4486,6 +4251,599 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arguments to minimum must be pdarrays or scalars.&quot;</span><span class="p">)</span></div>
 
+
+
+<span class="c1">#   New implementation of arctan2 using ufunc tools.</span>
+
+
+<div class="viewcode-block" id="arctan2">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.arctan2">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">arctan2</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_and_bool_scalars</span><span class="p">],</span>
+    <span class="n">x2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_and_bool_scalars</span><span class="p">],</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">where</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the element-wise inverse tangent of the array pair. The result chosen is the</span>
+<span class="sd">    signed angle in radians between the ray ending at the origin and passing through the</span>
+<span class="sd">    point (1,0), and the ray ending at the origin and passing through the point (denom, num).</span>
+<span class="sd">    The result is between -pi and pi.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : pdarray or numeric_scalars</span>
+<span class="sd">        Numerator of the arctan2 argument.</span>
+<span class="sd">    x2 : pdarray or numeric_scalars</span>
+<span class="sd">        Denominator of the arctan2 argument.</span>
+<span class="sd">    out: None or pdarray, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have a shape that</span>
+<span class="sd">        the inputs broadcast to.</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the condition is True,</span>
+<span class="sd">        the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain</span>
+<span class="sd">        its original value. Default set to True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A pdarray containing inverse tangent for each corresponding element pair</span>
+<span class="sd">        of the original pdarray, using the signed values or the numerator and</span>
+<span class="sd">        denominator to get proper placement on unit circle.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        | Raised if any parameter fails the typechecking</span>
+<span class="sd">        | Raised if any element of pdarrays num and denom is not a supported type</span>
+<span class="sd">        | Raised if both num and denom are scalars</span>
+<span class="sd">        | Raised if where is neither boolean nor a pdarray of boolean</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; x = ak.array([1,-1,-1,1])</span>
+<span class="sd">    &gt;&gt;&gt; y = ak.array([1,1,-1,-1])</span>
+<span class="sd">    &gt;&gt;&gt; ak.arctan2(y,x)</span>
+<span class="sd">    array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Unlike numpy, arkouda requires out if where is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#  arctan2-specific checking</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_supported</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">is_supported_number</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_bool</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_bools</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">ak_float64</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">x</span>
+
+    <span class="c1">#  arctan2 allows bools, but treats them as floats.</span>
+
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">handle_bools</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">handle_bools</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+
+    <span class="c1">#   for arctan2, out must be float.  Any other specification is an error.</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">ak_float64</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot return arctan2 result as type </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">_is_supported</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unsupported types </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2"> and/or </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="si">}</span><span class="s2">. Supported &quot;</span>
+            <span class="s2">&quot;types are numeric scalars and pdarrays.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># end of arctan2-specific checking.  Now use ufunc style call.</span>
+
+    <span class="k">return</span> <span class="n">_apply_where_out</span><span class="p">(</span>
+        <span class="n">_arctan2_impl</span><span class="p">,</span>  <span class="c1"># the actual function</span>
+        <span class="n">x1</span><span class="p">,</span>
+        <span class="n">x2</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ak_float64</span><span class="p">,</span>
+        <span class="n">scalar_op</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ------------------------------------------------------------</span>
+<span class="c1"># arctan2 implementation helpers</span>
+<span class="c1"># ------------------------------------------------------------</span>
+
+
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_arctan2_impl</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_and_bool_scalars</span><span class="p">],</span>
+    <span class="n">x2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_and_bool_scalars</span><span class="p">],</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+    <span class="c1"># Require at least one pdarray argument</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;_arctan2_ helper function called with no pdarray arguments.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Determine ndim from the pdarray argument</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">ndim</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">ndim</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">ndim</span>
+
+    <span class="n">argdict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="p">}</span>
+
+    <span class="c1"># Build command string</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">cmdstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;arctan2vv&lt;</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
+            <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2vs_&quot;</span> <span class="o">+</span> <span class="n">ts</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2"> is not an allowed x2 type for arctan2&quot;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ts</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]:</span>
+            <span class="n">cmdstring</span> <span class="o">=</span> <span class="s2">&quot;arctan2sv_&quot;</span> <span class="o">+</span> <span class="n">ts</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2"> is not an allowed x1 type for arctan2&quot;</span><span class="p">)</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="n">cmdstring</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">argdict</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="n">out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="c1">#   New implementation of floor using ufunc tools.</span>
+
+
+<div class="viewcode-block" id="floor">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.floor">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_and_bool_scalars</span><span class="p">],</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">where</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the element-wise floor of the array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">    out: None or pdarray, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have a shape that</span>
+<span class="sd">        the inputs broadcast to.</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A pdarray containing floor values of the input array elements</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if the parameter is not a pdarray</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.floor(ak.linspace(1.1,5.5,5))</span>
+<span class="sd">    array([1.00000000... 2.00000000... 3.00000000...</span>
+<span class="sd">    4.00000000... 5.00000000...])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Unlike numpy, arkouda requires out if where is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span>
+        <span class="k">else</span> <span class="n">resolve_scalar_dtype</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span>
+        <span class="k">else</span> <span class="n">ak_float64</span>
+    <span class="p">)</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_int64</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s2">&quot;floor&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_apply_where_out</span><span class="p">(</span>
+        <span class="n">_floor_impl</span><span class="p">,</span>  <span class="c1"># the actual function</span>
+        <span class="n">pda</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ak_float64</span><span class="p">,</span>
+        <span class="n">scalar_op</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_floor_impl</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+    <span class="c1"># floor is a no-op for integer/uint/bool</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;iub&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">pda</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;floor&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="n">out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="c1">#   New implementation of ceil using ufunc tools.</span>
+
+
+<div class="viewcode-block" id="ceil">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.ceil">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ceil</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_and_bool_scalars</span><span class="p">],</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">where</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the element-wise ceiling of the array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">    out: None or pdarray, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have a shape that</span>
+<span class="sd">        the inputs broadcast to.</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A pdarray containing ceiling values of the input array elements</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if the parameter is not a pdarray</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.ceil(ak.linspace(1.1,5.5,5))</span>
+<span class="sd">    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Unlike numpy, arkouda requires out if where is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="k">else</span> <span class="n">ak_float64</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_int64</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s2">&quot;ceil&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_apply_where_out</span><span class="p">(</span>
+        <span class="n">_ceil_impl</span><span class="p">,</span>  <span class="c1"># the actual function</span>
+        <span class="n">pda</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ak_float64</span><span class="p">,</span>
+        <span class="n">scalar_op</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ceil_impl</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+    <span class="c1"># ceil is a no-op for integer/uint/bool</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;iub&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">pda</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ceil&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="n">out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="c1">#   New implementation of trunc using ufunc tools.</span>
+
+
+<div class="viewcode-block" id="trunc">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/numeric/index.html#arkouda.trunc">[docs]</a>
+<span class="nd">@typechecked</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trunc</span><span class="p">(</span>
+    <span class="n">pda</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_and_bool_scalars</span><span class="p">],</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pdarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">where</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">numeric_scalars</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the element-wise truncation of the array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">    out: None or pdarray, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have a shape that</span>
+<span class="sd">        the inputs broadcast to.</span>
+<span class="sd">    where : bool or pdarray, default=True</span>
+<span class="sd">        This condition is applied over the input. At locations where the condition is True, the</span>
+<span class="sd">        corresponding value will be acted on by the function. Elsewhere, it will retain its</span>
+<span class="sd">        original value. Default set to True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        A pdarray containing input array elements truncated to the nearest integer</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        Raised if the parameter is not a pdarray</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    &gt;&gt;&gt; ak.trunc(ak.array([1.1, 2.5, 3.14159]))</span>
+<span class="sd">    array([1.00000000... 2.00000000... 3.00000000...])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Unlike numpy, arkouda requires out if where is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="nb">type</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">pda</span><span class="p">)</span> <span class="k">else</span> <span class="n">ak_float64</span>
+    <span class="n">_datatype_check</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="p">[</span><span class="n">ak_float64</span><span class="p">,</span> <span class="n">ak_int64</span><span class="p">,</span> <span class="n">ak_uint64</span><span class="p">,</span> <span class="n">ak_bool</span><span class="p">],</span> <span class="s2">&quot;trunc&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_apply_where_out</span><span class="p">(</span>
+        <span class="n">_trunc_impl</span><span class="p">,</span>  <span class="c1"># the actual function</span>
+        <span class="n">pda</span><span class="p">,</span>
+        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ak_float64</span><span class="p">,</span>
+        <span class="n">scalar_op</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">trunc</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_trunc_impl</span><span class="p">(</span><span class="n">pda</span><span class="p">:</span> <span class="n">pdarray</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
+
+    <span class="c1"># trunc is a no-op for integer/uint/bool: return copy or fill out</span>
+    <span class="k">if</span> <span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;iub&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pda</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">pda</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="n">rep_msg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;trunc&lt;</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pda</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">pda</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">res</span>
+    <span class="n">out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="c1">#  Helper functions for ufuncs (things that implement &quot;out&quot; and &quot;where&quot;).</span>
+
+<span class="c1"># ============================================================</span>
+<span class="c1"># scalar normalization</span>
+<span class="c1"># ============================================================</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_scalar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert NumPy scalar types (np.bool_, np.int64, etc.)</span>
+<span class="sd">    into Python scalars so broadcasting behaves sanely.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="c1"># ============================================================</span>
+<span class="c1"># &quot;where: normalization and policy enforcement</span>
+<span class="c1"># ============================================================</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_where</span><span class="p">(</span><span class="n">where</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Treat None as True (no mask), normalize NumPy scalars.&quot;&quot;&quot;</span>
+    <span class="n">where</span> <span class="o">=</span> <span class="n">_normalize_scalar</span><span class="p">(</span><span class="n">where</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">where</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where must have dtype bool, got </span><span class="si">{</span><span class="n">where</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> instead&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">where</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">where</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;where must have dtype bool, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">where</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">where</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_out</span><span class="p">(</span><span class="n">out</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">out</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;out must be a pdarray or None&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_require_out_for_mask</span><span class="p">(</span><span class="n">where</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Arkouda policy: if where is anything other than True/None, out must be provided.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;out must be provided when where is not None/True&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># ============================================================</span>
+<span class="c1"># minimal dispatcher abstraction</span>
+<span class="c1"># ============================================================</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_dispatch</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="o">*</span><span class="n">ops</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    op: server-side implementation callable.</span>
+
+<span class="sd">    Convention:</span>
+<span class="sd">      - if out is None: return a new pdarray</span>
+<span class="sd">      - if out is provided: fill it and return it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">op</span><span class="p">(</span><span class="o">*</span><span class="n">ops</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">op</span><span class="p">(</span><span class="o">*</span><span class="n">ops</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="c1"># ============================================================</span>
+<span class="c1"># Helpers</span>
+<span class="c1"># ============================================================</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_scalar_to_bool</span><span class="p">(</span><span class="n">where_scalar</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Strict-ish conversion for scalar where values.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">where_scalar</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">where_scalar</span>
+    <span class="c1"># after _normalize_scalar, np.bool_ becomes bool, but keep this safe:</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;where must be None/True, bool, or pdarray[bool]&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># ============================================================</span>
+<span class="c1"># unified where/out utility</span>
+<span class="c1"># ============================================================</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_apply_where_out</span><span class="p">(</span>
+    <span class="n">op</span><span class="p">,</span>  <span class="c1"># the arkouda function</span>
+    <span class="o">*</span><span class="n">operands</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">scalar_op</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Python/NumPy scalar implementation</span>
+<span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">where</span> <span class="k">as</span> <span class="n">ak_where</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_shapes</span> <span class="k">as</span> <span class="n">bcast_shapes</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_to</span> <span class="k">as</span> <span class="n">bcast_to</span>
+
+    <span class="c1"># --- normalize scalars ---</span>
+    <span class="n">ops</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_normalize_scalar</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">operands</span><span class="p">)</span>
+    <span class="n">where_n</span> <span class="o">=</span> <span class="n">_normalize_where</span><span class="p">(</span><span class="n">where</span><span class="p">)</span>
+    <span class="n">out_n</span> <span class="o">=</span> <span class="n">_validate_out</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="c1"># out_n = _normalize_scalar(out)</span>
+
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="c1"># Scalar-only fast path: return scalar</span>
+    <span class="c1"># Only when out is None and where is &quot;no mask&quot;</span>
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="k">if</span> <span class="n">out_n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">where_n</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scalar_op</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;scalar_op required for scalar-only inputs&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scalar_op</span><span class="p">(</span><span class="o">*</span><span class="n">ops</span><span class="p">)</span>
+
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="c1"># Enforce where/out policy (unlike numpy, arkouda requires out if where is used).</span>
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="n">_require_out_for_mask</span><span class="p">(</span><span class="n">where_n</span><span class="p">,</span> <span class="n">out_n</span><span class="p">)</span>
+
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="c1"># Determine target shape</span>
+    <span class="c1">#</span>
+    <span class="c1"># - If out is a pdarray, out.shape is THE target shape to which everything is broadcast.</span>
+    <span class="c1"># - Otherwise (no out pdarray), broadcast operand(s) (and where pdarray) to find shape.</span>
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="n">out_pd</span> <span class="o">=</span> <span class="n">out_n</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out_n</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">out_pd</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">out_pd</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shape_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="k">else</span> <span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">where_n</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="n">shape_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">where_n</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">bcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">shape_args</span><span class="p">)</span>
+
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="c1"># Broadcast operand(s) (and where) to target shape</span>
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="n">b_ops</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">bcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ops</span><span class="p">)</span>
+
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="c1"># FAST PATH: no mask</span>
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="k">if</span> <span class="n">where_n</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">out_pd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_dispatch</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="o">*</span><span class="n">b_ops</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="n">_dispatch</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="o">*</span><span class="n">b_ops</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out_pd</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out_pd</span>
+
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="c1"># MASKED PATH (out required, by policy)</span>
+    <span class="c1"># --------------------------------------------------------</span>
+    <span class="k">if</span> <span class="n">out_pd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># out could be a scalar here; policy requires out be provided,</span>
+        <span class="c1"># but caller may pass scalar. To match numpy, if inputs are scalar and out is provided,</span>
+        <span class="c1"># out must be &gt;=1-element pdarray.</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;out must be a pdarray when where is not None/True&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Normalize where to pdarray mask of target shape</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">where_n</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="n">bcast_to</span><span class="p">(</span><span class="n">where_n</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="n">bcast_to</span><span class="p">(</span><span class="n">_scalar_to_bool</span><span class="p">(</span><span class="n">where_n</span><span class="p">),</span> <span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># Compute full temporary result (server-side)</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">_dispatch</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="o">*</span><span class="n">b_ops</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># Merge</span>
+    <span class="n">merged</span> <span class="o">=</span> <span class="n">ak_where</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">out_pd</span><span class="p">)</span>
+
+    <span class="c1"># Write into out in place and return it</span>
+    <span class="n">out_pd</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">merged</span>
+    <span class="k">return</span> <span class="n">out_pd</span>
 </pre></div>
         </article>
       </div>

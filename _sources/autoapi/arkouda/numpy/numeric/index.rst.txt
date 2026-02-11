@@ -286,17 +286,20 @@ Module Contents
    array([-1.47760906... -1.30221689... 1.28737507... 1.47584462...])
 
 
-.. py:function:: arctan2(num: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], denom: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars], where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: arctan2(x1: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_and_bool_scalars], x2: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_and_bool_scalars], /, out: Optional[arkouda.numpy.pdarrayclass.pdarray] = None, *, where: Optional[Union[arkouda.numpy.dtypes.bool_scalars, arkouda.numpy.pdarrayclass.pdarray]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]
 
    Return the element-wise inverse tangent of the array pair. The result chosen is the
    signed angle in radians between the ray ending at the origin and passing through the
    point (1,0), and the ray ending at the origin and passing through the point (denom, num).
    The result is between -pi and pi.
 
-   :param num: Numerator of the arctan2 argument.
-   :type num: pdarray or numeric_scalars
-   :param denom: Denominator of the arctan2 argument.
-   :type denom: pdarray or numeric_scalars
+   :param x1: Numerator of the arctan2 argument.
+   :type x1: pdarray or numeric_scalars
+   :param x2: Denominator of the arctan2 argument.
+   :type x2: pdarray or numeric_scalars
+   :param out: A location into which the result is stored. If provided, it must have a shape that
+               the inputs broadcast to.
+   :type out: None or pdarray, optional
    :param where: This condition is broadcast over the input. At locations where the condition is True,
                  the inverse tangent will be applied to the corresponding values. Elsewhere, it will retain
                  its original value. Default set to True.
@@ -319,6 +322,10 @@ Module Contents
    >>> y = ak.array([1,1,-1,-1])
    >>> ak.arctan2(y,x)
    array([0.78539816... 2.35619449... -2.35619449... -0.78539816...])
+
+   .. rubric:: Notes
+
+   Unlike numpy, arkouda requires out if where is used.
 
 
 .. py:function:: arctanh(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
@@ -450,12 +457,15 @@ Module Contents
    array([False True True True True])
 
 
-.. py:function:: ceil(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: ceil(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_and_bool_scalars], /, out: Optional[arkouda.numpy.pdarrayclass.pdarray] = None, *, where: Optional[Union[arkouda.numpy.dtypes.bool_scalars, arkouda.numpy.pdarrayclass.pdarray]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]
 
    Return the element-wise ceiling of the array.
 
    :param pda:
    :type pda: pdarray
+   :param out: A location into which the result is stored. If provided, it must have a shape that
+               the inputs broadcast to.
+   :type out: None or pdarray, optional
    :param where: This condition is applied over the input. At locations where the condition is True, the
                  corresponding value will be acted on by the function. Elsewhere, it will retain its
                  original value. Default set to True.
@@ -471,6 +481,10 @@ Module Contents
    >>> import arkouda as ak
    >>> ak.ceil(ak.linspace(1.1,5.5,5))
    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])
+
+   .. rubric:: Notes
+
+   Unlike numpy, arkouda requires out if where is used.
 
 
 .. py:function:: clip(pda: arkouda.numpy.pdarrayclass.pdarray, lo: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray], hi: Union[arkouda.numpy.dtypes.numeric_scalars, arkouda.numpy.pdarrayclass.pdarray]) -> arkouda.numpy.pdarrayclass.pdarray
@@ -805,12 +819,15 @@ Module Contents
    2.00000000... 1.00000000...])
 
 
-.. py:function:: floor(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: floor(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_and_bool_scalars], /, out: Optional[arkouda.numpy.pdarrayclass.pdarray] = None, *, where: Optional[Union[arkouda.numpy.dtypes.bool_scalars, arkouda.numpy.pdarrayclass.pdarray]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]
 
    Return the element-wise floor of the array.
 
    :param pda:
    :type pda: pdarray
+   :param out: A location into which the result is stored. If provided, it must have a shape that
+               the inputs broadcast to.
+   :type out: None or pdarray, optional
    :param where: This condition is applied over the input. At locations where the condition is True, the
                  corresponding value will be acted on by the function. Elsewhere, it will retain its
                  original value. Default set to True.
@@ -827,6 +844,10 @@ Module Contents
    >>> ak.floor(ak.linspace(1.1,5.5,5))
    array([1.00000000... 2.00000000... 3.00000000...
    4.00000000... 5.00000000...])
+
+   .. rubric:: Notes
+
+   Unlike numpy, arkouda requires out if where is used.
 
 
 .. py:function:: hash(pda: HashableItems, full: Literal[True] = True) -> Tuple[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.pdarrayclass.pdarray]
@@ -1540,7 +1561,7 @@ Module Contents
    array([0.00000000... 119.939165... 239.878330... 359.817495...])
 
 
-.. py:function:: round(pda: arkouda.numpy.pdarrayclass.pdarray, decimals: Optional[int] = None) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: round(pda: arkouda.numpy.pdarrayclass.pdarray, decimals: Optional[Union[int, None]] = None) -> arkouda.numpy.pdarrayclass.pdarray
 
    Return the element-wise rounding of the array.
 
@@ -1586,10 +1607,9 @@ Module Contents
    :param pda:
    :type pda: pdarray
 
-   :returns: A pdarray containing sign values of the input array elements
-   :rtype: pdarray
-
-   :raises TypeError: Raised if the parameter is not a pdarray
+   :returns: * *pdarray* -- A pdarray containing sign values of the input array elements
+             * *------*
+             * *TypeError* -- Raised if the parameter is not a pdarray
 
    .. rubric:: Examples
 
@@ -1860,12 +1880,15 @@ Module Contents
    Server returns an error if rank of pda < 2
 
 
-.. py:function:: trunc(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
+.. py:function:: trunc(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_and_bool_scalars], /, out: Optional[arkouda.numpy.pdarrayclass.pdarray] = None, *, where: Optional[Union[arkouda.numpy.dtypes.bool_scalars, arkouda.numpy.pdarrayclass.pdarray]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]
 
    Return the element-wise truncation of the array.
 
    :param pda:
    :type pda: pdarray
+   :param out: A location into which the result is stored. If provided, it must have a shape that
+               the inputs broadcast to.
+   :type out: None or pdarray, optional
    :param where: This condition is applied over the input. At locations where the condition is True, the
                  corresponding value will be acted on by the function. Elsewhere, it will retain its
                  original value. Default set to True.
@@ -1881,6 +1904,10 @@ Module Contents
    >>> import arkouda as ak
    >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
    array([1.00000000... 2.00000000... 3.00000000...])
+
+   .. rubric:: Notes
+
+   Unlike numpy, arkouda requires out if where is used.
 
 
 .. py:function:: value_counts(pda: arkouda.numpy.pdarrayclass.pdarray) -> tuple[arkouda.groupbyclass.groupable, arkouda.numpy.pdarrayclass.pdarray]
