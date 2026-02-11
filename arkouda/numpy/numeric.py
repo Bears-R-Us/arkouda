@@ -154,13 +154,22 @@ class ErrorMode(Enum):
 
 # TODO: standardize error checking in python interface
 
-# merge_where comes in handy in arctan2 and some other functions.
+# merge_where comes in handy in various functions.
 
 
 def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
+
+
+# _normalize_scalar is needed in arctan2 to handle broadcasts of np.bool_ scalars
+
+
+def _normalize_scalar(x):
+    if isinstance(x, np.generic):
+        return x.item()
+    return x
 
 
 @overload
