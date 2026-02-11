@@ -425,7 +425,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.arraylike</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpsMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.dtypes.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionDtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
@@ -451,7 +450,7 @@
 
 <div class="viewcode-block" id="ArkoudaExtensionArray">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaExtensionArray">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaExtensionArray</span><span class="p">(</span><span class="n">OpsMixin</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaExtensionArray</span><span class="p">(</span><span class="n">ExtensionArray</span><span class="p">):</span>
     <span class="n">default_fill_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">all_scalars</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="n">_data</span><span class="p">:</span> <span class="n">Any</span>

@@ -1063,7 +1063,7 @@ Package Contents
 
 .. py:class:: ArkoudaExtensionArray(data)
 
-   Bases: :py:obj:`pandas.core.arraylike.OpsMixin`, :py:obj:`pandas.api.extensions.ExtensionArray`
+   Bases: :py:obj:`pandas.api.extensions.ExtensionArray`
 
 
    Abstract base class for custom 1-D array types.
