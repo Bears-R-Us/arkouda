@@ -64,6 +64,19 @@ def alternate(L, R, n):
     return v
 
 
+def random_scalar(dtype):
+    if dtype is np.float64:
+        return np.float64(np.random.random())
+    elif dtype is np.int64:
+        return np.random.randint(-100, 100, dtype=np.int64)
+    elif dtype is np.uint64:
+        return np.random.randint(0, 100, dtype=np.uint64)
+    elif dtype is np.bool_:
+        return np.random.randint(2, dtype=np.bool_)
+    else:
+        raise TypeError(f"Unsupported dtype: {dtype}")
+
+
 #  The following tuples support a simplification of the trigonometric
 #  and hyperbolic testing.
 
@@ -1368,6 +1381,43 @@ class TestNumeric:
                 sample = sample.reshape(local_shape)  # reshape only needed if rank > 1
             aksample = ak.array(sample)
             assert np.all(npfunc(sample) == akfunc(aksample).to_ndarray())
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_floats(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.uniform(0, 10000, prob_size)
+        pda = ak.array(nda)
+        for decimal in range(-5, 5):
+            nres = np.round(nda, decimal)
+            pres = ak.round(pda, decimal)
+            ak_assert_almost_equivalent(nres, pres)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_ints(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.randint(-10000, 10000, prob_size)
+        pda = ak.array(nda)
+        nres = np.round(nda)
+        pres = ak.round(pda)
+        ak_assert_almost_equivalent(nres, pres)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_uints(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.randint(1, 10000, prob_size, dtype=np.uint64)
+        pda = ak.array(nda)
+        nres = np.round(nda)
+        pres = ak.round(pda)
+        ak_assert_almost_equivalent(nres, pres)
+
+    @pytest.mark.parametrize("prob_size", pytest.prob_size)
+    def test_round_bools(self, prob_size):
+        np.random.seed(pytest.seed)
+        nda = np.random.randint(0, 2, prob_size, dtype=np.bool_)
+        pda = ak.array(nda)
+        nres = np.round(nda).astype(np.float64)  # for comparison below
+        pres = ak.round(pda)
+        ak_assert_almost_equivalent(nres, pres)
 
     def test_can_cast(self):
         from arkouda.numpy.dtypes import can_cast

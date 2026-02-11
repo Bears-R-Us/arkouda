@@ -135,3 +135,123 @@ class TestArkoudaArrayExtensionArithmeticOps:
         # but it should definitely not silently succeed.
         with pytest.raises(ValueError):
             _ = x + y
+
+
+# ---------------------------------------------------------------------------
+# Additional unit tests for new ArkoudaArray dunder methods
+# (unary, comparisons, boolean bitwise, invert)
+# ---------------------------------------------------------------------------
+
+
+class TestArkoudaArrayExtensionDunderMoreOps:
+    # ---- unary ops ---------------------------------------------------------
+
+    def test_unary_neg_int64(self):
+        x = _ea([1, -2, 3], dtype="ak_int64")
+        out = -x
+        assert isinstance(out, ArkoudaArray)
+        np.testing.assert_allclose(out.to_numpy(), np.array([-1, 2, -3]))
+
+    def test_unary_pos_int64(self):
+        x = _ea([1, -2, 3], dtype="ak_int64")
+        out = +x
+        assert isinstance(out, ArkoudaArray)
+        np.testing.assert_allclose(out.to_numpy(), np.array([1, -2, 3]))
+
+    def test_abs_int64(self):
+        x = _ea([1, -2, 3], dtype="ak_int64")
+        out = abs(x)
+        assert isinstance(out, ArkoudaArray)
+        np.testing.assert_allclose(out.to_numpy(), np.array([1, 2, 3]))
+
+    # ---- comparison ops ----------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "op, np_op",
+        [
+            (operator.eq, operator.eq),
+            (operator.ne, operator.ne),
+            (operator.lt, operator.lt),
+            (operator.le, operator.le),
+            (operator.gt, operator.gt),
+            (operator.ge, operator.ge),
+        ],
+    )
+    def test_comparison_ops_ea_ea_dispatch_and_values(self, op, np_op):
+        x = _ea([1, 2, 3], dtype="ak_int64")
+        y = _ea([2, 2, 2], dtype="ak_int64")
+
+        out = op(x, y)
+        assert isinstance(out, ArkoudaArray)
+
+        expected = np_op(_np([1, 2, 3]), _np([2, 2, 2]))
+        np.testing.assert_array_equal(out.to_numpy(), expected)
+
+    @pytest.mark.parametrize(
+        "op, np_op",
+        [
+            (operator.eq, operator.eq),
+            (operator.ne, operator.ne),
+            (operator.lt, operator.lt),
+            (operator.le, operator.le),
+            (operator.gt, operator.gt),
+            (operator.ge, operator.ge),
+        ],
+    )
+    def test_comparison_ops_ea_scalar_dispatch_and_values(self, op, np_op):
+        x = _ea([1, 2, 3], dtype="ak_int64")
+        s = 2
+
+        out = op(x, s)
+        assert isinstance(out, ArkoudaArray)
+
+        expected = np_op(_np([1, 2, 3]), s)
+        np.testing.assert_array_equal(out.to_numpy(), expected)
+
+    # ---- bool bitwise/logical ops -----------------------------------------
+
+    def test_bool_and_ea_ea(self):
+        x = _ea([True, False, True], dtype="ak_bool")
+        y = _ea([True, True, False], dtype="ak_bool")
+
+        out = x & y
+        assert isinstance(out, ArkoudaArray)
+        np.testing.assert_array_equal(out.to_numpy(), np.array([True, False, False]))
+
+    def test_bool_or_ea_scalar(self):
+        x = _ea([True, False, True], dtype="ak_bool")
+        out = x | False
+        assert isinstance(out, ArkoudaArray)
+        np.testing.assert_array_equal(out.to_numpy(), np.array([True, False, True]))
+
+    def test_bool_xor_scalar_ea_reflected(self):
+        x = _ea([True, False, True], dtype="ak_bool")
+        out = True ^ x  # reflected
+        assert isinstance(out, ArkoudaArray)
+        np.testing.assert_array_equal(out.to_numpy(), np.array([False, True, False]))
+
+    def test_bool_invert(self):
+        x = _ea([True, False, True], dtype="ak_bool")
+        out = ~x
+        assert isinstance(out, ArkoudaArray)
+        np.testing.assert_array_equal(out.to_numpy(), np.array([False, True, False]))
+
+    # ---- error / NotImplemented paths -------------------------------------
+
+    def test_bool_and_nonbool_returns_typeerror(self):
+        """If __and__ returns NotImplemented, Python should raise TypeError."""
+        x = _ea([1, 2, 3], dtype="ak_int64")
+        with pytest.raises(TypeError):
+            _ = x & x
+
+    def test_comparison_length_mismatch_raises(self):
+        x = _ea([1, 2, 3], dtype="ak_int64")
+        y = _ea([1, 2], dtype="ak_int64")
+        with pytest.raises(ValueError):
+            _ = x == y
+
+    def test_bool_op_length_mismatch_raises(self):
+        x = _ea([True, False, True], dtype="ak_bool")
+        y = _ea([True, False], dtype="ak_bool")
+        with pytest.raises(ValueError):
+            _ = x & y

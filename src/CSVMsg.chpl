@@ -982,19 +982,21 @@ module CSVMsg {
                     var a = makeDistArray(record_count, string);
                     read_files_into_dist_array(a, dset, filenames, subdoms, skips, true, col_delim, offsets, allowErrors, hasQuotes);
                     var col_lens = makeDistArray(record_count, int);
-                    forall (i, v) in zip(0..#a.size, a) {
-                        var tmp_str = v + "\x00";
-                        var vbytes = tmp_str.bytes();
-                        col_lens[i] = vbytes.size;
+                    var value_size: int;
+                    forall (colLen, elem) in zip(col_lens, a)
+                        with (+ reduce value_size) {
+                      colLen = elem.numBytes+1;
+                      value_size += colLen;
                     }
                     var str_offsets = (+ scan col_lens) - col_lens;
-                    var value_size: int = + reduce col_lens;
                     var data = makeDistArray(value_size, uint(8));
-                    forall (i, v) in zip(0..#a.size, a) {
-                        var tmp_str = v + "\x00";
-                        var vbytes = tmp_str.bytes();
-                        ref low = str_offsets[i];
-                        data[low..#vbytes.size] = vbytes;
+                    forall (startIdx, elem) in zip(str_offsets, a) {
+                        const low = str_offsets[i];
+                        // TODO can probably use Communication.get for more perf
+                        for (dstIdx, src) in zip(startIdx..#elem.numBytes,
+                                                 elem.bytes()) {
+                          data[dstIdx] = src;
+                        }
                     }
                     var ss = getSegString(str_offsets, data, st);
                     var rst = (dset, ObjType.STRINGS, "%s+%?".format(ss.name, ss.nBytes));
