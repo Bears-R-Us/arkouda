@@ -374,6 +374,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">ceil</span>
@@ -408,6 +409,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">int64</span> <span class="k">as</span> <span class="n">akint64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">str_</span> <span class="k">as</span> <span class="n">akstr_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">uint64</span> <span class="k">as</span> <span class="n">akuint64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.err</span><span class="w"> </span><span class="kn">import</span> <span class="n">geterr</span> <span class="k">as</span> <span class="n">ak_geterr</span>
 
 
 <span class="n">module</span> <span class="o">=</span> <span class="n">modules</span><span class="p">[</span><span class="vm">__name__</span><span class="p">]</span>
@@ -592,6 +594,28 @@
 <span class="n">SUPPORTED_INDEX_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">]</span>
 
 <span class="n">SUPPORTED_STATS_REDUCTION_OPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_dbz_check</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">op</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;//&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">flag</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">ak_geterr</span><span class="p">()[</span><span class="s2">&quot;divide&quot;</span><span class="p">]</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;divide by zero encountered in divide&quot;</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span>
+        <span class="k">else</span> <span class="s2">&quot;divide by zero encountered in floor_divide&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;ignore&quot;</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FloatingPointError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_axis_parser</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
@@ -1247,6 +1271,10 @@
                 <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopvv&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
                 <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">x2</span><span class="p">},</span>
             <span class="p">)</span>
+
+            <span class="c1">#  Create a runtime warning if this caused divide-by-zero.</span>
+            <span class="n">_dbz_check</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="nb">any</span><span class="p">(</span><span class="n">x2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+
             <span class="k">if</span> <span class="n">tmp_x1</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">x1</span>
             <span class="k">if</span> <span class="n">tmp_x2</span><span class="p">:</span>
@@ -1270,6 +1298,10 @@
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopvs&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">other</span><span class="p">},</span>
         <span class="p">)</span>
+
+        <span class="c1">#  Create a runtime warning if this caused divide-by-zero.</span>
+        <span class="n">_dbz_check</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">other</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
     <span class="c1"># reverse binary operators</span>
@@ -1321,6 +1353,10 @@
             <span class="n">cmd</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binopsv&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;op&quot;</span><span class="p">:</span> <span class="n">op</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">other</span><span class="p">},</span>
         <span class="p">)</span>
+
+        <span class="c1">#  Create a runtime warning if this caused divide-by-zero.</span>
+        <span class="n">_dbz_check</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span>
+
         <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
 
 <div class="viewcode-block" id="pdarray.transfer">
