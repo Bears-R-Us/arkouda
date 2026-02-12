@@ -228,7 +228,9 @@ class TestArkoudaSeriesGroupby:
         keys_py = keys.tolist()
         counts_py = counts.tolist()
 
-        # The above groups by index; we actually want value counts by value:
+        # Series.groupby().size() is equivalent to Series.value_counts()
+        # The grouped values become the index of the returned series.
+        # We sort so the order matches.
         expected = pd.Series([80, 443, 80, 22, 443]).value_counts().sort_index()
 
         assert keys_py == expected.index.to_list()
