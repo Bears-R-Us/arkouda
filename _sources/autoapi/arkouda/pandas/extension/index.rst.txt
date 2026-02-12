@@ -286,6 +286,55 @@ Package Contents
       27
 
 
+   .. py:method:: value_counts(dropna: bool = True) -> pandas.Series
+
+      Return counts of unique values as a pandas Series.
+
+      This method computes the frequency of each distinct value in the
+      underlying Arkouda array and returns the result as a pandas
+      ``Series``, with the unique values as the index and their counts
+      as the data.
+
+      :param dropna: Whether to exclude missing values. Currently, missing-value
+                     handling is supported only for floating-point data, where
+                     ``NaN`` values are treated as missing. Default is True.
+      :type dropna: bool
+
+      :returns: A Series containing the counts of unique values.
+                The index is an ``ArkoudaArray`` of unique values, and the
+                values are an ``ArkoudaArray`` of counts.
+      :rtype: pd.Series
+
+      .. rubric:: Notes
+
+      - Only ``dropna=True`` is supported.
+      - The following pandas options are not yet implemented:
+        ``normalize``, ``sort``, and ``bins``.
+      - Counting is performed server-side in Arkouda; only the small
+        result (unique values and counts) is materialized on the client.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaArray
+      >>>
+      >>> a = ArkoudaArray(ak.array([1, 2, 1, 3, 2, 1]))
+      >>> a.value_counts()
+      1    3
+      2    2
+      3    1
+      dtype: int64
+
+      Floating-point data with NaN values:
+
+      >>> b = ArkoudaArray(ak.array([1.0, 2.0, float("nan"), 1.0]))
+      >>> b.value_counts()
+      1.0    2
+      2.0    1
+      dtype: int64
+
+
+
 .. py:class:: ArkoudaBigintDtype
 
    Bases: :py:obj:`_ArkoudaBaseDtype`
@@ -656,39 +705,46 @@ Package Contents
    .. py:method:: to_list(*args, **kwargs)
 
 
-   .. py:method:: value_counts(*args, **kwargs)
+   .. py:method:: value_counts(dropna: bool = True) -> pandas.Series
 
-      Return a Series containing counts of unique values.
+      Return counts of categories as a pandas Series.
 
-      This method returns a Series with unique values as the index and their
-      counts as the values.
+      This method computes category frequencies from the underlying Arkouda
+      ``Categorical`` and returns them as a pandas ``Series``, where the
+      index contains the category labels and the values contain the
+      corresponding counts.
 
-      :param dropna: Don't include counts of NA values.
-      :type dropna: bool, default True
+      :param dropna: Whether to drop missing values from the result. When ``True``,
+                     the result is filtered using the categorical's ``na_value``.
+                     When ``False``, all categories returned by the underlying
+                     computation are included. Default is True.
+      :type dropna: bool
 
-      :returns: A Series with unique values as index and counts as values.
-      :rtype: Series
+      :returns: A Series containing category counts.
+                The index is an ``ArkoudaStringArray`` of category labels and the
+                values are an ``ArkoudaArray`` of counts.
+      :rtype: pd.Series
 
-      .. seealso::
+      .. rubric:: Notes
 
-         :py:obj:`Series.value_counts`
-             Equivalent method on Series.
-
-         :py:obj:`DataFrame.value_counts`
-             Equivalent method on DataFrame.
-
-         :py:obj:`Index.value_counts`
-             Equivalent method on Index.
+      - The result is computed server-side in Arkouda; only the (typically small)
+        output of categories and counts is materialized for the pandas ``Series``.
+      - This method does not yet support pandas options such as ``normalize``,
+        ``sort``, or ``bins``.
+      - The handling of missing values depends on the Arkouda ``Categorical``
+        definition of ``na_value``.
 
       .. rubric:: Examples
 
-      >>> from pandas.core.arrays import IntegerArray
-      >>> arr = IntegerArray._from_sequence([3, 3, 3, 1, 2, 2])
-      >>> arr.value_counts()
-      3    3
-      1    1
-      2    2
-      Name: count, dtype: Int64
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
+      >>>
+      >>> a = ArkoudaCategoricalArray(["a", "b", "a", "c", "b", "a"])
+      >>> a.value_counts()
+      a    3
+      b    2
+      c    1
+      dtype: int64
 
 
 
@@ -1713,42 +1769,6 @@ Package Contents
 
 
 
-   .. py:method:: value_counts(*args, **kwargs)
-
-      Return a Series containing counts of unique values.
-
-      This method returns a Series with unique values as the index and their
-      counts as the values.
-
-      :param dropna: Don't include counts of NA values.
-      :type dropna: bool, default True
-
-      :returns: A Series with unique values as index and counts as values.
-      :rtype: Series
-
-      .. seealso::
-
-         :py:obj:`Series.value_counts`
-             Equivalent method on Series.
-
-         :py:obj:`DataFrame.value_counts`
-             Equivalent method on DataFrame.
-
-         :py:obj:`Index.value_counts`
-             Equivalent method on Index.
-
-      .. rubric:: Examples
-
-      >>> from pandas.core.arrays import IntegerArray
-      >>> arr = IntegerArray._from_sequence([3, 3, 3, 1, 2, 2])
-      >>> arr.value_counts()
-      3    3
-      1    1
-      2    2
-      Name: count, dtype: Int64
-
-
-
    .. py:method:: view(dtype=None)
 
       Return a shallow view of the ExtensionArray.
@@ -2752,6 +2772,55 @@ Package Contents
 
 
    .. py:method:: trace(*args, **kwargs)
+
+
+   .. py:method:: value_counts(dropna: bool = True) -> pandas.Series
+
+      Return counts of unique strings as a pandas Series.
+
+      This method computes the frequency of each distinct string value in the
+      underlying Arkouda ``Strings`` object and returns the result as a pandas
+      ``Series``, with the unique string values as the index and their counts
+      as the data.
+
+      :param dropna: Whether to exclude missing values. Missing-value handling for
+                     Arkouda string arrays is not yet implemented, so this parameter is
+                     accepted for pandas compatibility but currently has no effect.
+                     Default is True.
+      :type dropna: bool
+
+      :returns: A Series containing the counts of unique string values.
+                The index is an ``ArkoudaStringArray`` of unique values, and the
+                values are an ``ArkoudaArray`` of counts.
+      :rtype: pd.Series
+
+      .. rubric:: Notes
+
+      - The following pandas options are not yet implemented:
+        ``normalize``, ``sort``, and ``bins``.
+      - Counting is performed server-side in Arkouda; only the small result
+        (unique values and counts) is materialized on the client.
+
+      .. rubric:: Examples
+
+      Basic usage:
+
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaStringArray
+      >>>
+      >>> s = ArkoudaStringArray(["red", "blue", "red", "green", "blue", "red"])
+      >>> s.value_counts()
+      red      3
+      blue     2
+      green    1
+      dtype: int64
+
+      Empty input:
+
+      >>> empty = ArkoudaStringArray([])
+      >>> empty.value_counts()
+      Series([], dtype: int64)
+
 
 
    .. py:method:: var(*args, **kwargs)

@@ -712,6 +712,59 @@ detection or cannot produce a boolean mask.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaArray.value_counts">
+<span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_array.html#ArkoudaArray.value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaArray.value_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Return counts of unique values as a pandas Series.</p>
+<p>This method computes the frequency of each distinct value in the
+underlying Arkouda array and returns the result as a pandas
+<code class="docutils literal notranslate"><span class="pre">Series</span></code>, with the unique values as the index and their counts
+as the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dropna</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to exclude missing values. Currently, missing-value
+handling is supported only for floating-point data, where
+<code class="docutils literal notranslate"><span class="pre">NaN</span></code> values are treated as missing. Default is True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series containing the counts of unique values.
+The index is an <code class="docutils literal notranslate"><span class="pre">ArkoudaArray</span></code> of unique values, and the
+values are an <code class="docutils literal notranslate"><span class="pre">ArkoudaArray</span></code> of counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Only <code class="docutils literal notranslate"><span class="pre">dropna=True</span></code> is supported.</p></li>
+<li><p>The following pandas options are not yet implemented:
+<code class="docutils literal notranslate"><span class="pre">normalize</span></code>, <code class="docutils literal notranslate"><span class="pre">sort</span></code>, and <code class="docutils literal notranslate"><span class="pre">bins</span></code>.</p></li>
+<li><p>Counting is performed server-side in Arkouda; only the small
+result (unique values and counts) is materialized on the client.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="go">1    3</span>
+<span class="go">2    2</span>
+<span class="go">3    1</span>
+<span class="go">dtype: int64</span>
+</pre></div>
+</div>
+<p>Floating-point data with NaN values:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="go">1.0    2</span>
+<span class="go">2.0    1</span>
+<span class="go">dtype: int64</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1137,40 +1190,47 @@ returned.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaCategoricalArray.value_counts">
-<span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaCategoricalArray.value_counts" title="Link to this definition">¶</a></dt>
-<dd><p>Return a Series containing counts of unique values.</p>
-<p>This method returns a Series with unique values as the index and their
-counts as the values.</p>
+<span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_categorical_array.html#ArkoudaCategoricalArray.value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaCategoricalArray.value_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Return counts of categories as a pandas Series.</p>
+<p>This method computes category frequencies from the underlying Arkouda
+<code class="docutils literal notranslate"><span class="pre">Categorical</span></code> and returns them as a pandas <code class="docutils literal notranslate"><span class="pre">Series</span></code>, where the
+index contains the category labels and the values contain the
+corresponding counts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dropna</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Don’t include counts of NA values.</p>
+<dd class="field-odd"><p><strong>dropna</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to drop missing values from the result. When <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+the result is filtered using the categorical’s <code class="docutils literal notranslate"><span class="pre">na_value</span></code>.
+When <code class="docutils literal notranslate"><span class="pre">False</span></code>, all categories returned by the underlying
+computation are included. Default is True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A Series with unique values as index and counts as values.</p>
+<dd class="field-even"><p>A Series containing category counts.
+The index is an <code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray</span></code> of category labels and the
+values are an <code class="docutils literal notranslate"><span class="pre">ArkoudaArray</span></code> of counts.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.value_counts</span></code></dt><dd><p>Equivalent method on Series.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.value_counts</span></code></dt><dd><p>Equivalent method on DataFrame.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index.value_counts</span></code></dt><dd><p>Equivalent method on Index.</p>
-</dd>
-</dl>
-</div>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The result is computed server-side in Arkouda; only the (typically small)
+output of categories and counts is materialized for the pandas <code class="docutils literal notranslate"><span class="pre">Series</span></code>.</p></li>
+<li><p>This method does not yet support pandas options such as <code class="docutils literal notranslate"><span class="pre">normalize</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sort</span></code>, or <code class="docutils literal notranslate"><span class="pre">bins</span></code>.</p></li>
+<li><p>The handling of missing values depends on the Arkouda <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>
+definition of <code class="docutils literal notranslate"><span class="pre">na_value</span></code>.</p></li>
+</ul>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.arrays</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegerArray</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">IntegerArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-<span class="go">3    3</span>
-<span class="go">1    1</span>
-<span class="go">2    2</span>
-<span class="go">Name: count, dtype: Int64</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalArray</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="go">a    3</span>
+<span class="go">b    2</span>
+<span class="go">c    1</span>
+<span class="go">dtype: int64</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2354,46 +2414,6 @@ materialization step.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaExtensionArray.value_counts">
-<span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaExtensionArray.value_counts" title="Link to this definition">¶</a></dt>
-<dd><p>Return a Series containing counts of unique values.</p>
-<p>This method returns a Series with unique values as the index and their
-counts as the values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dropna</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Don’t include counts of NA values.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A Series with unique values as index and counts as values.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series">Series</a></p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series.value_counts</span></code></dt><dd><p>Equivalent method on Series.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame.value_counts</span></code></dt><dd><p>Equivalent method on DataFrame.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index.value_counts</span></code></dt><dd><p>Equivalent method on Index.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.arrays</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegerArray</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">IntegerArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-<span class="go">3    3</span>
-<span class="go">1    1</span>
-<span class="go">2    2</span>
-<span class="go">Name: count, dtype: Int64</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="id13">
 <span class="sig-name descname"><span class="pre">view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_extension_array.html#ArkoudaExtensionArray.view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id13" title="Link to this definition">¶</a></dt>
 <dd><p>Return a shallow view of the ExtensionArray.</p>
@@ -3523,6 +3543,58 @@ returned.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaStringArray.value_counts">
+<span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_string_array.html#ArkoudaStringArray.value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaStringArray.value_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Return counts of unique strings as a pandas Series.</p>
+<p>This method computes the frequency of each distinct string value in the
+underlying Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object and returns the result as a pandas
+<code class="docutils literal notranslate"><span class="pre">Series</span></code>, with the unique string values as the index and their counts
+as the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dropna</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to exclude missing values. Missing-value handling for
+Arkouda string arrays is not yet implemented, so this parameter is
+accepted for pandas compatibility but currently has no effect.
+Default is True.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Series containing the counts of unique string values.
+The index is an <code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray</span></code> of unique values, and the
+values are an <code class="docutils literal notranslate"><span class="pre">ArkoudaArray</span></code> of counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The following pandas options are not yet implemented:
+<code class="docutils literal notranslate"><span class="pre">normalize</span></code>, <code class="docutils literal notranslate"><span class="pre">sort</span></code>, and <code class="docutils literal notranslate"><span class="pre">bins</span></code>.</p></li>
+<li><p>Counting is performed server-side in Arkouda; only the small result
+(unique values and counts) is materialized on the client.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Basic usage:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaStringArray</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ArkoudaStringArray</span><span class="p">([</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="go">red      3</span>
+<span class="go">blue     2</span>
+<span class="go">green    1</span>
+<span class="go">dtype: int64</span>
+</pre></div>
+</div>
+<p>Empty input:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">empty</span> <span class="o">=</span> <span class="n">ArkoudaStringArray</span><span class="p">([])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">empty</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="go">Series([], dtype: int64)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaStringArray.var">
 <span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_arkouda_string_array.html#ArkoudaStringArray.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaStringArray.var" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -3842,6 +3914,7 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.isna"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.isna()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.isnull"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.isnull()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.nbytes"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.nbytes</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaArray.value_counts"><code class="docutils literal notranslate"><span class="pre">ArkoudaArray.value_counts()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaBigintDtype"><code class="docutils literal notranslate"><span class="pre">ArkoudaBigintDtype</span></code></a><ul>
@@ -3970,7 +4043,6 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.take()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.to_ndarray()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.to_numpy"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.to_numpy()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray.value_counts"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.value_counts()</span></code></a></li>
 <li><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray.view()</span></code></a></li>
 </ul>
 </li>
@@ -4052,6 +4124,7 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray.tobytes"><code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray.tobytes()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray.tofile"><code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray.tofile()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray.trace"><code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray.trace()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray.value_counts"><code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray.value_counts()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaStringArray.var"><code class="docutils literal notranslate"><span class="pre">ArkoudaStringArray.var()</span></code></a></li>
 </ul>
 </li>

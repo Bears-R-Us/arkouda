@@ -376,6 +376,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
@@ -1292,6 +1293,79 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">isnull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for isna().&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaArray.value_counts">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaArray.value_counts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return counts of unique values as a pandas Series.</span>
+
+<span class="sd">        This method computes the frequency of each distinct value in the</span>
+<span class="sd">        underlying Arkouda array and returns the result as a pandas</span>
+<span class="sd">        ``Series``, with the unique values as the index and their counts</span>
+<span class="sd">        as the data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dropna : bool</span>
+<span class="sd">            Whether to exclude missing values. Currently, missing-value</span>
+<span class="sd">            handling is supported only for floating-point data, where</span>
+<span class="sd">            ``NaN`` values are treated as missing. Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.Series</span>
+<span class="sd">            A Series containing the counts of unique values.</span>
+<span class="sd">            The index is an ``ArkoudaArray`` of unique values, and the</span>
+<span class="sd">            values are an ``ArkoudaArray`` of counts.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Only ``dropna=True`` is supported.</span>
+<span class="sd">        - The following pandas options are not yet implemented:</span>
+<span class="sd">          ``normalize``, ``sort``, and ``bins``.</span>
+<span class="sd">        - Counting is performed server-side in Arkouda; only the small</span>
+<span class="sd">          result (unique values and counts) is materialized on the client.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaArray</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; a = ArkoudaArray(ak.array([1, 2, 1, 3, 2, 1]))</span>
+<span class="sd">        &gt;&gt;&gt; a.value_counts()</span>
+<span class="sd">        1    3</span>
+<span class="sd">        2    2</span>
+<span class="sd">        3    1</span>
+<span class="sd">        dtype: int64</span>
+
+<span class="sd">        Floating-point data with NaN values:</span>
+
+<span class="sd">        &gt;&gt;&gt; b = ArkoudaArray(ak.array([1.0, 2.0, float(&quot;nan&quot;), 1.0]))</span>
+<span class="sd">        &gt;&gt;&gt; b.value_counts()</span>
+<span class="sd">        1.0    2</span>
+<span class="sd">        2.0    1</span>
+<span class="sd">        dtype: int64</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span> <span class="k">as</span> <span class="n">ak_isnan</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+        <span class="c1"># Handle NA only for floats (pandas-compatible)</span>
+        <span class="k">if</span> <span class="n">dropna</span> <span class="ow">and</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;float64&quot;</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">ak_isnan</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+
+        <span class="n">keys</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+
+        <span class="n">return_index</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="n">return_values</span> <span class="o">=</span> <span class="n">ArkoudaArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">return_values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">return_index</span><span class="p">)</span></div>
 </div>
 
 

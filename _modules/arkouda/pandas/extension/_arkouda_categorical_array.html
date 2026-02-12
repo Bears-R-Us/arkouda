@@ -376,6 +376,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
@@ -760,6 +761,82 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ArkoudaCategoricalArray(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="si">}</span><span class="s2">)&quot;</span>
 
+<div class="viewcode-block" id="ArkoudaCategoricalArray.value_counts">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray.value_counts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropna</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return counts of categories as a pandas Series.</span>
+
+<span class="sd">        This method computes category frequencies from the underlying Arkouda</span>
+<span class="sd">        ``Categorical`` and returns them as a pandas ``Series``, where the</span>
+<span class="sd">        index contains the category labels and the values contain the</span>
+<span class="sd">        corresponding counts.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dropna : bool</span>
+<span class="sd">            Whether to drop missing values from the result. When ``True``,</span>
+<span class="sd">            the result is filtered using the categorical&#39;s ``na_value``.</span>
+<span class="sd">            When ``False``, all categories returned by the underlying</span>
+<span class="sd">            computation are included. Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.Series</span>
+<span class="sd">            A Series containing category counts.</span>
+<span class="sd">            The index is an ``ArkoudaStringArray`` of category labels and the</span>
+<span class="sd">            values are an ``ArkoudaArray`` of counts.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - The result is computed server-side in Arkouda; only the (typically small)</span>
+<span class="sd">          output of categories and counts is materialized for the pandas ``Series``.</span>
+<span class="sd">        - This method does not yet support pandas options such as ``normalize``,</span>
+<span class="sd">          ``sort``, or ``bins``.</span>
+<span class="sd">        - The handling of missing values depends on the Arkouda ``Categorical``</span>
+<span class="sd">          definition of ``na_value``.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; from arkouda.pandas.extension import ArkoudaCategoricalArray</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; a = ArkoudaCategoricalArray([&quot;a&quot;, &quot;b&quot;, &quot;a&quot;, &quot;c&quot;, &quot;b&quot;, &quot;a&quot;])</span>
+<span class="sd">        &gt;&gt;&gt; a.value_counts()</span>
+<span class="sd">        a    3</span>
+<span class="sd">        b    2</span>
+<span class="sd">        c    1</span>
+<span class="sd">        dtype: int64</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span><span class="p">,</span> <span class="n">ArkoudaStringArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
+
+        <span class="n">cat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+        <span class="n">codes</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">codes</span>
+
+        <span class="k">if</span> <span class="n">codes</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+
+        <span class="n">grouped_codes</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span><span class="n">grouped_codes</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">dropna</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">categories</span> <span class="o">!=</span> <span class="n">cat</span><span class="o">.</span><span class="n">na_value</span>
+            <span class="n">categories</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">categories</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+            <span class="n">ArkoudaArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">counts</span><span class="p">),</span>
+            <span class="n">index</span><span class="o">=</span><span class="n">ArkoudaStringArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">categories</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># pandas.Categorical-specific API that is not yet implemented</span>
     <span class="c1"># ------------------------------------------------------------------</span>
@@ -940,12 +1017,6 @@
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray.min">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_categorical_not_implemented</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ArkoudaCategoricalArray.value_counts">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategoricalArray.value_counts">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">value_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_categorical_not_implemented</span><span class="p">(</span><span class="s2">&quot;value_counts&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
