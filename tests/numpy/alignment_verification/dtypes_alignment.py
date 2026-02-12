@@ -213,7 +213,7 @@ def test_result_type_bigint_and_float_precedence(args: tuple[Any, ...], expect_b
         # When not bigint, should be numpy dtype or type consistent with numpy result_type
         assert rt == np.result_type(
             *[np.dtype(a) if isinstance(a, np.dtype) else a for a in args if a is not ak.bigint]
-        ) or isinstance(rt, (np.dtype, type))
+        )
 
 
 @pytest.mark.parametrize(
