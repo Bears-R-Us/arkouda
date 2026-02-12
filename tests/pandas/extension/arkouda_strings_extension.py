@@ -406,3 +406,67 @@ class TestArkoudaStringArrayGetitem:
 
         assert isinstance(result, ArkoudaStringArray)
         np.testing.assert_array_equal(result.to_ndarray(), np.array(["a", "c"], dtype=object))
+
+
+class TestArkoudaStringArrayValueCounts:
+    def _series_to_pycounts(self, s: pd.Series) -> dict[str, int]:
+        """
+        Convert Series(index=unique values, values=counts) to a Python dict.
+        Avoids relying on ordering.
+        """
+        idx = list(s.index.to_numpy())
+        vals = list(s.to_numpy())
+        return {str(idx[i]): int(vals[i]) for i in range(len(s))}
+
+    def test_string_value_counts_basic(self):
+        a = ArkoudaStringArray(["red", "blue", "red", "green", "blue", "red"])
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {"red": 3, "blue": 2, "green": 1}
+
+    def test_string_value_counts_index_is_unique_values_not_original(self):
+        """
+        Regression test for a common bug: using the original array 's' as index,
+        which causes a length mismatch (or incorrect results).
+        """
+        a = ArkoudaStringArray(["a", "b", "a", "c"])
+        out = a.value_counts()
+
+        # index length must equal number of unique values, not len(a)
+        assert len(out.index) == 3
+        assert len(out) == 3
+
+        got = self._series_to_pycounts(out)
+        assert got == {"a": 2, "b": 1, "c": 1}
+
+    def test_string_value_counts_empty_returns_empty_series(self):
+        a = ArkoudaStringArray([])
+        out = a.value_counts()
+
+        assert isinstance(out, pd.Series)
+        assert len(out) == 0
+
+    def test_string_value_counts_dropna_parameter_is_accepted(self):
+        """
+        Dropna is currently inert for ArkoudaStringArray, but should be accepted
+        for pandas compatibility.
+        """
+        a = ArkoudaStringArray(["x", "y", "x"])
+        out_true = a.value_counts(dropna=True)
+        out_false = a.value_counts(dropna=False)
+
+        assert (
+            self._series_to_pycounts(out_true) == self._series_to_pycounts(out_false) == {"x": 2, "y": 1}
+        )
+
+    def test_string_value_counts_matches_pandas_as_multiset(self):
+        """Cross-check counts against pandas, ignoring ordering."""
+        data = ["blue", "red", "blue", "green", "blue", "red"]
+        a = ArkoudaStringArray(data)
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        expected = pd.Series(data).value_counts(dropna=True).to_dict()
+
+        assert got == {str(k): int(v) for k, v in expected.items()}

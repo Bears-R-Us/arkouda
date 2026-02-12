@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Sequence, TypeVar, Union, overload
 from typing import cast as type_cast
 
 import numpy as np
+import pandas as pd
 
 from numpy import ndarray
 from numpy.typing import NDArray
@@ -341,6 +342,81 @@ class ArkoudaStringArray(ArkoudaExtensionArray, ExtensionArray):
 
     def __repr__(self):
         return f"ArkoudaStringArray({self._data})"
+
+    def value_counts(self, dropna: bool = True) -> pd.Series:
+        """
+        Return counts of unique strings as a pandas Series.
+
+        This method computes the frequency of each distinct string value in the
+        underlying Arkouda ``Strings`` object and returns the result as a pandas
+        ``Series``, with the unique string values as the index and their counts
+        as the data.
+
+        Parameters
+        ----------
+        dropna : bool
+            Whether to exclude missing values. Missing-value handling for
+            Arkouda string arrays is not yet implemented, so this parameter is
+            accepted for pandas compatibility but currently has no effect.
+            Default is True.
+
+        Returns
+        -------
+        pd.Series
+            A Series containing the counts of unique string values.
+            The index is an ``ArkoudaStringArray`` of unique values, and the
+            values are an ``ArkoudaArray`` of counts.
+
+        Notes
+        -----
+        - The following pandas options are not yet implemented:
+          ``normalize``, ``sort``, and ``bins``.
+        - Counting is performed server-side in Arkouda; only the small result
+          (unique values and counts) is materialized on the client.
+
+        Examples
+        --------
+        Basic usage:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaStringArray
+        >>>
+        >>> s = ArkoudaStringArray(["red", "blue", "red", "green", "blue", "red"])
+        >>> s.value_counts()
+        red      3
+        blue     2
+        green    1
+        dtype: int64
+
+        Empty input:
+
+        >>> empty = ArkoudaStringArray([])
+        >>> empty.value_counts()
+        Series([], dtype: int64)
+        """
+        import pandas as pd
+
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.extension import ArkoudaArray, ArkoudaStringArray
+        from arkouda.pandas.groupbyclass import GroupBy
+
+        s = self._data
+
+        if s.size == 0:
+            return pd.Series(dtype="int64")
+
+        values, counts = GroupBy(s).size()
+
+        #   For type checking:
+        assert isinstance(values, Strings)
+
+        if values.size == 0:
+            return pd.Series(dtype="int64")
+
+        return pd.Series(
+            ArkoudaArray._from_sequence(counts),
+            index=ArkoudaStringArray._from_sequence(values),
+        )
 
     def _not_implemented(self, name: str):
         raise NotImplementedError(f"`{name}` is not implemented for Arkouda-backed arrays yet.")
