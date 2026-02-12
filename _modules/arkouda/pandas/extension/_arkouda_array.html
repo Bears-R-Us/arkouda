@@ -380,6 +380,7 @@
           <h1>Source code for arkouda.pandas.extension._arkouda_array</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NotImplementedType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">type_cast</span>
 
@@ -777,20 +778,69 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="c1"># Dunder operator helpers</span>
+    <span class="c1"># pandas comparison protocol hook</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_other_for_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Normalize `other` for binary ops.</span>
 
-<span class="sd">        Returns a tuple (other_norm, kind) where:</span>
-<span class="sd">          - other_norm is one of: scalar, pdarray</span>
-<span class="sd">          - kind is one of: &quot;scalar&quot;, &quot;pdarray&quot;, &quot;notimpl&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cmp_method</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">op</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArkoudaArray</span> <span class="o">|</span> <span class="n">NotImplementedType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform an elementwise comparison operation.</span>
+
+<span class="sd">        This method implements the pandas ``ExtensionArray`` comparison</span>
+<span class="sd">        protocol and may be invoked internally by pandas for comparison</span>
+<span class="sd">        operations (e.g., ``==``, ``!=``, ``&lt;``, ``&lt;=``, ``&gt;``, ``&gt;=``).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : Any</span>
+<span class="sd">            The right-hand operand. Supported inputs include another</span>
+<span class="sd">            ``ArkoudaArray``, an Arkouda ``pdarray``, a NumPy ``ndarray``,</span>
+<span class="sd">            a Python sequence (list/tuple), or a scalar value. Unsupported</span>
+<span class="sd">            types result in ``NotImplemented``.</span>
+
+<span class="sd">        op : Callable[[Any, Any], Any]</span>
+<span class="sd">            A binary operator implementing the comparison (for example</span>
+<span class="sd">            functions from the ``operator`` module such as ``operator.eq``</span>
+<span class="sd">            or ``operator.lt``).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ArkoudaArray | NotImplementedType</span>
+<span class="sd">            A boolean ``ArkoudaArray`` containing the elementwise comparison</span>
+<span class="sd">            result, or ``NotImplemented`` if the operation cannot be performed.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">          - Accepts ArkoudaArray, pdarray, numpy arrays, and python sequences.</span>
-<span class="sd">          - Leaves non-scalar unsupported objects as NotImplemented.</span>
+<span class="sd">        Length compatibility is enforced for elementwise comparisons.</span>
+<span class="sd">        Scalar operands are broadcast. Comparison results are always boolean.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_binary_op</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">op</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">NotImplemented</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_other_for_binop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize ``other`` for binary operations.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : Any</span>
+<span class="sd">            The right-hand operand to normalize. Supported inputs include</span>
+<span class="sd">            ``ArkoudaArray``, Arkouda ``pdarray``, NumPy ``ndarray``, Python</span>
+<span class="sd">            sequences (list/tuple), and scalars.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple[Any, str]</span>
+<span class="sd">            A pair ``(other_norm, kind)`` where:</span>
+
+<span class="sd">            - ``other_norm`` is the normalized operand (a scalar or an Arkouda ``pdarray``),</span>
+<span class="sd">              or ``None`` when unsupported.</span>
+<span class="sd">            - ``kind`` is one of ``&quot;scalar&quot;``, ``&quot;pdarray&quot;``, or ``&quot;notimpl&quot;``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
@@ -805,7 +855,6 @@
             <span class="k">return</span> <span class="n">other</span><span class="p">,</span> <span class="s2">&quot;scalar&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
-            <span class="c1"># Let arkouda infer dtype; for bool ops we may override elsewhere.</span>
             <span class="k">return</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="s2">&quot;pdarray&quot;</span>
 
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;notimpl&quot;</span>
