@@ -40,6 +40,7 @@ from pandas import Index as pd_Index
 from pandas.api.extensions import register_series_accessor
 
 from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.series import Series as ak_Series
 
 
@@ -356,3 +357,34 @@ class ArkoudaSeriesAccessor:
         arr = getattr(self._obj, "array", None)
         idx_arr = self._obj.index.values
         return isinstance(arr, ArkoudaExtensionArray) and isinstance(idx_arr, ArkoudaExtensionArray)
+
+    def groupby(self) -> GroupBy:
+        """
+        Return an Arkouda GroupBy object for this Series, without materializing.
+
+        Returns
+        -------
+        GroupBy
+
+        Raises
+        ------
+        TypeError
+            Returns TypeError if Series is not arkouda backed.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> import pandas as pd
+        >>> s = pd.Series([80, 443, 80]).ak.to_ak()
+        >>> g = s.ak.groupby()
+        >>> keys, counts = g.size()
+        """
+        if not self.is_arkouda:
+            raise TypeError("Series must be Arkouda-backed. Call .ak.to_ak() first.")
+
+        arr = self._obj.array
+        akcol = getattr(arr, "_data", None)
+        if akcol is None:
+            raise TypeError("Arkouda-backed Series array does not expose '_data'")
+
+        return GroupBy(akcol)
