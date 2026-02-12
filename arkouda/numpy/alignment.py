@@ -293,7 +293,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
      [0, 4]]
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy import cumsum, where
 
     # Concatenate the space and query in fast (block interleaved) mode

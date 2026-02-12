@@ -44,8 +44,8 @@ import re
 
 from typing import cast
 
+from arkouda.core.logger import get_arkouda_logger
 from arkouda.infoclass import list_symbol_table
-from arkouda.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pandas.match import Match, MatchType
@@ -113,7 +113,7 @@ class Matcher:
 
     def find_locations(self) -> None:
         """Populate Matcher object by finding the positions of matches."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         sym_tab = list_symbol_table()
         if not self.populated or any(
@@ -177,7 +177,7 @@ class Matcher:
 
         If maxsplit is nonzero, at most maxsplit splits occur.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         if re.search(self.pattern, ""):
@@ -204,7 +204,7 @@ class Matcher:
 
     def findall(self, return_match_origins: bool = False):
         """Return all non-overlapping matches of pattern in Strings as a new Strings object."""
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         self.find_locations()
@@ -237,7 +237,7 @@ class Matcher:
         If count is nonzero, at most count substitutions occur
         If return_num_subs is True, return the number of substitutions that occurred.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         rep_msg = cast(

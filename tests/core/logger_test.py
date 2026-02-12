@@ -6,8 +6,8 @@ import pytest
 
 import arkouda as ak
 
-from arkouda import logger
-from arkouda.logger import LogLevel, get_arkouda_client_logger, get_arkouda_logger
+from arkouda.core import logger
+from arkouda.core.logger import LogLevel, get_arkouda_client_logger, get_arkouda_logger
 from arkouda.pandas import io_util
 
 

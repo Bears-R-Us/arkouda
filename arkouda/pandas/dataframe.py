@@ -71,8 +71,8 @@ from numpy import ndarray
 from numpy._typing import _8Bit, _16Bit, _32Bit, _64Bit
 from typeguard import typechecked
 
-from arkouda.client import maxTransferBytes
 from arkouda.client_dtypes import BitVector, Fields, IPv4
+from arkouda.core.client import maxTransferBytes
 from arkouda.index import Index, MultiIndex
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint, numeric_scalars
 from arkouda.numpy.dtypes import bool_ as akbool
@@ -1211,7 +1211,7 @@ class DataFrame(UserDict):
         return newdf.to_pandas(retain_index=True)
 
     def _get_head_tail_server(self):
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.pdarrayclass import create_pdarray
         from arkouda.numpy.pdarraycreation import array
         from arkouda.numpy.segarray import SegArray
@@ -1341,7 +1341,7 @@ class DataFrame(UserDict):
             a supported dtype
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical
 
         self.update_nrows()
@@ -2635,7 +2635,7 @@ class DataFrame(UserDict):
 
         Parameters
         ----------
-        datalimit : int, default=arkouda.client.maxTransferBytes
+        datalimit : int, default=arkouda.core.client.maxTransferBytes
             The maximum number size, in megabytes to transfer. The requested
             DataFrame will be converted to a pandas DataFrame only if the
             estimated size of the DataFrame does not exceed this value.
@@ -2890,7 +2890,7 @@ class DataFrame(UserDict):
             Raised if a server-side error is thrown saving the pdarray
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.segarray import SegArray
         from arkouda.pandas.categorical import Categorical as Categorical_
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
@@ -4621,7 +4621,7 @@ class DataFrame(UserDict):
         False
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.segarray import SegArray
         from arkouda.pandas.categorical import Categorical as Categorical_
 

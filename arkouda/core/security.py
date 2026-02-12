@@ -1,7 +1,7 @@
 """
 Security and user identity utilities for Arkouda clients.
 
-The `arkouda.security` module provides functionality for managing access credentials,
+The `arkouda.core.security` module provides functionality for managing access credentials,
 user identity, and secure client-side metadata used in communicating with the Arkouda server.
 
 Features
@@ -37,7 +37,7 @@ and must not be confused.
 
 Examples
 --------
->>> from arkouda.security import generate_token, get_username, generate_username_token_json
+>>> from arkouda.core.security import generate_token, get_username, generate_username_token_json
 >>> token = generate_token()
 >>> print(token)  # doctest: +SKIP
 '8f3a52e1b75f44d1a3a57a869488b637'
@@ -61,8 +61,6 @@ from os.path import expanduser
 from pathlib import Path
 
 from typeguard import typechecked
-
-from arkouda.pandas import io_util
 
 
 __all__ = [
@@ -142,6 +140,8 @@ def get_arkouda_client_directory() -> Path:
     as the server's token directory as the file format is different.
 
     """
+    from arkouda.pandas import io_util
+
     arkouda_parent_dir = os.getenv("ARKOUDA_CLIENT_DIRECTORY")
     if not arkouda_parent_dir:
         arkouda_parent_dir = get_home_directory()

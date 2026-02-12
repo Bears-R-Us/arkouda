@@ -43,7 +43,7 @@ write_log(log_msg, tag="ClientGeneratedLog", log_lvl=LogLevel.INFO)
 
 Usage Example
 -------------
->>> from arkouda.logger import get_arkouda_logger, LogLevel
+>>> from arkouda.core.logger import get_arkouda_logger, LogLevel
 >>> logger = get_arkouda_logger("myLogger")
 >>> logger.info("This is an info message.")
 >>> logger.enable_verbose()
@@ -52,7 +52,7 @@ Usage Example
 See Also
 --------
 - logging (Python Standard Library)
-- arkouda.client.generic_msg
+- arkouda.core.client.generic_msg
 
 """
 
@@ -805,6 +805,6 @@ def write_log(log_msg: str, tag: str = "ClientGeneratedLog", log_lvl: LogLevel =
     LogLevel
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     generic_msg(cmd="clientlog", args={"log_msg": log_msg, "log_lvl": log_lvl.name, "tag": tag})

@@ -6,7 +6,7 @@ from typing import Literal, Optional, Sequence, Tuple
 
 import numpy as np
 
-from arkouda.logger import get_arkouda_logger
+from arkouda.core.logger import get_arkouda_logger
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import int_scalars, is_supported_int, str_
@@ -820,7 +820,7 @@ class SegArray:
             A tuple of two int64 pdarrays. The ith hash value is the concatenation
             of the ith values from each array.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         rep_msg = generic_msg(
             cmd="segmentedHash",
@@ -868,7 +868,7 @@ class SegArray:
         --------
         load
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return generic_msg(
@@ -921,7 +921,7 @@ class SegArray:
         - Because HDF5 deletes do not release memory, this will create a copy of the
           file with the new data
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
@@ -1008,7 +1008,7 @@ class SegArray:
         - Any file extension can be used.The file I/O does not rely on the extension to
         determine the file format.
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.io import _mode_str_to_int
 
         if mode.lower() == "append":
@@ -1340,7 +1340,7 @@ class SegArray:
         unregister, attach, is_registered
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         if self.registered_name is not None and self.is_registered():
             raise RegistrationError(f"This object is already registered as {self.registered_name}")
@@ -1440,7 +1440,7 @@ class SegArray:
             Raised if other is not a pdarray or the pdarray.dtype is not
             a supported dtype
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
 
         return generic_msg(
             cmd="sendArray",
