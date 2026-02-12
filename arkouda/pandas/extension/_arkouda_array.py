@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar, Union, overload
 from typing import cast as type_cast
 
 import numpy as np
+import pandas as pd
 
 from numpy import ndarray
 from numpy.typing import NDArray
 from pandas.api.extensions import ExtensionArray
+from pandas.core.dtypes.dtypes import ExtensionDtype
 
 from arkouda.numpy.dtypes import dtype as ak_dtype
 
@@ -392,39 +394,310 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
         self._data[key] = value
 
-    def astype(self, dtype, copy: bool = False):
-        # Always hand back a real object-dtype ndarray when object is requested
-        if dtype in (object, np.object_, "object", np.dtype("O")):
-            return self.to_ndarray().astype(object, copy=copy)
+    # -------------------------------------------------------------------------
+    # Dunder operator helpers
+    # -------------------------------------------------------------------------
+    def _coerce_other_for_binop(self, other: Any):
+        """
+        Normalize `other` for binary ops.
 
-        if isinstance(dtype, _ArkoudaBaseDtype):
-            dtype = dtype.numpy_dtype
+        Returns a tuple (other_norm, kind) where:
+          - other_norm is one of: scalar, pdarray
+          - kind is one of: "scalar", "pdarray", "notimpl"
 
-        # Server-side cast for numeric/bool
+        Notes
+        -----
+          - Accepts ArkoudaArray, pdarray, numpy arrays, and python sequences.
+          - Leaves non-scalar unsupported objects as NotImplemented.
+        """
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import array as ak_array
+
+        if isinstance(other, ArkoudaArray):
+            return other._data, "pdarray"
+
+        if isinstance(other, pdarray):
+            return other, "pdarray"
+
+        if np.isscalar(other):
+            return other, "scalar"
+
+        if isinstance(other, (list, tuple, np.ndarray)):
+            # Let arkouda infer dtype; for bool ops we may override elsewhere.
+            return ak_array(other), "pdarray"
+
+        return None, "notimpl"
+
+    def _check_compatible_lengths(self, other_pdarray) -> None:
+        """
+        Enforce elementwise length compatibility.
+        Allow scalar-broadcast pdarray of size 1.
+        """
+        if getattr(other_pdarray, "size", None) not in (1, len(self)):
+            raise ValueError("Lengths must match for elementwise operation")
+
+    def _binary_op(self, other: Any, op, *, require_bool: bool = False):
+        """
+        Core binary operator for self <op> other.
+        `op` should be a callable accepting (lhs, rhs) returning a pdarray/scalar.
+        """
+        other_norm, kind = self._coerce_other_for_binop(other)
+        if kind == "notimpl":
+            return NotImplemented
+
+        if require_bool and self._data.dtype != "bool":
+            return NotImplemented
+
+        if kind == "pdarray":
+            if require_bool and getattr(other_norm, "dtype", None) != "bool":
+                return NotImplemented
+            # elementwise length check unless scalar-broadcast pdarray
+            self._check_compatible_lengths(other_norm)
+            return type(self)(op(self._data, other_norm))
+
+        # scalar
+        if require_bool and not isinstance(other_norm, (bool, np.bool_)):
+            return NotImplemented
+        return type(self)(op(self._data, other_norm))
+
+    def _rbinary_op(self, other: Any, op, *, require_bool: bool = False):
+        """Core binary operator for other <op> self (reverse op)."""
+        other_norm, kind = self._coerce_other_for_binop(other)
+        if kind == "notimpl":
+            return NotImplemented
+
+        if require_bool and self._data.dtype != "bool":
+            return NotImplemented
+
+        if kind == "pdarray":
+            if require_bool and getattr(other_norm, "dtype", None) != "bool":
+                return NotImplemented
+            self._check_compatible_lengths(other_norm)
+            return type(self)(op(other_norm, self._data))
+
+        # scalar
+        if require_bool and not isinstance(other_norm, (bool, np.bool_)):
+            return NotImplemented
+        return type(self)(op(other_norm, self._data))
+
+    def _unary_op(self, op):
+        """Core unary operator, returning ArkoudaArray or NotImplemented."""
         try:
-            npdt = np.dtype(dtype)
+            return type(self)(op(self._data))
         except Exception:
-            return self.to_ndarray().astype(dtype, copy=copy)
+            return NotImplemented
 
-        from arkouda.numpy.numeric import cast as ak_cast
+    # -------------------------------------------------------------------------
+    # Arithmetic dunders
+    # -------------------------------------------------------------------------
+    def __add__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a + b)
 
-        if npdt.kind in {"i", "u", "f", "b"}:
-            return type(self)(ak_cast(self._data, ak_dtype(npdt.name)))
+    def __radd__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a + b)
 
-        # Fallback: local cast
-        return self.to_ndarray().astype(npdt, copy=copy)
+    def __sub__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a - b)
 
-    def isna(self) -> NDArray[np.bool_]:
-        from arkouda.numpy import isnan
-        from arkouda.numpy.pdarraycreation import full as ak_full
-        from arkouda.numpy.util import is_float
+    def __rsub__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a - b)
 
-        if not is_float(self._data):
-            return (
-                ak_full(self._data.size, False, dtype=bool).to_ndarray().astype(dtype=bool, copy=False)
-            )
+    def __mul__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a * b)
 
-        return isnan(self._data).to_ndarray().astype(dtype=bool, copy=False)
+    def __rmul__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a * b)
+
+    def __truediv__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a / b)
+
+    def __rtruediv__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a / b)
+
+    def __floordiv__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a // b)
+
+    def __rfloordiv__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a // b)
+
+    def __mod__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a % b)
+
+    def __rmod__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a % b)
+
+    def __pow__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a**b)
+
+    def __rpow__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a**b)
+
+    # Unary arithmetic
+    def __neg__(self):
+        return self._unary_op(lambda a: -a)
+
+    def __pos__(self):
+        return self._unary_op(lambda a: +a)
+
+    def __abs__(self):
+        return self._unary_op(lambda a: abs(a))
+
+    # -------------------------------------------------------------------------
+    # Comparison dunders (elementwise, return ArkoudaArray[bool])
+    # -------------------------------------------------------------------------
+
+    def __eq__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a == b)
+
+    def __ne__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a != b)
+
+    def __lt__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a < b)
+
+    def __le__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a <= b)
+
+    def __gt__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a > b)
+
+    def __ge__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a >= b)
+
+    # -------------------------------------------------------------------------
+    # Bitwise / logical dunders (only for bool dtype)
+    # -------------------------------------------------------------------------
+    def __and__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a & b, require_bool=True)
+
+    def __rand__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a & b, require_bool=True)
+
+    def __or__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a | b, require_bool=True)
+
+    def __ror__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a | b, require_bool=True)
+
+    def __xor__(self, other: Any):
+        return self._binary_op(other, lambda a, b: a ^ b, require_bool=True)
+
+    def __rxor__(self, other: Any):
+        return self._rbinary_op(other, lambda a, b: a ^ b, require_bool=True)
+
+    def __invert__(self):
+        # ~ only makes sense for boolean arrays here (or integer bitwise if you later want it)
+        if self._data.dtype != "bool":
+            return NotImplemented
+        return type(self)(~self._data)
+
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: np.dtype[Any], copy: bool = True) -> NDArray[Any]: ...
+
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: ExtensionDtype, copy: bool = True) -> ExtensionArray: ...
+
+    # docstr-coverage:excused `typing-only overload stub`
+    @overload
+    def astype(self, dtype: Any, copy: bool = True) -> Union[ExtensionArray, NDArray[Any]]: ...
+
+    def astype(
+        self,
+        dtype: Any,
+        copy: bool = True,
+    ) -> Union[ExtensionArray, NDArray[Any]]:
+        """
+        Cast the array to a specified dtype.
+
+        Casting rules:
+
+        * If ``dtype`` requests ``object``, returns a NumPy ``NDArray[Any]`` of
+          dtype ``object`` containing the array values.
+        * Otherwise, the target dtype is normalized using Arkouda's dtype
+          resolution rules.
+        * If the normalized dtype matches the current dtype and ``copy=False``,
+          returns ``self``.
+        * In all other cases, casts the underlying Arkouda array to the target
+          dtype and returns an Arkouda-backed ``ArkoudaExtensionArray``.
+
+        Parameters
+        ----------
+        dtype : Any
+            Target dtype. May be a NumPy dtype, pandas dtype, Arkouda dtype,
+            or any dtype-like object accepted by Arkouda.
+        copy : bool
+            Whether to force a copy when the target dtype matches the current dtype.
+            Default is True.
+
+        Returns
+        -------
+        Union[ExtensionArray, NDArray[Any]]
+            The cast result. Returns a NumPy array only when casting to ``object``;
+            otherwise returns an Arkouda-backed ExtensionArray.
+
+        Examples
+        --------
+        Basic numeric casting returns an Arkouda-backed array:
+
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>> a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        >>> a.astype("float64").to_ndarray()
+        array([1., 2., 3.])
+
+        Casting to the same dtype with ``copy=False`` returns the original object:
+
+        >>> b = a.astype("int64", copy=False)
+        >>> b is a
+        True
+
+        Forcing a copy when the dtype is unchanged returns a new array:
+
+        >>> c = a.astype("int64", copy=True)
+        >>> c is a
+        False
+        >>> c.to_ndarray()
+        array([1, 2, 3])
+
+        Casting to ``object`` materializes the data to a NumPy array:
+
+        >>> a.astype(object)
+        array([1, 2, 3], dtype=object)
+
+        NumPy and pandas dtype objects are also accepted:
+
+        >>> import numpy as np
+        >>> a.astype(np.dtype("bool")).to_ndarray()
+        array([ True,  True,  True])
+        """
+        from arkouda.numpy.dtypes import dtype as ak_dtype
+
+        # --- 1) ExtensionDtype branch (satisfies overload #2) ---
+        if isinstance(dtype, ExtensionDtype):
+            # pandas extension dtypes typically have .numpy_dtype
+            if hasattr(dtype, "numpy_dtype"):
+                dtype = dtype.numpy_dtype
+
+            if copy is False and self.dtype.numpy_dtype == dtype:
+                return self
+
+            casted = self._data.astype(dtype)
+            return type_cast(ExtensionArray, ArkoudaExtensionArray._from_sequence(casted))
+
+        # --- 2) object -> numpy (satisfies overload #1 / general) ---
+
+        if dtype in (object, np.object_, "object", np.dtype("O")):
+            return self.to_ndarray().astype(object, copy=False)
+
+        dtype = ak_dtype(dtype)
+
+        if copy is False and self.dtype.numpy_dtype == dtype:
+            return self
+
+        casted = self._data.astype(dtype)
+        return ArkoudaExtensionArray._from_sequence(casted)
 
     @property
     def dtype(self):
@@ -542,95 +815,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             #   op was not in the keys of scalar_fns:
             raise TypeError(f"Unknown reduction '{name}'")
 
-    def __eq__(self, other):
-        """
-        Elementwise equality with correct pandas ExtensionArray semantics.
-        Returns an ArkoudaArray of booleans.
-        """
-        from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.numpy.pdarraycreation import array as ak_array
-
-        # Case 1: comparing with another ArkoudaArray
-        if isinstance(other, ArkoudaArray):
-            if len(self) != len(other):
-                raise ValueError("Lengths must match for elementwise comparison")
-            return ArkoudaArray(self._data == other._data)
-
-        # Case 2: comparing with an arkouda pdarray
-        if isinstance(other, pdarray):
-            if other.size != 1 and len(other) != len(self):
-                raise ValueError("Lengths must match for elementwise comparison")
-            return ArkoudaArray(self._data == other)
-
-        # Case 3: scalar broadcasting
-        if np.isscalar(other):
-            return ArkoudaArray(self._data == other)
-
-        # Case 4: Python iterable / numpy array comparison
-        if isinstance(other, (list, tuple, np.ndarray)):
-            other_ak = ak_array(other)
-            if other_ak.size not in (1, len(self)):
-                raise ValueError("Lengths must match for elementwise comparison")
-            return ArkoudaArray(self._data == other_ak)
-
-        return NotImplemented
-
-    def __or__(self, other):
-        """
-        Elementwise boolean OR.
-
-        This is only defined for boolean ArkoudaArray instances and returns
-        an ArkoudaArray[bool]. For unsupported operand types or dtypes,
-        returns NotImplemented so Python can fall back appropriately.
-        """
-        from arkouda.numpy.pdarrayclass import pdarray
-        from arkouda.numpy.pdarraycreation import array as ak_array
-
-        # Only defined for boolean arrays
-        if self._data.dtype != "bool":
-            return NotImplemented
-
-        # ArkoudaArray | ArkoudaArray
-        if isinstance(other, ArkoudaArray):
-            if other._data.dtype != "bool":
-                return NotImplemented
-            if len(self) != len(other):
-                raise ValueError("Lengths must match for elementwise boolean operations")
-            return ArkoudaArray(self._data | other._data)
-
-        # ArkoudaArray | pdarray
-        if isinstance(other, pdarray):
-            if other.dtype != "bool":
-                return NotImplemented
-            if other.size not in (1, len(self)):
-                raise ValueError("Lengths must match for elementwise boolean operations")
-            return ArkoudaArray(self._data | other)
-
-        # ArkoudaArray | scalar bool
-        if isinstance(other, (bool, np.bool_)):
-            return ArkoudaArray(self._data | other)
-
-        # ArkoudaArray | numpy array / Python sequence
-        if isinstance(other, (list, tuple, np.ndarray)):
-            other_ak = ak_array(other, dtype=bool)
-            if other_ak.size not in (1, len(self)):
-                raise ValueError("Lengths must match for elementwise boolean operations")
-            return ArkoudaArray(self._data | other_ak)
-
-        return NotImplemented
-
-    def __ror__(self, other):
-        """
-        Elementwise boolean OR with reversed operands.
-
-        This allows expressions like `pdarray | ArkoudaArray` to be handled
-        by ArkoudaArray when appropriate.
-        """
-        result = self.__or__(other)
-        if result is NotImplemented:
-            return NotImplemented
-        return result
-
     def __repr__(self):
         return f"ArkoudaArray({self._data})"
 
@@ -671,6 +855,123 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         boolean-reduction calls.
         """
         return bool(self._data.any())
+
+    def isna(self) -> np.ndarray:
+        """
+        Return a boolean mask indicating missing values.
+
+        This method implements the pandas ExtensionArray.isna contract
+        and always returns a NumPy ndarray of dtype ``bool`` with the
+        same length as the array.
+
+        Returns
+        -------
+        np.ndarray
+            A boolean mask where ``True`` marks elements considered missing.
+
+        Raises
+        ------
+        TypeError
+            If the underlying data buffer does not support missing-value
+            detection or cannot produce a boolean mask.
+        """
+        from arkouda.categorical import Categorical
+        from arkouda.numpy import isnan
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraycreation import full
+        from arkouda.numpy.segarray import SegArray
+
+        data = self._data
+
+        # SegArray
+        if isinstance(data, SegArray):
+            raise TypeError("isna is not supported for SegArray-backed ArkoudaArray")
+
+        # Categorical
+        if isinstance(data, Categorical):
+            return (data.codes == -1).to_ndarray()
+        # pdarray
+        if isinstance(data, pdarray):
+            if data.dtype in ("float64", "float32"):
+                return (isnan(data)).to_ndarray()
+
+            return (full(data.size, False, dtype=bool)).to_ndarray()
+
+        return NotImplemented
+
+    def isnull(self):
+        """Alias for isna()."""
+        return self.isna()
+
+    def value_counts(self, dropna: bool = True) -> pd.Series:
+        """
+        Return counts of unique values as a pandas Series.
+
+        This method computes the frequency of each distinct value in the
+        underlying Arkouda array and returns the result as a pandas
+        ``Series``, with the unique values as the index and their counts
+        as the data.
+
+        Parameters
+        ----------
+        dropna : bool
+            Whether to exclude missing values. Currently, missing-value
+            handling is supported only for floating-point data, where
+            ``NaN`` values are treated as missing. Default is True.
+
+        Returns
+        -------
+        pd.Series
+            A Series containing the counts of unique values.
+            The index is an ``ArkoudaArray`` of unique values, and the
+            values are an ``ArkoudaArray`` of counts.
+
+        Notes
+        -----
+        - Only ``dropna=True`` is supported.
+        - The following pandas options are not yet implemented:
+          ``normalize``, ``sort``, and ``bins``.
+        - Counting is performed server-side in Arkouda; only the small
+          result (unique values and counts) is materialized on the client.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>>
+        >>> a = ArkoudaArray(ak.array([1, 2, 1, 3, 2, 1]))
+        >>> a.value_counts()
+        1    3
+        2    2
+        3    1
+        dtype: int64
+
+        Floating-point data with NaN values:
+
+        >>> b = ArkoudaArray(ak.array([1.0, 2.0, float("nan"), 1.0]))
+        >>> b.value_counts()
+        1.0    2
+        2.0    1
+        dtype: int64
+        """
+        from arkouda.numpy.numeric import isnan as ak_isnan
+
+        data = self._data
+
+        # Handle NA only for floats (pandas-compatible)
+        if dropna and data.dtype == "float64":
+            mask = ~ak_isnan(data)
+            data = data[mask]
+
+        if data.size == 0:
+            return pd.Series(dtype="int64")
+
+        keys, counts = data.value_counts()
+
+        return_index = ArkoudaArray._from_sequence(keys)
+        return_values = ArkoudaArray._from_sequence(counts)
+
+        return pd.Series(return_values, index=return_index)
 
 
 def _is_empty_indexer(key) -> bool:

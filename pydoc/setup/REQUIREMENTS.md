@@ -59,7 +59,7 @@ The dependencies listed here are only required if you will be doing development 
 - `black==25.1.0`
 - `isort==5.13.2`
 - `pytest-json-report`
-- `pytest-benchmark`
+- `pytest-benchmark>=4.0.0`
 - `mathjax`
 - `pandas-stubs`
 - `types-python-dateutil`

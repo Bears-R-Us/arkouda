@@ -6,8 +6,14 @@ import arkouda as ak
 
 from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.pandas.categorical import Categorical
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaCategoricalDtype
-from arkouda.testing import assert_equivalent
+from arkouda.pandas.extension import (
+    ArkoudaArray,
+    ArkoudaCategoricalArray,
+    ArkoudaCategoricalDtype,
+    ArkoudaExtensionArray,
+    ArkoudaStringArray,
+)
+from arkouda.testing import assert_equal, assert_equivalent
 
 
 class TestArkoudaCategoricalExtension:
@@ -137,6 +143,79 @@ class TestArkoudaCategoricalExtension:
         s = pd.Series(pda.to_ndarray())
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data.to_strings(), s.take(idx1.to_ndarray()).to_numpy())
+
+
+class TestArkoudaCategoricalArrayAsType:
+    def test_categorical_array_astype_category_stays_extension(
+        self,
+    ):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype("category")
+        assert isinstance(out, ArkoudaCategoricalArray)
+        assert_equal(out._data, c._data)
+
+    def test_categorical_array_astype_object_returns_numpy_labels(
+        self,
+    ):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(object)
+        assert isinstance(out, np.ndarray)
+        assert out.dtype == object
+        assert out.tolist() == ["x", "y", "x"]
+
+    @pytest.mark.parametrize("dtype", ["string", "str", "str_"])
+    def test_categorical_array_astype_string_targets_return_string_array(self, dtype):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(dtype)
+        assert isinstance(out, ArkoudaStringArray)
+        assert out.to_ndarray().tolist() == ["x", "y", "x"]
+
+    def test_categorical_array_astype_other_returns_extension_array_not_numpy(self):
+        # New behavior: does NOT fall back to NumPy; returns an Arkouda-backed EA
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["1", "2", "3"])))
+        out = c.astype("int64")
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+
+        # Values should match numeric cast of labels
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
+
+    def test_categorical_array_astype_other_uses_labels_once(self):
+        # (Optional sanity) ensure it is casting labels, not codes/categories
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["10", "20", "10"])))
+        out = c.astype("int64")
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([10, 20, 10], dtype=np.int64))
+
+    def test_categorical_array_astype_extensiondtype_categoricaldtype_copy_false_returns_self(self):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(pd.CategoricalDtype(), copy=False)
+        assert out is c
+
+    def test_categorical_array_astype_extensiondtype_categoricaldtype_copy_true_returns_new_array(self):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(pd.CategoricalDtype(), copy=True)
+
+        assert isinstance(out, ArkoudaCategoricalArray)
+        assert out is not c
+        assert out.to_ndarray().tolist() == ["x", "y", "x"]
+
+    def test_categorical_array_astype_extensiondtype_stringdtype_returns_string_array(self):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        out = c.astype(pd.StringDtype())  # ExtensionDtype path
+
+        assert isinstance(out, ArkoudaStringArray)
+        assert out.to_ndarray().tolist() == ["x", "y", "x"]
+
+    def test_categorical_array_astype_extensiondtype_numeric_casts_labels_and_returns_extension_array(
+        self,
+    ):
+        c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["1", "2", "3"])))
+        out = c.astype(pd.Int64Dtype())  # ExtensionDtype path
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
 
 
 class TestArkoudaCategoricalArrayEq:
@@ -348,3 +427,83 @@ class TestArkoudaCategoricalArrayGetitem:
         arr = self._make_array()
         with pytest.raises(IndexError):
             _ = arr[10]
+
+
+class TestArkoudaCategoricalValueCounts:
+    def _series_to_pycounts(self, s: pd.Series) -> dict:
+        """
+        Convert the returned Series to a plain Python {value: count} mapping.
+
+        Works whether the index / values are Arkouda-backed or NumPy-backed.
+        """
+        idx = list(s.index.to_numpy())
+        vals = list(s.to_numpy())
+        return {idx[i]: int(vals[i]) for i in range(len(s))}
+
+    def test_categorical_value_counts_basic(self):
+        a = ArkoudaCategoricalArray(["a", "b", "a", "c", "b", "a"])
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {"a": 3, "b": 2, "c": 1}
+
+    def test_categorical_value_counts_single_category(self):
+        a = ArkoudaCategoricalArray(["x", "x", "x"])
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {"x": 3}
+
+    def test_categorical_value_counts_empty(self):
+        a = ArkoudaCategoricalArray(ak.array([], dtype="str_"))
+        out = a.value_counts()
+
+        assert isinstance(out, pd.Series)
+        assert len(out) == 0
+
+    def test_categorical_value_counts_matches_pandas_as_multiset(self):
+        """Cross-check correctness against pandas value_counts, ignoring ordering."""
+        data = ["blue", "red", "blue", "green", "blue", "red"]
+        a = ArkoudaCategoricalArray(data)
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        expected = pd.Series(pd.Categorical(data)).value_counts(dropna=True).to_dict()
+
+        # pandas returns counts as numpy ints; normalize to python ints
+        assert got == {str(k): int(v) for k, v in expected.items()}
+
+    def test_categorical_value_counts_dropna_true_drops_na_value(self):
+        """
+        With the current implementation, dropna=True filters the result down to
+        categories != cat.na_value.
+        """
+        a = ArkoudaCategoricalArray(["a", "b", "a"])
+        out = a.value_counts(dropna=True)
+
+        got = self._series_to_pycounts(out)
+
+        # It should not contain the na value
+        na = a._data.na_value
+        assert na not in set(got.keys())
+
+    def test_categorical_value_counts_dropna_false_includes_non_na_categories(self):
+        """dropna=False should not apply the na_value filter, so normal categories appear."""
+        a = ArkoudaCategoricalArray(["a", "b", "a"])
+        out = a.value_counts(dropna=False)
+
+        got = self._series_to_pycounts(out)
+
+        assert got.get("a", 0) == 2
+        assert got.get("b", 0) == 1
+
+    def test_categorical_value_counts_dropna(self):
+        c = Categorical([])
+        a = ArkoudaCategoricalArray(["x", "y", "x", c.na_value])
+        na = a._data.na_value
+
+        out1 = a.value_counts(dropna=True)
+        assert na not in set(out1.index)
+
+        out2 = a.value_counts(dropna=False)
+        assert na in set(out2.index)

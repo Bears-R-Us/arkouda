@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -6,9 +8,15 @@ import arkouda as ak
 
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.pdarraycreation import array as ak_array
-from arkouda.pandas.extension import ArkoudaCategoricalArray, ArkoudaStringArray
-from arkouda.pandas.extension._arkouda_array import ArkoudaArray
-from arkouda.pandas.extension._dtypes import ArkoudaBoolDtype, ArkoudaFloat64Dtype, ArkoudaInt64Dtype
+from arkouda.pandas.extension import (
+    ArkoudaArray,
+    ArkoudaBoolDtype,
+    ArkoudaCategoricalArray,
+    ArkoudaExtensionArray,
+    ArkoudaFloat64Dtype,
+    ArkoudaInt64Dtype,
+    ArkoudaStringArray,
+)
 from arkouda.testing import assert_equivalent
 
 
@@ -148,9 +156,10 @@ class TestArkoudaArrayExtension:
 
         ak_data = ak.array([1, np.nan, 2])
         arr = ArkoudaArray(ak_data)
-        na = arr.isna()
+
         expected = np.array([False, True, False])
-        assert_equal(na, expected)
+        assert_equal(arr.isna(), expected)
+        assert_equal(arr.isnull(), expected)
 
     def test_copy(self):
         ak_data = ak.arange(10)
@@ -178,14 +187,6 @@ class TestArkoudaArrayExtension:
         np_arr = arr.to_numpy()
         assert isinstance(np_arr, np.ndarray)
         assert np_arr.tolist() == [0, 1, 2, 3, 4]
-
-    def test_astype(self):
-        ak_data = ak.arange(10)
-        arr = ArkoudaArray(ak_data)
-        casted = arr.astype(np.float64)
-        assert isinstance(casted, ArkoudaArray)
-        assert isinstance(casted._data, pdarray)
-        assert casted._data.dtype == np.float64
 
     def test_equals_true(self):
         ak_data = ak.arange(10)
@@ -386,6 +387,78 @@ class TestArkoudaArrayExtension:
 
         # Values preserved
         np.testing.assert_array_equal(default_copy.to_numpy(), ea.to_numpy())
+
+
+class TestArkoudaArrayAsType:
+    def test_arkouda_array_astype_object_returns_numpy_object_array(self):
+        a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        out = a.astype(object)
+
+        assert isinstance(out, np.ndarray)
+        assert out.dtype == object
+        assert out.tolist() == [1, 2, 3]
+
+    def test_arkouda_array_astype_same_dtype_copy_false_returns_self(self):
+        a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        out = a.astype("int64", copy=False)
+
+        assert out is a
+
+    def test_arkouda_array_astype_same_dtype_copy_true_returns_new_array(self):
+        a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        out = a.astype("int64", copy=True)
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert out is not a
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.int64))
+
+    @pytest.mark.parametrize(
+        "src_dtype, target_dtype, values",
+        [
+            ("int64", "float64", [1, 2, 3]),
+            ("float64", "int64", [1.2, 2.0, 3.7]),
+            ("int64", "bool", [0, 1, 2]),
+            ("bool", "int64", [True, False, True]),
+        ],
+    )
+    def test_arkouda_array_astype_casts_and_returns_extension_array(
+        self, src_dtype, target_dtype, values
+    ):
+        a = ArkoudaArray(ak.array(values, dtype=src_dtype))
+        out = a.astype(target_dtype)
+
+        # Should return an Arkouda-backed EA, not NumPy (unless object)
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+
+        expected = np.array(values, dtype=np.dtype(src_dtype)).astype(np.dtype(target_dtype))
+        np.testing.assert_array_equal(out.to_ndarray(), expected)
+
+    @pytest.mark.parametrize(
+        "src_dtype, target_ext_dtype, values, expected_dtype",
+        [
+            ("int64", pd.Int64Dtype(), [1, 2, 3], np.int64),
+            ("int64", pd.BooleanDtype(), [0, 1, 2], np.bool_),
+        ],
+    )
+    def test_arkouda_array_astype_extensiondtype_casts_and_returns_extension_array(
+        self, src_dtype, target_ext_dtype, values, expected_dtype
+    ):
+        a = ArkoudaArray(ak.array(values, dtype=src_dtype))
+        out = a.astype(target_ext_dtype)
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        assert not isinstance(out, np.ndarray)
+
+        expected = np.array(values, dtype=np.dtype(src_dtype)).astype(np.dtype(expected_dtype))
+        np.testing.assert_array_equal(out.to_ndarray(), expected)
+
+    def test_arkouda_array_astype_accepts_numpy_dtype_objects(self):
+        a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        out = a.astype(np.dtype("float64"))
+
+        assert isinstance(out, ArkoudaExtensionArray)
+        np.testing.assert_array_equal(out.to_ndarray(), np.array([1, 2, 3], dtype=np.float64))
 
 
 class TestArkoudaArrayEq:
@@ -1064,3 +1137,85 @@ class TestArkoudaArrayGetitem:
 
         with pytest.raises(NotImplementedError):
             _ = arr[idx]
+
+
+class TestArkoudaArrayValueCounts:
+    def _series_to_pycounts(self, s: pd.Series) -> dict:
+        """
+        Convert the returned Series to a plain Python {value: count} mapping.
+
+        This avoids relying on ordering and avoids depending on whether the
+        Series holds Arkouda-backed values vs NumPy-backed values.
+        """
+        # Index and values may be Arkouda-backed; coerce to python scalars
+        idx = list(s.index.to_numpy())
+        vals = list(s.to_numpy())
+        return {idx[i]: int(vals[i]) for i in range(len(s))}
+
+    def test_value_counts_int64_basic(self):
+        a = ArkoudaArray(ak.array([1, 2, 1, 3, 2, 1], dtype="int64"))
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {1: 3, 2: 2, 3: 1}
+
+    def test_value_counts_uint64_basic(self):
+        a = ArkoudaArray(ak.array([1, 2, 1, 3, 2, 1], dtype="uint64"))
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {1: 3, 2: 2, 3: 1}
+
+    def test_value_counts_bool_basic(self):
+        a = ArkoudaArray(ak.array([True, False, True, True], dtype="bool"))
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {True: 3, False: 1}
+
+    def test_value_counts_float64_dropna_true_excludes_nan(self):
+        a = ArkoudaArray(ak.array([1.0, 2.0, float("nan"), 1.0], dtype="float64"))
+        out = a.value_counts(dropna=True)
+
+        got = self._series_to_pycounts(out)
+
+        # NaN should not appear when dropna=True
+        assert 1.0 in got and got[1.0] == 2
+        assert 2.0 in got and got[2.0] == 1
+        assert not any(isinstance(k, float) and math.isnan(k) for k in got.keys())
+
+    def test_value_counts_empty_returns_empty_series(self):
+        a = ArkoudaArray(ak.array([], dtype="int64"))
+        out = a.value_counts()
+
+        assert isinstance(out, pd.Series)
+        assert len(out) == 0
+
+    def test_value_counts_matches_pandas_counts_as_multiset(self):
+        """Cross-check correctness against pandas value_counts, ignoring ordering."""
+        data = [3, 1, 2, 3, 3, 2, 1, 4, 4, 4, 4]
+        a = ArkoudaArray(ak.array(data, dtype="int64"))
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        expected = pd.Series(data).value_counts(dropna=True).to_dict()
+
+        # pandas dict keys are python ints; compare directly
+        assert got == {int(k): int(v) for k, v in expected.items()}
+
+    def test_arkoudaarray_value_counts_dropna_true_excludes_nan(self):
+        # float64 with NaNs present
+        arr = pd.array([1.0, np.nan, 2.0, np.nan, 2.0], dtype="ak_float64")
+
+        vc = arr.value_counts(dropna=True)
+
+        # With the bug, NaN will still be counted -> this assertion would fail.
+        assert len(vc) == 2
+
+        # Ensure NaN isn't present as an index entry
+        # (robust across different index container types)
+        assert not any(pd.isna(x) for x in vc.index.to_numpy())
+
+        # And the numeric counts are correct (order-independent)
+        got = dict(zip(vc.index.to_numpy(), vc.to_numpy()))
+        assert got == {1.0: 1, 2.0: 2}

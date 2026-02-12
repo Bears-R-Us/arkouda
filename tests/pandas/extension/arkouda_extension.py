@@ -674,13 +674,6 @@ class TestArkoudaExtensionArrayArithmatic:
         out = x._arith_method([1, 2, 3], operator.add)
         assert out is NotImplemented
 
-    def test_operator_add_raises_typeerror_for_unsupported_other(self):
-        # This checks the user-visible behavior when NotImplemented propagates.
-        x = pd.array([1, 2, 3], dtype="ak_int64")
-
-        with pytest.raises(TypeError):
-            _ = x + [1, 2, 3]
-
     def test_arith_method_unwraps_other_data_attribute(self):
         # Ensures the unwrap path is actually used.
         x = pd.array([1, 2, 3], dtype="ak_int64")

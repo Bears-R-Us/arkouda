@@ -816,6 +816,14 @@ class TestPdarrayCreation:
             assert (full_like_arr == 1).all()
             assert full_like_arr.size == ran_arr.size
 
+    def test_linspace_special_cases(self):
+        pda = ak.linspace(0, 1, 0, endpoint=True)
+        nda = np.linspace(0, 1, 0, endpoint=True)
+        assert_almost_equivalent(pda, nda)
+        pda = ak.linspace(0, 1, 1, endpoint=True)
+        nda = np.linspace(0, 1, 1, endpoint=True)
+        assert_almost_equivalent(pda, nda)
+
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_linspace_1D(self, size):
         pda = ak.linspace(0, 100, size)

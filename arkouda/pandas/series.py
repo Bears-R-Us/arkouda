@@ -19,7 +19,7 @@ from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
 from arkouda.numpy.pdarrayclass import RegistrationError, any, argmaxk, create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.util import get_callback, is_float
-from arkouda.pandas.groupbyclass import GroupBy, groupable_element_type
+from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 
 
@@ -429,6 +429,7 @@ class Series:
         """
         from arkouda.numpy.pdarraycreation import array
         from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
 
         val = self.validate_val(val)
         key = self.validate_key(key)
@@ -440,7 +441,23 @@ class Series:
         if is_supported_scalar(key):
             indices = self.index == key
         else:
-            indices = in1d(self.index.values, key)
+            # mypy: key may be scalar/SegArray/etc, but in1d only accepts groupables
+            if not isinstance(key, (pdarray, Strings, Categorical, list, tuple)):
+                raise TypeError(f"Unsupported key type for membership test: {type(key)}")
+
+            # If key is a python list/tuple, it will be validated/converted by validate_key in many paths
+            # but if it slips through, convert here.
+            if (
+                isinstance(self.index, MultiIndex)
+                and isinstance(key, tuple)
+                and len(key) == self.index.nlevels
+            ):
+                indices = self.index.lookup(key)  # returns boolean mask
+            else:
+                if isinstance(key, list):
+                    key = array(key)
+                indices = in1d(self.index.values, cast(groupable, key))
+
         tf, counts = GroupBy(indices).size()
         update_count = counts[1] if len(counts) == 2 else 0
         if update_count == 0:
@@ -614,10 +631,28 @@ class Series:
             and False otherwise.
 
         """
+        from arkouda.numpy.pdarraycreation import array
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
+
         if isinstance(lst, list):
             lst = array(lst)
 
-        boolean = in1d(self.values, lst)
+        # mypy: lst/self.values can be a wider union (SegArray/Any) at type level.
+        # At runtime, in1d only supports pdarray/Strings/Categorical (or sequences of those).
+        if not isinstance(self.values, (pdarray, Strings, Categorical)):
+            raise TypeError(f"in1d not supported for Series values type: {type(self.values)}")
+
+        if not isinstance(lst, (pdarray, Strings, Categorical, list, tuple)):
+            raise TypeError(f"in1d not supported for list type: {type(lst)}")
+
+        if isinstance(lst, (list, tuple)):
+            lst = array(lst)
+
+        boolean = in1d(
+            cast(groupable_element_type, self.values),
+            cast(groupable_element_type, lst),
+        )
         return Series(data=boolean, index=self.index)
 
     @typechecked
@@ -1597,19 +1632,31 @@ class Series:
         dtype: float64
 
         """
+        import typing as t
+
         from arkouda.numpy import isnan, where
+        from arkouda.numpy.segarray import SegArray
+        from arkouda.numpy.strings import Strings
+        from arkouda.pandas.categorical import Categorical
 
+        # Normalize `value` to the underlying thing
         value_: Union[supported_scalars, pdarray, Strings, Categorical, SegArray]
-
         if isinstance(value, Series):
             value_ = value.values
         else:
             value_ = value  # scalar or pdarray
 
+        # Only float pdarray supports NaN fill
         if isinstance(self.values, pdarray) and is_float(self.values):
-            return Series(where(isnan(self.values), value_, self.values), index=self.index)
-        else:
-            return Series(self.values, index=self.index)
+            # For a float Series, the fill value must be numeric scalar or pdarray
+            if isinstance(value_, (Strings, Categorical, SegArray)):
+                raise TypeError("fillna for float Series requires a numeric scalar or pdarray")
+
+            value_num = t.cast(Union[supported_scalars, pdarray], value_)
+            return Series(where(isnan(self.values), value_num, self.values), index=self.index)
+
+        # Non-float: current behavior is "no-op"
+        return Series(self.values, index=self.index)
 
     @staticmethod
     @typechecked

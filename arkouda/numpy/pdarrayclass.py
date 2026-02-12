@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 import json
+import warnings
 
 from functools import reduce
 from math import ceil
@@ -36,6 +37,7 @@ from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import str_ as akstr_
 from arkouda.numpy.dtypes import uint64 as akuint64
+from arkouda.numpy.err import geterr as ak_geterr
 
 
 module = modules[__name__]
@@ -220,6 +222,28 @@ SUPPORTED_REDUCTION_OPS = [
 SUPPORTED_INDEX_REDUCTION_OPS = ["argmin", "argmax"]
 
 SUPPORTED_STATS_REDUCTION_OPS = ["var", "std"]
+
+
+def _dbz_check(op, flag):
+    if op not in ["/", "//"] or not flag:
+        return
+
+    mode = ak_geterr()["divide"]
+
+    msg = (
+        "divide by zero encountered in divide"
+        if op == "/"
+        else "divide by zero encountered in floor_divide"
+    )
+
+    if mode == "ignore":
+        return
+
+    elif mode == "warn":
+        warnings.warn(msg, RuntimeWarning)
+
+    elif mode == "raise":
+        raise FloatingPointError(msg)
 
 
 def _axis_parser(axis):
@@ -683,6 +707,12 @@ class pdarray:
 
         return generic_msg(cmd="repr", args={"array": self, "printThresh": pdarrayIterThresh})
 
+    def __abs__(self):
+        """Absolute value (abs(self))."""
+        from arkouda.numpy.numeric import abs as ak_abs
+
+        return ak_abs(self)
+
     @property
     def shape(self):
         """
@@ -855,6 +885,10 @@ class pdarray:
                 cmd=f"binopvv<{self.dtype},{other.dtype},{x1.ndim}>",
                 args={"op": op, "a": x1, "b": x2},
             )
+
+            #  Create a runtime warning if this caused divide-by-zero.
+            _dbz_check(op, any(x2 == 0))
+
             if tmp_x1:
                 del x1
             if tmp_x2:
@@ -878,6 +912,10 @@ class pdarray:
             cmd=f"binopvs<{self.dtype},{dt},{self.ndim}>",
             args={"op": op, "a": self, "value": other},
         )
+
+        #  Create a runtime warning if this caused divide-by-zero.
+        _dbz_check(op, other == 0)
+
         return create_pdarray(rep_msg)
 
     # reverse binary operators
@@ -929,6 +967,10 @@ class pdarray:
             cmd=f"binopsv<{self.dtype},{dt},{self.ndim}>",
             args={"op": op, "a": self, "value": other},
         )
+
+        #  Create a runtime warning if this caused divide-by-zero.
+        _dbz_check(op, any(self == 0))
+
         return create_pdarray(rep_msg)
 
     def transfer(self, hostname: str, port: int_scalars):
