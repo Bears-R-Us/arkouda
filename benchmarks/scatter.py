@@ -16,7 +16,11 @@ def time_ak_scatter(isize, vsize, trials, dtype, random, seed):
     cfg = ak.get_config()
     Ni = isize * cfg["numNodes"]
     Nv = vsize * cfg["numNodes"]
-    print("numLocales = {}, numNodes {}, num_indices = {:,} ; num_values = {:,}".format(cfg["numLocales"], cfg["numNodes"], Ni, Nv))
+    print(
+        "numLocales = {}, numNodes {}, num_indices = {:,} ; num_values = {:,}".format(
+            cfg["numLocales"], cfg["numNodes"], Ni, Nv
+        )
+    )
     # Index vector is always random
     i = ak.randint(0, Nv, Ni, seed=seed)
     c = ak.zeros(Nv, dtype=dtype)

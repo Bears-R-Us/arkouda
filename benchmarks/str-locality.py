@@ -68,7 +68,7 @@ def time_all_ops(N_per_locale, trials, seed, correctnessOnly):
     assert (ans1[perm] == ans2).all()
 
     # Scalar compare
-    op = lambda x: (x == "5.5")
+    op = lambda x: x == "5.5"
     ans1, ans2 = time_op(op, "Comparing to scalar")
     assert (ans1[perm] == ans2).all()
 
