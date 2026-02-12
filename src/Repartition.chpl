@@ -164,7 +164,7 @@ module Repartition
     // Compute run ids and run counts
     var runId: [0..<n] int(64);
     runId = (+ scan isRunStart) - isRunStart;
-    const numRuns = if n == 0 then 0:int(64) else runId[n-1] + isRunStart[n-1];
+    const numRuns = if n == 0 then 0:int(64) else runId[n-1] + 1;
 
     var runStarts: [0..<numRuns] int;
 
