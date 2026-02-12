@@ -489,9 +489,9 @@ IPv4([192.168.0.1,</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – The integers to represent as bit vectors</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a>) – The integers to represent as bit vectors</p></li>
 <li><p><strong>width</strong> (<em>int</em>) – The number of bit fields in the vector</p></li>
-<li><p><strong>reverse</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True, display bits from least significant (left) to most
+<li><p><strong>reverse</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, display bits from least significant (left) to most
 significant (right). By default, the most significant bit
 is the left-most bit.</p></li>
 </ul>
@@ -542,7 +542,7 @@ typically treat this class like a uint64 pdarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<em>int</em><em>, </em><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector"><em>BitVector</em></a><em>, or </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Right-hand operand.</p></li>
+<li><p><strong>other</strong> (<em>int</em><em>, </em><a class="reference internal" href="#arkouda.client_dtypes.BitVector" title="arkouda.client_dtypes.BitVector"><em>BitVector</em></a><em>, or </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Right-hand operand.</p></li>
 <li><p><strong>op</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Binary operator as a string (e.g., ‘+’, ‘&amp;’).</p></li>
 </ul>
 </dd>
@@ -570,7 +570,7 @@ Please note you cannot register two different BitVectors with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.RegistrationError" title="arkouda.numpy.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the BitVector with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the BitVector with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -630,14 +630,14 @@ they are unregistered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
+<li><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The array of field values. If (u)int64, the values are used as-is for the
 binary representation of fields. If Strings, the values are converted
 to binary according to the mapping defined by the names and MSB_left
 arguments.</p></li>
 <li><p><strong>names</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>sequence</em><em> of </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The names of the fields, in order. A string will be treated as a list
 of single-character field names. Multi-character field names are allowed,
 but must be passed as a list or tuple and user must specify a separator.</p></li>
-<li><p><strong>MSB_left</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Controls how field names are mapped to binary values. If True (default),
+<li><p><strong>MSB_left</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Controls how field names are mapped to binary values. If True (default),
 the left-most field name corresponds to the most significant bit in the
 binary representation. If False, the left-most field name corresponds to
 the least significant bit.</p></li>
@@ -645,7 +645,7 @@ the least significant bit.</p></li>
 padding is desired.</p></li>
 <li><p><strong>separator</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Substring that separates fields. Used to parse input values (if ak.Strings)
 and to display output.</p></li>
-<li><p><strong>show_int</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), display the integer value of the binary fields in output.</p></li>
+<li><p><strong>show_int</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True (default), display the integer value of the binary fields in output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -728,7 +728,7 @@ typically treat this class like an int64 pdarray.</p>
 <p>Represent integers as IPv4 addresses.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – The integer IP addresses</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a>) – The integer IP addresses</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The same IP addresses</p>
@@ -750,7 +750,7 @@ typically treat this class like an int64 pdarray.</p>
 <dd class="field-odd"><p>Array of uint64 values representing the data.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -776,7 +776,7 @@ and convert it to an integer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>other</strong> (<em>int</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><em>IPv4</em></a>) – Operand for the operation.</p></li>
+<li><p><strong>other</strong> (<em>int</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><em>IPv4</em></a>) – Operand for the operation.</p></li>
 <li><p><strong>op</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Binary operator as a string.</p></li>
 </ul>
 </dd>
@@ -804,7 +804,7 @@ Please note you cannot register two different IPv4s with the same name.</p>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
-<li><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.RegistrationError" title="arkouda.numpy.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the IPv4 with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the IPv4 with the user_defined_name</p></li>
 </ul>
 </dd>
 </dl>
@@ -842,7 +842,7 @@ they are unregistered.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.client_dtypes.IPv4.update_hdf">
-<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#IPv4.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.IPv4.update_hdf" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arkouda/client_dtypes.html#IPv4.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.client_dtypes.IPv4.update_hdf" title="Link to this definition">¶</a></dt>
 <dd><p>Override the pdarray implementation so that the special object type will be used.</p>
 </dd></dl>
 
@@ -861,7 +861,7 @@ they are unregistered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>width</strong> (<em>int</em>) – The number of bit fields in the vector</p></li>
-<li><p><strong>reverse</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True, display bits from least significant (left) to most
+<li><p><strong>reverse</strong> (<a class="reference internal" href="../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, display bits from least significant (left) to most
 significant (right). By default, the most significant bit
 is the left-most bit.</p></li>
 </ul>
@@ -904,12 +904,12 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ip</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>) or </em><em>ak.IPv4</em>) – IPv4 value. High Bits of IPv6 if IPv6 is passed in.</p></li>
-<li><p><strong>ip2</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>)</em><em>, </em><em>Optional</em>) – Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.</p></li>
+<li><p><strong>ip</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>) or </em><em>ak.IPv4</em>) – IPv4 value. High Bits of IPv6 if IPv6 is passed in.</p></li>
+<li><p><strong>ip2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>)</em><em>, </em><em>Optional</em>) – Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a> of bools indicating which indexes are IPv4.</p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> of bools indicating which indexes are IPv4.</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -925,12 +925,12 @@ for importing Python lists of IP addresses into Arkouda.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ip</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>) or </em><em>ak.IPv4</em>) – High Bits of IPv6.</p></li>
-<li><p><strong>ip2</strong> (<a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a><em>)</em><em>, </em><em>Optional</em>) – Low Bits of IPv6</p></li>
+<li><p><strong>ip</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>) or </em><em>ak.IPv4</em>) – High Bits of IPv6.</p></li>
+<li><p><strong>ip2</strong> (<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> (</em><a class="reference internal" href="../index.html#arkouda.int64" title="arkouda.int64"><em>int64</em></a><em>)</em><em>, </em><em>Optional</em>) – Low Bits of IPv6</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a> of bools indicating which indexes are IPv6.</p>
+<dd class="field-even"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> of bools indicating which indexes are IPv6.</p>
 </dd>
 </dl>
 <div class="admonition seealso">

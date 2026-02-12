@@ -440,7 +440,7 @@ a NumPy scalar type (e.g. <cite>np.int64</cite>), or a string (e.g. <cite>‘int
 <dd class="field-even"><p>Union[np.dtype, type, str], optional</p>
 </dd>
 <dt class="field-odd">type copy<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-even">param copy<span class="colon">:</span></dt>
 <dd class="field-even"><p>If True, a deep copy of the array is made. If False, no copy is made if the input
@@ -460,7 +460,7 @@ This differs from NumPy. Also, the default (<cite>False</cite>) is chosen to red
 <dd class="field-even"><p>int, optional</p>
 </dd>
 <dt class="field-odd">type unsafe<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-even">param unsafe<span class="colon">:</span></dt>
 <dd class="field-even"><p>Enable performance-oriented shortcuts for bigint creation from dtype=object arrays.
@@ -473,7 +473,7 @@ full-array scans. If hints are not supplied, Arkouda will still do a single-pass
 <dd class="field-odd"><p>bool, default=False</p>
 </dd>
 <dt class="field-even">type any_neg<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">param any_neg<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Bigint hint: whether any value is negative. Only used when dtype=bigint and a is numeric/object.</p>
@@ -581,7 +581,7 @@ may override this limit by setting client.maxTransferBytes to a larger
 value, but proceed with caution.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.pdarray.tolist" title="arkouda.pdarray.tolist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolist</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -640,25 +640,25 @@ value, but proceed with caution.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filenames</strong> (<em>list</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Either a list of filenames or shell expression</p></li>
 <li><p><strong>datasets</strong> (<em>list</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
-<li><p><strong>iterative</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Iterative (True) or Single (False) function call(s) to server</p></li>
-<li><p><strong>strictTypes</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
+<li><p><strong>iterative</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Iterative (True) or Single (False) function call(s) to server</p></li>
+<li><p><strong>strictTypes</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
 same precision and sign. If False, allow dtypes of different
 precision and sign across different files. For example, if one
 file contains a uint32 dataset and another contains an int64
 dataset with the same name, the contents of both will be read
 into an int64 pdarray.</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True will allow files with read errors to be skipped
+<li><p><strong>allow_errors</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default False, if True will allow files with read errors to be skipped
 instead of failing.  A warning will be included in the return containing
 the total number of files skipped due to failure and up to 10 filenames.</p></li>
-<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
+<li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
 offsets/segments array on the server versus loading them from HDF5 files.
 In the future this option may be set to True as the default.</p></li>
 <li><p><strong>column_delim</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
-<li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
+<li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
 Ignored if datasets is not None
 Parquet Files only.</p></li>
-<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False. This flag must be set to True to read non-float parquet columns
+<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default False. This flag must be set to True to read non-float parquet columns
 that contain null values.</p></li>
 <li><p><strong>fixed_len</strong> (<em>int</em>) – Default -1. This value can be set for reading Parquet string columns when the
 length of each string is known at runtime. This can allow for skipping byte
@@ -716,10 +716,10 @@ Reads HDF5
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filenames</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>List</em><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – Name of the file/s from which to return datasets</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default: False
+<li><p><strong>allow_errors</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default: False
 Whether or not to allow errors while accessing datasets</p></li>
 <li><p><strong>column_delim</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
-<li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
+<li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
 Only used for Parquet Files.</p></li>
 </ul>
@@ -774,8 +774,8 @@ a file formatted to be read by Arkouda.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>read_path</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file where pandas data is stored. This can be glob expression for parquet formats.</p></li>
 <li><p><strong>write_file</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – path to file to write arkouda formatted data to. Only write file if provided</p></li>
-<li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), return the Arkouda DataFrame object. If False, return None.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True, maintain the indexes loaded from the pandas file. Default is False.</p></li>
+<li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True (default), return the Arkouda DataFrame object. If False, return None.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – If True, maintain the indexes loaded from the pandas file. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -820,8 +820,8 @@ to Pandas object or file formatted to be readable by Pandas.</p>
 <li><p><strong>dataset_name</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – name to store dataset under</p></li>
 <li><p><strong>write_file</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file to write pandas formatted data to. Only write the file if this is set.
 Default is None.</p></li>
-<li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – When True (default) return the Pandas DataFrame object, otherwise return None.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
+<li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – When True (default) return the Pandas DataFrame object, otherwise return None.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>

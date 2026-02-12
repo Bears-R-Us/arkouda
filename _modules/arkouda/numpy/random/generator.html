@@ -716,22 +716,26 @@
     <span class="c1">#   those generators must be destroyed individually before the python-side Generator</span>
     <span class="c1">#   is destroyed.  This is not strictly necessary, but should prevent memory creep in</span>
     <span class="c1">#   the event of reseeding the global Generator repeatedly.</span>
-
 <div class="viewcode-block" id="Generator.destructor">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/numpy/random/index.html#arkouda.numpy.random.generator.Generator.destructor">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">destructor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
 
+        <span class="c1"># If the server restarted, our client-side generator names can be stale.</span>
+        <span class="c1"># Make deletion idempotent: missing symbols should not be fatal.</span>
         <span class="k">for</span> <span class="n">chapel_dt</span> <span class="ow">in</span> <span class="n">get_registration_config</span><span class="p">()[</span><span class="s2">&quot;parameter_classes&quot;</span><span class="p">][</span><span class="s2">&quot;array&quot;</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">chapel_dt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_supported_chapel_types</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">dtype_for_chapel</span><span class="p">(</span><span class="n">chapel_dt</span><span class="p">)</span>
-            <span class="n">generic_msg</span><span class="p">(</span>
-                <span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;delGenerator&quot;</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">dt</span><span class="p">],</span>
-                <span class="p">},</span>
-            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">generic_msg</span><span class="p">(</span><span class="n">cmd</span><span class="o">=</span><span class="s2">&quot;delGenerator&quot;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_dict</span><span class="p">[</span><span class="n">dt</span><span class="p">]})</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="c1"># Be narrow: only swallow the &quot;unknown symbol&quot; / symbol-not-found failure mode</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;unknownsymbol&quot;</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;unknown symbol&quot;</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">raise</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="fm">__del__</span><span class="p">()</span>
         <span class="k">return</span></div>
 

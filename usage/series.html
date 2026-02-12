@@ -394,10 +394,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
-<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – a 1D array. Must not be None.</p></li>
+<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.SegArray" title="arkouda.SegArray"><em>SegArray</em></a>) – a 1D array. Must not be None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -440,7 +440,7 @@ If entering keywords,</p>
 <dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
 - A scalar
 - A list of scalars
 - A list of lists (for MultiIndex)
@@ -466,7 +466,7 @@ If entering keywords,</p>
 <dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
 - A scalar
 - A list of scalars
 - A list of lists (for MultiIndex)
@@ -492,7 +492,7 @@ If entering keywords,</p>
 <dd><p>Sort the Series by its index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Whether to sort the index in ascending (default) or descending order.
+<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to sort the index in ascending (default) or descending order.
 Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -510,7 +510,7 @@ Defaults to True.</p>
 <dd><p>Sort the Series by its values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Whether to sort values in ascending (default) or descending order.
+<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to sort values in ascending (default) or descending order.
 Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -573,7 +573,7 @@ Defaults to True.</p>
 <dd><p>Return a Series containing counts of unique values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sort</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Whether to sort the result by count in descending order. If False,
+<dd class="field-odd"><p><strong>sort</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Whether to sort the result by count in descending order. If False,
 the order of the results is not guaranteed. Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -617,7 +617,7 @@ each level is converted to a separate column.</p>
 - 0 = vertical (stack into a Series)
 - 1 = horizontal (align by index into a DataFrame)
 Defaults to 0.</p></li>
-<li><p><strong>labels</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Names to assign to the resulting columns in the DataFrame.</p></li>
+<li><p><strong>labels</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Names to assign to the resulting columns in the DataFrame.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

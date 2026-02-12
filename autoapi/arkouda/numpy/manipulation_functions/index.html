@@ -420,7 +420,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – <p>Reverse the order of elements in an array along the given axis.</p>
+<li><p><strong>x</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – <p>Reverse the order of elements in an array along the given axis.</p>
 <p>The shape of the array is preserved, but the elements are reordered.</p>
 </p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to flip the array. If None, flip the array along all axes.</p></li>
@@ -430,7 +430,7 @@
 <dd class="field-even"><p>An array with the entries of axis reversed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, or <a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical">Categorical</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>, or <a class="reference internal" href="../../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical">Categorical</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>IndexError</strong> – Raised if operation fails server-side.</p>
@@ -456,8 +456,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>repeats</strong> (<em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The number of repetitions for each element.
+<li><p><strong>a</strong> (<em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
+<li><p><strong>repeats</strong> (<em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, or </em><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The number of repetitions for each element.
 <cite>repeats</cite> is broadcasted to fit the shape of the given axis.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – The axis along which to repeat values.
 By default, use the flattened input array, and return a flat output array.</p></li>
@@ -467,7 +467,7 @@ By default, use the flattened input array, and return a flat output array.</p></
 <dd class="field-even"><p>Output array which has the same shape as <cite>a</cite>, except along the given axis.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -503,7 +503,7 @@ axis.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array to squeeze</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array to squeeze</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em>) – The axis or axes to squeeze (must have a size of one).
 If axis = None, all dimensions of size 1 will be squeezed.</p></li>
 </ul>
@@ -512,7 +512,7 @@ If axis = None, all dimensions of size 1 will be squeezed.</p></li>
 <dd class="field-even"><p>A copy of x with the dimensions specified in the axis argument removed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>RuntimeError</strong> – Raised if operation fails server-side.</p>
@@ -543,7 +543,7 @@ If axis = None, all dimensions of size 1 will be squeezed.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The input pdarray to be tiled</p></li>
+<li><p><strong>A</strong> (<a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The input pdarray to be tiled</p></li>
 <li><p><strong>reps</strong> (<em>int</em><em> or </em><em>Tuple</em><em> of </em><em>int</em>) – The number of repetitions of A along each axis.</p></li>
 </ul>
 </dd>
@@ -551,7 +551,7 @@ If axis = None, all dimensions of size 1 will be squeezed.</p></li>
 <dd class="field-even"><p>A new pdarray with the tiled data.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
