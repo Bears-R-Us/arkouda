@@ -305,7 +305,7 @@ def cast(
     >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool_)
     array([False True True True True])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.pandas.categorical import Categorical  # type: ignore
 
     if isinstance(pda, pdarray):
@@ -382,7 +382,7 @@ def abs(pda: pdarray) -> pdarray:
     array([5.00000000... 4.00000000... 3.00000000...
     2.00000000... 1.00000000...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if pda.dtype == "uint64" or pda.dtype == "bool":
         return pda.copy()
@@ -477,7 +477,7 @@ def round(pda: pdarray, decimals: Optional[Union[int, None]] = None) -> pdarray:
 
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if decimals is None:
         decimals = 0
@@ -526,7 +526,7 @@ def sign(pda: pdarray) -> pdarray:
     >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
     array([-1 -1 0 1 1])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     _datatype_check(pda.dtype, [int, float], "sign")
     rep_msg = generic_msg(
@@ -566,7 +566,7 @@ def isfinite(pda: pdarray) -> pdarray:
     >>> ak.isfinite(ak.array([1.0, 2.0, ak.inf]))
     array([True True False])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"isfinite<{pda.ndim}>",
@@ -605,7 +605,7 @@ def isinf(pda: pdarray) -> pdarray:
     >>> ak.isinf(ak.array([1.0, 2.0, ak.inf]))
     array([False False True])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"isinf<{pda.ndim}>",
@@ -644,7 +644,7 @@ def isnan(pda: pdarray) -> pdarray:
     >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
     array([False False True])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import is_float
 
     _datatype_check(pda.dtype, NUMERIC_TYPES, "isnan")
@@ -704,7 +704,7 @@ def log(pda: pdarray) -> pdarray:
     >>> ak.log(A) / np.log(2)
     array([0.00000000... 3.32192809... 6.64385618...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"log<{pda.dtype},{pda.ndim}>",
@@ -737,7 +737,7 @@ def log10(pda: pdarray) -> pdarray:
     >>> ak.log10(a)
     array([0.00000000... 0.30102999... 0.47712125... 0.60205999...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"log10<{pda.dtype},{pda.ndim}>",
@@ -770,7 +770,7 @@ def log2(pda: pdarray) -> pdarray:
     >>> ak.log2(a)
     array([0.00000000... 1.00000000... 1.58496250... 2.00000000...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"log2<{pda.dtype},{pda.ndim}>",
@@ -803,7 +803,7 @@ def log1p(pda: pdarray) -> pdarray:
     >>> ak.log1p(ak.arange(1,5))
     array([0.69314718... 1.09861228... 1.38629436... 1.60943791...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"log1p<{pda.dtype},{pda.ndim}>",
@@ -848,7 +848,7 @@ def nextafter(
     >>> ak.nextafter(a, b) == ak.array([eps + 1, 2 - eps])
     array([True True])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     return_scalar = True
     x1_: pdarray
@@ -915,7 +915,7 @@ def exp(pda: pdarray) -> pdarray:
     array([63.3448620... 3.80794671... 54.7254287... 36.2344168...])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"exp<{pda.dtype},{pda.ndim}>",
@@ -956,7 +956,7 @@ def expm1(pda: pdarray) -> pdarray:
     array([62.3448620... 2.80794671... 53.7254287...
         35.2344168... 41.1929399...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd=f"expm1<{pda.dtype},{pda.ndim}>",
@@ -1039,7 +1039,7 @@ def cumsum(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     >>> ak.cumsum(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
     array([1 1 2 3 4])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.util import _integer_axis_validation
 
@@ -1109,7 +1109,7 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
     >>> ak.cumprod(ak.randint(0, 2, 5, dtype=ak.bool_, seed=1))
     array([1 0 0 0 0])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.util import _integer_axis_validation
 
@@ -1573,7 +1573,7 @@ def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True)
     TypeError
         Raised if pda is not a pdarray or if is not real or int or uint, or if where is not Boolean
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
     if where is True:
@@ -1787,7 +1787,7 @@ def hash(
     """
     from arkouda import Categorical as Categorical_
     from arkouda import SegArray as SegArray_
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(pda, (pdarray, Strings, SegArray_, Categorical_)):
         return _hash_single(pda, full) if isinstance(pda, pdarray) else pda.hash()
@@ -1828,7 +1828,7 @@ def hash(
 
 @typechecked
 def _hash_single(pda: pdarray, full: bool = True):
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if pda.dtype == bigint:
         return hash(pda.bigint_to_uint_arrays())
@@ -1855,7 +1855,7 @@ def _str_cat_where(
 ) -> Union[Strings, Categorical]:
     # added @no_type_check because mypy can't handle Categorical not being declared
     # sooner, but there are circular dependencies preventing that
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraysetops import concatenate
     from arkouda.pandas.categorical import Categorical
 
@@ -2055,7 +2055,7 @@ def where(
     * ``Strings`` and ``Categorical`` are treated as 1D; we validate broadcast
       compatibility but do not currently broadcast these objects.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import broadcast_shapes, broadcast_to
     from arkouda.pandas.categorical import Categorical
 
@@ -2289,7 +2289,7 @@ def histogram(
     <BarContainer object of 3 artists>
     >>> plt.show() # doctest: +SKIP
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if bins < 1:
         raise ValueError("bins must be 1 or greater")
@@ -2387,7 +2387,7 @@ def histogram2d(
     >>> y_edges
     array([0.00000000... 3.00000000... 6.00000000... 9.00000000...])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if not isinstance(bins, Sequence):
         x_bins, y_bins = bins, bins
@@ -2494,7 +2494,7 @@ def histogramdd(
         array([0.00000000... 4.5 9.00000000...]),
         array([0.00000000... 2.66666666... 5.33333333... 8.00000000...])]
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if not isinstance(sample, Sequence):
         raise ValueError("Sample must be a sequence of pdarrays")
@@ -2890,7 +2890,7 @@ def putmask(
 
     multi-dim pdarrays are now implemented.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     allowed_putmask_pairs = [
         (ak_float64, ak_float64),
@@ -2959,7 +2959,7 @@ def eye(N: int_scalars, M: int_scalars, k: int_scalars = 0, dt: type = ak_float6
     Server returns an error if rank of pda < 2
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     cmd = f"eye<{akdtype(dt).name}>"
     args = {
@@ -3018,7 +3018,7 @@ def triu(pda: pdarray, diag: int_scalars = 0) -> pdarray:
     Server returns an error if rank of pda < 2
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     cmd = f"triu<{pda.dtype},{pda.ndim}>"
     args = {
@@ -3076,7 +3076,7 @@ def tril(pda: pdarray, diag: int_scalars = 0) -> pdarray:
     Server returns an error if rank of pda < 2
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     cmd = f"tril<{pda.dtype},{pda.ndim}>"
     args = {
@@ -3129,7 +3129,7 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int_scalars, ...]] = None) -> p
     TypeError
         Raised if pda is not a pdarray, or if axes is neither a tuple nor None
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if axes is not None:  # if axes was supplied, check that it's valid
         r = tuple(np.arange(pda.ndim))
@@ -3150,7 +3150,7 @@ def transpose(pda: pdarray, axes: Optional[Tuple[int_scalars, ...]] = None) -> p
 
 
 def _matmul2d(pda_L: pdarray, pda_R: pdarray) -> pdarray:
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if pda_L.ndim == 2 and pda_R.ndim == 2:
         if pda_L.shape[-1] != pda_R.shape[0]:
@@ -3217,7 +3217,7 @@ def matmul(pda_L: pdarray, pda_R: pdarray) -> pdarray:
         Raised if shapes are incompatible with matrix multiplication.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import dot
     from arkouda.numpy.util import broadcast_shapes, broadcast_to
 
@@ -3436,7 +3436,7 @@ def quantile(
         Raised if the result would have a rank not in the compiled ranks.
 
     """
-    from arkouda.client import generic_msg, get_array_ranks
+    from arkouda.core.client import generic_msg, get_array_ranks
 
     keepdims = False if keepdims is None else keepdims
 
@@ -3658,7 +3658,7 @@ def take(
     array([4 3 6])
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.util import _integer_axis_validation
 
     if isinstance(a, Strings):
@@ -3949,7 +3949,7 @@ def _arctan2_impl(
     out=None,
     dtype=None,
 ) -> pdarray:
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # Require at least one pdarray argument
 
@@ -4058,7 +4058,7 @@ def floor(
 
 
 def _floor_impl(pda: pdarray, out=None, dtype=None):
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # floor is a no-op for integer/uint/bool
     if pda.dtype.kind in "iub":
@@ -4137,7 +4137,7 @@ def ceil(
 
 
 def _ceil_impl(pda: pdarray, out=None, dtype=None):
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # ceil is a no-op for integer/uint/bool
     if pda.dtype.kind in "iub":
@@ -4216,7 +4216,7 @@ def trunc(
 
 
 def _trunc_impl(pda: pdarray, out=None, dtype=None):
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # trunc is a no-op for integer/uint/bool: return copy or fill out
     if pda.dtype.kind in "iub":

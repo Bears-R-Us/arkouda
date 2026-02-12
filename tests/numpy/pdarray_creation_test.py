@@ -35,7 +35,7 @@ DTYPES = [
 
 
 def multi_dim_ranks():
-    ranks = ak.client.get_array_ranks()[:]
+    ranks = ak.core.client.get_array_ranks()[:]
     ranks.remove(1)
     return ranks
 
@@ -100,8 +100,8 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_array_creation_error(self, dtype, subtests):
-        rank = ak.client.get_max_array_rank() + 1
-        assert rank > ak.client.get_max_array_rank(), "Test rank must exceed supported max"
+        rank = ak.core.client.get_max_array_rank() + 1
+        assert rank > ak.core.client.get_max_array_rank(), "Test rank must exceed supported max"
         shape, _ = _generate_test_shape(rank, 2**rank)
 
         # Attempt to create an array with rank > max supported; should raise ValueError
@@ -614,7 +614,7 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_zeros_error(self, dtype):
-        rank = ak.client.get_max_array_rank() + 1
+        rank = ak.core.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
             ak.zeros(shape, dtype)
@@ -687,7 +687,7 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_ones_error(self, dtype):
-        rank = ak.client.get_max_array_rank() + 1
+        rank = ak.core.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
             ak.ones(shape, dtype)
@@ -751,7 +751,7 @@ class TestPdarrayCreation:
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", [int, ak.int64, float, ak.float64, bool, ak.bool_])
     def test_full_match_numpy(self, size, dtype):
-        for rank in ak.client.get_array_ranks():
+        for rank in ak.core.client.get_array_ranks():
             if rank == 1:
                 continue
             shape, local_size = _generate_test_shape(rank, size)
@@ -762,7 +762,7 @@ class TestPdarrayCreation:
 
     @pytest.mark.parametrize("dtype", [int, ak.int64, ak.uint64, float, ak.float64, bool, ak.bool_])
     def test_full_error(self, dtype):
-        rank = ak.client.get_max_array_rank() + 1
+        rank = ak.core.client.get_max_array_rank() + 1
         shape, local_size = _generate_test_shape(rank, 2**rank)
         with pytest.raises(ValueError):
             ak.full(shape, 1, dtype)

@@ -150,7 +150,7 @@ def mean(
     Arkouda Array ((2,), float64)[2.0 7.0]
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in mean")
@@ -350,7 +350,7 @@ def std(
     Arkouda Array ((2,), float64)[1.41421 1.41421]
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in std")
@@ -501,7 +501,7 @@ def var(
     Arkouda Array ((2,), float64)[2.0 2.0]
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # Note: the keyword argument correction is different here
     if x.dtype not in _real_floating_dtypes:
@@ -594,7 +594,7 @@ def cumulative_sum(
     >>> xp.cumulative_sum(a,axis=1,include_initial=False)
     Arkouda Array ((2, 5), float64)[[1.0 3.0 6.0 10.0 15.0] [6.0 13.0 21.0 30.0 40.0]]
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import _axis_validation
 
     x_ = x._array
@@ -673,7 +673,7 @@ def cumulative_prod(
     >>> xp.cumulative_prod(a,axis=1,include_initial=False)
     Arkouda Array ((2, 3), float64)[[1.0 2.0 6.0] [4.0 20.0 120.0]]
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import _axis_validation
 
     x_ = x._array

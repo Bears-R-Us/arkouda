@@ -1057,7 +1057,7 @@ class Series:
         they are unregistered.
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.pandas.categorical import Categorical
 
         if self.registered_name is not None and self.is_registered():

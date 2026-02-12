@@ -105,7 +105,7 @@ Putting everything together, the client's request to the server will look someth
 
 ```python
 from typing import cast
-from arkouda.client import generic_msg
+from arkouda.core.client import generic_msg
 
 def example(arg="First Argument"):
   arg1 = arg
@@ -194,7 +194,7 @@ Now it's your turn to use the information presented in this document to create y
 1. In the root-level directory `arkouda`, create a new python file `mymodule.py`
    - At a minimum for server communication, you will need to import:
      - `from typing import cast`
-     - `from arkouda.client import generic_msg`
+     - `from arkouda.core.client import generic_msg`
 2. Create a new function which takes in as many arguments as you want
    - `def my_request(arg1, arg2, ...):`
 3. Send your arguments to the Server

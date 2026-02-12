@@ -36,14 +36,14 @@ Key Features
 
 Examples
 --------
->>> from arkouda.message import ParameterObject
+>>> from arkouda.core.message import ParameterObject
 >>> import arkouda as ak
 >>> arr = ak.array([1, 2, 3])
 >>> param = ParameterObject.factory("x", arr)
 >>> param.dict  # doctest: +SKIP
 {'key': 'x', 'dtype': 'int64', 'val': 'id_gHZzPBV_1'}
 
->>> from arkouda.message import RequestMessage
+>>> from arkouda.core.message import RequestMessage
 >>> msg = RequestMessage(user="user", cmd="add", args="x=1;y=2", format=MessageFormat.STRING)
 >>> msg.asdict()
 {'user': 'user', 'token': '', 'cmd': 'add', 'format': 'STRING', 'args': 'x=1;y=2', 'size': -1}
@@ -55,7 +55,7 @@ typically used directly by end users.
 
 See Also
 --------
-- arkouda.client.generic_msg
+- arkouda.core.client.generic_msg
 - arkouda.pdarray
 
 """
@@ -69,8 +69,6 @@ from enum import Enum
 from typing import Dict, Optional
 
 from typeguard import typechecked
-
-from arkouda.numpy.dtypes import is_supported_number, resolve_scalar_dtype
 
 
 __all__ = [
@@ -222,6 +220,8 @@ class ParameterObject:
 
         import numpy as np
 
+        from arkouda.numpy.dtypes import is_supported_number
+
         return isinstance(val, (str, np.str_, builtins.bool, np.bool_)) or is_supported_number(val)
 
     @staticmethod
@@ -272,6 +272,7 @@ class ParameterObject:
         ParameterObject
 
         """
+        from arkouda.numpy.dtypes import resolve_scalar_dtype
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.segarray import SegArray
         from arkouda.numpy.strings import Strings
@@ -329,6 +330,8 @@ class ParameterObject:
         ParameterObject
 
         """
+        from arkouda.numpy.dtypes import resolve_scalar_dtype
+
         v = val if isinstance(val, str) else str(val)
         return ParameterObject(key, resolve_scalar_dtype(val), v)
 
@@ -381,7 +384,7 @@ class ParameterObject:
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda.message import ParameterObject
+        >>> from arkouda.core.message import ParameterObject
         >>> arr = ak.array([1, 2, 3])
         >>> param = ParameterObject.factory("my_array", arr)
         >>> isinstance(param, ParameterObject)

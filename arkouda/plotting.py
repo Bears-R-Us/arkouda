@@ -142,9 +142,10 @@ def plot_dist(
     def to_ndarray(arr: pdarray | NDArray[np.floating]) -> NDArray[np.floating]:
         if isinstance(arr, pdarray):
             nbytes = arr.nbytes
-            if nbytes > ak.client.maxTransferBytes:
+            if nbytes > ak.core.client.maxTransferBytes:
                 raise ValueError(
-                    f"Array too large to transfer: {nbytes} bytes (max {ak.client.maxTransferBytes})"
+                    "Array too large to transfer: "
+                    f"{nbytes} bytes (max {ak.core.client.maxTransferBytes})"
                 )
             return arr.to_ndarray()
         return np.asarray(arr)

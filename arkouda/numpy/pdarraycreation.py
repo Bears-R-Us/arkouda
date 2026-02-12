@@ -87,7 +87,7 @@ __all__ = [
 
 
 def _deepcopy(a: pdarray) -> pdarray:
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray
 
     rep_msg = generic_msg(
@@ -259,7 +259,7 @@ def array(
         - If `a` is of string type and `dtype` is not `ak.str_`.
 
     RuntimeError
-        - If input size exceeds `ak.client.maxTransferBytes`.
+        - If input size exceeds `ak.core.client.maxTransferBytes`.
         - If `a.dtype` is unsupported or incompatible with Arkouda.
         - If `a.size * a.itemsize > maxTransferBytes`.
 
@@ -275,9 +275,9 @@ def array(
     Notes
     -----
     - Arkouda does not currently support shallow copies or views; all copies are deep.
-    - The number of bytes transferred to the server is limited by `ak.client.maxTransferBytes`.
+    - The number of bytes transferred to the server is limited by `ak.core.client.maxTransferBytes`.
       This prevents saturating the network during large transfers. To increase this limit,
-      set `ak.client.maxTransferBytes` to a larger value manually.
+      set `ak.core.client.maxTransferBytes` to a larger value manually.
     - If the input is a Unicode string array (`dtype.kind == 'U'` or `dtype='str'`),
       this function recursively creates a `Strings` object from two internal `pdarray`s
       (one for offsets and one for concatenated string bytes).
@@ -295,7 +295,7 @@ def array(
     >>> type(strings)
     <class 'arkouda.numpy.strings.Strings'>
     """
-    from arkouda.client import generic_msg, get_array_ranks
+    from arkouda.core.client import generic_msg, get_array_ranks
     from arkouda.numpy.numeric import cast as akcast
     from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
@@ -321,7 +321,7 @@ def array(
             casted.max_bits = max_bits
         return type_cast(Union[pdarray, Strings], casted)
 
-    from arkouda.client import maxTransferBytes
+    from arkouda.core.client import maxTransferBytes
 
     if isinstance(a, Iterable) and not isinstance(a, (list, tuple, np.ndarray, pd.Series, set, dict)):
         a = list(a)
@@ -390,7 +390,7 @@ def array(
         if nbytes > maxTransferBytes:
             raise RuntimeError(
                 f"Creating pdarray would require transferring {nbytes} bytes, which exceeds "
-                f"allowed transfer size. Increase ak.client.maxTransferBytes to force."
+                f"allowed transfer size. Increase ak.core.client.maxTransferBytes to force."
             )
         encoded_np = np.array(encoded, dtype=np.uint8)
         rep_msg = generic_msg(
@@ -410,7 +410,7 @@ def array(
     # Do not allow arrays that are too large
     if (full_size * a.itemsize) > maxTransferBytes:
         raise RuntimeError(
-            "Array exceeds allowed transfer size. Increase ak.client.maxTransferBytes to allow"
+            "Array exceeds allowed transfer size. Increase ak.core.client.maxTransferBytes to allow"
         )
     if a.ndim > 1 and a.flags["F_CONTIGUOUS"] and not a.flags["OWNDATA"]:
         # Make a copy if the array was shallow-transposed (to avoid error #3757)
@@ -473,7 +473,7 @@ def _bigint_from_numpy(
     - If unsafe=True and provided hints are wrong (e.g., num_bits too small or any_neg incorrect),
       results may be incorrect.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
     a = np.asarray(np_a)
@@ -714,7 +714,7 @@ def bigint_from_uint_arrays(arrays, max_bits=-1):
     >>> all(a[i] == 2**64 + i for i in range(5))
     True
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
     if not arrays:
@@ -829,7 +829,7 @@ def zeros(
     array([False False False False False])
 
     """
-    from arkouda.client import generic_msg, get_array_ranks
+    from arkouda.core.client import generic_msg, get_array_ranks
     from arkouda.numpy.pdarrayclass import create_pdarray
 
     dtype = akdtype(dtype)  # normalize dtype
@@ -1059,7 +1059,7 @@ def full(
     >>> ak.full(5, 5, dtype=ak.bool_)
     array([True True True True True])
     """
-    from arkouda.client import generic_msg, get_array_ranks
+    from arkouda.core.client import generic_msg, get_array_ranks
     from arkouda.numpy.pdarrayclass import create_pdarray
     from arkouda.numpy.util import _infer_shape_from_size  # placed here to avoid circ import
 
@@ -1143,7 +1143,7 @@ def scalar_array(
     RuntimeError
         Raised if value cannot be cast as dtype
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray
 
     if dtype is not None:
@@ -1179,7 +1179,7 @@ def _full_string(
     Strings
         array of the requested size and dtype filled with fill_value
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(cmd="segmentedFull", args={"size": size, "fill_value": fill_value})
     return Strings.from_return_msg(cast(str, rep_msg))
@@ -1421,7 +1421,7 @@ def arange(
     >>> ak.arange(-5, -10, -1)
     array([-5 -6 -7 -8 -9])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 
@@ -1971,7 +1971,7 @@ def random_strings_uniform(
     ... characters='printable')
     array(['2 .z', 'aom', '2d|', 'o(', 'M'])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if minlen < 0 or maxlen <= minlen or size < 0:
         raise ValueError("Incompatible arguments: minlen < 0, maxlen " + "<= minlen, or size < 0")
@@ -2048,7 +2048,7 @@ def random_strings_lognormal(
     >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
     array(['eL96<O', ')o-GOe lR', ')PV yHf(', '._b3Yc&K', ',7Wjef'])
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if not is_supported_number(logmean) or not is_supported_number(logstd):
         raise TypeError("both logmean and logstd must be an int, np.int64, float, or np.float64")
