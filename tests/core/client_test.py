@@ -181,7 +181,7 @@ class TestClient:
         """
         try:
             config = ak.core.client.get_config()
-            a = ak.ones(1024 * 1024 * config["numLocales"])  # noqa: F841
+            a = ak.ones(1024 * 1024 * config["numNodes"])  # noqa: F841
             mem_used = ak.core.client.get_mem_used()
         except Exception as e:
             raise AssertionError(e)
