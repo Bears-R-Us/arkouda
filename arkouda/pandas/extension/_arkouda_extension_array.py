@@ -53,7 +53,6 @@ import numpy as np
 
 from numpy.typing import NDArray
 from pandas.api.extensions import ExtensionArray
-from pandas.core.arraylike import OpsMixin
 from pandas.core.dtypes.base import ExtensionDtype
 from typing_extensions import Self
 
@@ -77,7 +76,7 @@ def _ensure_numpy(x):
     return np.asarray(x)
 
 
-class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
+class ArkoudaExtensionArray(ExtensionArray):
     default_fill_value: Optional[Union[all_scalars, str]] = -1
 
     _data: Any
@@ -939,9 +938,6 @@ class ArkoudaExtensionArray(OpsMixin, ExtensionArray):
 
     def swapaxes(self, *args, **kwargs):
         self._reduction_not_implemented("swapaxes")
-
-    def value_counts(self, *args, **kwargs):
-        self._reduction_not_implemented("value_counts")
 
     # ------------------------------------------------------------------
     # String-like methods

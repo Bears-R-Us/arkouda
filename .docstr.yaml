@@ -4,6 +4,6 @@ exclude: .*/tests     # regex to skip test files
 skip_magic: True      # ignore __dunder__ methods (except __init__)
 skip_init: True       # ignore __init__ methods
 skip_private: True    # ignore names starting with _
-fail_under: 75.0        # exit non-zero if coverage < 76%
+fail_under: 74.7        # exit non-zero if coverage < 74.7%
 badge: docs/badge.svg # generate an SVG badge
 

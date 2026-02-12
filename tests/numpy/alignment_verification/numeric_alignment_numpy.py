@@ -199,9 +199,6 @@ def test_unary_alignment(
 
         # NumPy reference
         if use_where and name in {
-            "ceil",
-            "floor",
-            "trunc",
             "square",
             "sin",
             "cos",
@@ -224,6 +221,22 @@ def test_unary_alignment(
         else:
             np_res = np_func(x.astype(np.float64) if name == "fabs" else x)
             ak_res = ak_func(ak.array(x))
+
+        # The functions below have been rewritten to process "where" and "out" identically to numpy.
+        # It is expected that as additional functions are rewritten, they will move from the above
+        # test to this one.
+        if use_where and name in {
+            "ceil",
+            "floor",
+            "trunc",
+        }:
+            np_where = where_mask
+            np_out = np.ones_like(x)
+            np_res = np_func(x, np_out, where=np_where)  # this behavior differs from _apply_numpy_where
+            ak_where = _ak_where_param(np_where)
+            ak_x = ak.array(x)
+            ak_out = ak.array(np_out)
+            ak_res = ak_func(ak_x, ak_out, where=ak_where)
 
         # Some functions always yield float in arkouda (fabs); accept that.
         ak_np = _to_np(ak_res)

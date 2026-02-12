@@ -1,7 +1,7 @@
 """
 Client interface for connecting to and communicating with the Arkouda server.
 
-The `arkouda.client` module provides the core logic for managing a client-server
+The `arkouda.core.client` module provides the core logic for managing a client-server
 session in Arkouda. It includes methods to connect, disconnect, send commands,
 check system status, and retrieve configuration details from the server. The client
 communicates with the server via ZMQ by default and handles both string and binary
@@ -73,16 +73,16 @@ from typing import Dict, List, Literal, Mapping, Optional, Tuple, Union, cast, o
 
 import zmq  # for typechecking
 
-from arkouda import __version__, security
-from arkouda.logger import ArkoudaLogger, LogLevel, get_arkouda_logger
-from arkouda.message import (
+from arkouda import __version__
+from arkouda.core import security
+from arkouda.core.logger import ArkoudaLogger, LogLevel, get_arkouda_logger
+from arkouda.core.message import (
     MessageFormat,
     MessageType,
     ParameterObject,
     ReplyMessage,
     RequestMessage,
 )
-from arkouda.pandas import io_util
 
 
 __all__ = [
@@ -395,6 +395,8 @@ class Channel:
             If there is an error reading/writing the tokens file.
 
         """
+        from arkouda.pandas import io_util
+
         path = f"{security.get_arkouda_client_directory()}/tokens.txt"
         url = f"{server}:{port}"
 

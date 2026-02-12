@@ -427,3 +427,83 @@ class TestArkoudaCategoricalArrayGetitem:
         arr = self._make_array()
         with pytest.raises(IndexError):
             _ = arr[10]
+
+
+class TestArkoudaCategoricalValueCounts:
+    def _series_to_pycounts(self, s: pd.Series) -> dict:
+        """
+        Convert the returned Series to a plain Python {value: count} mapping.
+
+        Works whether the index / values are Arkouda-backed or NumPy-backed.
+        """
+        idx = list(s.index.to_numpy())
+        vals = list(s.to_numpy())
+        return {idx[i]: int(vals[i]) for i in range(len(s))}
+
+    def test_categorical_value_counts_basic(self):
+        a = ArkoudaCategoricalArray(["a", "b", "a", "c", "b", "a"])
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {"a": 3, "b": 2, "c": 1}
+
+    def test_categorical_value_counts_single_category(self):
+        a = ArkoudaCategoricalArray(["x", "x", "x"])
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        assert got == {"x": 3}
+
+    def test_categorical_value_counts_empty(self):
+        a = ArkoudaCategoricalArray(ak.array([], dtype="str_"))
+        out = a.value_counts()
+
+        assert isinstance(out, pd.Series)
+        assert len(out) == 0
+
+    def test_categorical_value_counts_matches_pandas_as_multiset(self):
+        """Cross-check correctness against pandas value_counts, ignoring ordering."""
+        data = ["blue", "red", "blue", "green", "blue", "red"]
+        a = ArkoudaCategoricalArray(data)
+        out = a.value_counts()
+
+        got = self._series_to_pycounts(out)
+        expected = pd.Series(pd.Categorical(data)).value_counts(dropna=True).to_dict()
+
+        # pandas returns counts as numpy ints; normalize to python ints
+        assert got == {str(k): int(v) for k, v in expected.items()}
+
+    def test_categorical_value_counts_dropna_true_drops_na_value(self):
+        """
+        With the current implementation, dropna=True filters the result down to
+        categories != cat.na_value.
+        """
+        a = ArkoudaCategoricalArray(["a", "b", "a"])
+        out = a.value_counts(dropna=True)
+
+        got = self._series_to_pycounts(out)
+
+        # It should not contain the na value
+        na = a._data.na_value
+        assert na not in set(got.keys())
+
+    def test_categorical_value_counts_dropna_false_includes_non_na_categories(self):
+        """dropna=False should not apply the na_value filter, so normal categories appear."""
+        a = ArkoudaCategoricalArray(["a", "b", "a"])
+        out = a.value_counts(dropna=False)
+
+        got = self._series_to_pycounts(out)
+
+        assert got.get("a", 0) == 2
+        assert got.get("b", 0) == 1
+
+    def test_categorical_value_counts_dropna(self):
+        c = Categorical([])
+        a = ArkoudaCategoricalArray(["x", "y", "x", c.na_value])
+        na = a._data.na_value
+
+        out1 = a.value_counts(dropna=True)
+        assert na not in set(out1.index)
+
+        out2 = a.value_counts(dropna=False)
+        assert na in set(out2.index)

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Sequence, TypeVar, Union, overload
 from typing import cast as type_cast
 
 import numpy as np
+import pandas as pd
 
 from numpy import ndarray
 from numpy.typing import NDArray
@@ -380,6 +381,79 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
     def __repr__(self):
         return f"ArkoudaCategoricalArray({self._data})"
 
+    def value_counts(self, dropna: bool = True) -> pd.Series:
+        """
+        Return counts of categories as a pandas Series.
+
+        This method computes category frequencies from the underlying Arkouda
+        ``Categorical`` and returns them as a pandas ``Series``, where the
+        index contains the category labels and the values contain the
+        corresponding counts.
+
+        Parameters
+        ----------
+        dropna : bool
+            Whether to drop missing values from the result. When ``True``,
+            the result is filtered using the categorical's ``na_value``.
+            When ``False``, all categories returned by the underlying
+            computation are included. Default is True.
+
+        Returns
+        -------
+        pd.Series
+            A Series containing category counts.
+            The index is an ``ArkoudaStringArray`` of category labels and the
+            values are an ``ArkoudaArray`` of counts.
+
+        Notes
+        -----
+        - The result is computed server-side in Arkouda; only the (typically small)
+          output of categories and counts is materialized for the pandas ``Series``.
+        - This method does not yet support pandas options such as ``normalize``,
+          ``sort``, or ``bins``.
+        - The handling of missing values depends on the Arkouda ``Categorical``
+          definition of ``na_value``.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
+        >>>
+        >>> a = ArkoudaCategoricalArray(["a", "b", "a", "c", "b", "a"])
+        >>> a.value_counts()
+        a    3
+        b    2
+        c    1
+        dtype: int64
+        """
+        import pandas as pd
+
+        from arkouda.pandas.extension import ArkoudaArray, ArkoudaStringArray
+        from arkouda.pandas.groupbyclass import GroupBy
+
+        cat = self._data
+
+        codes = cat.codes
+
+        if codes.size == 0:
+            return pd.Series(dtype="int64")
+
+        grouped_codes, counts = GroupBy(codes).size()
+        categories = cat.categories[grouped_codes]
+
+        if dropna is True:
+            mask = categories != cat.na_value
+            categories = categories[mask]
+            counts = counts[mask]
+
+        if categories.size == 0:
+            return pd.Series(dtype="int64")
+
+        return pd.Series(
+            ArkoudaArray._from_sequence(counts),
+            index=ArkoudaStringArray._from_sequence(categories),
+        )
+
     # ------------------------------------------------------------------
     # pandas.Categorical-specific API that is not yet implemented
     # ------------------------------------------------------------------
@@ -501,6 +575,3 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
     def min(self, *args, **kwargs):
         self._categorical_not_implemented("min")
-
-    def value_counts(self, *args, **kwargs):
-        self._categorical_not_implemented("value_counts")

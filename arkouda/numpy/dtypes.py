@@ -1247,7 +1247,7 @@ def get_server_byteorder() -> str:
     'little'
 
     """
-    from arkouda.client import get_config
+    from arkouda.core.client import get_config
 
     order = get_config()["byteorder"]
     if order not in ("little", "big"):
