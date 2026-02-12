@@ -1,4 +1,5 @@
 import math
+import operator
 
 import numpy as np
 import pandas as pd
@@ -1219,3 +1220,113 @@ class TestArkoudaArrayValueCounts:
         # And the numeric counts are correct (order-independent)
         got = dict(zip(vc.index.to_numpy(), vc.to_numpy()))
         assert got == {1.0: 1, 2.0: 2}
+
+
+class TestArkoudaArrayComparisons:
+    def test__cmp_method_eq_scalar_matches_dunder(self):
+        a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+
+        via_cmp = a._cmp_method(2, operator.eq)
+        via_dunder = a == 2
+
+        assert isinstance(via_cmp, ArkoudaArray)
+        assert via_cmp.to_ndarray().tolist() == via_dunder.to_ndarray().tolist()
+        assert via_cmp.to_ndarray().tolist() == [False, True, False]
+
+    def test__cmp_method_lt_arraylike_numpy_matches_expected(self):
+        a = ArkoudaArray(ak.array([10, 20, 30], dtype="int64"))
+        other = np.array([15, 20, 25], dtype=np.int64)
+
+        res = a._cmp_method(other, operator.lt)
+
+        assert isinstance(res, ArkoudaArray)
+        assert res.to_ndarray().tolist() == [True, False, False]
+
+    def test__cmp_method_length_mismatch_raises_valueerror(self):
+        a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        other = ArkoudaArray(ak.array([1, 2], dtype="int64"))
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            a._cmp_method(other, operator.eq)
+
+    def test_arkoudaarray_has_binop_helpers(self):
+        """
+        Pure unit test: catches indentation/dedenting mistakes where helper methods
+        accidentally end up outside the class.
+        """
+        from arkouda.pandas.extension._arkouda_array import ArkoudaArray
+
+        assert hasattr(ArkoudaArray, "_coerce_other_for_binop"), (
+            "ArkoudaArray is missing _coerce_other_for_binop; "
+            "this usually means the method is defined outside the class "
+            "(indentation error) or you are importing the wrong module."
+        )
+        assert hasattr(ArkoudaArray, "_binary_op")
+        assert hasattr(ArkoudaArray, "_check_compatible_lengths")
+
+    def test_pd_array_comparison_gt_scalar_returns_bool_arkoudaarray(self):
+        """
+        Integration test: reproduces the user report:
+            x = pd.array([...], dtype="ak_int64")
+            x > 2
+        and ensures it works and returns the expected mask.
+        """
+        # Ensure our extension dtype is registered/imported
+        from arkouda.pandas.extension import ArkoudaArray  # noqa: F401
+
+        x = pd.array([1, 3, 4, 1], dtype="ak_int64")
+        out = x > 2
+
+        # pandas will typically return an ExtensionArray result here
+        # (your ArkoudaArray), not a numpy array.
+        assert out.dtype == "ak_bool" or str(out.dtype) in (
+            "ak_bool",
+            "boolean[pyarrow]",
+            "bool",
+        )  # tolerate envs
+        # Convert to numpy for assertion
+        out_np = np.asarray(out)
+        assert out_np.tolist() == [False, True, True, False]
+
+    @pytest.mark.parametrize(
+        "op, expected",
+        [
+            (operator.eq, [False, True, False, False]),
+            (operator.ne, [True, False, True, True]),
+            (operator.lt, [True, False, False, True]),
+            (operator.le, [True, True, False, True]),
+            (operator.gt, [False, False, True, False]),
+            (operator.ge, [False, True, True, False]),
+        ],
+    )
+    def test_cmp_method_matches_dunders(self, op, expected):
+        """Integration test: _cmp_method should agree with dunder comparisons."""
+        a = ArkoudaArray(ak.array([1, 2, 3, 1], dtype="int64"))
+
+        via_cmp = a._cmp_method(2, op)
+        # Build dunder equivalent
+        if op is operator.eq:
+            via_dunder = a == 2
+        elif op is operator.ne:
+            via_dunder = a != 2
+        elif op is operator.lt:
+            via_dunder = a < 2
+        elif op is operator.le:
+            via_dunder = a <= 2
+        elif op is operator.gt:
+            via_dunder = a > 2
+        elif op is operator.ge:
+            via_dunder = a >= 2
+        else:
+            raise AssertionError("Unexpected operator in parametrization")
+
+        assert np.asarray(via_cmp).tolist() == expected
+        assert np.asarray(via_dunder).tolist() == expected
+
+    def test_comparison_length_mismatch_raises_valueerror(self):
+        """Integration test: elementwise comparisons should enforce length compatibility."""
+        a = ArkoudaArray(ak.array([1, 2, 3], dtype="int64"))
+        b = ArkoudaArray(ak.array([1, 2], dtype="int64"))
+
+        with pytest.raises(ValueError, match="Lengths must match"):
+            _ = a > b
