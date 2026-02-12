@@ -158,7 +158,7 @@ def get_filetype(filenames: Union[str, List[str]]) -> str:
     read_parquet, read_hdf
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(filenames, list):
         fname = filenames[0]
@@ -214,7 +214,7 @@ def ls(filename: str, col_delim: str = ",", read_nested: bool = True) -> List[st
     ls_csv : List the contents of CSV files without headers.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
@@ -263,7 +263,7 @@ def get_null_indices(
     get_datasets, ls
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -424,7 +424,7 @@ def ls_csv(filename: str, col_delim: str = ",") -> List[str]:
     ls
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
@@ -792,7 +792,7 @@ def read_hdf(
     >>> x = ak.read_hdf('path/name_prefix*')  # doctest: +SKIP
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -957,7 +957,7 @@ def read_parquet(
     >>> x = ak.read_parquet('path/name_prefix*')  # doctest: +SKIP
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -1126,7 +1126,7 @@ def read_csv(
       bytes as uint(8).
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -1360,7 +1360,7 @@ def _delete_arkouda_files(prefix_path: str):
         Directory and filename prefix for files to be deleted
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     cast(
         str,
@@ -1445,7 +1445,7 @@ def to_parquet(
     >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b']) # doctest: +SKIP
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if mode.lower() not in ["append", "truncate"]:
         raise ValueError("Allowed modes are 'truncate' and 'append'")
@@ -1561,7 +1561,7 @@ def to_hdf(
 
 
 def _get_hdf_filetype(filename: str) -> Literal["single", "distribute"]:
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
@@ -1704,7 +1704,7 @@ def to_csv(
       bytes as uint(8).
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     dataset_names, pdarrays, _ = _bulk_write_prep(columns, names)  # type: ignore
     dtypes = [a.dtype.name for a in pdarrays]
@@ -1748,7 +1748,7 @@ def to_zarr(store_path: str, arr: pdarray, chunk_shape):
         the number of dimensions in the array or if the array is not a 32 or 64 bit numeric type
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     ndim = arr.ndim
     if ndim != len(chunk_shape):
@@ -1789,7 +1789,7 @@ def read_zarr(store_path: str, ndim: int, dtype):
         The pdarray read from the Zarr store.
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(cmd=f"readAllZarr<{dtype},{ndim}>", args={"store_path": store_path})
     return create_pdarray(rep_msg)
@@ -2215,7 +2215,7 @@ def save_checkpoint(
     load_checkpoint
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     legal_modes = ["overwrite", "error", "preserve_previous"]
     if mode not in legal_modes:
@@ -2264,7 +2264,7 @@ def load_checkpoint(name, path=".akdata"):
     save_checkpoint
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     # Right now, we don't need to build objects on the client side.
     # Checkpointing is only for the server state. But if we do, we'll need to
@@ -2334,7 +2334,7 @@ def read_tagged_data(
     {'Filname_Codes': array([0 3 6 9 12]), 'col_name': array([0 0 0 1])}
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -2483,7 +2483,7 @@ def receive(hostname: str, port):
         a supported dtype
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(cmd="receiveArray", args={"hostname": hostname, "port": port})
     rep = json.loads(rep_msg)
@@ -2525,7 +2525,7 @@ def receive_dataframe(hostname: str, port):
         a supported dtype
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(cmd="receiveDataframe", args={"hostname": hostname, "port": port})
     rep = json.loads(rep_msg)

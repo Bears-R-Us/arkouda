@@ -6,7 +6,7 @@ from scipy.stats import power_divergence as scipy_power_divergence
 
 import arkouda as ak
 
-from arkouda.client import get_array_ranks, get_max_array_rank
+from arkouda.core.client import get_array_ranks, get_max_array_rank
 from arkouda.scipy import chisquare as ak_chisquare
 from arkouda.scipy import power_divergence as ak_power_divergence
 
