@@ -3099,7 +3099,7 @@ Package Contents
 
 
    .. py:attribute:: logger
-      :type:  arkouda.logger.ArkoudaLogger
+      :type:  arkouda.core.logger.ArkoudaLogger
 
 
    .. py:method:: lower() -> Strings
@@ -3775,12 +3775,12 @@ Package Contents
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.core.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.client.maxTransferBytes to a larger
+      may override this limit by setting ak.core.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :py:obj:`array`, :py:obj:`tolist`
@@ -3845,12 +3845,12 @@ Package Contents
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.core.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.client.maxTransferBytes to a larger
+      may override this limit by setting ak.core.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :py:obj:`to_ndarray`
@@ -4855,7 +4855,7 @@ Package Contents
 
    :raises TypeError: - If `a` is not a `pdarray`, `np.ndarray`, or Python iterable.
        - If `a` is of string type and `dtype` is not `ak.str_`.
-   :raises RuntimeError: - If input size exceeds `ak.client.maxTransferBytes`.
+   :raises RuntimeError: - If input size exceeds `ak.core.client.maxTransferBytes`.
        - If `a.dtype` is unsupported or incompatible with Arkouda.
        - If `a.size * a.itemsize > maxTransferBytes`.
    :raises ValueError: - If `a`'s rank is not supported (see `get_array_ranks()`).
@@ -4869,9 +4869,9 @@ Package Contents
    .. rubric:: Notes
 
    - Arkouda does not currently support shallow copies or views; all copies are deep.
-   - The number of bytes transferred to the server is limited by `ak.client.maxTransferBytes`.
+   - The number of bytes transferred to the server is limited by `ak.core.client.maxTransferBytes`.
      This prevents saturating the network during large transfers. To increase this limit,
-     set `ak.client.maxTransferBytes` to a larger value manually.
+     set `ak.core.client.maxTransferBytes` to a larger value manually.
    - If the input is a Unicode string array (`dtype.kind == 'U'` or `dtype='str'`),
      this function recursively creates a `Strings` object from two internal `pdarray`s
      (one for offsets and one for concatenated string bytes).

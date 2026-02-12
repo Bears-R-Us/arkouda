@@ -935,7 +935,7 @@ Module Contents
 
 
    .. py:attribute:: logger
-      :type:  arkouda.logger.ArkoudaLogger
+      :type:  arkouda.core.logger.ArkoudaLogger
 
 
    .. py:method:: lower() -> Strings
@@ -1611,12 +1611,12 @@ Module Contents
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.core.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.client.maxTransferBytes to a larger
+      may override this limit by setting ak.core.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :py:obj:`array`, :py:obj:`tolist`
@@ -1681,12 +1681,12 @@ Module Contents
 
       .. rubric:: Notes
 
-      The number of bytes in the array cannot exceed ``ak.client.maxTransferBytes``,
+      The number of bytes in the array cannot exceed ``ak.core.client.maxTransferBytes``,
       otherwise a ``RuntimeError`` will be raised. This is to protect the user
       from overflowing the memory of the system on which the Python client
       is running, under the assumption that the server is running on a
       distributed system with much more memory than the client. The user
-      may override this limit by setting ak.client.maxTransferBytes to a larger
+      may override this limit by setting ak.core.client.maxTransferBytes to a larger
       value, but proceed with caution.
 
       .. seealso:: :py:obj:`to_ndarray`

@@ -1,0 +1,170 @@
+arkouda.core
+============
+
+.. py:module:: arkouda.core
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/arkouda/core/client/index
+   /autoapi/arkouda/core/infoclass/index
+   /autoapi/arkouda/core/logger/index
+   /autoapi/arkouda/core/security/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   arkouda.core.LogLevel
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   arkouda.core.disableVerbose
+   arkouda.core.disable_verbose
+   arkouda.core.enableVerbose
+   arkouda.core.enable_verbose
+   arkouda.core.write_log
+
+
+Package Contents
+----------------
+
+.. py:class:: LogLevel(*args, **kwds)
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   Enum for defining valid log levels used by ArkoudaLogger.
+
+   Members
+   -------
+   INFO : str
+       Confirmation that things are working as expected.
+   DEBUG : str
+       Detailed information, typically of interest only when diagnosing problems.
+   WARN : str
+       An indication that something unexpected happened, or indicative of some problem.
+   ERROR : str
+       A more serious problem, the software has not been able to perform some function.
+   CRITICAL : str
+       An extremely serious error, indicating the program itself may be unable to continue.
+
+   .. rubric:: Notes
+
+   This enum provides a controlled vocabulary for setting log levels on ArkoudaLogger
+   instances. These are mapped internally to the standard Python `logging` levels.
+
+
+   .. py:attribute:: CRITICAL
+      :value: 'CRITICAL'
+
+
+
+   .. py:attribute:: DEBUG
+      :value: 'DEBUG'
+
+
+
+   .. py:attribute:: ERROR
+      :value: 'ERROR'
+
+
+
+   .. py:attribute:: INFO
+      :value: 'INFO'
+
+
+
+   .. py:attribute:: WARN
+      :value: 'WARN'
+
+
+
+.. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO)
+
+   Deprecated alias for :func:`disable_verbose`.
+
+   This function exists for backward compatibility only. Use
+   :func:`disable_verbose` instead.
+
+   :param logLevel: The log level to apply to all ArkoudaLoggers, disabling
+                    verbose (DEBUG-level) output.
+   :type logLevel: LogLevel, default LogLevel.INFO
+
+   :rtype: None
+
+   :Warns: **DeprecationWarning** -- Always raised. ``disableVerbose`` is deprecated and will be removed
+           in a future release.
+
+   .. seealso::
+
+      :py:obj:`disable_verbose`
+          Disable verbose logging for all loggers.
+
+      :py:obj:`enable_verbose`
+          Enable verbose logging for all loggers.
+
+
+.. py:function:: disable_verbose(logLevel: LogLevel = LogLevel.INFO) -> None
+
+   Disables verbose logging.
+
+   Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
+   the log level for each to the logLevel parameter.
+
+   :param logLevel: The new log level, defaultts to LogLevel.INFO
+   :type logLevel: LogLevel
+
+   :raises TypeError: Raised if logLevel is not a LogLevel enum
+
+
+.. py:function:: enableVerbose()
+
+   Deprecated alias for :func:`enable_verbose`.
+
+   This function exists for backward compatibility only. Use
+   :func:`enable_verbose` instead.
+
+   :rtype: None
+
+   :Warns: **DeprecationWarning** -- Always raised. ``enableVerbose`` is deprecated and will be removed
+           in a future release.
+
+   .. seealso::
+
+      :py:obj:`enable_verbose`
+          Enable verbose (DEBUG-level) logging for all loggers.
+
+
+.. py:function:: enable_verbose() -> None
+
+   Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.
+
+
+.. py:function:: write_log(log_msg: str, tag: str = 'ClientGeneratedLog', log_lvl: LogLevel = LogLevel.INFO)
+
+   Allow the user to write custom logs.
+
+   :param log_msg: The message to be added to the server log
+   :type log_msg: str
+   :param tag: The tag to use in the log. This takes the place of the server function name.
+               Allows for easy identification of custom logs.
+               Defaults to "ClientGeneratedLog"
+   :type tag: str
+   :param log_lvl: The type of log to be written
+                   Defaults to LogLevel.INFO
+   :type log_lvl: LogLevel
+
+   .. seealso:: :py:obj:`LogLevel`
+
+

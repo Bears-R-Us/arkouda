@@ -139,7 +139,7 @@ Module Contents
 
       This involves copying the data from the server to the client, and thus
       will fail if the array is too large (see:
-      :func:`~arkouda.client.maxTransferBytes`)
+      :func:`~arkouda.core.client.maxTransferBytes`)
 
       .. seealso:: :py:obj:`pdarray.to_ndarray`
 
@@ -152,7 +152,7 @@ Module Contents
 
       This involves copying the data from the server to the client, and thus
       will fail if the array is too large (see:
-      :func:`~arkouda.client.maxTransferBytes`)
+      :func:`~arkouda.core.client.maxTransferBytes`)
 
       .. seealso:: :py:obj:`pdarray.tolist`
 

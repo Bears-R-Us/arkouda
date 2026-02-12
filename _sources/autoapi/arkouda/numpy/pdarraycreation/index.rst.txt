@@ -146,7 +146,7 @@ Module Contents
 
    :raises TypeError: - If `a` is not a `pdarray`, `np.ndarray`, or Python iterable.
        - If `a` is of string type and `dtype` is not `ak.str_`.
-   :raises RuntimeError: - If input size exceeds `ak.client.maxTransferBytes`.
+   :raises RuntimeError: - If input size exceeds `ak.core.client.maxTransferBytes`.
        - If `a.dtype` is unsupported or incompatible with Arkouda.
        - If `a.size * a.itemsize > maxTransferBytes`.
    :raises ValueError: - If `a`'s rank is not supported (see `get_array_ranks()`).
@@ -160,9 +160,9 @@ Module Contents
    .. rubric:: Notes
 
    - Arkouda does not currently support shallow copies or views; all copies are deep.
-   - The number of bytes transferred to the server is limited by `ak.client.maxTransferBytes`.
+   - The number of bytes transferred to the server is limited by `ak.core.client.maxTransferBytes`.
      This prevents saturating the network during large transfers. To increase this limit,
-     set `ak.client.maxTransferBytes` to a larger value manually.
+     set `ak.core.client.maxTransferBytes` to a larger value manually.
    - If the input is a Unicode string array (`dtype.kind == 'U'` or `dtype='str'`),
      this function recursively creates a `Strings` object from two internal `pdarray`s
      (one for offsets and one for concatenated string bytes).

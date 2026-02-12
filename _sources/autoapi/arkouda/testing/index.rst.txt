@@ -54,7 +54,7 @@ Package Contents
 
    .. warning::
 
-      This function cannot be used on pdarray of size > ak.client.maxTransferBytes
+      This function cannot be used on pdarray of size > ak.core.client.maxTransferBytes
       because it converts pdarrays to numpy arrays and calls np.allclose.
 
 
@@ -81,7 +81,7 @@ Package Contents
 
    .. warning::
 
-      This function cannot be used on pdarrays of size > ak.client.maxTransferBytes
+      This function cannot be used on pdarrays of size > ak.core.client.maxTransferBytes
       because it converts pdarrays to numpy arrays and calls np.allclose.
 
    .. seealso:: :py:obj:`assert_almost_equal`

@@ -2016,7 +2016,7 @@ Module Contents
       :param datalimit: The maximum number size, in megabytes to transfer. The requested
                         DataFrame will be converted to a pandas DataFrame only if the
                         estimated size of the DataFrame does not exceed this value.
-      :type datalimit: int, default=arkouda.client.maxTransferBytes
+      :type datalimit: int, default=arkouda.core.client.maxTransferBytes
       :param retain_index: Normally, to_pandas() creates a new range index object. If you want
                            to keep the index column, set this to True.
       :type retain_index: bool, default=False

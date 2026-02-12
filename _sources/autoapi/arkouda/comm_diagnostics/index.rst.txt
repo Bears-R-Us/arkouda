@@ -82,7 +82,7 @@ arkouda.comm_diagnostics
 
    Printed tables and verbose messages appear in the server-side Chapel logs.
 
-   .. seealso:: :py:obj:`arkouda.DataFrame`, :py:obj:`arkouda.client.generic_msg`
+   .. seealso:: :py:obj:`arkouda.DataFrame`, :py:obj:`arkouda.core.client.generic_msg`
 
 
 

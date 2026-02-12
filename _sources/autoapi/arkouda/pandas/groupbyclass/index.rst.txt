@@ -643,7 +643,7 @@ Module Contents
 
 
    .. py:attribute:: logger
-      :type:  arkouda.logger.ArkoudaLogger
+      :type:  arkouda.core.logger.ArkoudaLogger
 
 
    .. py:method:: max(values: arkouda.numpy.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.numpy.pdarrayclass.pdarray]

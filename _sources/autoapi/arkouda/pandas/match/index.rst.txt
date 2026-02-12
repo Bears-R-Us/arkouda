@@ -39,7 +39,7 @@ arkouda.pandas.match
    - `Match` objects are typically obtained via `Strings.search()`, /
    `Strings.match()`, or `Strings.fullmatch()`.
 
-   .. seealso:: :py:obj:`arkouda.strings.Strings`, :py:obj:`arkouda.client.regexMaxCaptures`
+   .. seealso:: :py:obj:`arkouda.strings.Strings`, :py:obj:`arkouda.core.client.regexMaxCaptures`
 
 
 
