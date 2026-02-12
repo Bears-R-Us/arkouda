@@ -56,12 +56,12 @@ def test_in1d_matches_numpy(dtype, n):
     b = ak.array(b_np)
 
     got = ak.in1d(a, b)
-    exp = np.in1d(a_np, b_np, assume_unique=False, invert=False)
+    exp = np.isin(a_np, b_np, assume_unique=False, invert=False)
 
     assert np.array_equal(got.to_ndarray(), exp)
 
     got_inv = ak.in1d(a, b, invert=True)
-    exp_inv = np.in1d(a_np, b_np, assume_unique=False, invert=True)
+    exp_inv = np.isin(a_np, b_np, assume_unique=False, invert=True)
     assert np.array_equal(got_inv.to_ndarray(), exp_inv)
 
 
@@ -79,8 +79,8 @@ def test_in1d_symmetric_matches_numpy(dtype):
     b = ak.array(b_np)
 
     got_a, got_b = ak.in1d(a, b, symmetric=True)
-    exp_a = np.in1d(a_np, b_np)
-    exp_b = np.in1d(b_np, a_np)
+    exp_a = np.isin(a_np, b_np)
+    exp_b = np.isin(b_np, a_np)
     assert np.array_equal(got_a.to_ndarray(), exp_a)
     assert np.array_equal(got_b.to_ndarray(), exp_b)
 
