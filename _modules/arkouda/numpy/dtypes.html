@@ -564,7 +564,7 @@
 
 
 <div class="viewcode-block" id="dtype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.dtype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.dtype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalize a dtype-like input into an Arkouda dtype sentinel or a NumPy dtype.</span>
@@ -709,7 +709,7 @@
 
 
 <div class="viewcode-block" id="dtype_for_chapel">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/dtypes/index.html#arkouda.dtype_for_chapel">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.dtype_for_chapel">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dtype_for_chapel</span><span class="p">(</span><span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns dtype() for the given Chapel type.</span>
@@ -759,7 +759,7 @@
 
 
 <div class="viewcode-block" id="can_cast">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.can_cast">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.can_cast">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">can_cast</span><span class="p">(</span><span class="n">from_dt</span><span class="p">,</span> <span class="n">to_dt</span><span class="p">,</span> <span class="n">casting</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;safe&quot;</span><span class="p">,]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine whether a value of one dtype can be safely cast to another,</span>
@@ -920,7 +920,7 @@
 
 
 <div class="viewcode-block" id="result_type">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.result_type">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.result_type">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the result dtype from one or more inputs, following NumPy’s</span>
@@ -1140,7 +1140,7 @@
 
 
 <div class="viewcode-block" id="DType">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.DType">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.DType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">FLOAT</span> <span class="o">=</span> <span class="s2">&quot;float&quot;</span>
     <span class="n">FLOAT64</span> <span class="o">=</span> <span class="s2">&quot;float64&quot;</span>
@@ -1247,7 +1247,7 @@
 
 
 <div class="viewcode-block" id="is_supported_int">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.is_supported_int">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_int">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">int_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported integer dtype.</span>
@@ -1276,7 +1276,7 @@
 
 
 <div class="viewcode-block" id="isSupportedInt">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedInt">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedInt">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated alias for :func:`is_supported_int`.</span>
@@ -1309,7 +1309,7 @@
 
 
 <div class="viewcode-block" id="is_supported_float">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.is_supported_float">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_float">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">float_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported float dtype.</span>
@@ -1338,7 +1338,7 @@
 
 
 <div class="viewcode-block" id="isSupportedFloat">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedFloat">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedFloat">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated alias for :func:`is_supported_float`.</span>
@@ -1371,7 +1371,7 @@
 
 
 <div class="viewcode-block" id="is_supported_number">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.is_supported_number">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_number">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_number</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">numeric_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported numeric dtype.</span>
@@ -1400,7 +1400,7 @@
 
 
 <div class="viewcode-block" id="isSupportedNumber">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedNumber">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedNumber">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated alias for :func:`is_supported_number`.</span>
@@ -1433,7 +1433,7 @@
 
 
 <div class="viewcode-block" id="is_supported_bool">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.is_supported_bool">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_bool">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_bool</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported boolean dtype.</span>
@@ -1462,7 +1462,7 @@
 
 
 <div class="viewcode-block" id="isSupportedBool">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedBool">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedBool">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated alias for :func:`is_supported_bool`.</span>
@@ -1495,7 +1495,7 @@
 
 
 <div class="viewcode-block" id="is_supported_dtype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.is_supported_dtype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_dtype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_dtype</span><span class="p">(</span><span class="n">scalar</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Whether a scalar is an arkouda supported dtype.</span>
@@ -1523,7 +1523,7 @@
 
 
 <div class="viewcode-block" id="isSupportedDType">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.isSupportedDType">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedDType">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deprecated alias for :func:`is_supported_dtype`.</span>
@@ -1556,7 +1556,7 @@
 
 
 <div class="viewcode-block" id="resolve_scalar_dtype">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.resolve_scalar_dtype">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.resolve_scalar_dtype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_scalar_dtype</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to infer what dtype arkouda_server should treat val as.&quot;&quot;&quot;</span>
     <span class="c1"># ---- 1. Arkouda bigint scalar instances ----</span>
@@ -1618,7 +1618,7 @@
 
 
 <div class="viewcode-block" id="get_byteorder">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.get_byteorder">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.get_byteorder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_byteorder</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a concrete byteorder (turns &#39;=&#39; into &#39;&lt;&#39; or &#39;&gt;&#39;) on the client.</span>
@@ -1658,7 +1658,7 @@
 
 
 <div class="viewcode-block" id="get_server_byteorder">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.get_server_byteorder">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.get_server_byteorder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_server_byteorder</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the server&#39;s byteorder.</span>

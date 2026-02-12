@@ -2393,6 +2393,24 @@ Package Contents
 
 
 
+   .. py:method:: groupby() -> arkouda.pandas.groupbyclass.GroupBy
+
+      Return an Arkouda GroupBy object for this Series, without materializing.
+
+      :rtype: GroupBy
+
+      :raises TypeError: Returns TypeError if Series is not arkouda backed.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> import pandas as pd
+      >>> s = pd.Series([80, 443, 80]).ak.to_ak()
+      >>> g = s.ak.groupby()
+      >>> keys, counts = g.size()
+
+
+
    .. py:property:: is_arkouda
       :type: bool
 
