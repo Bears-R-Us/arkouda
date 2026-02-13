@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from types import NotImplementedType
 from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar, Union, overload
 from typing import cast as type_cast
 
@@ -395,20 +396,69 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         self._data[key] = value
 
     # -------------------------------------------------------------------------
-    # Dunder operator helpers
+    # pandas comparison protocol hook
     # -------------------------------------------------------------------------
-    def _coerce_other_for_binop(self, other: Any):
-        """
-        Normalize `other` for binary ops.
 
-        Returns a tuple (other_norm, kind) where:
-          - other_norm is one of: scalar, pdarray
-          - kind is one of: "scalar", "pdarray", "notimpl"
+    def _cmp_method(
+        self,
+        other: Any,
+        op: Callable[[Any, Any], Any],
+    ) -> ArkoudaArray | NotImplementedType:
+        """
+        Perform an elementwise comparison operation.
+
+        This method implements the pandas ``ExtensionArray`` comparison
+        protocol and may be invoked internally by pandas for comparison
+        operations (e.g., ``==``, ``!=``, ``<``, ``<=``, ``>``, ``>=``).
+
+        Parameters
+        ----------
+        other : Any
+            The right-hand operand. Supported inputs include another
+            ``ArkoudaArray``, an Arkouda ``pdarray``, a NumPy ``ndarray``,
+            a Python sequence (list/tuple), or a scalar value. Unsupported
+            types result in ``NotImplemented``.
+
+        op : Callable[[Any, Any], Any]
+            A binary operator implementing the comparison (for example
+            functions from the ``operator`` module such as ``operator.eq``
+            or ``operator.lt``).
+
+        Returns
+        -------
+        ArkoudaArray | NotImplementedType
+            A boolean ``ArkoudaArray`` containing the elementwise comparison
+            result, or ``NotImplemented`` if the operation cannot be performed.
 
         Notes
         -----
-          - Accepts ArkoudaArray, pdarray, numpy arrays, and python sequences.
-          - Leaves non-scalar unsupported objects as NotImplemented.
+        Length compatibility is enforced for elementwise comparisons.
+        Scalar operands are broadcast. Comparison results are always boolean.
+        """
+        result = self._binary_op(other, lambda a, b: op(a, b))
+        if result is NotImplemented:
+            return NotImplemented
+        return result
+
+    def _coerce_other_for_binop(self, other: Any) -> tuple[Any, str]:
+        """
+        Normalize ``other`` for binary operations.
+
+        Parameters
+        ----------
+        other : Any
+            The right-hand operand to normalize. Supported inputs include
+            ``ArkoudaArray``, Arkouda ``pdarray``, NumPy ``ndarray``, Python
+            sequences (list/tuple), and scalars.
+
+        Returns
+        -------
+        tuple[Any, str]
+            A pair ``(other_norm, kind)`` where:
+
+            - ``other_norm`` is the normalized operand (a scalar or an Arkouda ``pdarray``),
+              or ``None`` when unsupported.
+            - ``kind`` is one of ``"scalar"``, ``"pdarray"``, or ``"notimpl"``.
         """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
@@ -423,7 +473,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return other, "scalar"
 
         if isinstance(other, (list, tuple, np.ndarray)):
-            # Let arkouda infer dtype; for bool ops we may override elsewhere.
             return ak_array(other), "pdarray"
 
         return None, "notimpl"
