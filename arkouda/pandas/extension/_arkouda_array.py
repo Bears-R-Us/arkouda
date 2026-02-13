@@ -22,7 +22,6 @@ from ._dtypes import (
     ArkoudaInt64Dtype,
     ArkoudaUint8Dtype,
     ArkoudaUint64Dtype,
-    _ArkoudaBaseDtype,
 )
 
 
@@ -114,6 +113,8 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     def _from_sequence(cls, scalars, dtype=None, copy=False):
         from arkouda.numpy.pdarraycreation import array as ak_array
 
+        from ._dtypes import ArkoudaBigintDtype
+
         # normalize dtype input
         if (
             dtype is not None
@@ -122,12 +123,9 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
                 or str(dtype) in {"bigint", "ak.bigint"}
             )
             or dtype is ArkoudaBigintDtype
+            or isinstance(dtype, ArkoudaBigintDtype)
         ):
             dtype = "bigint"
-
-        # If pandas passes our own EA dtype, ignore it and infer from data
-        if isinstance(dtype, _ArkoudaBaseDtype):
-            dtype = dtype.numpy_dtype
 
         if dtype is not None and hasattr(dtype, "numpy_dtype"):
             dtype = dtype.numpy_dtype
