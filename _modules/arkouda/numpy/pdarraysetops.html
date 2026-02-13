@@ -474,7 +474,7 @@
 <span class="sd">    array([False True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span> <span class="k">as</span> <span class="n">ak_zeros</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">Categorical_</span>
 
@@ -482,10 +482,10 @@
         <span class="c1"># While isinstance(thing, type) can be called on a tuple of types,</span>
         <span class="c1"># this causes an issue with mypy for unknown reasons.</span>
         <span class="k">if</span> <span class="n">pda1</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ak_zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">Strings</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda2</span><span class="p">,</span> <span class="n">Categorical_</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pda2</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ak_zeros</span><span class="p">(</span><span class="n">pda1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">akbool</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pda1</span><span class="p">,</span> <span class="s2">&quot;categories&quot;</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Categorical_</span><span class="p">,</span> <span class="n">pda1</span><span class="p">)</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">pda2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">invert</span> <span class="k">else</span> <span class="o">~</span><span class="n">x</span>
