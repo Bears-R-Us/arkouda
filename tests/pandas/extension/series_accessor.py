@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -6,6 +7,7 @@ import arkouda as ak
 from arkouda import Series
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.extension import ArkoudaExtensionArray
+from arkouda.pandas.extension._index_accessor import ArkoudaIndexAccessor
 from arkouda.pandas.extension._series_accessor import (
     ArkoudaSeriesAccessor,
     _ak_array_to_pandas_series,
@@ -206,6 +208,46 @@ class TestArkoudaSeriesAccessor:
             assert s_back.index.tolist() == [10, 20, 30]
             assert s_back.index.name == "id"
             assert s_back.tolist() == [100, 200, 300]
+
+    def test_ak_array_to_pandas_series_default_index_is_arkouda(self):
+        # legacy arkouda array (pdarray / Strings / Categorical all go through the same helper)
+        akarr = ak.array([1, 3, 4, 1])
+
+        from arkouda.pandas.extension._series_accessor import _ak_array_to_pandas_series
+
+        s = _ak_array_to_pandas_series(akarr, name="x")
+
+        # Should not silently create a NumPy RangeIndex
+        assert not isinstance(s.index, pd.RangeIndex)
+
+        # Index should be Arkouda-backed
+        assert ArkoudaIndexAccessor(s.index).is_arkouda is True
+
+        # Values should match 0..n-1
+        assert np.array_equal(s.index.to_numpy(), np.arange(len(s)))
+
+        # Data should be Arkouda-backed and correct
+        assert np.array_equal(s.to_numpy(), np.array([1, 3, 4, 1]))
+
+    def test_ak_array_to_pandas_series_preserves_provided_index_and_makes_it_arkouda(self):
+        akarr = ak.array([10, 20, 30, 40])
+
+        from arkouda.pandas.extension._series_accessor import _ak_array_to_pandas_series
+
+        idx = pd.Index([100, 101, 102, 103], name="id")
+        assert ArkoudaIndexAccessor(idx).is_arkouda is False
+
+        s = _ak_array_to_pandas_series(akarr, name="x", index=idx)
+
+        # Should preserve index values + name
+        assert s.index.name == "id"
+        assert np.array_equal(s.index.to_numpy(), np.array([100, 101, 102, 103]))
+
+        # Index should be Arkouda-backed (either via internal conversion or via caller passing ak index)
+        assert ArkoudaIndexAccessor(s.index).is_arkouda is True
+
+        # Data correct
+        assert np.array_equal(s.to_numpy(), np.array([10, 20, 30, 40]))
 
 
 class TestArkoudaSeriesGroupby:

@@ -76,10 +76,29 @@ def _pandas_series_to_ak_array(s: pd.Series) -> Any:
     return ak_array(s)
 
 
-def _ak_array_to_pandas_series(akarr: Any, name: str | None = None) -> pd.Series:
-    """Wrap an Arkouda array into a pandas Series backed by ArkoudaExtensionArray."""
+def _ak_array_to_pandas_series(
+    akarr: Any,
+    name: str | None = None,
+    index: pd.Index | None = None,
+) -> pd.Series:
+    """
+    Wrap a legacy Arkouda array into a pandas Series backed by ArkoudaExtensionArray.
+
+    If `index` is not provided, construct an Arkouda-backed default index.
+    If `index` is provided and not Arkouda-backed, convert it.
+    """
+    from arkouda.numpy.pdarraycreation import arange as ak_arange
+    from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+
     ea = _ak_arr_to_pandas_ea(akarr)
-    return pd.Series(ea, name=name)
+
+    if index is None:
+        index = pd.Index(ArkoudaExtensionArray._from_sequence(ak_arange(len(ea))))
+
+    if not ArkoudaIndexAccessor(index).is_arkouda:
+        index = ArkoudaIndexAccessor(index).to_ak()
+
+    return pd.Series(ea, index=index, name=name)
 
 
 # ---------------------------------------------------------------------------
