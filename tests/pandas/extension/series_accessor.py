@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 import arkouda as ak
 
@@ -205,3 +206,42 @@ class TestArkoudaSeriesAccessor:
             assert s_back.index.tolist() == [10, 20, 30]
             assert s_back.index.name == "id"
             assert s_back.tolist() == [100, 200, 300]
+
+
+class TestArkoudaSeriesGroupby:
+    def test_series_ak_groupby_raises_if_not_arkouda_backed(self):
+        s = pd.Series([80, 443, 80], name="Destination Port")  # plain pandas Series
+        with pytest.raises(
+            TypeError, match=r"Series must be Arkouda-backed\. Call \.ak\.to_ak\(\) first\."
+        ):
+            _ = s.ak.groupby()
+
+    def test_series_ak_groupby_returns_ak_groupby_and_size_matches_pandas_value_counts(self):
+        s = pd.Series([80, 443, 80, 22, 443], name="Destination Port").ak.to_ak()
+
+        g = s.ak.groupby()
+        assert isinstance(g, ak.GroupBy)
+
+        keys, counts = g.size()
+
+        # Convert results to python lists for comparison
+        keys_py = keys.tolist()
+        counts_py = counts.tolist()
+
+        # Series.groupby().size() is equivalent to Series.value_counts()
+        # The grouped values become the index of the returned series.
+        # We sort so the order matches.
+        expected = pd.Series([80, 443, 80, 22, 443]).value_counts().sort_index()
+
+        assert keys_py == expected.index.to_list()
+        assert counts_py == expected.to_list()
+
+    def test_series_ak_groupby_raises_if_underlying_array_missing_data(self):
+        s = pd.Series([1, 1, 2, 3]).ak.to_ak()
+
+        # Keep Series "arkouda-backed" but make _data unavailable
+        # so we hit the second error branch.
+        s.array._data = None  # type: ignore[attr-defined]
+
+        with pytest.raises(TypeError, match=r"Arkouda-backed Series array does not expose '_data'"):
+            _ = s.ak.groupby()

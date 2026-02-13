@@ -14,7 +14,7 @@ class TestClient:
     def test_client_docstrings(self):
         import doctest
 
-        from arkouda import client
+        from arkouda.core import client
 
         result = doctest.testmod(client, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
         assert result.failed == 0, f"Doctest failed: {result.failed} failures"
@@ -22,31 +22,31 @@ class TestClient:
     def test_client_connected(self):
         """
         Tests the following methods:
-        ak.client.connected()
-        ak.client.disconnect()
-        ak.client.connect()
+        ak.core.client.connected()
+        ak.core.client.disconnect()
+        ak.core.client.connect()
 
         :return: None
         :raise: AssertionError if an assert* method returns incorrect value or
                 if there is a error in connecting or disconnecting from  the
                 Arkouda server
         """
-        assert ak.client.connected
+        assert ak.core.client.connected
         try:
             ak.disconnect()
         except Exception as e:
             raise AssertionError(e)
 
-        assert not ak.client.connected
+        assert not ak.core.client.connected
         try:
             ak.connect(server=pytest.server, port=pytest.port)
         except Exception as e:
             raise AssertionError(e)
 
-        assert ak.client.connected
+        assert ak.core.client.connected
 
     def test_locale_info(self):
-        config = ak.client.get_config()
+        config = ak.core.client.get_config()
         assert config["numLocales"] > 0
         assert config["numNodes"] > 0
         assert config["numPUs"] > 0
@@ -60,7 +60,7 @@ class TestClient:
         disconnect to ensure there is no error
         """
         ak.disconnect()
-        assert not ak.client.connected
+        assert not ak.core.client.connected
         ak.disconnect()
         ak.connect(server=pytest.server, port=pytest.port)
 
@@ -76,33 +76,33 @@ class TestClient:
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
 
     def test_server_sleep(self):
-        """Tests ak.client.server_sleep()."""
+        """Tests ak.core.client.server_sleep()."""
         seconds = 1
         start = time.time()
-        ak.client.server_sleep(seconds)
+        ak.core.client.server_sleep(seconds)
         end = time.time()
         assert (end - start) >= seconds
 
     def test_server_note(self):
         """
-        Tests ak.client.note_for_server_log().
+        Tests ak.core.client.note_for_server_log().
 
         We could "tail" the server log, however this may give false negatives
         or crashes due to file system delays, server options, etc.
         So simply check that the method is invocable.
         """
-        ak.client.note_for_server_log("from test_server_note")
+        ak.core.client.note_for_server_log("from test_server_note")
 
     def test_client_get_config(self):
         """
-        Tests the ak.client.get_config() method
+        Tests the ak.core.client.get_config() method
 
         :return: None
         :raise: AssertionError if one or more Config values are not as expected
-                or the call to ak.client.get_config() fails
+                or the call to ak.core.client.get_config() fails
         """
         try:
-            config = ak.client.get_config()
+            config = ak.core.client.get_config()
         except Exception as e:
             raise AssertionError(e)
         assert pytest.port == config["ServerPort"]
@@ -119,18 +119,18 @@ class TestClient:
             registration-config.json file.
             """
             try:
-                reg = ak.client.get_registration_config()
+                reg = ak.core.client.get_registration_config()
                 nd_list = reg["parameter_classes"]["array"]["nd"]
                 return max(nd_list)
             except Exception:
                 # Minimal safe fallback (legacy servers / odd configs)
                 return 1
 
-        assert get_server_max_array_dims() == ak.client.get_max_array_rank()
+        assert get_server_max_array_dims() == ak.core.client.get_max_array_rank()
 
     def test_client_get_registration_config(self):
         """
-        Tests that we can call ak.client.get_registration_config()
+        Tests that we can call ak.core.client.get_registration_config()
         and that the returned result matches the contents of "registration-config.json".
 
         In multi-dim builds, the server may extend the 'array.nd' list beyond what
@@ -140,7 +140,7 @@ class TestClient:
         import copy
         import json
 
-        from_server = ak.client.get_registration_config()
+        from_server = ak.core.client.get_registration_config()
 
         try:
             with open("registration-config.json", "r") as f:
@@ -177,12 +177,12 @@ class TestClient:
 
         :return: None
         :raise: AssertionError if one or more ak.get_mem_used values are not as
-                expected or the call to ak.client.get_mem_used() fails
+                expected or the call to ak.core.client.get_mem_used() fails
         """
         try:
-            config = ak.client.get_config()
+            config = ak.core.client.get_config()
             a = ak.ones(1024 * 1024 * config["numLocales"])  # noqa: F841
-            mem_used = ak.client.get_mem_used()
+            mem_used = ak.core.client.get_mem_used()
         except Exception as e:
             raise AssertionError(e)
         assert mem_used > 0
@@ -190,7 +190,7 @@ class TestClient:
         # test units
         mem_used = ak.get_mem_used()
         mem_avail = ak.get_mem_avail()
-        for u, f in ak.client._memunit2factor.items():
+        for u, f in ak.core.client._memunit2factor.items():
             assert round(mem_used / f) == ak.get_mem_used(u)
             assert round(mem_avail / f) == ak.get_mem_avail(u)
 
@@ -203,50 +203,50 @@ class TestClient:
 
     def test_client_configuration(self):
         """
-        Tests the ak.client.set_defaults() method as well as set/get
+        Tests the ak.core.client.set_defaults() method as well as set/get
         parrayIterThresh, maxTransferBytes, and verbose config params.
         """
-        ak.client.pdarrayIterThresh = 50
-        ak.client.maxTransferBytes = 1048576000
-        ak.client.verbose = True
-        assert 50 == ak.client.pdarrayIterThresh
-        assert 1048576000 == ak.client.maxTransferBytes
-        assert ak.client.verbose
-        ak.client.set_defaults()
-        assert 100 == ak.client.pdarrayIterThresh
-        assert 1073741824 == ak.client.maxTransferBytes
-        assert not ak.client.verbose
+        ak.core.client.pdarrayIterThresh = 50
+        ak.core.client.maxTransferBytes = 1048576000
+        ak.core.client.verbose = True
+        assert 50 == ak.core.client.pdarrayIterThresh
+        assert 1048576000 == ak.core.client.maxTransferBytes
+        assert ak.core.client.verbose
+        ak.core.client.set_defaults()
+        assert 100 == ak.core.client.pdarrayIterThresh
+        assert 1073741824 == ak.core.client.maxTransferBytes
+        assert not ak.core.client.verbose
 
     def test_client_get_server_commands(self):
         """
-        Tests the ak.client.get_server_commands() method contains an expected
+        Tests the ak.core.client.get_server_commands() method contains an expected
         sample of commands.
         """
-        cmds = ak.client.get_server_commands()
+        cmds = ak.core.client.get_server_commands()
         for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
     def test_get_array_ranks(self):
-        availableRanks = ak.client.get_array_ranks()
+        availableRanks = ak.core.client.get_array_ranks()
         assert isinstance(availableRanks, list)
         assert len(availableRanks) >= 1
         assert 1 in availableRanks
-        assert ak.client.get_max_array_rank() == max(availableRanks)
+        assert ak.core.client.get_max_array_rank() == max(availableRanks)
 
     def test_no_op(self):
         """
-        Tests the ak.client._no_op method
+        Tests the ak.core.client._no_op method
 
         :return: None
         :raise: AssertionError if return message is not 'noop'
         """
-        assert "noop" == ak.client._no_op()
+        assert "noop" == ak.core.client._no_op()
 
     def test_ruok(self):
         """
-        Tests the ak.client.ruok method
+        Tests the ak.core.client.ruok method
 
         :return: None
         :raise: AssertionError if return message is not 'imok'
         """
-        assert "imok" == ak.client.ruok()
+        assert "imok" == ak.core.client.ruok()

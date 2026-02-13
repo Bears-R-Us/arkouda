@@ -36,7 +36,7 @@ Notes
 See Also
 --------
 arkouda.strings.Strings
-arkouda.client.regexMaxCaptures
+arkouda.core.client.regexMaxCaptures
 
 """
 
@@ -123,7 +123,7 @@ class Match:
             Human-readable summary of match objects and spans.
 
         """
-        from arkouda.client import pdarrayIterThresh
+        from arkouda.core.client import pdarrayIterThresh
 
         if self._matched.size <= pdarrayIterThresh:
             vals = [self.__getitem__(i) for i in range(self._matched.size)]
@@ -273,7 +273,7 @@ class Match:
         (array(['_', '____', '__']), array([0 1 3]))
 
         """
-        from arkouda.client import generic_msg
+        from arkouda.core.client import generic_msg
         from arkouda.numpy.strings import Strings
 
         rep_msg = cast(
@@ -331,7 +331,7 @@ class Match:
         (array(['Newton', 'Leibniz']), array([0 2]))
 
         """
-        from arkouda.client import generic_msg, regexMaxCaptures
+        from arkouda.core.client import generic_msg, regexMaxCaptures
         from arkouda.numpy.strings import Strings
 
         if group_num < 0:

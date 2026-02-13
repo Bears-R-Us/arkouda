@@ -4,9 +4,9 @@ import pytest
 
 import arkouda as ak
 
-from arkouda import message
-from arkouda.client import _json_args_to_str
-from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
+from arkouda.core import message
+from arkouda.core.client import _json_args_to_str
+from arkouda.core.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
 
 
 class TestMessage:

@@ -59,7 +59,7 @@ __all__ = [
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-    from arkouda.client import get_config, get_mem_used
+    from arkouda.core.client import get_config, get_mem_used
     from arkouda.numpy.pdarraycreation import arange
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
@@ -279,7 +279,7 @@ def attach(name: str):
     [1 2 3]
     >>> registered_obj.unregister()
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
@@ -372,7 +372,7 @@ def unregister(name: str) -> str:
     Unregistered PDARRAY my_array
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = cast(str, generic_msg(cmd="unregister", args={"name": name}))
 
@@ -572,7 +572,7 @@ def sparse_sum_help(
     >>> ak.GroupBy(ak.concatenate([idx1, idx2])).sum(ak.concatenate((vals1, vals2)))
     (array([0 1 3 4 6 7 9]), array([10 12 16 4 16 7 28]))
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     rep_msg = generic_msg(
         cmd="sparseSumHelp",
@@ -706,7 +706,7 @@ def broadcast_to(x: Union[numeric_scalars, pdarray], shape: Union[int, Tuple[int
 
 
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
     from arkouda.numpy.dtypes import _val_isinstance_of_union
     from arkouda.numpy.pdarraycreation import full as akfull
 

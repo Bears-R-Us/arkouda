@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from types import NotImplementedType
 from typing import TYPE_CHECKING, Any, Callable, Sequence, TypeVar, Union, overload
 from typing import cast as type_cast
 
 import numpy as np
+import pandas as pd
 
 from numpy import ndarray
 from numpy.typing import NDArray
@@ -394,20 +396,69 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         self._data[key] = value
 
     # -------------------------------------------------------------------------
-    # Dunder operator helpers
+    # pandas comparison protocol hook
     # -------------------------------------------------------------------------
-    def _coerce_other_for_binop(self, other: Any):
-        """
-        Normalize `other` for binary ops.
 
-        Returns a tuple (other_norm, kind) where:
-          - other_norm is one of: scalar, pdarray
-          - kind is one of: "scalar", "pdarray", "notimpl"
+    def _cmp_method(
+        self,
+        other: Any,
+        op: Callable[[Any, Any], Any],
+    ) -> ArkoudaArray | NotImplementedType:
+        """
+        Perform an elementwise comparison operation.
+
+        This method implements the pandas ``ExtensionArray`` comparison
+        protocol and may be invoked internally by pandas for comparison
+        operations (e.g., ``==``, ``!=``, ``<``, ``<=``, ``>``, ``>=``).
+
+        Parameters
+        ----------
+        other : Any
+            The right-hand operand. Supported inputs include another
+            ``ArkoudaArray``, an Arkouda ``pdarray``, a NumPy ``ndarray``,
+            a Python sequence (list/tuple), or a scalar value. Unsupported
+            types result in ``NotImplemented``.
+
+        op : Callable[[Any, Any], Any]
+            A binary operator implementing the comparison (for example
+            functions from the ``operator`` module such as ``operator.eq``
+            or ``operator.lt``).
+
+        Returns
+        -------
+        ArkoudaArray | NotImplementedType
+            A boolean ``ArkoudaArray`` containing the elementwise comparison
+            result, or ``NotImplemented`` if the operation cannot be performed.
 
         Notes
         -----
-          - Accepts ArkoudaArray, pdarray, numpy arrays, and python sequences.
-          - Leaves non-scalar unsupported objects as NotImplemented.
+        Length compatibility is enforced for elementwise comparisons.
+        Scalar operands are broadcast. Comparison results are always boolean.
+        """
+        result = self._binary_op(other, lambda a, b: op(a, b))
+        if result is NotImplemented:
+            return NotImplemented
+        return result
+
+    def _coerce_other_for_binop(self, other: Any) -> tuple[Any, str]:
+        """
+        Normalize ``other`` for binary operations.
+
+        Parameters
+        ----------
+        other : Any
+            The right-hand operand to normalize. Supported inputs include
+            ``ArkoudaArray``, Arkouda ``pdarray``, NumPy ``ndarray``, Python
+            sequences (list/tuple), and scalars.
+
+        Returns
+        -------
+        tuple[Any, str]
+            A pair ``(other_norm, kind)`` where:
+
+            - ``other_norm`` is the normalized operand (a scalar or an Arkouda ``pdarray``),
+              or ``None`` when unsupported.
+            - ``kind`` is one of ``"scalar"``, ``"pdarray"``, or ``"notimpl"``.
         """
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
@@ -422,7 +473,6 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             return other, "scalar"
 
         if isinstance(other, (list, tuple, np.ndarray)):
-            # Let arkouda infer dtype; for bool ops we may override elsewhere.
             return ak_array(other), "pdarray"
 
         return None, "notimpl"
@@ -901,6 +951,76 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
     def isnull(self):
         """Alias for isna()."""
         return self.isna()
+
+    def value_counts(self, dropna: bool = True) -> pd.Series:
+        """
+        Return counts of unique values as a pandas Series.
+
+        This method computes the frequency of each distinct value in the
+        underlying Arkouda array and returns the result as a pandas
+        ``Series``, with the unique values as the index and their counts
+        as the data.
+
+        Parameters
+        ----------
+        dropna : bool
+            Whether to exclude missing values. Currently, missing-value
+            handling is supported only for floating-point data, where
+            ``NaN`` values are treated as missing. Default is True.
+
+        Returns
+        -------
+        pd.Series
+            A Series containing the counts of unique values.
+            The index is an ``ArkoudaArray`` of unique values, and the
+            values are an ``ArkoudaArray`` of counts.
+
+        Notes
+        -----
+        - Only ``dropna=True`` is supported.
+        - The following pandas options are not yet implemented:
+          ``normalize``, ``sort``, and ``bins``.
+        - Counting is performed server-side in Arkouda; only the small
+          result (unique values and counts) is materialized on the client.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> from arkouda.pandas.extension import ArkoudaArray
+        >>>
+        >>> a = ArkoudaArray(ak.array([1, 2, 1, 3, 2, 1]))
+        >>> a.value_counts()
+        1    3
+        2    2
+        3    1
+        dtype: int64
+
+        Floating-point data with NaN values:
+
+        >>> b = ArkoudaArray(ak.array([1.0, 2.0, float("nan"), 1.0]))
+        >>> b.value_counts()
+        1.0    2
+        2.0    1
+        dtype: int64
+        """
+        from arkouda.numpy.numeric import isnan as ak_isnan
+
+        data = self._data
+
+        # Handle NA only for floats (pandas-compatible)
+        if dropna and data.dtype == "float64":
+            mask = ~ak_isnan(data)
+            data = data[mask]
+
+        if data.size == 0:
+            return pd.Series(dtype="int64")
+
+        keys, counts = data.value_counts()
+
+        return_index = ArkoudaArray._from_sequence(keys)
+        return_values = ArkoudaArray._from_sequence(counts)
+
+        return pd.Series(return_values, index=return_index)
 
 
 def _is_empty_indexer(key) -> bool:

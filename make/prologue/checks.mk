@@ -37,7 +37,7 @@ check-re2: $(RE2_CHECK)
 ARROW_CHECK = $(DEP_INSTALL_DIR)/checkArrow.chpl
 check-arrow: $(ARROW_CHECK) $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O)
 	@echo "Checking for Arrow"
-	$(MAKE) compile-arrow-cpp
+	$(MAKE) compile-arrow-cpp --no-print-directory
 	@$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_COMPAT_MODULES) $< \
 		$(ARROW_M) -M $(ARKOUDA_SOURCE_DIR) \
 		-I $(ARKOUDA_SOURCE_DIR)/parquet \

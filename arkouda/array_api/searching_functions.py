@@ -63,7 +63,7 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:
     """Return a tuple of arrays containing the indices of the non-zero elements of the input array."""
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     resp = cast(
         str,
@@ -89,7 +89,7 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
     x2 : Array
         Values selected at indices where `condition` is False.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     broadcasted = broadcast_arrays(condition, x1, x2)
     assert isinstance(broadcasted, list) and all(isinstance(arg, Array) for arg in broadcasted)
@@ -140,7 +140,7 @@ def searchsorted(
     sorter : Array, optional
         The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.
     """
-    from arkouda.client import generic_msg
+    from arkouda.core.client import generic_msg
 
     if x1.dtype not in _real_floating_dtypes or x2.dtype not in _real_floating_dtypes:
         raise TypeError("Only real dtypes are allowed in searchsorted")
