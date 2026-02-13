@@ -8,7 +8,7 @@ explicitly document intentional differences
 (e.g., deep-copy semantics, Strings handling, bigint support).
 
 Run:
-    pytest -q test_numpy_alignment_pdarraycreation.py
+    pytest -q pdarraycreation_alignment.py
 
 Notes
 -----
@@ -44,8 +44,6 @@ def _np_dtype_name(dt: Any) -> str:
 def _as_np(x: Any) -> np.ndarray:
     """Convert Arkouda object to numpy ndarray."""
     if hasattr(x, "to_ndarray"):
-        return x.to_ndarray()
-    if isinstance(x, ak.Strings):
         return x.to_ndarray()
     return np.asarray(x)
 
