@@ -517,28 +517,31 @@
     <span class="k">return</span> <span class="n">_extract_ak_from_ea</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">array</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_akcol_to_series</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">akcol</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_akcol_to_series</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">akcol</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrap an Arkouda column into a pandas Series using ArkoudaArray.</span>
-
-<span class="sd">    The data are not converted to NumPy/Python; instead, the Arkouda column</span>
-<span class="sd">    is wrapped in an :class:`ArkoudaArray` ExtensionArray.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name : str</span>
-<span class="sd">        Name for the resulting Series.</span>
-<span class="sd">    akcol : object</span>
-<span class="sd">        Underlying Arkouda column to wrap (for example, ``pdarray``,</span>
-<span class="sd">        ``Strings``, or ``Categorical``).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pd.Series</span>
-<span class="sd">        Series backed by an :class:`ArkoudaArray` containing ``akcol``.</span>
+<span class="sd">    Wrap an Arkouda column into a pandas Series using ArkoudaExtensionArray,</span>
+<span class="sd">    ensuring the index is Arkouda-backed (including the default index).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span> <span class="k">as</span> <span class="n">ak_arange</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaIndexAccessor</span>  <span class="c1"># avoids `index.ak` for mypy</span>
+
     <span class="n">ea</span> <span class="o">=</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ea</span><span class="p">)</span>
+        <span class="n">index_ea</span> <span class="o">=</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">ak_arange</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">index_ea</span><span class="p">)</span>
+
+    <span class="c1"># mypy-safe: call accessor class directly (pandas stubs don&#39;t know `.ak`)</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">acc</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_df_to_akdf_no_copy</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ak_DataFrame</span><span class="p">:</span>

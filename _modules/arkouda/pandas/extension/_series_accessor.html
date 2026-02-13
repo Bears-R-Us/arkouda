@@ -456,10 +456,29 @@
     <span class="k">return</span> <span class="n">ak_array</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_ak_array_to_pandas_series</span><span class="p">(</span><span class="n">akarr</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap an Arkouda array into a pandas Series backed by ArkoudaExtensionArray.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ak_array_to_pandas_series</span><span class="p">(</span>
+    <span class="n">akarr</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrap a legacy Arkouda array into a pandas Series backed by ArkoudaExtensionArray.</span>
+
+<span class="sd">    If `index` is not provided, construct an Arkouda-backed default index.</span>
+<span class="sd">    If `index` is provided and not Arkouda-backed, convert it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span> <span class="k">as</span> <span class="n">ak_arange</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span><span class="p">,</span> <span class="n">ArkoudaIndexAccessor</span>
+
     <span class="n">ea</span> <span class="o">=</span> <span class="n">_ak_arr_to_pandas_ea</span><span class="p">(</span><span class="n">akarr</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">ak_arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ea</span><span class="p">))))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">ea</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
