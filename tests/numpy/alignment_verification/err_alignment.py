@@ -101,7 +101,7 @@ def test_errstate_temporarily_sets_call_handler() -> None:
 
 
 @pytest.mark.parametrize("kind", ERR_KINDS)
-def test_handle_unknown_kind_raises_value_error(kind: str) -> None:
+def test_handle_known_kinds_do_not_raise(kind: str) -> None:
     # sanity: known kinds do not raise at validation layer
     ak.numpy.err.handle(kind, "msg")
 
