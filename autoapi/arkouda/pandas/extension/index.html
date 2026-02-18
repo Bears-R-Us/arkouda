@@ -3120,6 +3120,51 @@ Arkouda server-side arrays.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.locate">
+<span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.locate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.locate" title="Link to this definition">¶</a></dt>
+<dd><p>Lookup values by index label on the Arkouda server.</p>
+<p>This is a thin wrapper around the legacy <a class="reference internal" href="../series/index.html#arkouda.pandas.series.Series.locate" title="arkouda.pandas.series.Series.locate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pandas.series.Series.locate()</span></code></a>
+method. It converts the pandas Series to a legacy Arkouda <code class="docutils literal notranslate"><span class="pre">ak.Series</span></code>,
+performs the locate operation on the server, and wraps the result back into
+an Arkouda-backed pandas Series (ExtensionArray-backed) without NumPy
+materialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>object</em>) – Lookup key or keys. Interpreted in the same way as the legacy Arkouda
+<code class="docutils literal notranslate"><span class="pre">Series.locate</span></code> method. This may be:
+- a scalar
+- a list/tuple of scalars
+- an Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>
+- an Arkouda <code class="docutils literal notranslate"><span class="pre">Index</span></code> / <code class="docutils literal notranslate"><span class="pre">MultiIndex</span></code>
+- an Arkouda <code class="docutils literal notranslate"><span class="pre">Series</span></code> (special case: preserves key index)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pandas Series backed by Arkouda ExtensionArrays containing the located
+values. The returned Series remains distributed (no NumPy materialization)
+and is sorted by index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This method is Arkouda-specific; pandas does not define <code class="docutils literal notranslate"><span class="pre">Series.locate</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">key</span></code> is a pandas Index/MultiIndex, consider converting it via
+<code class="docutils literal notranslate"><span class="pre">key.ak.to_ak_legacy()</span></code> before calling <code class="docutils literal notranslate"><span class="pre">locate</span></code> for the most direct path.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">ak</span><span class="o">.</span><span class="n">locate</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[np.int64(10), np.int64(30)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak">
 <span class="sig-name descname"><span class="pre">to_ak</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.to_ak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak" title="Link to this definition">¶</a></dt>
 <dd><p>Convert this pandas Series into an Arkouda-backed Series.</p>
@@ -4153,6 +4198,7 @@ instances of <cite>type</cite>.</p>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.from_ak_legacy"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.from_ak_legacy()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.groupby"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.groupby()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.is_arkouda"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.is_arkouda</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.locate"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.locate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.to_ak()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.to_ak_legacy"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.to_ak_legacy()</span></code></a></li>
 </ul>

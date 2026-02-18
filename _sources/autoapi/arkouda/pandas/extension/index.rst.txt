@@ -2435,6 +2435,47 @@ Package Contents
       True
 
 
+   .. py:method:: locate(key: object) -> pandas.Series
+
+      Lookup values by index label on the Arkouda server.
+
+      This is a thin wrapper around the legacy :meth:`arkouda.pandas.series.Series.locate`
+      method. It converts the pandas Series to a legacy Arkouda ``ak.Series``,
+      performs the locate operation on the server, and wraps the result back into
+      an Arkouda-backed pandas Series (ExtensionArray-backed) without NumPy
+      materialization.
+
+      :param key: Lookup key or keys. Interpreted in the same way as the legacy Arkouda
+                  ``Series.locate`` method. This may be:
+                  - a scalar
+                  - a list/tuple of scalars
+                  - an Arkouda ``pdarray``
+                  - an Arkouda ``Index`` / ``MultiIndex``
+                  - an Arkouda ``Series`` (special case: preserves key index)
+      :type key: object
+
+      :returns: A pandas Series backed by Arkouda ExtensionArrays containing the located
+                values. The returned Series remains distributed (no NumPy materialization)
+                and is sorted by index.
+      :rtype: pd.Series
+
+      .. rubric:: Notes
+
+      * This method is Arkouda-specific; pandas does not define ``Series.locate``.
+      * If ``key`` is a pandas Index/MultiIndex, consider converting it via
+        ``key.ak.to_ak_legacy()`` before calling ``locate`` for the most direct path.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> import pandas as pd
+      >>> s = pd.Series([10, 20, 30], index=pd.Index([1, 2, 3])).ak.to_ak()
+      >>> out = s.ak.locate([3, 1])
+      >>> out.tolist()
+      [np.int64(10), np.int64(30)]
+
+
+
    .. py:method:: to_ak() -> pandas.Series
 
       Convert this pandas Series into an Arkouda-backed Series.

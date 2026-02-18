@@ -407,7 +407,7 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.alignment</span><span class="w"> </span><span class="kn">import</span> <span class="n">lookup</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">zeros</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
 <span class="k">else</span><span class="p">:</span>
@@ -1079,38 +1079,119 @@
 <span class="sd">            A Series containing the values corresponding to the key.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_scalar_label</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="c1"># scalar label component (NOT array-like)</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Index</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">to_pdarray</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Convert without ever touching pandas/numpy containers.</span>
+<span class="sd">            Assumes Arkouda Index/Series store pdarrays internally.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">obj</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
+                <span class="c1"># Arkouda Index wrapper: underlying pdarray is on .index</span>
+                <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
+                <span class="c1"># Arkouda Series wrapper: underlying pdarray is on .values</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">values</span>
+            <span class="c1"># python scalar / python list/tuple -&gt; arkouda pdarray (server-side)</span>
+            <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">rebuild_mi_with_names</span><span class="p">(</span><span class="n">mi</span><span class="p">:</span> <span class="n">MultiIndex</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultiIndex</span><span class="p">:</span>
+            <span class="c1"># Do not rely on mi.names setter being functional</span>
+            <span class="k">return</span> <span class="n">MultiIndex</span><span class="p">(</span><span class="n">mi</span><span class="o">.</span><span class="n">levels</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
+            <span class="n">out_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">selector</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out_index</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
+                <span class="n">out_index</span> <span class="o">=</span> <span class="n">rebuild_mi_with_names</span><span class="p">(</span><span class="n">out_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">out_index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">selector</span><span class="p">])</span>
+
+        <span class="c1"># ---- Series key: preserve its index, lookup by its values (Arkouda Series)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Series</span><span class="p">):</span>
-            <span class="c1"># special case, keep the index values of the Series, and lookup the values</span>
             <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">lookup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+
+        <span class="c1"># ---- Direct index objects</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Index</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+
+        <span class="c1"># ---- pdarray key</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+        <span class="c1"># ---- list/tuple keys</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
+                <span class="n">nlevels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">nlevels</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nlevels</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="s2">&quot;For MultiIndex Series, &#39;key&#39; must be a tuple label, an Index/MultiIndex, &quot;</span>
+                        <span class="s2">&quot;or per-level keys with length equal to nlevels.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Reject flat list-of-scalars like [0, 2]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">all_scalar</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_scalar_label</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                            <span class="n">all_scalar</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">all_scalar</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                            <span class="s2">&quot;For MultiIndex Series, a single label must be a tuple, e.g. (0, 2), &quot;</span>
+                            <span class="s2">&quot;not a flat list like [0, 2].&quot;</span>
+                        <span class="p">)</span>
+
+                <span class="c1"># Single scalar label tuple: (0, 10) -&gt; per-level length-1 arrays</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="n">all_scalar</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_scalar_label</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                            <span class="n">all_scalar</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">all_scalar</span><span class="p">:</span>
+                        <span class="n">per_level</span> <span class="o">=</span> <span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
+                        <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">per_level</span><span class="p">))</span>
+
+                <span class="c1"># Per-level keys: normalize each element without pandas/numpy</span>
+                <span class="n">per_level</span> <span class="o">=</span> <span class="p">[</span><span class="n">to_pdarray</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
+
+                <span class="c1"># Enforce paired selection: equal sizes (metadata only)</span>
+                <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">per_level</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sizes</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Per-level MultiIndex keys must have the same length; got </span><span class="si">{</span><span class="n">sizes</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">per_level</span><span class="p">))</span>
+
+            <span class="c1"># Non-MultiIndex:</span>
+            <span class="c1"># - list of scalars -&gt; convert to pdarray</span>
+            <span class="c1"># - nested list/tuple -&gt; transpose using pure Python (keys only)</span>
             <span class="n">key0</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="c1"># nested list. check if already arkouda arrays</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pdarray</span><span class="p">):</span>
-                    <span class="c1"># convert list of lists to list of pdarrays</span>
-                    <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
 
-            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-                <span class="c1"># a list of scalers, convert into arkouda array</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
-                        <span class="n">key</span> <span class="o">=</span> <span class="n">val</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;key&#39; parameter must be convertible to pdarray&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="p">))</span>
+                <span class="n">per_level</span> <span class="o">=</span> <span class="p">[</span><span class="n">array</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">]</span>  <span class="c1"># col is a tuple of python scalars</span>
+                <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">per_level</span><span class="p">))</span>
 
-            <span class="c1"># else already list if arkouda array, use as is</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># scalar value</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">key</span>
-        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span></div>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key0</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">to_pdarray</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
+
+        <span class="c1"># ---- scalar key</span>
+        <span class="k">return</span> <span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span></div>
 
 
     <span class="nd">@classmethod</span>

@@ -413,11 +413,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtype`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   BoolDType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.bool` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: ByteDType
@@ -425,11 +427,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int8DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int8` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: BytesDType
@@ -437,11 +441,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtype`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   BytesDType(size, /)
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.bytes_` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: CLongDoubleDType
@@ -449,11 +455,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._ComplexAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   CLongDoubleDType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.clongdouble` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Complex128DType
@@ -461,11 +469,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._ComplexAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Complex128DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.complex128` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Complex64DType
@@ -473,11 +483,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._ComplexAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Complex64DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.complex64` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: DType
@@ -659,11 +671,17 @@ Package Contents
    Bases: :py:obj:`numpy.dtype`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   DateTime64DType(unit, /)
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.datetime64` scalar type.
+
+   .. warning::
+       ``np.dtypes.DateTime64DType`` cannot be instantiated directly.
+       Use ``np.dtype("datetime64[{unit}]")`` instead.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Datetime(pda, unit: str = _BASE_UNIT)
@@ -951,16 +969,19 @@ Package Contents
    Bases: :py:obj:`numpy.generic`
 
 
+   bool(value=False, /)
+   --
+
    Boolean type (True or False), stored as a byte.
 
-       .. warning::
+   .. warning::
 
-          The :class:`bool` type is not a subclass of the :class:`int_` type
-          (the :class:`bool` is not even a number type). This is different
-          than Python's default implementation of :class:`bool` as a
-          sub-class of :class:`int`.
+       The :class:`bool` type is not a subclass of the :class:`int_` type
+       (the :class:`bool` is not even a number type). This is different
+       than Python's default implementation of :class:`bool` as a
+       sub-class of :class:`int`.
 
-       :Character code: ``'?'``
+   :Character code: ``'?'``
 
 
 .. py:class:: Float16DType
@@ -968,11 +989,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Float16DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.float16` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Float32DType
@@ -980,11 +1003,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Float32DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.float32` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Float64DType
@@ -992,11 +1017,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Float64DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.float64` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Int16DType
@@ -1004,11 +1031,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int16DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int16` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Int32DType
@@ -1016,11 +1045,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int32DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int32` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Int64DType
@@ -1028,11 +1059,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int64DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int64` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Int8DType
@@ -1040,11 +1073,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int8DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int8` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: IntDType
@@ -1052,11 +1087,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int32DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int32` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: LongDType
@@ -1064,11 +1101,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int64DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int64` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: LongDoubleDType
@@ -1076,11 +1115,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._FloatAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   LongDoubleDType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.longdouble` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: LongLongDType
@@ -1088,11 +1129,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   LongLongDType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.longlong` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: NUMBER_FORMAT_STRINGS
@@ -1261,11 +1304,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtype`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   ObjectDType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.object` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:exception:: RegistrationError
@@ -2159,11 +2204,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   Int16DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.int16` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:data:: SortingAlgorithm
@@ -2173,11 +2220,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtype`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   StrDType(size, /)
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.str_` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Strings(strings_pdarray: arkouda.numpy.pdarrayclass.pdarray, bytes_size: arkouda.numpy.dtypes.int_scalars)
@@ -3974,11 +4023,17 @@ Package Contents
    Bases: :py:obj:`numpy.dtype`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   TimeDelta64DType(unit, /)
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.timedelta64` scalar type.
+
+   .. warning::
+       ``np.dtypes.TimeDelta64DType`` cannot be instantiated directly.
+       Use ``np.dtype("timedelta64[{unit}]")`` instead.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: Timedelta(pda, unit: str = _BASE_UNIT)
@@ -4180,16 +4235,19 @@ Package Contents
    Bases: :py:obj:`numpy.generic`
 
 
+   bool(value=False, /)
+   --
+
    Boolean type (True or False), stored as a byte.
 
-       .. warning::
+   .. warning::
 
-          The :class:`bool` type is not a subclass of the :class:`int_` type
-          (the :class:`bool` is not even a number type). This is different
-          than Python's default implementation of :class:`bool` as a
-          sub-class of :class:`int`.
+       The :class:`bool` type is not a subclass of the :class:`int_` type
+       (the :class:`bool` is not even a number type). This is different
+       than Python's default implementation of :class:`bool` as a
+       sub-class of :class:`int`.
 
-       :Character code: ``'?'``
+   :Character code: ``'?'``
 
 
 .. py:class:: UByteDType
@@ -4197,11 +4255,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt8DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint8` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: UInt16DType
@@ -4209,11 +4269,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt16DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint16` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: UInt32DType
@@ -4221,11 +4283,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt32DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint32` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: UInt64DType
@@ -4233,11 +4297,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt64DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint64` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: UInt8DType
@@ -4245,11 +4311,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt8DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint8` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: UIntDType
@@ -4257,11 +4325,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt32DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint32` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: ULongDType
@@ -4269,11 +4339,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt64DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint64` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: ULongLongDType
@@ -4281,11 +4353,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   ULongLongDType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.ulonglong` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: UShortDType
@@ -4293,11 +4367,13 @@ Package Contents
    Bases: :py:obj:`numpy.dtypes._IntegerAbstractDType`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   UInt16DType()
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.uint16` scalar type.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:class:: VoidDType
@@ -4305,11 +4381,17 @@ Package Contents
    Bases: :py:obj:`numpy.dtype`
 
 
-   DType class corresponding to the scalar type and dtype of the same name.
+   VoidDType(length, /)
+   --
 
-   Please see `numpy.dtype` for the typical way to create
-   dtype instances and :ref:`arrays.dtypes` for additional
-   information.
+   DType class corresponding to the `numpy.void` scalar type.
+
+   .. warning::
+       ``np.dtypes.VoidDType`` cannot be instantiated directly.
+       Use ``np.dtype("void[{unit}]")`` instead.
+
+   See `numpy.dtype` for the typical way to create dtype instances
+   and :ref:`arrays.dtypes` for additional information.
 
 
 .. py:function:: abs(pda: arkouda.numpy.pdarrayclass.pdarray) -> arkouda.numpy.pdarrayclass.pdarray
@@ -5317,26 +5399,25 @@ Package Contents
    Bases: :py:obj:`numpy.unsignedinteger`
 
 
-   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit
-       systems.
+   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit systems.
 
-       :Character code: ``'L'``
-       :Canonical name: `numpy.uint`
-       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
-       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+   :Character code: ``'L'``
+   :Canonical name: `numpy.uint`
+   :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+   :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
 
 
    .. py:method:: bit_count(/)
 
       uint64.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint64(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint64(127).bit_count()
+      7
 
 
 
@@ -5347,14 +5428,14 @@ Package Contents
 
    Boolean type (True or False), stored as a byte.
 
-       .. warning::
+   .. warning::
 
-          The :class:`bool` type is not a subclass of the :class:`int_` type
-          (the :class:`bool` is not even a number type). This is different
-          than Python's default implementation of :class:`bool` as a
-          sub-class of :class:`int`.
+       The :class:`bool` type is not a subclass of the :class:`int_` type
+       (the :class:`bool` is not even a number type). This is different
+       than Python's default implementation of :class:`bool` as a
+       sub-class of :class:`int`.
 
-       :Character code: ``'?'``
+   :Character code: ``'?'``
 
 
 .. py:class:: bool_scalars
@@ -5494,24 +5575,24 @@ Package Contents
 
    Signed integer type, compatible with C ``char``.
 
-       :Character code: ``'b'``
-       :Canonical name: `numpy.byte`
-       :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
+   :Character code: ``'b'``
+   :Canonical name: `numpy.byte`
+   :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
 
 
    .. py:method:: bit_count(/)
 
       int8.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int8(127).bit_count()
-              7
-              >>> np.int8(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int8(127).bit_count()
+      7
+      >>> np.int8(-127).bit_count()
+      7
 
 
 
@@ -5519,139 +5600,110 @@ Package Contents
 
    A byte string.
 
-       When used in arrays, this type strips trailing null bytes.
+   When used in arrays, this type strips trailing null bytes.
 
-       :Character code: ``'S'``
+   :Character code: ``'S'``
 
 
    .. py:method:: T(*args, **kwargs)
 
-      Scalar attribute identical to the corresponding array attribute.
-
-          Please see `ndarray.T`.
+      Scalar attribute identical to `ndarray.T`.
 
 
 
-   .. py:method:: all(*args, **kwargs)
+   .. py:method:: all(/, axis=None, out=None, keepdims=False, *, where=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.all`.
+      Scalar method identical to `ndarray.all`.
 
 
 
-   .. py:method:: any(*args, **kwargs)
+   .. py:method:: any(/, axis=None, out=None, keepdims=False, *, where=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.any`.
+      Scalar method identical to `ndarray.any`.
 
 
 
-   .. py:method:: argmax(*args, **kwargs)
+   .. py:method:: argmax(/, axis=None, out=None, *, keepdims=False)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.argmax`.
+      Scalar method identical to `ndarray.argmax`.
 
 
 
-   .. py:method:: argmin(*args, **kwargs)
+   .. py:method:: argmin(/, axis=None, out=None, *, keepdims=False)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.argmin`.
+      Scalar method identical to `ndarray.argmin`.
 
 
 
-   .. py:method:: argsort(*args, **kwargs)
+   .. py:method:: argsort(/, axis=-1, kind=None, order=None, *, stable=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.argsort`.
+      Scalar method identical to `ndarray.argsort`.
 
 
 
-   .. py:method:: astype(*args, **kwargs)
+   .. py:method:: astype(/, dtype, order='K', casting='unsafe', subok=True, copy=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.astype`.
+      Scalar method identical to `ndarray.astype`.
 
 
 
    .. py:method:: base(*args, **kwargs)
 
-      Scalar attribute identical to the corresponding array attribute.
-
-          Please see `ndarray.base`.
+      Scalar attribute identical to `ndarray.base`.
 
 
 
-   .. py:method:: byteswap(*args, **kwargs)
+   .. py:method:: byteswap(/, inplace=False)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.byteswap`.
+      Scalar method identical to `ndarray.byteswap`.
 
 
 
-   .. py:method:: choose(*args, **kwargs)
+   .. py:method:: choose(/, choices, out=None, mode='raise')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.choose`.
+      Scalar method identical to `ndarray.choose`.
 
 
 
-   .. py:method:: clip(*args, **kwargs)
+   .. py:method:: clip(/, min=None, max=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.clip`.
+      Scalar method identical to `ndarray.clip`.
 
 
 
-   .. py:method:: compress(*args, **kwargs)
+   .. py:method:: compress(/, condition, axis=None, out=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.compress`.
+      Scalar method identical to `ndarray.compress`.
 
 
 
-   .. py:method:: conj(*args, **kwargs)
+   .. py:method:: conj(/)
 
-
-   .. py:method:: conjugate(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.conjugate`.
+      Scalar method identical to `ndarray.conj`.
 
 
 
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: conjugate(/)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.copy`.
+      Scalar method identical to `ndarray.conjugate`.
 
 
 
-   .. py:method:: cumprod(*args, **kwargs)
+   .. py:method:: copy(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.cumprod`.
+      Scalar method identical to `ndarray.copy`.
 
 
 
-   .. py:method:: cumsum(*args, **kwargs)
+   .. py:method:: cumprod(/, axis=None, dtype=None, out=None)
 
-      Scalar method identical to the corresponding array attribute.
+      Scalar method identical to `ndarray.cumprod`.
 
-          Please see `ndarray.cumsum`.
+
+
+   .. py:method:: cumsum(/, axis=None, dtype=None, out=None)
+
+      Scalar method identical to `ndarray.cumsum`.
 
 
 
@@ -5664,11 +5716,9 @@ Package Contents
    .. py:method:: device(*args, **kwargs)
 
 
-   .. py:method:: diagonal(*args, **kwargs)
+   .. py:method:: diagonal(/, offset=0, axis1=0, axis2=1)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.diagonal`.
+      Scalar method identical to `ndarray.diagonal`.
 
 
 
@@ -5678,27 +5728,21 @@ Package Contents
 
 
 
-   .. py:method:: dump(*args, **kwargs)
+   .. py:method:: dump(/, file)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.dump`.
+      Scalar method identical to `ndarray.dump`.
 
 
 
-   .. py:method:: dumps(*args, **kwargs)
+   .. py:method:: dumps(/)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.dumps`.
+      Scalar method identical to `ndarray.dumps`.
 
 
 
-   .. py:method:: fill(*args, **kwargs)
+   .. py:method:: fill(/, value)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.fill`.
+      Scalar method identical to `ndarray.fill`.
 
 
 
@@ -5714,19 +5758,15 @@ Package Contents
 
 
 
-   .. py:method:: flatten(*args, **kwargs)
+   .. py:method:: flatten(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.flatten`.
+      Scalar method identical to `ndarray.flatten`.
 
 
 
-   .. py:method:: getfield(*args, **kwargs)
+   .. py:method:: getfield(/, dtype, offset=0)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.getfield`.
+      Scalar method identical to `ndarray.getfield`.
 
 
 
@@ -5736,15 +5776,10 @@ Package Contents
 
 
 
-   .. py:method:: item(*args, **kwargs)
+   .. py:method:: item(/, *args)
 
-      Scalar method identical to the corresponding array attribute.
+      Scalar method identical to `ndarray.item`.
 
-          Please see `ndarray.item`.
-
-
-
-   .. py:method:: itemset(*args, **kwargs)
 
 
    .. py:method:: itemsize(*args, **kwargs)
@@ -5753,27 +5788,21 @@ Package Contents
 
 
 
-   .. py:method:: max(*args, **kwargs)
+   .. py:method:: max(/, axis=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.max`.
+      Scalar method identical to `ndarray.max`.
 
 
 
-   .. py:method:: mean(*args, **kwargs)
+   .. py:method:: mean(/, axis=None, dtype=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.mean`.
+      Scalar method identical to `ndarray.mean`.
 
 
 
-   .. py:method:: min(*args, **kwargs)
+   .. py:method:: min(/, axis=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.min`.
+      Scalar method identical to `ndarray.min`.
 
 
 
@@ -5786,41 +5815,27 @@ Package Contents
 
 
 
-   .. py:method:: newbyteorder(*args, **kwargs)
+   .. py:method:: nonzero(/)
 
-
-   .. py:method:: nonzero(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.nonzero`.
+      Scalar method identical to `ndarray.nonzero`.
 
 
 
-   .. py:method:: prod(*args, **kwargs)
+   .. py:method:: prod(/, axis=None, dtype=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.prod`.
+      Scalar method identical to `ndarray.prod`.
 
 
 
-   .. py:method:: ptp(*args, **kwargs)
+   .. py:method:: put(indices, values, /, mode='raise')
 
-
-   .. py:method:: put(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.put`.
+      Scalar method identical to `ndarray.put`.
 
 
 
-   .. py:method:: ravel(*args, **kwargs)
+   .. py:method:: ravel(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.ravel`.
+      Scalar method identical to `ndarray.ravel`.
 
 
 
@@ -5830,59 +5845,45 @@ Package Contents
 
 
 
-   .. py:method:: repeat(*args, **kwargs)
+   .. py:method:: repeat(repeats, /, axis=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.repeat`.
+      Scalar method identical to `ndarray.repeat`.
 
 
 
-   .. py:method:: reshape(*args, **kwargs)
+   .. py:method:: reshape(/, *shape, order='C', copy=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.reshape`.
+      Scalar method identical to `ndarray.reshape`.
 
 
 
-   .. py:method:: resize(*args, **kwargs)
+   .. py:method:: resize(/, *new_shape, refcheck=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.resize`.
+      Scalar method identical to `ndarray.resize`.
 
 
 
-   .. py:method:: round(*args, **kwargs)
+   .. py:method:: round(/, decimals=0, out=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.round`.
+      Scalar method identical to `ndarray.round`.
 
 
 
-   .. py:method:: searchsorted(*args, **kwargs)
+   .. py:method:: searchsorted(v, /, side='left', sorter=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.searchsorted`.
+      Scalar method identical to `ndarray.searchsorted`.
 
 
 
-   .. py:method:: setfield(*args, **kwargs)
+   .. py:method:: setfield(val, /, dtype, offset=0)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.setfield`.
+      Scalar method identical to `ndarray.setfield`.
 
 
 
-   .. py:method:: setflags(*args, **kwargs)
+   .. py:method:: setflags(/, *, write=None, align=None, uic=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.setflags`.
+      Scalar method identical to `ndarray.setflags`.
 
 
 
@@ -5898,27 +5899,21 @@ Package Contents
 
 
 
-   .. py:method:: sort(*args, **kwargs)
+   .. py:method:: sort(/, axis=-1, kind=None, order=None, *, stable=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.sort`.
+      Scalar method identical to `ndarray.sort`.
 
 
 
-   .. py:method:: squeeze(*args, **kwargs)
+   .. py:method:: squeeze(/, axis=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.squeeze`.
+      Scalar method identical to `ndarray.squeeze`.
 
 
 
-   .. py:method:: std(*args, **kwargs)
+   .. py:method:: std(/, axis=None, dtype=None, out=None, ddof=0, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.std`.
+      Scalar method identical to `ndarray.std`.
 
 
 
@@ -5928,89 +5923,69 @@ Package Contents
 
 
 
-   .. py:method:: sum(*args, **kwargs)
+   .. py:method:: sum(/, axis=None, dtype=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.sum`.
+      Scalar method identical to `ndarray.sum`.
 
 
 
-   .. py:method:: swapaxes(*args, **kwargs)
+   .. py:method:: swapaxes(axis1, axis2, /)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.swapaxes`.
+      Scalar method identical to `ndarray.swapaxes`.
 
 
 
-   .. py:method:: take(*args, **kwargs)
+   .. py:method:: take(indices, /, axis=None, out=None, mode='raise')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.take`.
+      Scalar method identical to `ndarray.take`.
 
 
 
-   .. py:method:: to_device(*args, **kwargs)
+   .. py:method:: to_device(device, /, *, stream=None)
 
-
-   .. py:method:: tobytes(*args, **kwargs)
-
-
-   .. py:method:: tofile(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.tofile`.
+      Scalar method identical to `ndarray.to_device`.
 
 
 
-   .. py:method:: tolist(*args, **kwargs)
+   .. py:method:: tobytes(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.tolist`.
+      Scalar method identical to `ndarray.tobytes`.
 
 
 
-   .. py:method:: tostring(*args, **kwargs)
+   .. py:method:: tofile(fid, /, sep='', format='%s')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.tostring`.
+      Scalar method identical to `ndarray.tofile`.
 
 
 
-   .. py:method:: trace(*args, **kwargs)
+   .. py:method:: tolist(/)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.trace`.
+      Scalar method identical to `ndarray.tolist`.
 
 
 
-   .. py:method:: transpose(*args, **kwargs)
+   .. py:method:: trace(/, offset=0, axis1=0, axis2=1, dtype=None, out=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.transpose`.
+      Scalar method identical to `ndarray.trace`.
 
 
 
-   .. py:method:: var(*args, **kwargs)
+   .. py:method:: transpose(/, *axes)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.var`.
+      Scalar method identical to `ndarray.transpose`.
 
 
 
-   .. py:method:: view(*args, **kwargs)
+   .. py:method:: var(/, axis=None, dtype=None, out=None, ddof=0, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
+      Scalar method identical to `ndarray.var`.
 
-          Please see `ndarray.view`.
+
+
+   .. py:method:: view(/, *args, **kwargs)
+
+      Scalar method identical to `ndarray.view`.
 
 
 
@@ -6135,12 +6110,12 @@ Package Contents
    Bases: :py:obj:`numpy.complexfloating`
 
 
-   Complex number type composed of two double-precision floating-point
-       numbers, compatible with Python :class:`complex`.
+   Complex number type composed of two double-precision floating-point numbers,
+   compatible with Python :class:`complex`.
 
-       :Character code: ``'D'``
-       :Canonical name: `numpy.cdouble`
-       :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
+   :Character code: ``'D'``
+   :Canonical name: `numpy.cdouble`
+   :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
 
 
 .. py:function:: ceil(pda: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_and_bool_scalars], /, out: Optional[arkouda.numpy.pdarrayclass.pdarray] = None, *, where: Optional[Union[arkouda.numpy.dtypes.bool_scalars, arkouda.numpy.pdarrayclass.pdarray]] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.numeric_scalars]
@@ -6244,11 +6219,10 @@ Package Contents
    Bases: :py:obj:`numpy.complexfloating`
 
 
-   Complex number type composed of two extended-precision floating-point
-       numbers.
+   Complex number type composed of two extended-precision floating-point numbers.
 
-       :Character code: ``'G'``
-       :Alias on this platform (Linux x86_64): `numpy.complex256`: Complex number type composed of 2 128-bit extended-precision floating-point numbers.
+   :Character code: ``'G'``
+   :Alias on this platform (Linux x86_64): `numpy.complex256`: Complex number type composed of 2 128-bit extended-precision floating-point numbers.
 
 
 .. py:function:: clz(pda: pdarray) -> pdarray
@@ -6319,12 +6293,12 @@ Package Contents
    Bases: :py:obj:`numpy.complexfloating`
 
 
-   Complex number type composed of two double-precision floating-point
-       numbers, compatible with Python :class:`complex`.
+   Complex number type composed of two double-precision floating-point numbers,
+   compatible with Python :class:`complex`.
 
-       :Character code: ``'D'``
-       :Canonical name: `numpy.cdouble`
-       :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
+   :Character code: ``'D'``
+   :Canonical name: `numpy.cdouble`
+   :Alias on this platform (Linux x86_64): `numpy.complex128`: Complex number type composed of 2 64-bit-precision floating-point numbers.
 
 
 .. py:class:: complex64
@@ -6332,12 +6306,11 @@ Package Contents
    Bases: :py:obj:`numpy.complexfloating`
 
 
-   Complex number type composed of two single-precision floating-point
-       numbers.
+   Complex number type composed of two single-precision floating-point numbers.
 
-       :Character code: ``'F'``
-       :Canonical name: `numpy.csingle`
-       :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
+   :Character code: ``'F'``
+   :Canonical name: `numpy.csingle`
+   :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
 
 
 .. py:function:: concatenate(arrays: Sequence[Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical]], axis: int = 0, ordered: bool = True) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, Sequence[arkouda.pandas.categorical.Categorical]]
@@ -6541,12 +6514,11 @@ Package Contents
    Bases: :py:obj:`numpy.complexfloating`
 
 
-   Complex number type composed of two single-precision floating-point
-       numbers.
+   Complex number type composed of two single-precision floating-point numbers.
 
-       :Character code: ``'F'``
-       :Canonical name: `numpy.csingle`
-       :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
+   :Character code: ``'F'``
+   :Canonical name: `numpy.csingle`
+   :Alias on this platform (Linux x86_64): `numpy.complex64`: Complex number type composed of 2 32-bit-precision floating-point numbers.
 
 
 .. py:function:: ctz(pda: pdarray) -> pdarray
@@ -6683,28 +6655,26 @@ Package Contents
    Bases: :py:obj:`numpy.generic`
 
 
-   If created from a 64-bit integer, it represents an offset from
-       ``1970-01-01T00:00:00``.
-       If created from string, the string can be in ISO 8601 date
-       or datetime format.
+   If created from a 64-bit integer, it represents an offset from ``1970-01-01T00:00:00``.
+   If created from string, the string can be in ISO 8601 date or datetime format.
 
-       When parsing a string to create a datetime object, if the string contains
-       a trailing timezone (A 'Z' or a timezone offset), the timezone will be
-       dropped and a User Warning is given.
+   When parsing a string to create a datetime object, if the string contains
+   a trailing timezone (A 'Z' or a timezone offset), the timezone will be
+   dropped and a User Warning is given.
 
-       Datetime64 objects should be considered to be UTC and therefore have an
-       offset of +0000.
+   Datetime64 objects should be considered to be UTC and therefore have an
+   offset of +0000.
 
-       >>> np.datetime64(10, 'Y')
-       np.datetime64('1980')
-       >>> np.datetime64('1980', 'Y')
-       np.datetime64('1980')
-       >>> np.datetime64(10, 'D')
-       np.datetime64('1970-01-11')
+   >>> np.datetime64(10, 'Y')
+   np.datetime64('1980')
+   >>> np.datetime64('1980', 'Y')
+   np.datetime64('1980')
+   >>> np.datetime64(10, 'D')
+   np.datetime64('1970-01-11')
 
-       See :ref:`arrays.datetime` for more information.
+   See :ref:`arrays.datetime` for more information.
 
-       :Character code: ``'M'``
+   :Character code: ``'M'``
 
 
 .. py:function:: deg2rad(pda: arkouda.numpy.pdarrayclass.pdarray, where: Union[bool, arkouda.numpy.pdarrayclass.pdarray] = True) -> arkouda.numpy.pdarrayclass.pdarray
@@ -6910,28 +6880,27 @@ Package Contents
    Bases: :py:obj:`numpy.floating`
 
 
-   Double-precision floating-point number type, compatible with Python
-       :class:`float` and C ``double``.
+   Double-precision floating-point number type, compatible with Python :class:`float` and C ``double``.
 
-       :Character code: ``'d'``
-       :Canonical name: `numpy.double`
-       :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
+   :Character code: ``'d'``
+   :Canonical name: `numpy.double`
+   :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
 
 
    .. py:method:: as_integer_ratio(/)
 
       double.as_integer_ratio() -> (int, int)
 
-              Return a pair of integers, whose ratio is exactly equal to the original
-              floating point number, and with a positive denominator.
-              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+      Return a pair of integers, whose ratio is exactly equal to the original
+      floating point number, and with a positive denominator.
+      Raise `OverflowError` on infinities and a `ValueError` on NaNs.
 
-              >>> np.double(10.0).as_integer_ratio()
-              (10, 1)
-              >>> np.double(0.0).as_integer_ratio()
-              (0, 1)
-              >>> np.double(-.25).as_integer_ratio()
-              (-1, 4)
+      >>> np.double(10.0).as_integer_ratio()
+      (10, 1)
+      >>> np.double(0.0).as_integer_ratio()
+      (0, 1)
+      >>> np.double(-.25).as_integer_ratio()
+      (-1, 4)
 
 
 
@@ -6961,17 +6930,17 @@ Package Contents
 
       double.is_integer() -> bool
 
-              Return ``True`` if the floating point number is finite with integral
-              value, and ``False`` otherwise.
+      Return ``True`` if the floating point number is finite with integral
+      value, and ``False`` otherwise.
 
-              .. versionadded:: 1.22
+      .. versionadded:: 1.22
 
-              Examples
-              --------
-              >>> np.double(-2.0).is_integer()
-              True
-              >>> np.double(3.2).is_integer()
-              False
+      .. rubric:: Examples
+
+      >>> np.double(-2.0).is_integer()
+      True
+      >>> np.double(3.2).is_integer()
+      False
 
 
 
@@ -7311,6 +7280,7 @@ Package Contents
    .. attribute:: maxexp
 
       The smallest positive power of the base (2) that causes overflow.
+      Corresponds to the C standard MAX_EXP.
 
       :type: int
 
@@ -7323,7 +7293,8 @@ Package Contents
    .. attribute:: minexp
 
       The most negative power of the base (2) consistent with there
-      being no leading 0's in the mantissa.
+      being no leading 0's in the mantissa. Corresponds to the C
+      standard MIN_EXP - 1.
 
       :type: int
 
@@ -7341,7 +7312,8 @@ Package Contents
 
    .. attribute:: nmant
 
-      The number of bits in the mantissa.
+      The number of explicit bits in the mantissa (excluding the implicit
+      leading bit for normalized numbers).
 
       :type: int
 
@@ -7407,6 +7379,12 @@ Package Contents
    fill the gap between 0 and ``smallest_normal``. However, subnormal numbers
    may have significantly reduced precision [2]_.
 
+   For ``longdouble``, the representation varies across platforms. On most
+   platforms it is IEEE 754 binary128 (quad precision) or binary64-extended
+   (80-bit extended precision). On PowerPC systems, it may use the IBM
+   double-double format (a pair of float64 values), which has special
+   characteristics for precision and range.
+
    This function can also be used for complex data types as well. If used,
    the output will be the same as the corresponding real float type
    (e.g. numpy.finfo(numpy.csingle) is the same as numpy.finfo(numpy.single)).
@@ -7428,18 +7406,25 @@ Package Contents
    dtype('float32')
 
 
-   .. py:property:: smallest_normal
-
-      Return the value for the smallest normal.
-
-      :returns: **smallest_normal** -- Value for the smallest normal.
-      :rtype: float
-
-      :Warns: **UserWarning** -- If the calculated value for the smallest normal is requested for
-              double-double.
+   .. py:method:: epsneg(*args, **kwargs)
 
 
-   .. py:property:: tiny
+   .. py:method:: iexp(*args, **kwargs)
+
+
+   .. py:method:: machep(*args, **kwargs)
+
+
+   .. py:method:: negep(*args, **kwargs)
+
+
+   .. py:method:: nexp(*args, **kwargs)
+
+
+   .. py:method:: resolution(*args, **kwargs)
+
+
+   .. py:method:: tiny(*args, **kwargs)
 
       Return the value for tiny, alias of smallest_normal.
 
@@ -7450,14 +7435,15 @@ Package Contents
               double-double.
 
 
+
 .. py:class:: flexible
 
    Bases: :py:obj:`numpy.generic`
 
 
    Abstract base class of all scalar types without predefined length.
-       The actual size of these types depends on the specific `numpy.dtype`
-       instantiation.
+   The actual size of these types depends on the specific `numpy.dtype`
+   instantiation.
 
 
 .. py:function:: flip(x: arkouda.numpy.pdarrayclass.pdarray, /, *, axis: Optional[Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]]] = None) -> arkouda.numpy.pdarrayclass.pdarray
@@ -7495,25 +7481,25 @@ Package Contents
 
    Half-precision floating-point number type.
 
-       :Character code: ``'e'``
-       :Canonical name: `numpy.half`
-       :Alias on this platform (Linux x86_64): `numpy.float16`: 16-bit-precision floating-point number type: sign bit, 5 bits exponent, 10 bits mantissa.
+   :Character code: ``'e'``
+   :Canonical name: `numpy.half`
+   :Alias on this platform (Linux x86_64): `numpy.float16`: 16-bit-precision floating-point number type: sign bit, 5 bits exponent, 10 bits mantissa.
 
 
    .. py:method:: as_integer_ratio(/)
 
       half.as_integer_ratio() -> (int, int)
 
-              Return a pair of integers, whose ratio is exactly equal to the original
-              floating point number, and with a positive denominator.
-              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+      Return a pair of integers, whose ratio is exactly equal to the original
+      floating point number, and with a positive denominator.
+      Raise `OverflowError` on infinities and a `ValueError` on NaNs.
 
-              >>> np.half(10.0).as_integer_ratio()
-              (10, 1)
-              >>> np.half(0.0).as_integer_ratio()
-              (0, 1)
-              >>> np.half(-.25).as_integer_ratio()
-              (-1, 4)
+      >>> np.half(10.0).as_integer_ratio()
+      (10, 1)
+      >>> np.half(0.0).as_integer_ratio()
+      (0, 1)
+      >>> np.half(-.25).as_integer_ratio()
+      (-1, 4)
 
 
 
@@ -7521,17 +7507,17 @@ Package Contents
 
       half.is_integer() -> bool
 
-              Return ``True`` if the floating point number is finite with integral
-              value, and ``False`` otherwise.
+      Return ``True`` if the floating point number is finite with integral
+      value, and ``False`` otherwise.
 
-              .. versionadded:: 1.22
+      .. versionadded:: 1.22
 
-              Examples
-              --------
-              >>> np.half(-2.0).is_integer()
-              True
-              >>> np.half(3.2).is_integer()
-              False
+      .. rubric:: Examples
+
+      >>> np.half(-2.0).is_integer()
+      True
+      >>> np.half(3.2).is_integer()
+      False
 
 
 
@@ -7542,25 +7528,25 @@ Package Contents
 
    Single-precision floating-point number type, compatible with C ``float``.
 
-       :Character code: ``'f'``
-       :Canonical name: `numpy.single`
-       :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
+   :Character code: ``'f'``
+   :Canonical name: `numpy.single`
+   :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
 
 
    .. py:method:: as_integer_ratio(/)
 
       single.as_integer_ratio() -> (int, int)
 
-              Return a pair of integers, whose ratio is exactly equal to the original
-              floating point number, and with a positive denominator.
-              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+      Return a pair of integers, whose ratio is exactly equal to the original
+      floating point number, and with a positive denominator.
+      Raise `OverflowError` on infinities and a `ValueError` on NaNs.
 
-              >>> np.single(10.0).as_integer_ratio()
-              (10, 1)
-              >>> np.single(0.0).as_integer_ratio()
-              (0, 1)
-              >>> np.single(-.25).as_integer_ratio()
-              (-1, 4)
+      >>> np.single(10.0).as_integer_ratio()
+      (10, 1)
+      >>> np.single(0.0).as_integer_ratio()
+      (0, 1)
+      >>> np.single(-.25).as_integer_ratio()
+      (-1, 4)
 
 
 
@@ -7568,17 +7554,17 @@ Package Contents
 
       single.is_integer() -> bool
 
-              Return ``True`` if the floating point number is finite with integral
-              value, and ``False`` otherwise.
+      Return ``True`` if the floating point number is finite with integral
+      value, and ``False`` otherwise.
 
-              .. versionadded:: 1.22
+      .. versionadded:: 1.22
 
-              Examples
-              --------
-              >>> np.single(-2.0).is_integer()
-              True
-              >>> np.single(3.2).is_integer()
-              False
+      .. rubric:: Examples
+
+      >>> np.single(-2.0).is_integer()
+      True
+      >>> np.single(3.2).is_integer()
+      False
 
 
 
@@ -7587,28 +7573,27 @@ Package Contents
    Bases: :py:obj:`numpy.floating`
 
 
-   Double-precision floating-point number type, compatible with Python
-       :class:`float` and C ``double``.
+   Double-precision floating-point number type, compatible with Python :class:`float` and C ``double``.
 
-       :Character code: ``'d'``
-       :Canonical name: `numpy.double`
-       :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
+   :Character code: ``'d'``
+   :Canonical name: `numpy.double`
+   :Alias on this platform (Linux x86_64): `numpy.float64`: 64-bit precision floating-point number type: sign bit, 11 bits exponent, 52 bits mantissa.
 
 
    .. py:method:: as_integer_ratio(/)
 
       double.as_integer_ratio() -> (int, int)
 
-              Return a pair of integers, whose ratio is exactly equal to the original
-              floating point number, and with a positive denominator.
-              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+      Return a pair of integers, whose ratio is exactly equal to the original
+      floating point number, and with a positive denominator.
+      Raise `OverflowError` on infinities and a `ValueError` on NaNs.
 
-              >>> np.double(10.0).as_integer_ratio()
-              (10, 1)
-              >>> np.double(0.0).as_integer_ratio()
-              (0, 1)
-              >>> np.double(-.25).as_integer_ratio()
-              (-1, 4)
+      >>> np.double(10.0).as_integer_ratio()
+      (10, 1)
+      >>> np.double(0.0).as_integer_ratio()
+      (0, 1)
+      >>> np.double(-.25).as_integer_ratio()
+      (-1, 4)
 
 
 
@@ -7638,17 +7623,17 @@ Package Contents
 
       double.is_integer() -> bool
 
-              Return ``True`` if the floating point number is finite with integral
-              value, and ``False`` otherwise.
+      Return ``True`` if the floating point number is finite with integral
+      value, and ``False`` otherwise.
 
-              .. versionadded:: 1.22
+      .. versionadded:: 1.22
 
-              Examples
-              --------
-              >>> np.double(-2.0).is_integer()
-              True
-              >>> np.double(3.2).is_integer()
-              False
+      .. rubric:: Examples
+
+      >>> np.double(-2.0).is_integer()
+      True
+      >>> np.double(3.2).is_integer()
+      False
 
 
 
@@ -7999,25 +7984,25 @@ Package Contents
 
    Half-precision floating-point number type.
 
-       :Character code: ``'e'``
-       :Canonical name: `numpy.half`
-       :Alias on this platform (Linux x86_64): `numpy.float16`: 16-bit-precision floating-point number type: sign bit, 5 bits exponent, 10 bits mantissa.
+   :Character code: ``'e'``
+   :Canonical name: `numpy.half`
+   :Alias on this platform (Linux x86_64): `numpy.float16`: 16-bit-precision floating-point number type: sign bit, 5 bits exponent, 10 bits mantissa.
 
 
    .. py:method:: as_integer_ratio(/)
 
       half.as_integer_ratio() -> (int, int)
 
-              Return a pair of integers, whose ratio is exactly equal to the original
-              floating point number, and with a positive denominator.
-              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+      Return a pair of integers, whose ratio is exactly equal to the original
+      floating point number, and with a positive denominator.
+      Raise `OverflowError` on infinities and a `ValueError` on NaNs.
 
-              >>> np.half(10.0).as_integer_ratio()
-              (10, 1)
-              >>> np.half(0.0).as_integer_ratio()
-              (0, 1)
-              >>> np.half(-.25).as_integer_ratio()
-              (-1, 4)
+      >>> np.half(10.0).as_integer_ratio()
+      (10, 1)
+      >>> np.half(0.0).as_integer_ratio()
+      (0, 1)
+      >>> np.half(-.25).as_integer_ratio()
+      (-1, 4)
 
 
 
@@ -8025,17 +8010,17 @@ Package Contents
 
       half.is_integer() -> bool
 
-              Return ``True`` if the floating point number is finite with integral
-              value, and ``False`` otherwise.
+      Return ``True`` if the floating point number is finite with integral
+      value, and ``False`` otherwise.
 
-              .. versionadded:: 1.22
+      .. versionadded:: 1.22
 
-              Examples
-              --------
-              >>> np.half(-2.0).is_integer()
-              True
-              >>> np.half(3.2).is_integer()
-              False
+      .. rubric:: Examples
+
+      >>> np.half(-2.0).is_integer()
+      True
+      >>> np.half(3.2).is_integer()
+      False
 
 
 
@@ -8524,8 +8509,8 @@ Package Contents
 
 
    Abstract base class of all numeric scalar types with a (potentially)
-       inexact representation of the values in its range, such as
-       floating-point numbers.
+   inexact representation of the values in its range, such as
+   floating-point numbers.
 
 
 .. py:data:: inf
@@ -8538,24 +8523,24 @@ Package Contents
 
    Signed integer type, compatible with C ``short``.
 
-       :Character code: ``'h'``
-       :Canonical name: `numpy.short`
-       :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
+   :Character code: ``'h'``
+   :Canonical name: `numpy.short`
+   :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
 
 
    .. py:method:: bit_count(/)
 
       int16.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int16(127).bit_count()
-              7
-              >>> np.int16(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int16(127).bit_count()
+      7
+      >>> np.int16(-127).bit_count()
+      7
 
 
 
@@ -8566,24 +8551,24 @@ Package Contents
 
    Signed integer type, compatible with C ``int``.
 
-       :Character code: ``'i'``
-       :Canonical name: `numpy.intc`
-       :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
+   :Character code: ``'i'``
+   :Canonical name: `numpy.intc`
+   :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
 
 
    .. py:method:: bit_count(/)
 
       int32.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int32(127).bit_count()
-              7
-              >>> np.int32(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int32(127).bit_count()
+      7
+      >>> np.int32(-127).bit_count()
+      7
 
 
 
@@ -8592,28 +8577,27 @@ Package Contents
    Bases: :py:obj:`numpy.signedinteger`
 
 
-   Default signed integer type, 64bit on 64bit systems and 32bit on 32bit
-       systems.
+   Signed integer type, compatible with C ``long``.
 
-       :Character code: ``'l'``
-       :Canonical name: `numpy.int_`
-       :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
-       :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
+   :Character code: ``'l'``
+   :Canonical name: `numpy.long`
+   :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
+   :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
 
 
    .. py:method:: bit_count(/)
 
       int64.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int64(127).bit_count()
-              7
-              >>> np.int64(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int64(127).bit_count()
+      7
+      >>> np.int64(-127).bit_count()
+      7
 
 
 
@@ -8624,24 +8608,24 @@ Package Contents
 
    Signed integer type, compatible with C ``char``.
 
-       :Character code: ``'b'``
-       :Canonical name: `numpy.byte`
-       :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
+   :Character code: ``'b'``
+   :Canonical name: `numpy.byte`
+   :Alias on this platform (Linux x86_64): `numpy.int8`: 8-bit signed integer (``-128`` to ``127``).
 
 
    .. py:method:: bit_count(/)
 
       int8.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int8(127).bit_count()
-              7
-              >>> np.int8(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int8(127).bit_count()
+      7
+      >>> np.int8(-127).bit_count()
+      7
 
 
 
@@ -8726,24 +8710,24 @@ Package Contents
 
    Signed integer type, compatible with C ``int``.
 
-       :Character code: ``'i'``
-       :Canonical name: `numpy.intc`
-       :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
+   :Character code: ``'i'``
+   :Canonical name: `numpy.intc`
+   :Alias on this platform (Linux x86_64): `numpy.int32`: 32-bit signed integer (``-2_147_483_648`` to ``2_147_483_647``).
 
 
    .. py:method:: bit_count(/)
 
       int32.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int32(127).bit_count()
-              7
-              >>> np.int32(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int32(127).bit_count()
+      7
+      >>> np.int32(-127).bit_count()
+      7
 
 
 
@@ -8817,28 +8801,27 @@ Package Contents
    Bases: :py:obj:`numpy.signedinteger`
 
 
-   Default signed integer type, 64bit on 64bit systems and 32bit on 32bit
-       systems.
+   Signed integer type, compatible with C ``long``.
 
-       :Character code: ``'l'``
-       :Canonical name: `numpy.int_`
-       :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
-       :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
+   :Character code: ``'l'``
+   :Canonical name: `numpy.long`
+   :Alias on this platform (Linux x86_64): `numpy.int64`: 64-bit signed integer (``-9_223_372_036_854_775_808`` to ``9_223_372_036_854_775_807``).
+   :Alias on this platform (Linux x86_64): `numpy.intp`: Signed integer large enough to fit pointer, compatible with C ``intptr_t``.
 
 
    .. py:method:: bit_count(/)
 
       int64.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int64(127).bit_count()
-              7
-              >>> np.int64(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int64(127).bit_count()
+      7
+      >>> np.int64(-127).bit_count()
+      7
 
 
 
@@ -9591,27 +9574,27 @@ Package Contents
    Bases: :py:obj:`numpy.floating`
 
 
-   Extended-precision floating-point number type, compatible with C
-       ``long double`` but not necessarily with IEEE 754 quadruple-precision.
+   Extended-precision floating-point number type, compatible with C ``long double``
+   but not necessarily with IEEE 754 quadruple-precision.
 
-       :Character code: ``'g'``
-       :Alias on this platform (Linux x86_64): `numpy.float128`: 128-bit extended-precision floating-point number type.
+   :Character code: ``'g'``
+   :Alias on this platform (Linux x86_64): `numpy.float128`: 128-bit extended-precision floating-point number type.
 
 
    .. py:method:: as_integer_ratio(/)
 
       longdouble.as_integer_ratio() -> (int, int)
 
-              Return a pair of integers, whose ratio is exactly equal to the original
-              floating point number, and with a positive denominator.
-              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+      Return a pair of integers, whose ratio is exactly equal to the original
+      floating point number, and with a positive denominator.
+      Raise `OverflowError` on infinities and a `ValueError` on NaNs.
 
-              >>> np.longdouble(10.0).as_integer_ratio()
-              (10, 1)
-              >>> np.longdouble(0.0).as_integer_ratio()
-              (0, 1)
-              >>> np.longdouble(-.25).as_integer_ratio()
-              (-1, 4)
+      >>> np.longdouble(10.0).as_integer_ratio()
+      (10, 1)
+      >>> np.longdouble(0.0).as_integer_ratio()
+      (0, 1)
+      >>> np.longdouble(-.25).as_integer_ratio()
+      (-1, 4)
 
 
 
@@ -9619,17 +9602,17 @@ Package Contents
 
       longdouble.is_integer() -> bool
 
-              Return ``True`` if the floating point number is finite with integral
-              value, and ``False`` otherwise.
+      Return ``True`` if the floating point number is finite with integral
+      value, and ``False`` otherwise.
 
-              .. versionadded:: 1.22
+      .. versionadded:: 1.22
 
-              Examples
-              --------
-              >>> np.longdouble(-2.0).is_integer()
-              True
-              >>> np.longdouble(3.2).is_integer()
-              False
+      .. rubric:: Examples
+
+      >>> np.longdouble(-2.0).is_integer()
+      True
+      >>> np.longdouble(3.2).is_integer()
+      False
 
 
 
@@ -9640,10 +9623,23 @@ Package Contents
 
    Signed integer type, compatible with C ``long long``.
 
-       :Character code: ``'q'``
+   :Character code: ``'q'``
 
 
    .. py:method:: bit_count(/)
+
+      longlong.bit_count() -> int
+
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+      .. rubric:: Examples
+
+      >>> np.longlong(127).bit_count()
+      7
+      >>> np.longlong(-127).bit_count()
+      7
+
 
 
 .. py:function:: lookup(keys, values, arguments, fillvalue=-1)
@@ -12482,24 +12478,24 @@ Package Contents
 
    Signed integer type, compatible with C ``short``.
 
-       :Character code: ``'h'``
-       :Canonical name: `numpy.short`
-       :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
+   :Character code: ``'h'``
+   :Canonical name: `numpy.short`
+   :Alias on this platform (Linux x86_64): `numpy.int16`: 16-bit signed integer (``-32_768`` to ``32_767``).
 
 
    .. py:method:: bit_count(/)
 
       int16.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.int16(127).bit_count()
-              7
-              >>> np.int16(-127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.int16(127).bit_count()
+      7
+      >>> np.int16(-127).bit_count()
+      7
 
 
 
@@ -12561,25 +12557,25 @@ Package Contents
 
    Single-precision floating-point number type, compatible with C ``float``.
 
-       :Character code: ``'f'``
-       :Canonical name: `numpy.single`
-       :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
+   :Character code: ``'f'``
+   :Canonical name: `numpy.single`
+   :Alias on this platform (Linux x86_64): `numpy.float32`: 32-bit-precision floating-point number type: sign bit, 8 bits exponent, 23 bits mantissa.
 
 
    .. py:method:: as_integer_ratio(/)
 
       single.as_integer_ratio() -> (int, int)
 
-              Return a pair of integers, whose ratio is exactly equal to the original
-              floating point number, and with a positive denominator.
-              Raise `OverflowError` on infinities and a `ValueError` on NaNs.
+      Return a pair of integers, whose ratio is exactly equal to the original
+      floating point number, and with a positive denominator.
+      Raise `OverflowError` on infinities and a `ValueError` on NaNs.
 
-              >>> np.single(10.0).as_integer_ratio()
-              (10, 1)
-              >>> np.single(0.0).as_integer_ratio()
-              (0, 1)
-              >>> np.single(-.25).as_integer_ratio()
-              (-1, 4)
+      >>> np.single(10.0).as_integer_ratio()
+      (10, 1)
+      >>> np.single(0.0).as_integer_ratio()
+      (0, 1)
+      >>> np.single(-.25).as_integer_ratio()
+      (-1, 4)
 
 
 
@@ -12587,17 +12583,17 @@ Package Contents
 
       single.is_integer() -> bool
 
-              Return ``True`` if the floating point number is finite with integral
-              value, and ``False`` otherwise.
+      Return ``True`` if the floating point number is finite with integral
+      value, and ``False`` otherwise.
 
-              .. versionadded:: 1.22
+      .. versionadded:: 1.22
 
-              Examples
-              --------
-              >>> np.single(-2.0).is_integer()
-              True
-              >>> np.single(3.2).is_integer()
-              False
+      .. rubric:: Examples
+
+      >>> np.single(-2.0).is_integer()
+      True
+      >>> np.single(3.2).is_integer()
+      False
 
 
 
@@ -12784,152 +12780,123 @@ Package Contents
 
    A unicode string.
 
-       This type strips trailing null codepoints.
+   This type strips trailing null codepoints.
 
-       >>> s = np.str_("abc\x00")
-       >>> s
-       'abc'
+   >>> s = np.str_("abc\x00")
+   >>> s
+   'abc'
 
-       Unlike the builtin :class:`str`, this supports the
-       :ref:`python:bufferobjects`, exposing its contents as UCS4:
+   Unlike the builtin :class:`str`, this supports the
+   :ref:`python:bufferobjects`, exposing its contents as UCS4:
 
-       >>> m = memoryview(np.str_("abc"))
-       >>> m.format
-       '3w'
-       >>> m.tobytes()
-       b'a\x00\x00\x00b\x00\x00\x00c\x00\x00\x00'
+   >>> m = memoryview(np.str_("abc"))
+   >>> m.format
+   '3w'
+   >>> m.tobytes()
+   b'a\x00\x00\x00b\x00\x00\x00c\x00\x00\x00'
 
-       :Character code: ``'U'``
+   :Character code: ``'U'``
 
 
    .. py:method:: T(*args, **kwargs)
 
-      Scalar attribute identical to the corresponding array attribute.
-
-          Please see `ndarray.T`.
+      Scalar attribute identical to `ndarray.T`.
 
 
 
-   .. py:method:: all(*args, **kwargs)
+   .. py:method:: all(/, axis=None, out=None, keepdims=False, *, where=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.all`.
+      Scalar method identical to `ndarray.all`.
 
 
 
-   .. py:method:: any(*args, **kwargs)
+   .. py:method:: any(/, axis=None, out=None, keepdims=False, *, where=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.any`.
+      Scalar method identical to `ndarray.any`.
 
 
 
-   .. py:method:: argmax(*args, **kwargs)
+   .. py:method:: argmax(/, axis=None, out=None, *, keepdims=False)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.argmax`.
+      Scalar method identical to `ndarray.argmax`.
 
 
 
-   .. py:method:: argmin(*args, **kwargs)
+   .. py:method:: argmin(/, axis=None, out=None, *, keepdims=False)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.argmin`.
+      Scalar method identical to `ndarray.argmin`.
 
 
 
-   .. py:method:: argsort(*args, **kwargs)
+   .. py:method:: argsort(/, axis=-1, kind=None, order=None, *, stable=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.argsort`.
+      Scalar method identical to `ndarray.argsort`.
 
 
 
-   .. py:method:: astype(*args, **kwargs)
+   .. py:method:: astype(/, dtype, order='K', casting='unsafe', subok=True, copy=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.astype`.
+      Scalar method identical to `ndarray.astype`.
 
 
 
    .. py:method:: base(*args, **kwargs)
 
-      Scalar attribute identical to the corresponding array attribute.
-
-          Please see `ndarray.base`.
+      Scalar attribute identical to `ndarray.base`.
 
 
 
-   .. py:method:: byteswap(*args, **kwargs)
+   .. py:method:: byteswap(/, inplace=False)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.byteswap`.
+      Scalar method identical to `ndarray.byteswap`.
 
 
 
-   .. py:method:: choose(*args, **kwargs)
+   .. py:method:: choose(/, choices, out=None, mode='raise')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.choose`.
+      Scalar method identical to `ndarray.choose`.
 
 
 
-   .. py:method:: clip(*args, **kwargs)
+   .. py:method:: clip(/, min=None, max=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.clip`.
+      Scalar method identical to `ndarray.clip`.
 
 
 
-   .. py:method:: compress(*args, **kwargs)
+   .. py:method:: compress(/, condition, axis=None, out=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.compress`.
+      Scalar method identical to `ndarray.compress`.
 
 
 
-   .. py:method:: conj(*args, **kwargs)
+   .. py:method:: conj(/)
 
-
-   .. py:method:: conjugate(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.conjugate`.
+      Scalar method identical to `ndarray.conj`.
 
 
 
-   .. py:method:: copy(*args, **kwargs)
+   .. py:method:: conjugate(/)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.copy`.
+      Scalar method identical to `ndarray.conjugate`.
 
 
 
-   .. py:method:: cumprod(*args, **kwargs)
+   .. py:method:: copy(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.cumprod`.
+      Scalar method identical to `ndarray.copy`.
 
 
 
-   .. py:method:: cumsum(*args, **kwargs)
+   .. py:method:: cumprod(/, axis=None, dtype=None, out=None)
 
-      Scalar method identical to the corresponding array attribute.
+      Scalar method identical to `ndarray.cumprod`.
 
-          Please see `ndarray.cumsum`.
+
+
+   .. py:method:: cumsum(/, axis=None, dtype=None, out=None)
+
+      Scalar method identical to `ndarray.cumsum`.
 
 
 
@@ -12942,11 +12909,9 @@ Package Contents
    .. py:method:: device(*args, **kwargs)
 
 
-   .. py:method:: diagonal(*args, **kwargs)
+   .. py:method:: diagonal(/, offset=0, axis1=0, axis2=1)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.diagonal`.
+      Scalar method identical to `ndarray.diagonal`.
 
 
 
@@ -12956,27 +12921,21 @@ Package Contents
 
 
 
-   .. py:method:: dump(*args, **kwargs)
+   .. py:method:: dump(/, file)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.dump`.
+      Scalar method identical to `ndarray.dump`.
 
 
 
-   .. py:method:: dumps(*args, **kwargs)
+   .. py:method:: dumps(/)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.dumps`.
+      Scalar method identical to `ndarray.dumps`.
 
 
 
-   .. py:method:: fill(*args, **kwargs)
+   .. py:method:: fill(/, value)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.fill`.
+      Scalar method identical to `ndarray.fill`.
 
 
 
@@ -12992,19 +12951,15 @@ Package Contents
 
 
 
-   .. py:method:: flatten(*args, **kwargs)
+   .. py:method:: flatten(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.flatten`.
+      Scalar method identical to `ndarray.flatten`.
 
 
 
-   .. py:method:: getfield(*args, **kwargs)
+   .. py:method:: getfield(/, dtype, offset=0)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.getfield`.
+      Scalar method identical to `ndarray.getfield`.
 
 
 
@@ -13014,15 +12969,10 @@ Package Contents
 
 
 
-   .. py:method:: item(*args, **kwargs)
+   .. py:method:: item(/, *args)
 
-      Scalar method identical to the corresponding array attribute.
+      Scalar method identical to `ndarray.item`.
 
-          Please see `ndarray.item`.
-
-
-
-   .. py:method:: itemset(*args, **kwargs)
 
 
    .. py:method:: itemsize(*args, **kwargs)
@@ -13031,27 +12981,21 @@ Package Contents
 
 
 
-   .. py:method:: max(*args, **kwargs)
+   .. py:method:: max(/, axis=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.max`.
+      Scalar method identical to `ndarray.max`.
 
 
 
-   .. py:method:: mean(*args, **kwargs)
+   .. py:method:: mean(/, axis=None, dtype=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.mean`.
+      Scalar method identical to `ndarray.mean`.
 
 
 
-   .. py:method:: min(*args, **kwargs)
+   .. py:method:: min(/, axis=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.min`.
+      Scalar method identical to `ndarray.min`.
 
 
 
@@ -13064,41 +13008,27 @@ Package Contents
 
 
 
-   .. py:method:: newbyteorder(*args, **kwargs)
+   .. py:method:: nonzero(/)
 
-
-   .. py:method:: nonzero(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.nonzero`.
+      Scalar method identical to `ndarray.nonzero`.
 
 
 
-   .. py:method:: prod(*args, **kwargs)
+   .. py:method:: prod(/, axis=None, dtype=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.prod`.
+      Scalar method identical to `ndarray.prod`.
 
 
 
-   .. py:method:: ptp(*args, **kwargs)
+   .. py:method:: put(indices, values, /, mode='raise')
 
-
-   .. py:method:: put(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.put`.
+      Scalar method identical to `ndarray.put`.
 
 
 
-   .. py:method:: ravel(*args, **kwargs)
+   .. py:method:: ravel(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.ravel`.
+      Scalar method identical to `ndarray.ravel`.
 
 
 
@@ -13108,59 +13038,45 @@ Package Contents
 
 
 
-   .. py:method:: repeat(*args, **kwargs)
+   .. py:method:: repeat(repeats, /, axis=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.repeat`.
+      Scalar method identical to `ndarray.repeat`.
 
 
 
-   .. py:method:: reshape(*args, **kwargs)
+   .. py:method:: reshape(/, *shape, order='C', copy=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.reshape`.
+      Scalar method identical to `ndarray.reshape`.
 
 
 
-   .. py:method:: resize(*args, **kwargs)
+   .. py:method:: resize(/, *new_shape, refcheck=True)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.resize`.
+      Scalar method identical to `ndarray.resize`.
 
 
 
-   .. py:method:: round(*args, **kwargs)
+   .. py:method:: round(/, decimals=0, out=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.round`.
+      Scalar method identical to `ndarray.round`.
 
 
 
-   .. py:method:: searchsorted(*args, **kwargs)
+   .. py:method:: searchsorted(v, /, side='left', sorter=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.searchsorted`.
+      Scalar method identical to `ndarray.searchsorted`.
 
 
 
-   .. py:method:: setfield(*args, **kwargs)
+   .. py:method:: setfield(val, /, dtype, offset=0)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.setfield`.
+      Scalar method identical to `ndarray.setfield`.
 
 
 
-   .. py:method:: setflags(*args, **kwargs)
+   .. py:method:: setflags(/, *, write=None, align=None, uic=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.setflags`.
+      Scalar method identical to `ndarray.setflags`.
 
 
 
@@ -13176,27 +13092,21 @@ Package Contents
 
 
 
-   .. py:method:: sort(*args, **kwargs)
+   .. py:method:: sort(/, axis=-1, kind=None, order=None, *, stable=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.sort`.
+      Scalar method identical to `ndarray.sort`.
 
 
 
-   .. py:method:: squeeze(*args, **kwargs)
+   .. py:method:: squeeze(/, axis=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.squeeze`.
+      Scalar method identical to `ndarray.squeeze`.
 
 
 
-   .. py:method:: std(*args, **kwargs)
+   .. py:method:: std(/, axis=None, dtype=None, out=None, ddof=0, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.std`.
+      Scalar method identical to `ndarray.std`.
 
 
 
@@ -13206,89 +13116,69 @@ Package Contents
 
 
 
-   .. py:method:: sum(*args, **kwargs)
+   .. py:method:: sum(/, axis=None, dtype=None, out=None, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.sum`.
+      Scalar method identical to `ndarray.sum`.
 
 
 
-   .. py:method:: swapaxes(*args, **kwargs)
+   .. py:method:: swapaxes(axis1, axis2, /)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.swapaxes`.
+      Scalar method identical to `ndarray.swapaxes`.
 
 
 
-   .. py:method:: take(*args, **kwargs)
+   .. py:method:: take(indices, /, axis=None, out=None, mode='raise')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.take`.
+      Scalar method identical to `ndarray.take`.
 
 
 
-   .. py:method:: to_device(*args, **kwargs)
+   .. py:method:: to_device(device, /, *, stream=None)
 
-
-   .. py:method:: tobytes(*args, **kwargs)
-
-
-   .. py:method:: tofile(*args, **kwargs)
-
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.tofile`.
+      Scalar method identical to `ndarray.to_device`.
 
 
 
-   .. py:method:: tolist(*args, **kwargs)
+   .. py:method:: tobytes(/, order='C')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.tolist`.
+      Scalar method identical to `ndarray.tobytes`.
 
 
 
-   .. py:method:: tostring(*args, **kwargs)
+   .. py:method:: tofile(fid, /, sep='', format='%s')
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.tostring`.
+      Scalar method identical to `ndarray.tofile`.
 
 
 
-   .. py:method:: trace(*args, **kwargs)
+   .. py:method:: tolist(/)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.trace`.
+      Scalar method identical to `ndarray.tolist`.
 
 
 
-   .. py:method:: transpose(*args, **kwargs)
+   .. py:method:: trace(/, offset=0, axis1=0, axis2=1, dtype=None, out=None)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.transpose`.
+      Scalar method identical to `ndarray.trace`.
 
 
 
-   .. py:method:: var(*args, **kwargs)
+   .. py:method:: transpose(/, *axes)
 
-      Scalar method identical to the corresponding array attribute.
-
-          Please see `ndarray.var`.
+      Scalar method identical to `ndarray.transpose`.
 
 
 
-   .. py:method:: view(*args, **kwargs)
+   .. py:method:: var(/, axis=None, dtype=None, out=None, ddof=0, **kwargs)
 
-      Scalar method identical to the corresponding array attribute.
+      Scalar method identical to `ndarray.var`.
 
-          Please see `ndarray.view`.
+
+
+   .. py:method:: view(/, *args, **kwargs)
+
+      Scalar method identical to `ndarray.view`.
 
 
 
@@ -13437,9 +13327,9 @@ Package Contents
 
    A timedelta stored as a 64-bit integer.
 
-       See :ref:`arrays.datetime` for more information.
+   See :ref:`arrays.datetime` for more information.
 
-       :Character code: ``'m'``
+   :Character code: ``'m'``
 
 
 .. py:function:: timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs)
@@ -13668,22 +13558,22 @@ Package Contents
 
    Unsigned integer type, compatible with C ``unsigned char``.
 
-       :Character code: ``'B'``
-       :Canonical name: `numpy.ubyte`
-       :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
+   :Character code: ``'B'``
+   :Canonical name: `numpy.ubyte`
+   :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
 
 
    .. py:method:: bit_count(/)
 
       uint8.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint8(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint8(127).bit_count()
+      7
 
 
 
@@ -13692,26 +13582,25 @@ Package Contents
    Bases: :py:obj:`numpy.unsignedinteger`
 
 
-   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit
-       systems.
+   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit systems.
 
-       :Character code: ``'L'``
-       :Canonical name: `numpy.uint`
-       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
-       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+   :Character code: ``'L'``
+   :Canonical name: `numpy.uint`
+   :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+   :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
 
 
    .. py:method:: bit_count(/)
 
       uint64.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint64(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint64(127).bit_count()
+      7
 
 
 
@@ -13722,22 +13611,22 @@ Package Contents
 
    Unsigned integer type, compatible with C ``unsigned short``.
 
-       :Character code: ``'H'``
-       :Canonical name: `numpy.ushort`
-       :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
+   :Character code: ``'H'``
+   :Canonical name: `numpy.ushort`
+   :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
 
 
    .. py:method:: bit_count(/)
 
       uint16.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint16(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint16(127).bit_count()
+      7
 
 
 
@@ -13748,22 +13637,22 @@ Package Contents
 
    Unsigned integer type, compatible with C ``unsigned int``.
 
-       :Character code: ``'I'``
-       :Canonical name: `numpy.uintc`
-       :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
+   :Character code: ``'I'``
+   :Canonical name: `numpy.uintc`
+   :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
 
 
    .. py:method:: bit_count(/)
 
       uint32.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint32(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint32(127).bit_count()
+      7
 
 
 
@@ -13772,26 +13661,25 @@ Package Contents
    Bases: :py:obj:`numpy.unsignedinteger`
 
 
-   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit
-       systems.
+   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit systems.
 
-       :Character code: ``'L'``
-       :Canonical name: `numpy.uint`
-       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
-       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+   :Character code: ``'L'``
+   :Canonical name: `numpy.uint`
+   :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+   :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
 
 
    .. py:method:: bit_count(/)
 
       uint64.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint64(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint64(127).bit_count()
+      7
 
 
 
@@ -13802,22 +13690,22 @@ Package Contents
 
    Unsigned integer type, compatible with C ``unsigned char``.
 
-       :Character code: ``'B'``
-       :Canonical name: `numpy.ubyte`
-       :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
+   :Character code: ``'B'``
+   :Canonical name: `numpy.ubyte`
+   :Alias on this platform (Linux x86_64): `numpy.uint8`: 8-bit unsigned integer (``0`` to ``255``).
 
 
    .. py:method:: bit_count(/)
 
       uint8.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint8(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint8(127).bit_count()
+      7
 
 
 
@@ -13828,22 +13716,22 @@ Package Contents
 
    Unsigned integer type, compatible with C ``unsigned int``.
 
-       :Character code: ``'I'``
-       :Canonical name: `numpy.uintc`
-       :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
+   :Character code: ``'I'``
+   :Canonical name: `numpy.uintc`
+   :Alias on this platform (Linux x86_64): `numpy.uint32`: 32-bit unsigned integer (``0`` to ``4_294_967_295``).
 
 
    .. py:method:: bit_count(/)
 
       uint32.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint32(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint32(127).bit_count()
+      7
 
 
 
@@ -13852,26 +13740,25 @@ Package Contents
    Bases: :py:obj:`numpy.unsignedinteger`
 
 
-   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit
-       systems.
+   Unsigned signed integer type, 64bit on 64bit systems and 32bit on 32bit systems.
 
-       :Character code: ``'L'``
-       :Canonical name: `numpy.uint`
-       :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
-       :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
+   :Character code: ``'L'``
+   :Canonical name: `numpy.uint`
+   :Alias on this platform (Linux x86_64): `numpy.uint64`: 64-bit unsigned integer (``0`` to ``18_446_744_073_709_551_615``).
+   :Alias on this platform (Linux x86_64): `numpy.uintp`: Unsigned integer large enough to fit pointer, compatible with C ``uintptr_t``.
 
 
    .. py:method:: bit_count(/)
 
       uint64.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint64(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint64(127).bit_count()
+      7
 
 
 
@@ -13880,12 +13767,23 @@ Package Contents
    Bases: :py:obj:`numpy.unsignedinteger`
 
 
-   Signed integer type, compatible with C ``unsigned long long``.
+   Unsigned integer type, compatible with C ``unsigned long long``.
 
-       :Character code: ``'Q'``
+   :Character code: ``'Q'``
 
 
    .. py:method:: bit_count(/)
+
+      ulonglong.bit_count() -> int
+
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+
+      .. rubric:: Examples
+
+      >>> np.ulonglong(127).bit_count()
+      7
+
 
 
 .. py:function:: uniform(size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]], low: arkouda.numpy.dtypes.numeric_scalars = float(0.0), high: arkouda.numpy.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
@@ -14051,22 +13949,22 @@ Package Contents
 
    Unsigned integer type, compatible with C ``unsigned short``.
 
-       :Character code: ``'H'``
-       :Canonical name: `numpy.ushort`
-       :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
+   :Character code: ``'H'``
+   :Canonical name: `numpy.ushort`
+   :Alias on this platform (Linux x86_64): `numpy.uint16`: 16-bit unsigned integer (``0`` to ``65_535``).
 
 
    .. py:method:: bit_count(/)
 
       uint16.bit_count() -> int
 
-              Computes the number of 1-bits in the absolute value of the input.
-              Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
+      Computes the number of 1-bits in the absolute value of the input.
+      Analogous to the builtin `int.bit_count` or ``popcount`` in C++.
 
-              Examples
-              --------
-              >>> np.uint16(127).bit_count()
-              7
+      .. rubric:: Examples
+
+      >>> np.uint16(127).bit_count()
+      7
 
 
 
@@ -14145,51 +14043,49 @@ Package Contents
 
    np.void(length_or_data, /, dtype=None)
 
-       Create a new structured or unstructured void scalar.
+   Create a new structured or unstructured void scalar.
 
-       Parameters
-       ----------
-       length_or_data : int, array-like, bytes-like, object
-          One of multiple meanings (see notes).  The length or
-          bytes data of an unstructured void.  Or alternatively,
-          the data to be stored in the new scalar when `dtype`
-          is provided.
-          This can be an array-like, in which case an array may
-          be returned.
-       dtype : dtype, optional
-          If provided the dtype of the new scalar.  This dtype must
-          be "void" dtype (i.e. a structured or unstructured void,
-          see also :ref:`defining-structured-types`).
+   :param length_or_data: One of multiple meanings (see notes).  The length or
+                          bytes data of an unstructured void.  Or alternatively,
+                          the data to be stored in the new scalar when `dtype`
+                          is provided.
+                          This can be an array-like, in which case an array may
+                          be returned.
+   :type length_or_data: int, array-like, bytes-like, object
+   :param dtype: If provided the dtype of the new scalar.  This dtype must
+                 be "void" dtype (i.e. a structured or unstructured void,
+                 see also :ref:`defining-structured-types`).
 
-          .. versionadded:: 1.24
+                 .. versionadded:: 1.24
+   :type dtype: dtype, optional
 
-       Notes
-       -----
-       For historical reasons and because void scalars can represent both
-       arbitrary byte data and structured dtypes, the void constructor
-       has three calling conventions:
+   .. rubric:: Notes
 
-       1. ``np.void(5)`` creates a ``dtype="V5"`` scalar filled with five
-          ``\0`` bytes.  The 5 can be a Python or NumPy integer.
-       2. ``np.void(b"bytes-like")`` creates a void scalar from the byte string.
-          The dtype itemsize will match the byte string length, here ``"V10"``.
-       3. When a ``dtype=`` is passed the call is roughly the same as an
-          array creation.  However, a void scalar rather than array is returned.
+   For historical reasons and because void scalars can represent both
+   arbitrary byte data and structured dtypes, the void constructor
+   has three calling conventions:
 
-       Please see the examples which show all three different conventions.
+   1. ``np.void(5)`` creates a ``dtype="V5"`` scalar filled with five
+       ``\0`` bytes.  The 5 can be a Python or NumPy integer.
+   2. ``np.void(b"bytes-like")`` creates a void scalar from the byte string.
+       The dtype itemsize will match the byte string length, here ``"V10"``.
+   3. When a ``dtype=`` is passed the call is roughly the same as an
+       array creation.  However, a void scalar rather than array is returned.
 
-       Examples
-       --------
-       >>> np.void(5)
-       np.void(b'\x00\x00\x00\x00\x00')
-       >>> np.void(b'abcd')
-       np.void(b'\x61\x62\x63\x64')
-       >>> np.void((3.2, b'eggs'), dtype="d,S5")
-       np.void((3.2, b'eggs'), dtype=[('f0', '<f8'), ('f1', 'S5')])
-       >>> np.void(3, dtype=[('x', np.int8), ('y', np.int8)])
-       np.void((3, 3), dtype=[('x', 'i1'), ('y', 'i1')])
+   Please see the examples which show all three different conventions.
 
-       :Character code: ``'V'``
+   .. rubric:: Examples
+
+   >>> np.void(5)
+   np.void(b'\x00\x00\x00\x00\x00')
+   >>> np.void(b'abcd')
+   np.void(b'\x61\x62\x63\x64')
+   >>> np.void((3.2, b'eggs'), dtype="d,S5")
+   np.void((3.2, b'eggs'), dtype=[('f0', '<f8'), ('f1', 'S5')])
+   >>> np.void(3, dtype=[('x', np.int8), ('y', np.int8)])
+   np.void((3, 3), dtype=[('x', 'i1'), ('y', 'i1')])
+
+   :Character code: ``'V'``
 
 
 .. py:function:: vstack(tup: Sequence[arkouda.numpy.pdarrayclass.pdarray], *, dtype: Optional[Union[str, type]] = None, casting: Literal['no', 'equiv', 'safe', 'same_kind', 'unsafe'] = 'same_kind') -> arkouda.numpy.pdarrayclass.pdarray

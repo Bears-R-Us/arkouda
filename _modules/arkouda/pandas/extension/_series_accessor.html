@@ -771,6 +771,104 @@
         <span class="n">idx_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx_arr</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span>
 
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Legacy delegation: thin wrappers over ak.Series</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ArkoudaSeriesAccessor.locate">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.locate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">locate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lookup values by index label on the Arkouda server.</span>
+
+<span class="sd">        This is a thin wrapper around the legacy :meth:`arkouda.pandas.series.Series.locate`</span>
+<span class="sd">        method. It converts the pandas Series to a legacy Arkouda ``ak.Series``,</span>
+<span class="sd">        performs the locate operation on the server, and wraps the result back into</span>
+<span class="sd">        an Arkouda-backed pandas Series (ExtensionArray-backed) without NumPy</span>
+<span class="sd">        materialization.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : object</span>
+<span class="sd">            Lookup key or keys. Interpreted in the same way as the legacy Arkouda</span>
+<span class="sd">            ``Series.locate`` method. This may be:</span>
+<span class="sd">            - a scalar</span>
+<span class="sd">            - a list/tuple of scalars</span>
+<span class="sd">            - an Arkouda ``pdarray``</span>
+<span class="sd">            - an Arkouda ``Index`` / ``MultiIndex``</span>
+<span class="sd">            - an Arkouda ``Series`` (special case: preserves key index)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.Series</span>
+<span class="sd">            A pandas Series backed by Arkouda ExtensionArrays containing the located</span>
+<span class="sd">            values. The returned Series remains distributed (no NumPy materialization)</span>
+<span class="sd">            and is sorted by index.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        * This method is Arkouda-specific; pandas does not define ``Series.locate``.</span>
+<span class="sd">        * If ``key`` is a pandas Index/MultiIndex, consider converting it via</span>
+<span class="sd">          ``key.ak.to_ak_legacy()`` before calling ``locate`` for the most direct path.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">        &gt;&gt;&gt; s = pd.Series([10, 20, 30], index=pd.Index([1, 2, 3])).ak.to_ak()</span>
+<span class="sd">        &gt;&gt;&gt; out = s.ak.locate([3, 1])</span>
+<span class="sd">        &gt;&gt;&gt; out.tolist()</span>
+<span class="sd">        [np.int64(10), np.int64(30)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Lift the pandas Series into a legacy Arkouda Series</span>
+        <span class="n">aks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+
+        <span class="c1"># Normalize common pandas key types to legacy Arkouda where possible</span>
+        <span class="c1"># (mirrors the “thin wrapper” approach used in the Index accessor).</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">)):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="c1"># For pandas Series keys, convert to legacy ak.Series to preserve key.index semantics.</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">ArkoudaSeriesAccessor</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+
+        <span class="n">out_ak</span> <span class="o">=</span> <span class="n">aks</span><span class="o">.</span><span class="n">locate</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># Wrap result into an Arkouda-backed pandas Series</span>
+        <span class="c1"># (keep the returned index/name from the legacy result).</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">out_ak</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">())</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>  <span class="c1"># preserve names/levels</span>
+        <span class="k">return</span> <span class="n">_ak_array_to_pandas_series</span><span class="p">(</span><span class="n">out_ak</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">out_ak</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_axis</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a pandas Series from a legacy Arkouda return message.</span>
+
+<span class="sd">        This mirrors :meth:`ArkoudaIndexAccessor.from_return_msg`. It calls the legacy</span>
+<span class="sd">        ``ak.Series.from_return_msg`` constructor, then immediately wraps the resulting</span>
+<span class="sd">        Arkouda arrays back into a pandas Series backed by Arkouda ExtensionArrays.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rep_msg : str</span>
+<span class="sd">            The ``+ delimited`` string message returned by Arkouda server operations</span>
+<span class="sd">            that construct a Series.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.Series</span>
+<span class="sd">            A pandas Series backed by Arkouda ExtensionArrays (no NumPy materialization).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ak_s</span> <span class="o">=</span> <span class="n">ak_Series</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+
+        <span class="c1"># Wrap values and index without materializing</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">_ak_array_to_pandas_series</span><span class="p">(</span><span class="n">ak_s</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">ak_s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Prefer wrapping the legacy index via the Index accessor helper path.</span>
+        <span class="c1"># We need a pandas Index/MultiIndex backed by EAs.</span>
+        <span class="n">pd_idx</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">ak_s</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">pd_idx</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">ak_s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
 <div class="viewcode-block" id="ArkoudaSeriesAccessor.groupby">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.groupby">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">groupby</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroupBy</span><span class="p">:</span>

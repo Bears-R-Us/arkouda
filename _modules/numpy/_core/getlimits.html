@@ -1,0 +1,902 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>numpy._core.getlimits - arkouda documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">arkouda  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <span class="sidebar-brand-text">arkouda  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/REQUIREMENTS.html">Requirements</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../setup/install_menu.html">Installation</a><input aria-label="Toggle navigation of Installation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/LINUX_INSTALL.html">Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/WINDOWS_INSTALL.html">Windows (WSL2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../setup/MAC_INSTALL.html">MacOS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/BUILD.html">Building the Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/MODULAR.html">Modular Server Builds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../file_io/io_menu.html">File I/O</a><input aria-label="Toggle navigation of File I/O" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/HDF5.html">HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/PARQUET.html">Parquet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/CSV.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../file_io/IMPORT_EXPORT.html">Import/Export</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage.html">Usage Guide</a><input aria-label="Toggle navigation of Usage Guide" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/categorical.html">Categoricals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/random.html">Random in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/segarray.html">SegArrays in Arkouda</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/creation_functions/index.html">arkouda.array_api.creation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/data_type_functions/index.html">arkouda.array_api.data_type_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/elementwise_functions/index.html">arkouda.array_api.elementwise_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/indexing_functions/index.html">arkouda.array_api.indexing_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/linalg/index.html">arkouda.array_api.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/manipulation_functions/index.html">arkouda.array_api.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/searching_functions/index.html">arkouda.array_api.searching_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/set_functions/index.html">arkouda.array_api.set_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/sorting_functions/index.html">arkouda.array_api.sorting_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/statistical_functions/index.html">arkouda.array_api.statistical_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/core/index.html">arkouda.core</a><input aria-label="Toggle navigation of arkouda.core" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/core/client/index.html">arkouda.core.client</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/core/infoclass/index.html">arkouda.core.infoclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/core/logger/index.html">arkouda.core.logger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/core/security/index.html">arkouda.core.security</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/message/index.html">arkouda.message</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ctypeslib/index.html">arkouda.numpy.ctypeslib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/dtypes/index.html">arkouda.numpy.dtypes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/err/index.html">arkouda.numpy.err</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/exceptions/index.html">arkouda.numpy.exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/fft/index.html">arkouda.numpy.fft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/imports/index.html">arkouda.numpy.imports</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/index.html">arkouda.numpy.lib</a><input aria-label="Toggle navigation of arkouda.numpy.lib" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/emath/index.html">arkouda.numpy.lib.emath</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/lib/npyio/index.html">arkouda.numpy.lib.npyio</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/linalg/index.html">arkouda.numpy.linalg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/ma/index.html">arkouda.numpy.ma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/manipulation_functions/index.html">arkouda.numpy.manipulation_functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/numeric/index.html">arkouda.numpy.numeric</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarrayclass/index.html">arkouda.numpy.pdarrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraycreation/index.html">arkouda.numpy.pdarraycreation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraymanipulation/index.html">arkouda.numpy.pdarraymanipulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/pdarraysetops/index.html">arkouda.numpy.pdarraysetops</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/polynomial/index.html">arkouda.numpy.polynomial</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/index.html">arkouda.numpy.random</a><input aria-label="Toggle navigation of arkouda.numpy.random" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/generator/index.html">arkouda.numpy.random.generator</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/arkouda/numpy/random/legacy/index.html">arkouda.numpy.random.legacy</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/rec/index.html">arkouda.numpy.rec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/segarray/index.html">arkouda.numpy.segarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/sorting/index.html">arkouda.numpy.sorting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/strings/index.html">arkouda.numpy.strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/timeclass/index.html">arkouda.numpy.timeclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/util/index.html">arkouda.numpy.util</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/utils/index.html">arkouda.numpy.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index.html">arkouda.pandas</a><input aria-label="Toggle navigation of arkouda.pandas" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/accessor/index.html">arkouda.pandas.accessor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/categorical/index.html">arkouda.pandas.categorical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/conversion/index.html">arkouda.pandas.conversion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/dataframe/index.html">arkouda.pandas.dataframe</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/extension/index.html">arkouda.pandas.extension</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/groupbyclass/index.html">arkouda.pandas.groupbyclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/index/index.html">arkouda.pandas.index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io/index.html">arkouda.pandas.io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/io_util/index.html">arkouda.pandas.io_util</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/join/index.html">arkouda.pandas.join</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/match/index.html">arkouda.pandas.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/matcher/index.html">arkouda.pandas.matcher</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/row/index.html">arkouda.pandas.row</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/series/index.html">arkouda.pandas.series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/pandas/typing/index.html">arkouda.pandas.typing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/plotting/index.html">arkouda.plotting</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/scipy/index.html">arkouda.scipy</a><input aria-label="Toggle navigation of arkouda.scipy" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparrayclass/index.html">arkouda.scipy.sparrayclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/sparsematrix/index.html">arkouda.scipy.sparsematrix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/special/index.html">arkouda.scipy.special</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../developer/dev_menu.html">Developer Documentation</a><input aria-label="Toggle navigation of Developer Documentation" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/TIPS.html">Speeding up Arkouda Compilation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/USER_BUGS.html">Tips for Reproducing User Bugs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/MEMORY.html">Reducing Memory Usage of Arkouda Builds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/GASNET.html">GASNet Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/RELEASE_PROCESS.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/BENCHMARK.html">PyTest Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../developer/ADDING_FEATURES.html">Adding Your First Feature</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for numpy._core.getlimits</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Machine limits for Float32 and Float64 and (long double) if available...</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;finfo&#39;</span><span class="p">,</span> <span class="s1">&#39;iinfo&#39;</span><span class="p">]</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy._utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_module</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">numeric</span><span class="p">,</span> <span class="n">numerictypes</span> <span class="k">as</span> <span class="n">ntypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._multiarray_umath</span><span class="w"> </span><span class="kn">import</span> <span class="n">_populate_finfo_constants</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fr0</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;fix rank-0 --&gt; rank-1&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
+    <span class="k">return</span> <span class="n">a</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fr1</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;fix rank &gt; 0 --&gt; rank-0&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">return</span> <span class="n">a</span>
+
+
+<span class="n">_convert_to_float</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ntypes</span><span class="o">.</span><span class="n">csingle</span><span class="p">:</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">single</span><span class="p">,</span>
+    <span class="n">ntypes</span><span class="o">.</span><span class="n">complex128</span><span class="p">:</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+    <span class="n">ntypes</span><span class="o">.</span><span class="n">clongdouble</span><span class="p">:</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">longdouble</span>
+    <span class="p">}</span>
+
+<span class="c1"># Parameters for creating MachAr / MachAr-like objects</span>
+<span class="n">_title_fmt</span> <span class="o">=</span> <span class="s1">&#39;numpy </span><span class="si">{}</span><span class="s1"> precision floating point number&#39;</span>
+<span class="n">_MACHAR_PARAMS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ntypes</span><span class="o">.</span><span class="n">double</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;itype&#39;</span><span class="p">:</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+        <span class="s1">&#39;fmt&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%24.16e</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">_title_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;double&#39;</span><span class="p">)},</span>
+    <span class="n">ntypes</span><span class="o">.</span><span class="n">single</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;itype&#39;</span><span class="p">:</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+        <span class="s1">&#39;fmt&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%15.7e</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">_title_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;single&#39;</span><span class="p">)},</span>
+    <span class="n">ntypes</span><span class="o">.</span><span class="n">longdouble</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;itype&#39;</span><span class="p">:</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">longlong</span><span class="p">,</span>
+        <span class="s1">&#39;fmt&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">_title_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;long double&#39;</span><span class="p">)},</span>
+    <span class="n">ntypes</span><span class="o">.</span><span class="n">half</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;itype&#39;</span><span class="p">:</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span>
+        <span class="s1">&#39;fmt&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%12.5e</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">_title_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;half&#39;</span><span class="p">)}}</span>
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">finfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    finfo(dtype)</span>
+
+<span class="sd">    Machine limits for floating point types.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bits : int</span>
+<span class="sd">        The number of bits occupied by the type.</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        Returns the dtype for which `finfo` returns information. For complex</span>
+<span class="sd">        input, the returned dtype is the associated ``float*`` dtype for its</span>
+<span class="sd">        real and complex components.</span>
+<span class="sd">    eps : float</span>
+<span class="sd">        The difference between 1.0 and the next smallest representable float</span>
+<span class="sd">        larger than 1.0. For example, for 64-bit binary floats in the IEEE-754</span>
+<span class="sd">        standard, ``eps = 2**-52``, approximately 2.22e-16.</span>
+<span class="sd">    epsneg : float</span>
+<span class="sd">        The difference between 1.0 and the next smallest representable float</span>
+<span class="sd">        less than 1.0. For example, for 64-bit binary floats in the IEEE-754</span>
+<span class="sd">        standard, ``epsneg = 2**-53``, approximately 1.11e-16.</span>
+<span class="sd">    iexp : int</span>
+<span class="sd">        The number of bits in the exponent portion of the floating point</span>
+<span class="sd">        representation.</span>
+<span class="sd">    machep : int</span>
+<span class="sd">        The exponent that yields `eps`.</span>
+<span class="sd">    max : floating point number of the appropriate type</span>
+<span class="sd">        The largest representable number.</span>
+<span class="sd">    maxexp : int</span>
+<span class="sd">        The smallest positive power of the base (2) that causes overflow.</span>
+<span class="sd">        Corresponds to the C standard MAX_EXP.</span>
+<span class="sd">    min : floating point number of the appropriate type</span>
+<span class="sd">        The smallest representable number, typically ``-max``.</span>
+<span class="sd">    minexp : int</span>
+<span class="sd">        The most negative power of the base (2) consistent with there</span>
+<span class="sd">        being no leading 0&#39;s in the mantissa. Corresponds to the C</span>
+<span class="sd">        standard MIN_EXP - 1.</span>
+<span class="sd">    negep : int</span>
+<span class="sd">        The exponent that yields `epsneg`.</span>
+<span class="sd">    nexp : int</span>
+<span class="sd">        The number of bits in the exponent including its sign and bias.</span>
+<span class="sd">    nmant : int</span>
+<span class="sd">        The number of explicit bits in the mantissa (excluding the implicit</span>
+<span class="sd">        leading bit for normalized numbers).</span>
+<span class="sd">    precision : int</span>
+<span class="sd">        The approximate number of decimal digits to which this kind of</span>
+<span class="sd">        float is precise.</span>
+<span class="sd">    resolution : floating point number of the appropriate type</span>
+<span class="sd">        The approximate decimal resolution of this type, i.e.,</span>
+<span class="sd">        ``10**-precision``.</span>
+<span class="sd">    tiny : float</span>
+<span class="sd">        An alias for `smallest_normal`, kept for backwards compatibility.</span>
+<span class="sd">    smallest_normal : float</span>
+<span class="sd">        The smallest positive floating point number with 1 as leading bit in</span>
+<span class="sd">        the mantissa following IEEE-754 (see Notes).</span>
+<span class="sd">    smallest_subnormal : float</span>
+<span class="sd">        The smallest positive floating point number with 0 as leading bit in</span>
+<span class="sd">        the mantissa following IEEE-754.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dtype : float, dtype, or instance</span>
+<span class="sd">        Kind of floating point or complex floating point</span>
+<span class="sd">        data-type about which to get information.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    iinfo : The equivalent for integer data types.</span>
+<span class="sd">    spacing : The distance between a value and the nearest adjacent number</span>
+<span class="sd">    nextafter : The next floating point value after x1 towards x2</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For developers of NumPy: do not instantiate this at the module level.</span>
+<span class="sd">    The initial calculation of these parameters is expensive and negatively</span>
+<span class="sd">    impacts import times.  These objects are cached, so calling ``finfo()``</span>
+<span class="sd">    repeatedly inside your functions is not a problem.</span>
+
+<span class="sd">    Note that ``smallest_normal`` is not actually the smallest positive</span>
+<span class="sd">    representable value in a NumPy floating point type. As in the IEEE-754</span>
+<span class="sd">    standard [1]_, NumPy floating point types make use of subnormal numbers to</span>
+<span class="sd">    fill the gap between 0 and ``smallest_normal``. However, subnormal numbers</span>
+<span class="sd">    may have significantly reduced precision [2]_.</span>
+
+<span class="sd">    For ``longdouble``, the representation varies across platforms. On most</span>
+<span class="sd">    platforms it is IEEE 754 binary128 (quad precision) or binary64-extended</span>
+<span class="sd">    (80-bit extended precision). On PowerPC systems, it may use the IBM</span>
+<span class="sd">    double-double format (a pair of float64 values), which has special</span>
+<span class="sd">    characteristics for precision and range.</span>
+
+<span class="sd">    This function can also be used for complex data types as well. If used,</span>
+<span class="sd">    the output will be the same as the corresponding real float type</span>
+<span class="sd">    (e.g. numpy.finfo(numpy.csingle) is the same as numpy.finfo(numpy.single)).</span>
+<span class="sd">    However, the output is true for the real and imaginary components.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] IEEE Standard for Floating-Point Arithmetic, IEEE Std 754-2008,</span>
+<span class="sd">           pp.1-70, 2008, https://doi.org/10.1109/IEEESTD.2008.4610935</span>
+<span class="sd">    .. [2] Wikipedia, &quot;Denormal Numbers&quot;,</span>
+<span class="sd">           https://en.wikipedia.org/wiki/Denormal_number</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; np.finfo(np.float64).dtype</span>
+<span class="sd">    dtype(&#39;float64&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.finfo(np.complex64).dtype</span>
+<span class="sd">    dtype(&#39;float32&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_finfo_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">GenericAlias</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_finfo_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># most common path</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">obj</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Deprecated in NumPy 1.25, 2023-01-16</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;finfo() dtype cannot be None. This behavior will &quot;</span>
+                <span class="s2">&quot;raise an error in the future. (Deprecated in NumPy 1.25)&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">numeric</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="c1"># In case a float instance was given</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">numeric</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_finfo_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span>
+        <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">dtype</span><span class="p">]</span>
+        <span class="n">newdtype</span> <span class="o">=</span> <span class="n">ntypes</span><span class="o">.</span><span class="n">obj2sctype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">newdtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dtype</span><span class="p">:</span>
+            <span class="n">dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newdtype</span><span class="p">)</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">newdtype</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numeric</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data type </span><span class="si">{</span><span class="n">dtype</span><span class="si">!r}</span><span class="s2"> not inexact&quot;</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_finfo_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numeric</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+            <span class="n">newdtype</span> <span class="o">=</span> <span class="n">_convert_to_float</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">newdtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">dtype</span><span class="p">:</span>
+                <span class="c1"># dtype changed, for example from complex128 to float64</span>
+                <span class="n">dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newdtype</span><span class="p">)</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">newdtype</span>
+
+                <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_finfo_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># the original dtype was not in the cache, but the new</span>
+                    <span class="c1"># dtype is in the cache. we add the original dtypes to</span>
+                    <span class="c1"># the cache and return the result</span>
+                    <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
+                        <span class="bp">cls</span><span class="o">.</span><span class="n">_finfo_cache</span><span class="p">[</span><span class="n">dt</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                    <span class="k">return</span> <span class="n">obj</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">_finfo_cache</span><span class="p">[</span><span class="n">dt</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">numeric</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="mi">8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_populate_finfo_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="finfo.epsneg">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.epsneg">[docs]</a>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">epsneg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Assume typical floating point logic.  Could also use nextafter.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radix</span></div>
+
+
+<div class="viewcode-block" id="finfo.resolution">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.resolution">[docs]</a>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">**-</span><span class="bp">self</span><span class="o">.</span><span class="n">precision</span></div>
+
+
+<div class="viewcode-block" id="finfo.machep">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.machep">[docs]</a>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">machep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="finfo.negep">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.negep">[docs]</a>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">negep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsneg</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="finfo.nexp">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.nexp">[docs]</a>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nexp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># considering all ones (inf/nan) and all zeros (subnormal/zero)</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxexp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minexp</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="finfo.iexp">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.iexp">[docs]</a>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">iexp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Calculate exponent bits from it&#39;s range:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxexp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minexp</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">fmt</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_fmt&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fmt</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_str</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&lt;undefined&gt;&quot;</span>
+            <span class="k">if</span> <span class="n">pad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="n">precision</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;precision&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">machep</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;machep&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">negep</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;negep&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">minexp</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;minexp&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">maxexp</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;maxexp&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">)</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;eps&quot;</span><span class="p">)</span>
+        <span class="n">epsneg</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;epsneg&quot;</span><span class="p">)</span>
+        <span class="n">tiny</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;tiny&quot;</span><span class="p">)</span>
+        <span class="n">smallest_normal</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;smallest_normal&quot;</span><span class="p">)</span>
+        <span class="n">smallest_subnormal</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;smallest_subnormal&quot;</span><span class="p">)</span>
+        <span class="n">nexp</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;nexp&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">max_</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">min</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
+            <span class="n">min_</span> <span class="o">=</span> <span class="s2">&quot;-max&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">min_</span> <span class="o">=</span> <span class="n">get_str</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">)</span>
+
+        <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Machine parameters for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;---------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;precision = </span><span class="si">{</span><span class="n">precision</span><span class="si">}</span><span class="s1">   resolution = </span><span class="si">{</span><span class="n">resolution</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;machep = </span><span class="si">{</span><span class="n">machep</span><span class="si">}</span><span class="s1">   eps =        </span><span class="si">{</span><span class="n">eps</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;negep =  </span><span class="si">{</span><span class="n">negep</span><span class="si">}</span><span class="s1">   epsneg =     </span><span class="si">{</span><span class="n">epsneg</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;minexp = </span><span class="si">{</span><span class="n">minexp</span><span class="si">}</span><span class="s1">   tiny =       </span><span class="si">{</span><span class="n">tiny</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;maxexp = </span><span class="si">{</span><span class="n">maxexp</span><span class="si">}</span><span class="s1">   max =        </span><span class="si">{</span><span class="n">max_</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;nexp =   </span><span class="si">{</span><span class="n">nexp</span><span class="si">}</span><span class="s1">   min =        </span><span class="si">{</span><span class="n">min_</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;smallest_normal = </span><span class="si">{</span><span class="n">smallest_normal</span><span class="si">}</span><span class="s1">   &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;smallest_subnormal = </span><span class="si">{</span><span class="n">smallest_subnormal</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;---------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">=</span> <span class="n">fmt</span>
+        <span class="k">return</span> <span class="n">fmt</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">repr_str</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_repr&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">repr_str</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+        <span class="c1"># Use precision+1 digits in exponential notation</span>
+        <span class="n">fmt_str</span> <span class="o">=</span> <span class="n">_MACHAR_PARAMS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fmt&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fmt_str</span> <span class="o">!=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">):</span>
+            <span class="n">max_str</span> <span class="o">=</span> <span class="p">(</span><span class="n">fmt_str</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">min_str</span> <span class="o">=</span> <span class="p">(</span><span class="n">fmt_str</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">max_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+            <span class="n">min_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+
+        <span class="n">resolution_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+
+        <span class="n">repr_str</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">(resolution=</span><span class="si">{</span><span class="n">resolution_str</span><span class="si">}</span><span class="s2">, min=</span><span class="si">{</span><span class="n">min_str</span><span class="si">}</span><span class="s2">,&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; max=</span><span class="si">{</span><span class="n">max_str</span><span class="si">}</span><span class="s2">, dtype=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_repr</span> <span class="o">=</span> <span class="n">repr_str</span>
+        <span class="k">return</span> <span class="n">repr_str</span>
+
+<div class="viewcode-block" id="finfo.tiny">
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.tiny">[docs]</a>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tiny</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value for tiny, alias of smallest_normal.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tiny : float</span>
+<span class="sd">            Value for the smallest normal, alias of smallest_normal.</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        UserWarning</span>
+<span class="sd">            If the calculated value for the smallest normal is requested for</span>
+<span class="sd">            double-double.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">smallest_normal</span></div>
+
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">iinfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    iinfo(type)</span>
+
+<span class="sd">    Machine limits for integer types.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bits : int</span>
+<span class="sd">        The number of bits occupied by the type.</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        Returns the dtype for which `iinfo` returns information.</span>
+<span class="sd">    min : int</span>
+<span class="sd">        The smallest integer expressible by the type.</span>
+<span class="sd">    max : int</span>
+<span class="sd">        The largest integer expressible by the type.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    int_type : integer type, dtype, or instance</span>
+<span class="sd">        The kind of integer data type to get information about.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    finfo : The equivalent for floating point data types.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    With types:</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; ii16 = np.iinfo(np.int16)</span>
+<span class="sd">    &gt;&gt;&gt; ii16.min</span>
+<span class="sd">    -32768</span>
+<span class="sd">    &gt;&gt;&gt; ii16.max</span>
+<span class="sd">    32767</span>
+<span class="sd">    &gt;&gt;&gt; ii32 = np.iinfo(np.int32)</span>
+<span class="sd">    &gt;&gt;&gt; ii32.min</span>
+<span class="sd">    -2147483648</span>
+<span class="sd">    &gt;&gt;&gt; ii32.max</span>
+<span class="sd">    2147483647</span>
+
+<span class="sd">    With instances:</span>
+
+<span class="sd">    &gt;&gt;&gt; ii32 = np.iinfo(np.int32(10))</span>
+<span class="sd">    &gt;&gt;&gt; ii32.min</span>
+<span class="sd">    -2147483648</span>
+<span class="sd">    &gt;&gt;&gt; ii32.max</span>
+<span class="sd">    2147483647</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_min_vals</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_max_vals</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">GenericAlias</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">int_type</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">numeric</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">int_type</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">numeric</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">int_type</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="mi">8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s1">&#39;iu&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid integer data type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Minimum value of given dtype.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;u&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">iinfo</span><span class="o">.</span><span class="n">_min_vals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+                <span class="n">iinfo</span><span class="o">.</span><span class="n">_min_vals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Maximum value of given dtype.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">iinfo</span><span class="o">.</span><span class="n">_max_vals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;u&#39;</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">iinfo</span><span class="o">.</span><span class="n">_max_vals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;String representation.&quot;&quot;&quot;</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;Machine parameters for </span><span class="si">%(dtype)s</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="s1">&#39;---------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="s1">&#39;min = </span><span class="si">%(min)s</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="s1">&#39;max = </span><span class="si">%(max)s</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="s1">&#39;---------------------------------------------------------------</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">{</span><span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(min=</span><span class="si">%s</span><span class="s2">, max=</span><span class="si">%s</span><span class="s2">, dtype=</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020, Michael Merrill and William Reus
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

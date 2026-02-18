@@ -835,6 +835,15 @@
         <span class="k">if</span> <span class="n">fill_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fill_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_fill_value</span>
 
+        <span class="c1"># Pandas commonly passes fill_value=-1 for integer-like data when allow_fill=True.</span>
+        <span class="c1"># That cannot be represented in unsigned dtypes; fall back to a safe fill.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;kind&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span> <span class="ow">and</span> <span class="n">fill_value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">fill_value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="c1"># Non-numeric fill_value; let the cast below raise a sensible error</span>
+            <span class="k">pass</span>
+
         <span class="c1"># cast once to ensure dtype match</span>
         <span class="n">fv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
 
@@ -847,7 +856,14 @@
         <span class="k">if</span> <span class="n">oob</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;indexer out of bounds in take with allow_fill=True&quot;</span><span class="p">)</span>
 
-        <span class="n">gathered</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">fv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">idx_fix</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">idx_fix</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ak</span><span class="o">.</span><span class="n">bigint</span><span class="p">:</span>
+            <span class="n">gathered</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">gathered</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gathered</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">fv</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">gathered</span><span class="p">)</span></div>
 
 
