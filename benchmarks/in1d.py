@@ -17,15 +17,15 @@ LARGE = THRESHOLD + 1
 def time_ak_in1d(N_per_locale, trials, dtype):
     print(f">>> arkouda {dtype} in1d")
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
+    N = N_per_locale * cfg["numNodes"]
     a = ak.arange(N) % LARGE
     if dtype == "uint64":
         a = ak.cast(a, ak.uint64)
 
     for regime, bsize in zip(("Medium", "Large"), (MEDIUM, LARGE)):
         print(
-            "{} regime: numLocales = {}  a.size = {:,}  b.size = {:,}".format(
-                regime, cfg["numLocales"], N, bsize
+            "{} regime: numNodes = {}  a.size = {:,}  b.size = {:,}".format(
+                regime, cfg["numNodes"], N, bsize
             )
         )
         b = ak.arange(bsize)

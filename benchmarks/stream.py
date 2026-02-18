@@ -16,8 +16,8 @@ TYPES = ("int64", "float64")
 def time_ak_stream(N_per_locale, trials, alpha, dtype, random, seed):
     print(">>> arkouda {} stream".format(dtype))
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
     if random or seed is not None:
         if dtype == "int64":
             a = ak.randint(0, 2**32, N, seed=seed)

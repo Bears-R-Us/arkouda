@@ -341,7 +341,7 @@ def bench_delete(benchmark):
         benchmark.pedantic(_remove_files, rounds=1)
 
         benchmark.extra_info["description"] = "Measures the performance of IO delete files from system"
-        benchmark.extra_info["problem_size"] = pytest.io_files * pytest.cfg["numLocales"]
+        benchmark.extra_info["problem_size"] = pytest.io_files * pytest.cfg["numNodes"]
         benchmark.extra_info["transfer_rate"] = "N/A"
 
 

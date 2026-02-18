@@ -46,8 +46,12 @@ def time_ak_write(
     print(file_format_actions.get(fileFormat, "Invalid file format"))
 
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
+    N = N_per_locale * cfg["numNodes"]
+    print(
+        "numLocales = {}, numNodes {}, N = {:,}, filesPerLoc = {}".format(
+            cfg["numLocales"], cfg["numNodes"], N, numfiles
+        )
+    )
     if dtype == "int64":
         a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == "float64":
@@ -114,8 +118,12 @@ def time_ak_read(N_per_locale, numfiles, trials, dtype, path, fileFormat, comps=
     print(file_format_actions.get(fileFormat, "Invalid file format"))
 
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}, filesPerLoc = {}".format(cfg["numLocales"], N, numfiles))
+    N = N_per_locale * cfg["numNodes"]
+    print(
+        "numLocales = {}, numNodes {}, N = {:,}, filesPerLoc = {}".format(
+            cfg["numLocales"], cfg["numNodes"], N, numfiles
+        )
+    )
     a = ak.array([])
 
     times = {}
