@@ -2,10 +2,19 @@ from __future__ import annotations
 
 from typing import NamedTuple, cast
 
-from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray, create_pdarrays
+from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 
 from .array_object import Array
+
+__all__ = [
+    "UniqueAllResult",
+    "UniqueCountsResult",
+    "UniqueInverseResult",
+    "unique_all",
+    "unique_counts",
+    "unique_inverse",
+    "unique_values",
+]
 
 
 class UniqueAllResult(NamedTuple):
@@ -32,7 +41,10 @@ def unique_all(x: Array, /) -> UniqueAllResult:
     - the indices of the first occurrence of each unique value
     - the inverse indices that reconstruct `x` from the unique values
     - the counts of each unique value
+
     """
+    from arkouda.client import generic_msg
+
     arrays = create_pdarrays(
         cast(
             str,
@@ -57,6 +69,8 @@ def unique_counts(x: Array, /) -> UniqueCountsResult:
     - the unique values in `x`
     - the counts of each unique value
     """
+    from arkouda.client import generic_msg
+
     arrays = create_pdarrays(
         cast(
             str,
@@ -79,6 +93,8 @@ def unique_inverse(x: Array, /) -> UniqueInverseResult:
     - the unique values in `x`
     - the inverse indices that reconstruct `x` from the unique values
     """
+    from arkouda.client import generic_msg
+
     arrays = create_pdarrays(
         cast(
             str,
@@ -99,6 +115,8 @@ def unique_values(x: Array, /) -> Array:
     """
     Return an array containing the unique values from `x`.
     """
+    from arkouda.client import generic_msg
+
     return Array._new(
         create_pdarray(
             cast(

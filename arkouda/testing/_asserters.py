@@ -19,8 +19,8 @@ from arkouda import (
     pdarray,
     sort,
 )
-from arkouda import sum as aksum
-from arkouda.util import is_numeric
+from arkouda.numpy.pdarrayclass import sum as aksum
+from arkouda.numpy.util import is_numeric
 
 DEBUG = True
 
@@ -118,7 +118,11 @@ def assert_almost_equal(
 
         if isinstance(left, pdarray) and isinstance(right, pdarray):
             assert np.allclose(
-                left.to_ndarray(), right.to_ndarray(), rtol=rtol, atol=atol, equal_nan=True
+                left.to_ndarray(),
+                right.to_ndarray(),
+                rtol=rtol,
+                atol=atol,
+                equal_nan=True,
             )
         else:
             assert np.allclose(left, right, rtol=rtol, atol=atol, equal_nan=True)
@@ -126,9 +130,10 @@ def assert_almost_equal(
 
 def _check_isinstance(left, right, cls) -> None:
     """
-    Helper method for our assert_* methods that ensures that
-    the two objects being compared have the right type before
+    Ensures that the two objects being compared have the right type before
     proceeding with the comparison.
+
+    Helper method for our assert_* methods.
 
     Parameters
     ----------
@@ -216,6 +221,7 @@ def assert_index_equal(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> from arkouda import testing as tm
     >>> a = ak.Index([1, 2, 3])
     >>> b = ak.Index([1, 2, 3])
@@ -273,8 +279,8 @@ def assert_index_equal(
             try:
                 # try comparison on levels/codes to avoid densifying MultiIndex
                 assert_index_equal(
-                    left.levels[level],
-                    right.levels[level],
+                    Index(left.levels[level]),
+                    Index(right.levels[level]),
                     exact=exact,
                     check_names=check_names,
                     check_exact=check_exact,
@@ -310,7 +316,7 @@ def assert_index_equal(
             else:
                 mismatch = left != right
 
-            diff = aksum(mismatch.astype(int)) * 100.0 / len(left)
+            diff = aksum(mismatch) * 100.0 / len(left)
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right)
     else:
@@ -336,9 +342,7 @@ def assert_index_equal(
 
 
 def assert_class_equal(left, right, exact: bool = True, obj: str = "Input") -> None:
-    """
-    Checks classes are equal.
-    """
+    """Check classes are equal."""
     __tracebackhide__ = not DEBUG
 
     def repr_class(x):
@@ -432,7 +436,10 @@ def assert_categorical_equal(
 
     if check_category_order:
         assert_index_equal(
-            Index(left.categories), Index(right.categories), obj=f"{obj}.categories", exact=exact
+            Index(left.categories),
+            Index(right.categories),
+            obj=f"{obj}.categories",
+            exact=exact,
         )
         assert_arkouda_array_equal(left.codes, right.codes, check_dtype=check_dtype, obj=f"{obj}.codes")
     else:
@@ -504,8 +511,8 @@ def raise_assert_detail(
 
 
 def assert_arkouda_pdarray_equal(
-    left,
-    right,
+    left: pdarray,
+    right: pdarray,
     check_dtype: bool = True,
     err_msg=None,
     check_same=None,
@@ -539,9 +546,25 @@ def assert_arkouda_pdarray_equal(
     # both classes must be an ak.pdarray
     _check_isinstance(left, right, pdarray)
 
-    assert len(left) == len(
-        right
-    ), f"Arrays were not same size.  left had length {len(left)} and right had length {len(right)}"
+    assert left.ndim == right.ndim, (
+        f"left dimension {left.ndim} does not match right dimension {right.ndim}."
+    )
+    assert left.size == right.size, f"left size {left.size} does not match right size {right.size}."
+    if left.shape:
+        assert left.shape == right.shape, (
+            f"left shape {left.shape} does not match right shape {right.shape}."
+        )
+    else:
+        assert (
+            isinstance(left.shape, tuple)
+            and isinstance(right.shape, tuple)
+            and len(left.shape) == 0
+            and len(right.shape) == 0
+        ), f"left shape {left.shape} does not match right shape {right.shape}."
+
+    assert len(left) == len(right), (
+        f"Arrays were not same size.  left had length {len(left)} and right had length {len(right)}"
+    )
 
     def _get_base(obj):
         return obj.base if getattr(obj, "base", None) is not None else obj
@@ -563,14 +586,14 @@ def assert_arkouda_pdarray_equal(
 
             diff = aksum(left != right)
 
-            diff = diff * 100.0 / left.size
+            diff = diff * 100.0 / float(left.size)
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right, index_values=index_values)
 
         raise AssertionError(err_msg)
 
     from arkouda import all as akall
-    from arkouda.dtypes import bigint, dtype
+    from arkouda.numpy.dtypes import bigint, dtype
 
     # compare shape and values
     # @TODO use ak.allclose
@@ -594,11 +617,11 @@ def assert_arkouda_segarray_equal(
     obj: str = "segarray",
 ) -> None:
     """
-    Check that the two 'ak.segarray's are equivalent.
+    Check that the two 'ak.SegArray's are equivalent.
 
     Parameters
     ----------
-    left, right : arkouda.segarray
+    left, right : arkouda.numpy.SegArray
         The two segarrays to be compared.
     check_dtype : bool, default True
         Check dtype if both a and b are ak.pdarray.
@@ -669,7 +692,7 @@ def assert_arkouda_strings_equal(
 
     Parameters
     ----------
-    left, right : arkouda.Strings
+    left, right : arkouda.numpy.Strings
         The two Strings to be compared.
     err_msg : str, default None
         If provided, used as assertion message.
@@ -705,7 +728,7 @@ def assert_arkouda_strings_equal(
     def _raise(left: Strings, right: Strings, err_msg):
         if err_msg is None:
             diff = aksum(left != right)
-            diff = diff * 100.0 / left.size
+            diff = diff * 100.0 / float(left.size)
             msg = f"{obj} values are different ({np.round(diff, 5)} %)"
             raise_assert_detail(obj, msg, left, right, index_values=index_values)
 
@@ -732,7 +755,7 @@ def assert_arkouda_array_equal(
 
     Parameters
     ----------
-    left, right : arkouda.pdarray or arkouda.Strings or arkouda.Categorical or arkouda.SegArray
+    left, right : pdarray or Strings or Categorical or SegArray
         The two arrays to be compared.
     check_dtype : bool, default True
         Check dtype if both a and b are ak.pdarray.
@@ -745,12 +768,18 @@ def assert_arkouda_array_equal(
         assertion message.
     index_values : Index | arkouda.pdarray, default None
         optional index (shared by both left and right), used in output.
+
     """
     assert_class_equal(left, right)
 
     if isinstance(left, Strings) and isinstance(right, Strings):
         assert_arkouda_strings_equal(
-            left, right, err_msg=err_msg, check_same=check_same, obj=obj, index_values=index_values
+            left,
+            right,
+            err_msg=err_msg,
+            check_same=check_same,
+            obj=obj,
+            index_values=index_values,
         )
     elif isinstance(left, Categorical) and isinstance(right, Categorical):
         assert_arkouda_array_equal(
@@ -771,7 +800,7 @@ def assert_arkouda_array_equal(
             check_same=check_same,
             obj=obj,
         )
-    else:
+    elif isinstance(left, pdarray) and isinstance(right, pdarray):
         assert_arkouda_pdarray_equal(
             left,
             right,
@@ -780,6 +809,11 @@ def assert_arkouda_array_equal(
             check_same=check_same,
             obj=obj,
             index_values=index_values,
+        )
+    else:
+        raise TypeError(
+            "assert_arkouda_array_equal can only compare arrays of matching type: "
+            "pdarray | Strings | Categorical | SegArray"
         )
 
 
@@ -838,6 +872,7 @@ def assert_series_equal(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> from arkouda import testing as tm
     >>> a = ak.Series([1, 2, 3, 4])
     >>> b = ak.Series([1, 2, 3, 4])
@@ -987,6 +1022,8 @@ def assert_frame_equal(
 
     Examples
     --------
+    >>> import arkouda as ak
+
     This example shows comparing two DataFrames that are equal
     but with columns of differing dtypes.
 
@@ -995,12 +1032,10 @@ def assert_frame_equal(
     >>> df2 = ak.DataFrame({'a': [1, 2], 'b': [3.0, 4.0]})
 
     df1 equals itself.
-
     >>> assert_frame_equal(df1, df1)
 
     df1 differs from df2 as column 'b' is of a different type.
-
-    >>> assert_frame_equal(df1, df2)
+    >>> assert_frame_equal(df1, df2) # doctest: +SKIP
     Traceback (most recent call last):
     ...
     AssertionError: Attributes of DataFrame.iloc[:, 1] (column name="b") are different
@@ -1129,7 +1164,7 @@ def assert_contains_all(iterable, dic) -> None:
 
 def assert_copy(iter1, iter2, **eql_kwargs) -> None:
     """
-    Checks that the elements are equal, but not the same object.
+    Check that the elements are equal, but not the same object.
     (Does not check that items in sequences are also not the same object.)
 
     Parameters

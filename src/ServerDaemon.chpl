@@ -38,6 +38,8 @@ module ServerDaemon {
     
     var serverDaemonTypes = try! getDaemonTypes();
 
+    private var numAsyncTasks: atomic int;
+
     /**
      * Retrieves a list of 1..n ServerDaemonType objects generated 
      * from the comma-delimited list of ServerDaemonType strings
@@ -75,7 +77,7 @@ module ServerDaemon {
      * Returns a boolean indicating if there are multiple ServerDaemons
      */
     proc multipleServerDaemons() {
-        return serverDaemonTypes.size > 1;
+        return ( serverDaemonTypes.size + numAsyncTasks.read() ) > 1;
     }
 
     /**
@@ -354,6 +356,7 @@ module ServerDaemon {
             registerFunction("str", strMsg);
             registerFunction("repr", reprMsg);
             registerFunction("getconfig", getconfigMsg);
+            registerFunction('getRegistrationConfig', getRegistrationConfig);
             registerFunction("getmemused", getmemusedMsg);
             registerFunction("getavailmem", getmemavailMsg);
             registerFunction("getmemstatus", getMemoryStatusMsg);
@@ -370,6 +373,7 @@ module ServerDaemon {
             registerFunction("disconnect", akMsgSign);
             registerFunction("noop", akMsgSign);
             registerFunction("ruok", akMsgSign);
+            registerFunction("wait_for_async_activity", akMsgSign);
             registerFunction("shutdown", akMsgSign);
         }
         
@@ -510,15 +514,17 @@ module ServerDaemon {
                 this.printServerSplashMessage(this.serverToken,this.arkDirectory);
             }
             this.registerServerCommands();
+            startAsyncCheckpointTask();
                     
             var startTime = timeSinceEpoch().totalSeconds();
         
             while !this.shutdownDaemon {
+                serverIdleStart();
+
                 // receive message on the zmq socket
                 var reqMsgRaw = socket.recv(bytes);
 
                 this.reqCount += 1;
-
                 var s0 = timeSinceEpoch().totalSeconds();
 
                 /*
@@ -527,7 +533,6 @@ module ServerDaemon {
                  * remaining payload.
                  */
                 var (rawRequest, _) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
-                var user, token, cmd: string;
 
                 // parse requests, execute requests, format responses
                 /*
@@ -537,22 +542,23 @@ module ServerDaemon {
                     */
                 var request : string;
 
-                try! {
+                try {
                     request = rawRequest.decode();
                 } catch e: DecodeError {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                         "illegal byte sequence in command: %?".format(
                                         rawRequest.decode(decodePolicy.replace)));
                     sendRepMsg(MsgTuple.error(e.message()), "Unknown");
+                    continue;
                 }
 
                 // deserialize the decoded, JSON-formatted cmdStr into a RequestMsg
-                var msg: RequestMsg  = extractRequest(request);
-                user   = msg.user;
-                token  = msg.token;
-                cmd    = msg.cmd;
-                var format = msg.format;
-                var args   = msg.args;
+                const msg: RequestMsg = extractRequest(request);
+                const user   = msg.user;
+                const token  = msg.token;
+                const cmd    = msg.cmd;
+                const format = msg.format;
+                const args   = msg.args;
                 var size: int;
                 try {
                         size = msg.size: int;
@@ -561,9 +567,10 @@ module ServerDaemon {
                     sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                             "Argument List size is not an integer. %s cannot be cast".format(msg.size));
                     sendRepMsg(MsgTuple.error(e.message()), "Unknown");
+                    continue;
                 }
 
-                var msgArgs: owned MessageArgs;
+                const msgArgs: owned MessageArgs;
                 if size > 0 {
                     if reqMsgRaw.endsWith(b"BINARY_PAYLOAD")
                         then msgArgs = parseMessageArgs(args, size, socket.recv(bytes));
@@ -576,7 +583,7 @@ module ServerDaemon {
                 sdLogger.info(getModuleName(),
                                 getRoutineName(),
                                 getLineNumber(),
-                                "MessageArgs: %?".format(msgArgs));
+                                "Command: %s MessageArgs: %?".format(cmd, msgArgs));
 
                 /*
                 * If authentication is enabled with the --authenticate flag, authenticate
@@ -657,35 +664,31 @@ module ServerDaemon {
                         when "ruok" {
                             repMsg = new MsgTuple("imok", MsgType.NORMAL);
                         }
-                        otherwise { // Look up in CommandMap or Binary CommandMap
+                        when "wait_for_async_activity" {
+                            repMsg = MsgTuple.success(waitForActivityMutex());
+                        }
+                        when "" {
+                            repMsg = MsgTuple.error("Server received an empty command");
+                        }
+                        otherwise { // Look up in CommandMap
+                            serverIdleStop();
                             if commandMap.contains(cmd) {
+                                activityMutex.writeEF("server");
+                                defer { activityMutex.readFE(); }
+                                serverActivityMark();
+
                                 repMsg = executeCommand(cmd, msgArgs, st);
                             } else {
-                                const (multiDimCommand, nd, rawCmd) = getNDSpec(cmd),
-                                      command1D = rawCmd + "1D";
-                                if multiDimCommand && nd > ServerConfig.MaxArrayDims && commandMap.contains(command1D) {
-                                    const errMsg = "Error: Command '%s' is not supported with the current server configuration "
-                                                    .format(cmd) +
-                                                    "as the maximum array dimensionality is %i. Please recompile with support for at least %iD arrays"
-                                                    .format(ServerConfig.MaxArrayDims, nd);
-                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
-                                } else if multiDimCommand && commandMap.contains(rawCmd) {
-                                    const errMsg = "Error: Command '%s' is not supported for multidimensional arrays".format(rawCmd);
-                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
-                                    repMsg = new MsgTuple(errMsg, MsgType.ERROR);
-                                } else {
-                                    const errorMsg = "Unrecognized command: %s".format(cmd);
-                                    sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                                    repMsg = new MsgTuple(errorMsg, MsgType.ERROR);
-                                }
+                                const errorMsg = "Unrecognized command: %s".format(cmd);
+                                sdLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                                repMsg = MsgTuple.error(errorMsg);
                             }
                         }
                     }
 
                     (response, wasError) = sendRepMsg(repMsg, user);
                 } catch e {
-                    (response, wasError) = sendRepMsg(MsgTuple.error("Error executing command: %s".format(e.message())), user);
+                    (response, wasError) = sendRepMsg(MsgTuple.error("Error executing command %s: %s".format(cmd, e.message())), user);
                 }
 
                 var elapsedTime = timeSinceEpoch().totalSeconds() - s0;
@@ -739,23 +742,52 @@ module ServerDaemon {
                                                                             elapsed));
             this.shutdown(); 
         }
-    }
 
-    /*
-      Determines whether a command contains an ND specification, e.g. 1D, 2D, 3D, etc.
+        // Guard mutually-exclusive activities such as the main "server"
+        // and asynchronous checkpointing.
+        var activityMutex: sync string;
 
-      If it does, returns a tuple containing (true, <array-dimension>, "<raw_cmd>")
-      Otherwise, returns (false, 0, "")
-    */
-    private proc getNDSpec(cmd: string): (bool, int, string) {
-        import Regex.regex;
+        // Time stamp when the server started being idle.
+        // 0 if it is currently not idle.
+        var idlePeriodStart: atomic real;
 
-        const ndCmd = try! new regex("([a-zA-Z_]+)(\\d+)?D");
-        var cmdString: string, nd: int;
-        if ndCmd.match(cmd, cmdString, nd) {
-            if nd != 0 then return (true, nd, cmdString);
+        // Has the server received non-trivial commands?
+        var seenNotableActivity: atomic bool;
+
+        /* Starts a task for asynchronous checkpointing. */
+        proc startAsyncCheckpointTask() {
+          numAsyncTasks.add(1);
+          const taskStarted = funStartAsyncCheckpointDaemon(this);
+          if ! taskStarted then
+            numAsyncTasks.sub(1);
         }
-        return (false, 0, "");
+
+        /* Indicates that the server is "idle".
+           Records "now" as the time when idle-ness started,
+           unless the server is already "idle", in which case
+           the previous idle-start time is preserved. */
+        proc serverIdleStart() {
+          var notIdle = 0: real;  // compareExchange needs a ref
+          idlePeriodStart.compareExchange(notIdle, currentTime());
+        }
+
+        /* Indicates that the server is no longer "idle". */
+        proc serverIdleStop() {
+          idlePeriodStart.write(0);
+        }
+
+        proc serverActivityMark() {
+          seenNotableActivity.write(true);
+        }
+
+        /* Waits until 'activityMutex' is empty; leaves it empty. */
+        proc waitForActivityMutex() {
+          // 'isFull' is unstable: if ! activityMutex.isFull then return;
+          activityMutex.writeEF("waitForMutex");
+          activityMutex.readFE();
+          return "completed";
+        }
+          
     }
 
     /**
@@ -773,11 +805,8 @@ module ServerDaemon {
             this.port = try! getEnv('METRICS_SERVER_PORT','5556'):int;
 
             try! this.socket.bind("tcp://*:%?".format(this.port));
-            try! sdLogger.debug(getModuleName(), 
-                                getRoutineName(), 
-                                getLineNumber(),
-                                "initialized and listening in port %i".format(
-                                this.port));
+            sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                           "initialized and listening in port ", this.port: string);
         }
 
         override proc run() throws {
@@ -877,11 +906,8 @@ module ServerDaemon {
             this.port = try! getEnv('SERVER_STATUS_PORT','5557'):int;
 
             try! this.socket.bind("tcp://*:%?".format(this.port));
-            try! sdLogger.debug(getModuleName(), 
-                                getRoutineName(), 
-                                getLineNumber(),
-                                "initialized and listening in port %i".format(
-                                this.port));
+            sdLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                           "initialized and listening in port ", this.port: string);
         }
 
         override proc run() throws {

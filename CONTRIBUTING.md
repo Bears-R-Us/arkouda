@@ -60,16 +60,18 @@ Our Continuous Integration workflow has a linter (`flake8`) to verify all our py
 
 We use `isort`, `black`, and `flake8` (typically in that order) to ensure our code is consistent.
 We utilize a line length of 105. When running `black`, be sure to to use the `--line-length 105` parameter.
+Please use `make ruff-format` and `make isort` to ensure consistency across contributors.
 
 ```bash
-$ isort arkouda/example_feature.py
-Fixing arkouda/example_feature.py
+$ make isort
+isort --gitignore --float-to-top arkouda
+Skipped 34 files
+isort --gitignore --float-to-top tests
+Skipped 1 files
 
 $ black --line-length 105 arkouda/example_feature.py
-reformatted arkouda/example_feature.py
-
-All done!
-1 file reformatted.
+All done! ✨ 🍰 ✨
+27 files reformatted, 67 files left unchanged.
 
 $ flake8 arkouda/example_feature.py
 ```

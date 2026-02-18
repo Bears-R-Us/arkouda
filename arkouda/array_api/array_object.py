@@ -1,5 +1,14 @@
 """
-Wrapper class around the ndarray object for the array API standard.
+__all__ = [
+    'Array',
+    'implements_numpy',
+]
+
+Wrapper class around the pdarray object for the array API standard.
+
+The information below can be found online here:
+
+https://pydoc.dev/numpy/latest/numpy.array_api._array_object.html
 
 The array API standard defines some behaviors differently than ndarray, in
 particular, type promotion rules are different (the standard has no
@@ -29,6 +38,12 @@ from typing import (
     cast,
 )
 
+import numpy as np
+
+import arkouda as ak
+from arkouda import array_api
+from arkouda.numpy.pdarraycreation import scalar_array
+
 from ._dtypes import (  # _all_dtypes,; _integer_or_boolean_dtypes,; _numeric_dtypes,
     _boolean_dtypes,
     _complex_floating_dtypes,
@@ -42,23 +57,18 @@ from .creation_functions import asarray
 if TYPE_CHECKING:
     from ._typing import Device, Dtype
 
-import numpy as np
-
-import arkouda as ak
-from arkouda import array_api
-from arkouda.pdarraycreation import scalar_array
 
 HANDLED_FUNCTIONS: Dict[str, Callable] = {}
 
 
 class Array:
     """
-    n-d array object for the array API namespace.
+    n-dimensional array object for the array API namespace.
 
     See the docstring of :py:obj:`np.ndarray <numpy.ndarray>` for more
     information.
 
-    This is a wrapper around numpy.ndarray that restricts the usage to only
+    This is a wrapper around ak.pdarray that restricts the usage to only
     those things that are required by the array API namespace. Note,
     attributes on this object that start with a single underscore are not part
     of the API specification and should only be used internally. This object
@@ -71,7 +81,7 @@ class Array:
     _empty: bool
 
     # Use a custom constructor instead of __init__, as manually initializing
-    # this class is not supported API.
+    # this class is not supported by the API.
     @classmethod
     def _new(cls, x, /, empty: bool = False):
         """
@@ -97,13 +107,19 @@ class Array:
 
     def tolist(self):
         """
-        Convert the array to a Python list or nested lists
+        Convert the array to a Python list or nested lists, using the pdarray
+        method tolist.
 
         This involves copying the data from the server to the client, and thus
         will fail if the array is too large (see:
         :func:`~arkouda.client.maxTransferBytes`)
+
+        See Also
+        --------
+        pdarray.tolist()
+
         """
-        x = self._array.to_list()
+        x = self._array.tolist()
         if self.shape == ():
             # to match numpy, return a scalar for a 0-dimensional array
             return x[0]
@@ -112,11 +128,16 @@ class Array:
 
     def to_ndarray(self):
         """
-        Convert the array to a numpy ndarray
+        Convert the array to a numpy ndarray, using the pdarray method to_ndarray.
 
         This involves copying the data from the server to the client, and thus
         will fail if the array is too large (see:
         :func:`~arkouda.client.maxTransferBytes`)
+
+        See Also
+        --------
+        pdarray.to_ndarray()
+
         """
         return self._array.to_ndarray()
 
@@ -136,33 +157,24 @@ class Array:
         Return a view of the array with the specified axes transposed.
 
         For axes=None, reverse all the dimensions of the array.
+
+        See Also
+        --------
+        ak.transpose()
+
         """
-        from .manipulation_functions import permute_dims
 
-        if axes is None:
-            _axes = tuple(range(self.ndim - 1, -1, -1))
-        else:
-            if len(axes) < self.ndim:
-                _axes_list = list(range(0, self.ndim))
-                for i, j in enumerate(axes):
-                    _axes_list[i] = j
-                _axes = tuple(_axes_list)
-            elif len(axes) == self.ndim:
-                _axes = tuple(axes)
-            else:
-                raise ValueError("number of axes don't match array dimensions")
-
-        return permute_dims(self, _axes)
+        return asarray(ak.transpose(self._array, axes))
 
     def __str__(self: Array, /) -> str:
         """
-        Performs the operation __str__.
+        Perform the operation __str__.
         """
         return self._array.__str__()
 
     def __repr__(self: Array, /) -> str:
         """
-        Performs the operation __repr__.
+        Perform the operation __repr__.
         """
         return f"Arkouda Array ({self.shape}, {self.dtype})" + self._array.__str__()
 
@@ -200,8 +212,9 @@ class Array:
             extract_chunk(
                 cast(
                     str,
-                    ak.generic_msg(
-                        cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>", args={"array": self._array}
+                    ak.client.generic_msg(
+                        cmd=f"chunkInfoAsString<{self.dtype},{self.ndim}>",
+                        args={"array": self._array},
                     ),
                 )  # string returned has format "str {list of lists}"
             )
@@ -224,7 +237,9 @@ class Array:
         self, other: bool | int | float | Array, dtype_category: str, op: str
     ) -> Array:
         """
-        Helper function for operators to only allow specific input dtypes
+        Allow only specific input dtypes.
+
+        Helper function for operators.
 
         Use like
 
@@ -266,7 +281,7 @@ class Array:
     # Helper function to match the type promotion rules in the spec
     def _promote_scalar(self, scalar) -> Array:
         """
-        Returns a promoted version of a Python scalar appropriate for use with
+        Return a promoted version of a Python scalar appropriate for use with
         operations on self.
 
         This may raise an OverflowError in cases where the scalar is an
@@ -319,8 +334,8 @@ class Array:
         >>> import numpy as np
         >>> a = np.array([1.0], dtype=np.float32)
         >>> b = np.array(1.0, dtype=np.float64)
-        >>> np.add(a, b) # The spec says this should be float64
-        array([2.], dtype=float32)
+        >>> np.add(a, b).dtype # The spec says this should be float64
+        dtype('float64')
 
         To fix this, we add a dimension to the 0-dimension array before passing it
         through. This works because a dimension would be added anyway from
@@ -351,8 +366,14 @@ class Array:
     def __abs__(self: Array, /) -> Array:
         """
         Take the element-wise absolute value of the array.
+
+        See Also
+        --------
+        ak.abs()
+
         """
-        return self
+
+        return ak.abs(self._array)
 
     def __add__(self: Array, other: Union[int, float, Array], /) -> Array:
         """
@@ -389,8 +410,7 @@ class Array:
             return bool(s)
         else:
             raise ValueError(
-                "The truth value of an array with more than one element is ambiguous. "
-                "Use 'any' or 'all'"
+                "The truth value of an array with more than one element is ambiguous. Use 'any' or 'all'"
             )
 
     def __complex__(self: Array, /) -> complex:
@@ -558,9 +578,12 @@ class Array:
         """
         Compute the matrix multiplication of this array with another array.
 
-        Warning: Not implemented.
+        See Also
+        --------
+        ak.matmul()
         """
-        raise ValueError("Not implemented")
+        #       raise ValueError("Not implemented")
+        return asarray(ak.matmul(self._array, other._array))
 
     def __mod__(self: Array, other: Union[int, float, Array], /) -> Array:
         """
@@ -573,7 +596,7 @@ class Array:
 
     def __mul__(self: Array, other: Union[int, float, Array], /) -> Array:
         """
-        Compute the product of this array and another array or scalar.
+        Compute the element-wise product of this array and another array or scalar.
         """
         if isinstance(other, (int, float)):
             return Array._new(self._array * other)

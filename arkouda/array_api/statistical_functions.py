@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
 
+import numpy as np
+
+from arkouda.numpy import cast as akcast
+from arkouda.numpy.dtypes import dtype as akdtype
+from arkouda.numpy.pdarrayclass import create_pdarray
+
 from ._dtypes import (  # _complex_floating_dtypes,; complex128,
     _numeric_dtypes,
     _real_floating_dtypes,
@@ -14,15 +20,22 @@ from ._dtypes import (  # _complex_floating_dtypes,; complex128,
 from .array_object import Array, implements_numpy
 from .manipulation_functions import squeeze
 
+__all__ = [
+    "_prod_sum_dtype",
+    "cumulative_sum",
+    "max",
+    "mean",
+    "mean_shim",
+    "min",
+    "prod",
+    "std",
+    "sum",
+    "var",
+]
+
+
 if TYPE_CHECKING:
     from ._typing import Dtype
-
-import numpy as np
-
-from arkouda.client import generic_msg
-from arkouda.numpy import cast as akcast
-from arkouda.numpy.dtypes import dtype as akdtype
-from arkouda.pdarrayclass import create_pdarray
 
 
 def max(
@@ -44,17 +57,14 @@ def max(
         entire array is computed (returning a scalar-array).
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
+
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in max")
 
     from arkouda import max as ak_max
 
-    arr = Array._new(ak_max(x._array, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_max(x._array, axis=axis, keepdims=keepdims))
 
 
 # this is a temporary fix to get mean working with XArray
@@ -86,6 +96,8 @@ def mean(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
+    from arkouda.client import generic_msg
+
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in mean")
 
@@ -97,10 +109,10 @@ def mean(
     arr = Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"meanReduce<{x.dtype},{x.ndim}>",
+                cmd=f"mean<{x.dtype},{x.ndim}>",
                 args={
                     "x": x._array,
-                    "axes": axis_list,
+                    "axis": axis_list,
                     "skipNan": True,  # TODO: handle all-nan slices
                 },
             )
@@ -138,11 +150,7 @@ def min(
 
     from arkouda import min as ak_min
 
-    arr = Array._new(ak_min(x._array, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_min(x._array, axis=axis, keepdims=keepdims))
 
 
 def prod(
@@ -180,11 +188,7 @@ def prod(
 
     from arkouda import prod as ak_prod
 
-    arr = Array._new(ak_prod(x_op, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_prod(x_op, axis=axis, keepdims=keepdims))
 
 
 # Not working with XArray yet, pending a fix for:
@@ -212,6 +216,8 @@ def std(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
+    from arkouda.client import generic_msg
+
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in std")
     if correction < 0:
@@ -229,7 +235,7 @@ def std(
                 args={
                     "x": x._array,
                     "ddof": correction,
-                    "axes": axis_list,
+                    "axis": axis_list,
                     "skipNan": True,
                 },
             )
@@ -277,11 +283,7 @@ def sum(
 
     from arkouda import sum as ak_sum
 
-    arr = Array._new(ak_sum(x_op, axis=axis))
-    if keepdims or axis is None or x.ndim == 1:
-        return arr
-    else:
-        return squeeze(arr, axis)
+    return Array._new(ak_sum(x_op, axis=axis, keepdims=keepdims))
 
 
 # Not working with XArray yet, pending a fix for:
@@ -309,6 +311,8 @@ def var(
     keepdims : bool, optional
         Whether to keep the singleton dimension(s) along `axis` in the result.
     """
+    from arkouda.client import generic_msg
+
     # Note: the keyword argument correction is different here
     if x.dtype not in _real_floating_dtypes:
         raise TypeError("Only real floating-point dtypes are allowed in var")
@@ -327,7 +331,7 @@ def var(
                 args={
                     "x": x._array,
                     "ddof": correction,
-                    "axes": axis_list,
+                    "axis": axis_list,
                     "skipNan": True,
                 },
             )
@@ -376,6 +380,7 @@ def cumulative_sum(
     include_initial : bool, optional
         Whether to include the initial value as the first element of the output.
     """
+    from arkouda.client import generic_msg
 
     if dtype is None:
         x_ = x

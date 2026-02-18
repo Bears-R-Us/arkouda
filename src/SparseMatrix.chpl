@@ -467,36 +467,91 @@ module SparseMatrix {
     return A;
   }
 
-  proc sparseMatFromArrays(rows, cols, vals, shape: 2*int, param layout, type eltType) throws {
+  proc sparseMatFromArrays(rows, cols, vals, shape: 2*int, param layout,
+                           type eltType) throws {
     import SymArrayDmap.makeSparseDomain;
     var (SD, dense) = makeSparseDomain(shape, layout);
 
-    for i in 0..<rows.size {
-      if SD.contains((rows[i], cols[i])) then
-        throw getErrorWithContext(
-                                  msg="Duplicate index (%i, %i) in sparse matrix".format(rows[i], cols[i]),
-                                  lineNumber=getLineNumber(),
-                                  routineName=getRoutineName(),
-                                  moduleName=getModuleName(),
-                                  errorClass="InvalidArgumentError"
-                                  );
-      if rows[i] < 1 || rows[i] > shape[0] || cols[i] < 1 || cols[i] > shape[1] then
-        throw getErrorWithContext(
-                                  msg="Index (%i, %i) out of bounds for sparse matrix of shape (%i, %i)".format(rows[i], cols[i], shape[0], shape[1]),
-                                  lineNumber=getLineNumber(),
-                                  routineName=getRoutineName(),
-                                  moduleName=getModuleName(),
-                                  errorClass="InvalidArgumentError"
-                                  );
-      SD += (rows[i], cols[i]);
-    }
+    const minRow = min reduce rows;
+    const maxRow = max reduce rows;
+    const minCol = min reduce cols;
+    const maxCol = max reduce cols;
+    param e1 = "Sparse matrix indices must be greater than 0; got (%i, %i)";
+    param e2 = "Sparse matrix indices must be less than the shape;"
+               +"got (%i, %i) >= (%i, %i)";
+    if minRow < 0 || minCol < 0 then
+      throw getErrorWithContext(
+         // TODO, change this when we start matrix from 0 instead of 1
+        msg=e1.format(minRow, minCol),
+        lineNumber=getLineNumber(),
+        routineName=getRoutineName(),
+        moduleName=getModuleName(),
+        errorClass="InvalidArgumentError"
+        );
+    if maxRow >= shape[0] || maxCol >= shape[1] then
+      throw getErrorWithContext(
+        msg=e2.format(maxRow, maxCol, shape[0], shape[1]),
+        lineNumber=getLineNumber(),
+        routineName=getRoutineName(),
+        moduleName=getModuleName(),
+        errorClass="InvalidArgumentError"
+        );
 
     var A: [SD] eltType;
-    for i in 0..<rows.size {
-      A[rows[i], cols[i]] = vals[i];
-    }
+    addElementsToSparseArray(A, SD, rows, cols, vals);
 
     return A;
+  }
+
+  proc addElementsToSparseArray(ref A, ref SD, const ref rows,const ref cols,
+                                const ref vals) throws where
+                                A.chpl_isNonDistributedArray() {
+    for (r,c,v) in zip(rows, cols, vals) {
+      if A.domain.contains(r,c) then
+        throw getErrorWithContext(
+          msg="Duplicate index (%i, %i) in sparse matrix".format(r, c),
+          lineNumber=getLineNumber(),
+          routineName=getRoutineName(),
+          moduleName=getModuleName(),
+          errorClass="InvalidArgumentError"
+          );
+      SD += (r,c);
+      A[r,c] = v;
+    }
+  }
+
+
+  proc addElementsToSparseArray(ref A, ref SD, const ref rows, const ref cols,
+                                const ref vals) throws where
+                                !A.chpl_isNonDistributedArray() {
+    coforall (loc, locDom) in zip(getGrid(A),
+                                  SD._value.locDoms) {
+      on loc {
+        for _srcLocId in loc.id..#numLocales {
+          const srcLocId = _srcLocId % numLocales;
+          var rowChunk = rows[rows.localSubdomain(Locales[srcLocId])];
+          var colChunk = cols[rows.localSubdomain(Locales[srcLocId])];
+          var valChunk = vals[rows.localSubdomain(Locales[srcLocId])];
+          for (r,c,v) in zip(rowChunk, colChunk, valChunk) {
+            if locDom!.parentDom.contains(r,c) {
+              if locDom!.mySparseBlock.contains(r,c) then
+                throw getErrorWithContext(
+                  msg="Duplicate index (%i, %i) in sparse matrix".format(r, c),
+                  lineNumber=getLineNumber(),
+                  routineName=getRoutineName(),
+                  moduleName=getModuleName(),
+                  errorClass="InvalidArgumentError"
+                  );
+
+
+              locDom!.mySparseBlock += (r,c);
+              A[r,c] = v;
+            }
+          }
+        }
+      }
+    }
+
   }
 
   module SpsMatUtil {
@@ -505,13 +560,12 @@ module SparseMatrix {
     //
     //  public use LayoutCSUtil, SparseBlockDistUtil;
 
-    use BlockDist, LayoutCS, Map, Random;
+    use BlockDist, Map, Random;
 
     enum Layout {
       CSR,
       CSC
     };
-    // public use layout;
 
     config const seed = 0;
 
@@ -560,9 +614,10 @@ module SparseMatrix {
     // create a new sparse matrix from a map from sparse indices to values
     //
     proc makeSparseMat(parentDom, spsData) {
+      use ArkoudaSparseMatrixCompat;
       use Sort;
 
-      var CDom: sparse subdomain(parentDom) dmapped new dmap(new CS());
+      var CDom: sparse subdomain(parentDom) dmapped getSparseDom(Layout.CSR);
       var inds: [0..<spsData.size] 2*int;
       for (idx, i) in zip(spsData.keys(), 0..) do
         inds[i] = idx;

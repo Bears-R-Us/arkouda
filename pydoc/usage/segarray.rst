@@ -20,7 +20,7 @@ Because ``SegArray`` is currently processing entirely on the Arkouda client side
 
 Similar to ``Strings``, ``SegArrays`` will be moved to process server side. This will remove the ability to natively iterate to discourage transferring all of the objects data to the client. In order to support this moving forward, ``SegArray`` includes a ``to_ndarray()`` function. It is recommended that this function be used for iteration over ``SegArray`` objects, to prevent issues associated with moving processing server side. For more information on the usage of ``to_ndarray`` with SegArray
 
-.. autofunction:: arkouda.SegArray.to_ndarray
+.. autofunction:: arkouda.numpy.SegArray.to_ndarray
 
 Operation
 ===========
@@ -36,51 +36,51 @@ SegArray Specific Methods
 
 Prefix & Suffix
 -----------
-.. autofunction:: arkouda.SegArray.get_prefixes
+.. autofunction:: arkouda.numpy.SegArray.get_prefixes
 
-.. autofunction:: arkouda.SegArray.get_suffixes
+.. autofunction:: arkouda.numpy.SegArray.get_suffixes
 
 NGrams
 ----------
-.. autofunction:: arkouda.SegArray.get_ngrams
+.. autofunction:: arkouda.numpy.SegArray.get_ngrams
 
 Sub-array of Size
 ----------
-.. autofunction:: arkouda.SegArray.get_length_n
+.. autofunction:: arkouda.numpy.SegArray.get_length_n
 
 Access/Set Specific Elements in Sub-Array
 ----------
-.. autofunction:: arkouda.SegArray.get_jth
+.. autofunction:: arkouda.numpy.SegArray.get_jth
 
-.. autofunction:: arkouda.SegArray.set_jth
+.. autofunction:: arkouda.numpy.SegArray.set_jth
 
 Append & Prepend
 ----------
-.. autofunction:: arkouda.SegArray.append
+.. autofunction:: arkouda.numpy.SegArray.append
 
-.. autofunction:: arkouda.SegArray.append_single
+.. autofunction:: arkouda.numpy.SegArray.append_single
 
-.. autofunction:: arkouda.SegArray.prepend_single
+.. autofunction:: arkouda.numpy.SegArray.prepend_single
 
 Deduplication
 ----------
-.. autofunction:: arkouda.SegArray.remove_repeats
+.. autofunction:: arkouda.numpy.SegArray.remove_repeats
 
 SegArray SetOps
 ===============
 
 Union
 -----
-.. autofunction:: arkouda.SegArray.union
+.. autofunction:: arkouda.numpy.SegArray.union
 
 Intersect
 ---------
-.. autofunction:: arkouda.SegArray.intersect
+.. autofunction:: arkouda.numpy.SegArray.intersect
 
 Set Difference
 --------------
-.. autofunction:: arkouda.SegArray.setdiff
+.. autofunction:: arkouda.numpy.SegArray.setdiff
 
 Symmetric Difference
 --------------------
-.. autofunction:: arkouda.SegArray.setxor
+.. autofunction:: arkouda.numpy.SegArray.setxor

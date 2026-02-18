@@ -17,31 +17,31 @@ class TestBitOps:
 
     def test_popcount(self):
         for arr in self.int_arr, self.uint_arr, self.bigint_arr:
-            assert arr.popcount().to_list() == [0, 1, 1, 2, 1, 2, 2, 3, 1, 2]
+            assert arr.popcount().tolist() == [0, 1, 1, 2, 1, 2, 2, 3, 1, 2]
 
         for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
-            assert ak.popcount(arr).to_list() == [1, 64, 63]
+            assert ak.popcount(arr).tolist() == [1, 64, 63]
 
     def test_parity(self):
         for arr in self.int_arr, self.uint_arr, self.bigint_arr:
-            assert arr.parity().to_list() == [0, 1, 1, 0, 1, 0, 0, 1, 1, 0]
+            assert arr.parity().tolist() == [0, 1, 1, 0, 1, 0, 0, 1, 1, 0]
 
         for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
-            assert ak.parity(arr).to_list() == [1, 0, 1]
+            assert ak.parity(arr).tolist() == [1, 0, 1]
 
     def test_clz(self):
         for arr in self.int_arr, self.uint_arr, self.bigint_arr:
-            assert arr.clz().to_list() == [64, 63, 62, 62, 61, 61, 61, 61, 60, 60]
+            assert arr.clz().tolist() == [64, 63, 62, 62, 61, 61, 61, 61, 60, 60]
 
         for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
-            assert ak.clz(arr).to_list() == [0, 0, 1]
+            assert ak.clz(arr).tolist() == [0, 0, 1]
 
     def test_ctz(self):
         for arr in self.int_arr, self.uint_arr, self.bigint_arr:
-            assert arr.ctz().to_list() == [0, 0, 1, 0, 2, 0, 1, 0, 3, 0]
+            assert arr.ctz().tolist() == [0, 0, 1, 0, 2, 0, 1, 0, 3, 0]
 
         for arr in self.edge_cases, self.edge_cases_uint, self.edge_cases_bigint:
-            assert ak.ctz(arr).to_list() == [63, 0, 0]
+            assert ak.ctz(arr).tolist() == [63, 0, 0]
 
     def test_bigint_bitops(self):
         # compare against int pdarray with variety of max_bits, should be the same except for clz
@@ -58,10 +58,10 @@ class TestBitOps:
             # base_clz plus the difference between max_bits and the number bits used to store the bigint
             clz_ans = base_clz + (max_bits - 64)
 
-            assert pop_ans.to_list() == bi.popcount().to_list()
-            assert par_ans.to_list() == bi.parity().to_list()
-            assert clz_ans.to_list() == bi.clz().to_list()
-            assert ctz_ans.to_list() == bi.ctz().to_list()
+            assert pop_ans.tolist() == bi.popcount().tolist()
+            assert par_ans.tolist() == bi.parity().tolist()
+            assert clz_ans.tolist() == bi.clz().tolist()
+            assert ctz_ans.tolist() == bi.ctz().tolist()
 
         # set one more bit (the 201st)
         bi += 2**200
@@ -76,10 +76,10 @@ class TestBitOps:
             bi.max_bits = max_bits
             clz_ans = ak.full_like(bi, max_bits - 201)
 
-            assert pop_ans.to_list() == bi.popcount().to_list()
-            assert par_ans.to_list() == bi.parity().to_list()
-            assert clz_ans.to_list() == bi.clz().to_list()
-            assert ctz_ans.to_list() == bi.ctz().to_list()
+            assert pop_ans.tolist() == bi.popcount().tolist()
+            assert par_ans.tolist() == bi.parity().tolist()
+            assert clz_ans.tolist() == bi.clz().tolist()
+            assert ctz_ans.tolist() == bi.ctz().tolist()
 
         # test with lots of trailing zeros
         bi = ak.bigint_from_uint_arrays(
@@ -105,10 +105,10 @@ class TestBitOps:
             # so we want the 128 bits after accounted
             clz_ans[0] += 128
 
-            assert pop_ans.to_list() == bi.popcount().to_list()
-            assert par_ans.to_list() == bi.parity().to_list()
-            assert clz_ans.to_list() == bi.clz().to_list()
-            assert ctz_ans.to_list() == bi.ctz().to_list()
+            assert pop_ans.tolist() == bi.popcount().tolist()
+            assert par_ans.tolist() == bi.parity().tolist()
+            assert clz_ans.tolist() == bi.clz().tolist()
+            assert ctz_ans.tolist() == bi.ctz().tolist()
 
         # test edge cases
         edge_case = ak.cast(ak.array([-(2**63), -1, 2**63 - 1]), ak.uint64)
@@ -126,10 +126,10 @@ class TestBitOps:
             # base_clz plus the amount that max_bits exceeds the bits used to store the bigint
             clz_ans = base_clz + (max_bits - 192)
 
-            assert pop_ans.to_list() == bi.popcount().to_list()
-            assert par_ans.to_list() == bi.parity().to_list()
-            assert clz_ans.to_list() == bi.clz().to_list()
-            assert ctz_ans.to_list() == bi.ctz().to_list()
+            assert pop_ans.tolist() == bi.popcount().tolist()
+            assert par_ans.tolist() == bi.parity().tolist()
+            assert clz_ans.tolist() == bi.clz().tolist()
+            assert ctz_ans.tolist() == bi.ctz().tolist()
 
     @pytest.mark.parametrize("dtype", [bool, str, float])
     def test_dtypes_errors(self, dtype):
@@ -147,41 +147,41 @@ class TestBitOps:
         rotated = self.int_arr.rotl(5)
         shifted = self.int_arr << 5
         # No wraparound, so these should be equal
-        assert rotated.to_list() == shifted.to_list()
+        assert rotated.tolist() == shifted.tolist()
 
-        assert ak.rotl(self.edge_cases, 1).to_list() == [1, -1, -2]
+        assert ak.rotl(self.edge_cases, 1).tolist() == [1, -1, -2]
 
         # vector <<< vector
         rotated = self.int_arr.rotl(self.int_arr)
         shifted = self.int_arr << self.int_arr
         # No wraparound, so these should be equal
-        assert rotated.to_list() == shifted.to_list()
+        assert rotated.tolist() == shifted.tolist()
 
-        assert ak.rotl(self.edge_cases, ak.array([1, 1, 1])).to_list() == [1, -1, -2]
+        assert ak.rotl(self.edge_cases, ak.array([1, 1, 1])).tolist() == [1, -1, -2]
 
         # scalar <<< vector
         rotated = ak.rotl(-(2**63), self.int_arr)
-        assert rotated.to_list() == [-(2**63), 1, 2, 4, 8, 16, 32, 64, 128, 256]
+        assert rotated.tolist() == [-(2**63), 1, 2, 4, 8, 16, 32, 64, 128, 256]
 
     def test_rotr(self):
         # vector <<< scalar
         rotated = (1024 * self.int_arr).rotr(5)
         shifted = (1024 * self.int_arr) >> 5
         # No wraparound, so these should be equal
-        assert rotated.to_list() == shifted.to_list()
+        assert rotated.tolist() == shifted.tolist()
 
-        assert ak.rotr(self.edge_cases, 1).to_list() == [2**62, -1, -(2**62) - 1]
+        assert ak.rotr(self.edge_cases, 1).tolist() == [2**62, -1, -(2**62) - 1]
 
         # vector <<< vector
         rotated = (1024 * self.int_arr).rotr(self.int_arr)
         shifted = (1024 * self.int_arr) >> self.int_arr
         # No wraparound, so these should be equal
-        assert rotated.to_list() == shifted.to_list()
+        assert rotated.tolist() == shifted.tolist()
 
         r = ak.rotr(self.edge_cases, ak.array([1, 1, 1]))
-        assert r.to_list() == [2**62, -1, -(2**62) - 1]
+        assert r.tolist() == [2**62, -1, -(2**62) - 1]
 
         # scalar <<< vector
         rotated = ak.rotr(1, self.int_arr)
         ans = [1, -(2**63), 2**62, 2**61, 2**60, 2**59, 2**58, 2**57, 2**56, 2**55]
-        assert rotated.to_list() == ans
+        assert rotated.tolist() == ans

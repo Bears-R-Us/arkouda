@@ -1,8 +1,6 @@
 import numpy as np
-import pytest
 
 import arkouda as ak
-
 
 """
 Encapsulates unit tests for the pdarrayclass module that provide
@@ -11,7 +9,6 @@ summarized values via reduction methods
 
 
 class TestSummarization:
-
     @classmethod
     def setup_class(cls):
         cls.na = np.linspace(1, 10, 10)

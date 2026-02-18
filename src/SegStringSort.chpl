@@ -10,6 +10,7 @@ module SegStringSort {
   use Logging;
   use ServerConfig;
   use BlockDist;
+  import DynamicSort.dynamicTwoArrayRadixSort;
 
   private config const SSS_v = false;
   private const vv = SSS_v;
@@ -29,10 +30,10 @@ module SegStringSort {
   record StringIntComparator: keyPartComparator {
     proc keyPart((a0,_): (string, int), in i: int) {
       // Just run the default comparator on the string
-      return (new DefaultComparator()).keyPart(a0, i);
+      return (new defaultComparator()).keyPart(a0, i);
     }
   }
-  
+
   proc twoPhaseStringSort(ss: SegString): [ss.offsets.a.domain] int throws {
     var t = timeSinceEpoch().totalSeconds();
     const lengths = ss.getLengths();
@@ -42,9 +43,9 @@ module SegStringSort {
     // Compute length survival function and choose a pivot length
     const (pivot, nShort) = getPivot(lengths);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Computed pivot in %? seconds".format(timeSinceEpoch().totalSeconds() - t)); 
+                                       "Computed pivot in %? seconds".format(timeSinceEpoch().totalSeconds() - t));
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Pivot = %?, nShort = %?".format(pivot, nShort)); 
+                                       "Pivot = %?, nShort = %?".format(pivot, nShort));
     t = timeSinceEpoch().totalSeconds();
     const longStart = ss.offsets.a.domain.low + nShort;
     const isLong = (lengths >= pivot);
@@ -54,7 +55,7 @@ module SegStringSort {
     var longLocs = + scan isLong;
     locs -= longLocs;
     var gatherInds = makeDistArray(ss.offsets.a.domain, int);
-    forall (i, l, ll, t) in zip(ss.offsets.a.domain, locs, longLocs, isLong) 
+    forall (i, l, ll, t) in zip(ss.offsets.a.domain, locs, longLocs, isLong)
       with (var agg = newDstAggregator(int)) {
       if !t {
         agg.copy(gatherInds[l], i);
@@ -76,7 +77,7 @@ module SegStringSort {
       tl = timeSinceEpoch().totalSeconds();
       // Sort the strings, but bring the inds along for the ride
       const myComparator = new StringIntComparator();
-      sort(stringsWithInds, comparator=myComparator);
+      dynamicTwoArrayRadixSort(stringsWithInds, comparator=myComparator);
 
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                              "Sorted long strings in %? seconds".format(timeSinceEpoch().totalSeconds() - tl));
@@ -95,7 +96,7 @@ module SegStringSort {
                                           "Sorted ranks in %? seconds".format(timeSinceEpoch().totalSeconds() - t));
     return ranks;
   }
-  
+
   proc getPivot(lengths: [?D] int): 2*int throws {
     if !PARTITION_LONG_STRING {
       var pivot = max reduce lengths + 1;
@@ -137,13 +138,21 @@ module SegStringSort {
       return (pivot, nShort);
     }
   }
-  
+
   proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) throws {
     ref oa = ss.offsets.a;
     ref va = ss.values.a;
     const myD: domain(1) = D;
     const myInds = makeDistArray(longInds);
-    var stringsWithInds = makeDistArray(myD, (string, int));
+    // This forces the creation of a non-distributed array
+    // It's not clear if this is necessary, but it seems to be
+    // desired since on the previous line, we explicitly cast domain
+    // to a non-distributed domain.
+    // It is not clear if this was to work around a limitation of Chapel's
+    // sort routing from when this code was written, or if it is still
+    // necessary.
+    // Either way, it seems to work.
+    var stringsWithInds = myD.tryCreateArray((string, int));
     forall (i, si) in zip(myInds, stringsWithInds) {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
@@ -176,7 +185,7 @@ module SegStringSort {
   inline proc calcGlobalIndex(bucket: int, loc: int, task: int): int {
     return ((bucket * numLocales * numTasks) + (loc * numTasks) + task);
   }
-  
+
   proc radixSortLSD_raw(const ref offsets: [?aD] int, const ref lengths: [aD] int, const ref values: [] uint(8), const ref inds: [aD] int, const pivot: int): [aD] int throws {
     const numBuckets = 2**16;
     type state = (uint(8), uint(8), int, int, int);
@@ -215,7 +224,7 @@ module SegStringSort {
         }
       }
     }
-    
+
     var kr0 = makeDistArray(aD, state);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = 0");
     forall (k, rank) in zip(kr0, inds) with (var agg = newSrcAggregator(uint(8))) {
@@ -225,7 +234,7 @@ module SegStringSort {
     // create a global count array to scan
     var globalCounts = makeDistArray(numLocales * numTasks * numBuckets, int);
     var globalStarts = makeDistArray(numLocales * numTasks * numBuckets, int);
-        
+
     // loop over digits
     for rshift in {2..#pivot by 2} {
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = %?".format(rshift));
@@ -236,7 +245,7 @@ module SegStringSort {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts
-            var taskBucketCounts = makeDistArray(bD, int);
+            var taskBucketCounts =  bD.tryCreateArray(int); // Non-dist array
             // get local domain's indices
             var lD = kr0.localSubdomain();
             // calc task's indices from local domain's indices
@@ -263,7 +272,7 @@ module SegStringSort {
       // scan globalCounts to get bucket ends on each locale/task
       globalStarts = + scan globalCounts;
       globalStarts = globalStarts - globalCounts;
-            
+
       // calc new positions and permute
       coforall loc in Locales with (ref kr0, ref kr1) {
         on loc {
@@ -271,7 +280,7 @@ module SegStringSort {
             // bucket domain
             var bD = {0..#numBuckets};
             // allocate counts
-            var taskBucketPos = makeDistArray(bD, int);
+            var taskBucketPos = bD.tryCreateArray(int); // Non-dist array
             // get local domain's indices
             var lD = kr0.localSubdomain();
             // calc task's indices from local domain's indices
@@ -305,10 +314,10 @@ module SegStringSort {
               }
               aggregator.flush();
             }
-          }//coforall task 
+          }//coforall task
         }//on loc
       }//coforall loc
-            
+
       // copy back to k0 and r0 for next iteration
       // Only do this if there are more digits left
       // If this is the last digit, the negative-swapping code will copy the ranks

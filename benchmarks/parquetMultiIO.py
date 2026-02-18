@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 
-from multiIO import *
+from IO import COMPRESSIONS, FileFormat, remove_files
+from multiIO import check_correctness, time_ak_read, time_ak_write
 
-TYPES = (
-    "int64",
-    "float64",
-    "uint64",
-    "str"
-)
+import arkouda as ak
+from server_util.test.server_test_util import get_default_temp_directory
+
+TYPES = ("int64", "float64", "uint64", "str")
 
 
 def create_parser():
@@ -19,21 +19,35 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**7, help="Problem size: length of array to write/read"
+        "-n",
+        "--size",
+        type=int,
+        default=10**7,
+        help="Problem size: length of array to write/read",
     )
     parser.add_argument(
-        "--fixed-size", type=int, default=-1, help="Fixed size length of string for Parquet"
+        "--fixed-size",
+        type=int,
+        default=-1,
+        help="Fixed size length of string for Parquet",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=1, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=1,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
-        "-d", "--dtype", default="int64", help="Dtype of array ({})".format(", ".join(TYPES))
+        "-d",
+        "--dtype",
+        default="int64",
+        help="Dtype of array ({})".format(", ".join(TYPES)),
     )
     parser.add_argument(
         "-p",
         "--path",
-        default=os.getcwd() + "ak-io-test",
+        default=os.path.join(get_default_temp_directory(), "ak-io-test"),
         help="Target path for measuring read/write rates",
     )
     parser.add_argument(
@@ -43,7 +57,11 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     parser.add_argument(
         "-w",
@@ -67,15 +85,20 @@ def create_parser():
         help="Only delete files created from writing with this benchmark",
     )
     parser.add_argument(
-        "-l", "--files-per-loc", type=int, default=10, help="Number of files to create per locale"
+        "-l",
+        "--files-per-loc",
+        type=int,
+        default=10,
+        help="Number of files to create per locale",
     )
     parser.add_argument(
         "-c",
         "--compression",
         default="",
         action="store",
-        help="Compression types to run Parquet benchmarks against. Comma delimited list (NO SPACES) allowing "
-             "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4"
+        help="Compression types to run Parquet benchmarks against. "
+        "Comma delimited list (NO SPACES) allowing "
+        "for multiple. Accepted values: none, snappy, gzip, brotli, zstd, and lz4",
     )
     return parser
 
@@ -110,10 +133,19 @@ if __name__ == "__main__":
             args.seed,
             FileFormat.PARQUET,
             comp_types,
-            args.fixed_size
+            args.fixed_size,
         )
     elif args.only_read:
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types, args.fixed_size)
+        time_ak_read(
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            FileFormat.PARQUET,
+            comp_types,
+            args.fixed_size,
+        )
     elif args.only_delete:
         remove_files(args.path)
     else:
@@ -126,9 +158,18 @@ if __name__ == "__main__":
             args.seed,
             FileFormat.PARQUET,
             comp_types,
-            args.fixed_size
+            args.fixed_size,
         )
-        time_ak_read(args.size, args.files_per_loc, args.trials, args.dtype, args.path, FileFormat.PARQUET, comp_types, args.fixed_size)
+        time_ak_read(
+            args.size,
+            args.files_per_loc,
+            args.trials,
+            args.dtype,
+            args.path,
+            FileFormat.PARQUET,
+            comp_types,
+            args.fixed_size,
+        )
         remove_files(args.path)
 
     sys.exit(0)

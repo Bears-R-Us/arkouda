@@ -160,6 +160,37 @@ module FileIO {
     }
 
     /*
+     * Delete files matching a prefix and following the pattern <prefix>_LOCALE*.
+     */
+    proc deleteMatchingFilenamesMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+      var prefix = msgArgs["prefix"].toScalar(string);
+      var extension: string;
+      (prefix, extension) = getFileMetadata(prefix);
+      deleteMatchingFilenames(prefix, extension);
+
+      var repMsg = "Files deleted successfully!";
+      return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    proc deleteMatchingFilenames(prefix : string, extension : string) throws {
+      const filenames = getMatchingFilenames(prefix, extension);
+      forall filename in filenames{
+        deleteFile(filename);
+      }
+    }
+
+    proc deleteFile(filename: string) throws {
+      try {
+        remove(filename);
+        fioLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+          "File %s has been deleted successfully.".format(filename));
+      } catch e {
+        fioLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+          "Error deleting file: %s".format(e.message()));
+      }
+    }
+
+    /*
      * Returns a tuple composed of a file prefix and extension to be used to
      * generate locale-specific filenames to be written to.
      */
@@ -378,4 +409,7 @@ module FileIO {
       }
       return new MsgTuple(formatJson(filenames), MsgType.NORMAL);
     }
+
+    use CommandMap;
+    registerFunction("deleteMatchingFilenames", deleteMatchingFilenamesMsg, getModuleName());
 }

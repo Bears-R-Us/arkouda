@@ -123,7 +123,7 @@ module MultiTypeSymEntry
         :arg etype: type for gse to be cast to
         :type etype: type
        */
-    inline proc toSymEntry(gse: borrowed GenSymEntry, type etype, param dimensions=1) {
+    inline proc toSymEntry(gse: borrowed GenSymEntry, type etype, param dimensions=1) throws {
         return gse.toSymEntry(etype, dimensions);
     }
 
@@ -173,8 +173,13 @@ module MultiTypeSymEntry
            :arg etype: `SymEntry` type parameter
            :type etype: type
          */
-        inline proc toSymEntry(type etype, param dimensions=1) {
-            return try! this :borrowed SymEntry(etype, dimensions);
+        inline proc toSymEntry(type etype, param dimensions=1) throws {
+            try {
+                return this :borrowed SymEntry(etype, dimensions);
+            } catch e {
+                    const errorMsg = "Could not cast this `GenSymEntry` to `borrowed SymEntry(%s)".format(type2str(etype));
+                    throw new Error(errorMsg);
+            }
         }
 
         /* 
@@ -576,8 +581,6 @@ module MultiTypeSymEntry
     }
 
     import SparseMatrix.Layout;
-    use LayoutCS;
-
 
     proc layoutToStr(param l) param {
         select l {

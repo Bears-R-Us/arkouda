@@ -10,7 +10,9 @@ module LinalgMsg {
     use ServerErrorStrings;
     use AryUtil;
 
-    import BigInteger;
+    use CommAggregation; // needed for SrcAggregator
+
+    use BigInteger;
 
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
@@ -27,35 +29,35 @@ module LinalgMsg {
     where array_dtype != BigInteger.bigint
     {
 
-        const rows = msgArgs["rows"].toScalar(int),
-              cols = msgArgs["cols"].toScalar(int),
-              diag = msgArgs["diag"].toScalar(int),
-              shape = (rows, cols);
+        const N = msgArgs["N"].toScalar(int),
+              M = msgArgs["M"].toScalar(int),
+              k = msgArgs["k"].toScalar(int),
+              shape = (N, M);
 
-        // rows, cols = dimensions of 2 dimensional matrix.
-        // diag = 0 gives ones along center diagonal
-        // diag = nonzero moves the diagonal up/right for diag > 0, and down/left for diag < 0
+        // N, M = dimensions of 2 dimensional matrix.
+        // k = 0 gives ones along center diagonal
+        // k = nonzero moves the diagonal up/right for diag > 0, and down/left for diag < 0
         //        See comment below
 
         linalgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s dtype: %s aRows: %i: aCols: %i aDiag: %i".format(
-            cmd,type2str(array_dtype),rows,cols,diag));
+            "cmd: %s dtype: %s aN: %i: aM: %i ak: %i".format(
+            cmd,type2str(array_dtype),N,M,k));
 
         var e = createSymEntry((...shape), array_dtype);
 
-        // Now put the ones where they go, on the main diagonal if diag == 0, otherise
-        // up-and-right by 'diag' spaces) if diag > 0,
-        // or down-and-left by abs(diag) spaces if diag < 0
+        // Now put the ones where they go, on the main diagonal if k == 0, otherise
+        // up-and-right by 'k' spaces) if k > 0,
+        // or down-and-left by abs(k) spaces if k < 0
 
-        if diag == 0 {
-            forall ij in 0..<min(rows, cols) do
+        if k == 0 {
+            forall ij in 0..<min(N, M) do
                 e.a[ij, ij] = 1 : array_dtype;
-        } else if diag > 0 {
-            forall i in 0..<min(rows, cols-diag) do
-                e.a[i, i+diag] = 1 : array_dtype;
-        } else if diag < 0 {
-            forall j in 0..<min(rows+diag, cols) do
-                e.a[j-diag, j] = 1 : array_dtype;
+        } else if k > 0 {
+            forall i in 0..<min(N, M-k) do
+                e.a[i, i+k] = 1 : array_dtype;
+        } else if k < 0 {
+            forall j in 0..<min(N+k, M) do
+                e.a[j-k, j] = 1 : array_dtype;
         }
 
         return st.insert(e);
@@ -161,7 +163,7 @@ module LinalgMsg {
         var x1E = st[x1Name]: borrowed SymEntry(array_dtype_x1, array_nd),
             x2E = st[x2Name]: borrowed SymEntry(array_dtype_x2, array_nd);
 
-        type resultType = compute_result_type_matmul(array_dtype_x1, array_dtype_x2);
+        type resultType = np_ret_type(array_dtype_x1, array_dtype_x2);
 
         const (valid, outDims, err) = assertValidDims(x1E, x2E);
         if !valid then return err;
@@ -177,13 +179,6 @@ module LinalgMsg {
 
         return st.insert(eOut);
 
-    }
-
-    proc compute_result_type_matmul(type t1, type t2) type {
-        if t1 == real || t2 == real then return real;
-        if t1 == int || t2 == int then return int;
-        if t1 == uint(8) || t2 == uint(8) then return uint(8);
-        return bool;
     }
 
     // Check that dimensions are valid for matrix multiplication.
@@ -253,7 +248,7 @@ module LinalgMsg {
             if t != bool {
                         C[i, j] += A[i, l] * B[l, j];
             } else {
-              C[i,j] |= A[i, l] & B[l, j];
+                        C[i,j] |= A[i, l] & B[l, j];
             }
     }
 
@@ -266,7 +261,7 @@ module LinalgMsg {
         outShape[outShape.size-2] <=> outShape[outShape.size-1];
         var ret = makeDistArray((...outShape), t);
         
-        // // TODO: performance improvements. Should use tiling to keep data local
+        // TODO: performance improvements. Should use tiling to keep data local
         forall idx in d {
             var bIdx = idx;
             bIdx[d.rank-1] <=> bIdx[d.rank-2];  // bIdx is now the reverse of idx
@@ -275,6 +270,133 @@ module LinalgMsg {
     
         return ret;
     }
+
+    // For many numeric functions, the return type depends on the type of two inputs.  The
+    // function np_ret_type provides return types that match the behavior of numpy.
+
+    // This function is used in dotProd and matMult.
+
+    proc np_ret_type(type ta, type tb) type {
+        if ( (ta==real || tb==real) || (ta==int && tb==uint) || (ta==uint && tb==int) ) {
+            return real ;
+        } else if (ta==int || tb==int) {
+            return int ;
+        } else if (ta==uint || tb==uint) {
+            return uint ;
+        } else {
+            return bool ;
+        }
+    }
+
+    // TODO: add a special case of dotProd where b is 1-D.  This is currently handled by
+    // padding a 1-D vector to 2-D client-side, doing the computation here, and removing
+    // the padded dimension from the result.
+
+    // TODO: add bigint handling
+
+    // This implements the M-D x N-D case of ak.dot, aligning its funcionality to np.dot.
+ 
+    @arkouda.registerCommand(name="dot")
+    proc dotProd(a: [?d] ?ta, b: [?d2] ?tb): [] np_ret_type(ta,tb) throws
+    where ((d.rank >=2 && d2.rank>= 2)
+        && (ta == int || ta == real || ta == bool || ta == uint )
+        && (tb == int || tb == real || tb == bool || tb == uint )
+           ) {
+        param pn = Reflection.getRoutineName();
+
+        // make an array of the appropriate shape and type to hold the output
+
+        var eOut = makeDistArray((...dotShape(a.shape, b.shape)), np_ret_type(ta,tb));
+
+        // aOffset and bOffset will be used to iterate through A and B in the computation
+
+        var aOffset: (d.rank)*int;
+        for i in 0..<d.rank do aOffset[i] = (if i == d.rank - 1 then d.shape[d.rank - 1] else -1);
+
+        var bOffset: (d2.rank)*int;
+        for i in 0..<d2.rank do bOffset[i] = (if i == d2.rank - 2 then d2.shape[d2.rank - 2] else -1);
+
+        // tmp1Domain and tmp2Domain look like 0..0 in all dimensions except the one where a and b
+        // must have the same shape.  In that dimension, they look like 0..<k, where k is the size
+        // of that dimension.
+
+        var tmp1Domain = d.interior(aOffset);
+        var tmp2Domain = d2.interior(bOffset);
+
+        forall outIdx in eOut.domain with (
+            var tmp1: [tmp1Domain] ta,
+            var tmp2: [tmp2Domain] tb,
+            const aOffsetTmp = aOffset,
+            const bOffsetTmp = bOffset
+        ) {
+            var aIdx: (d.rank)*int;
+            var bIdx: (d2.rank)*int;
+
+            // Deduce the aIdx and bIdx from the output index.
+
+            for i in 0..<d.rank-1 do aIdx[i] = outIdx[i];
+            for i in 0..<d2.rank-2 do bIdx[i] = outIdx[d.rank-1+i];
+            aIdx[d.rank-1] = 0;
+            bIdx[d2.rank-1] = outIdx[outIdx.size-1];
+            bIdx[d2.rank-2] = 0;
+
+            // Set up the domains to grab the k elements at a time.
+
+            var aDom = d;
+            var bDom = d2;
+
+            // Make the domains k long in the common dimension, 1 long in every other dimension.
+
+            aDom = aDom.interior(aOffsetTmp);
+            bDom = bDom.interior(bOffsetTmp);
+
+            // Shift the domains by the index, which is set to zero in the common domain.
+
+            aDom = aDom.translate(aIdx);
+            bDom = bDom.translate(bIdx);
+
+            // Grab the data with the domain slice.
+
+            tmp1 = a[aDom];                 
+            tmp2 = b[bDom];
+            
+            var total: np_ret_type(ta,tb) = 0:np_ret_type(ta,tb);
+
+            // Perform the dot product.
+
+            for (i, j) in zip(tmp1, tmp2) {
+                if np_ret_type(ta,tb) == bool {
+                    total |= i:bool && j:bool;
+                }
+                else {
+                    total += i:np_ret_type(ta,tb) * j:np_ret_type(ta,tb);
+                }
+            }
+            eOut[outIdx] = total;
+            
+        }
+
+        return eOut;
+    }
+
+    // dotShape creates a new shape based on the input shapes and the rules of
+    // ak.dot (equivalently np.dot).
+    // Note: error checking (e.g. ensuring the two ks are equal) was already
+    // done python-side.
+
+    // In general, if aShape is ( (front dims), k) and
+    //            and bShape is ( (back dims), k, m), then
+    //         then shapeOut is ( (front dims), (back dims), m)
+
+    proc dotShape(aShape: ?N*int, bShape: ?N2*int): (N+N2-2)*int
+        where N > 1 && N2 > 1 {
+        var shapeOut: (N+N2-2)*int;
+        for i in 0..<(N-1) do shapeOut[i] = aShape[i];
+        for i in 0..<(N2-2) do shapeOut[(N - 1) + i] = bShape[i];
+        shapeOut[N + N2 - 3] = bShape[N2 - 1];
+        return shapeOut;
+    }
+
 
     /*
         Compute the generalized dot product of two tensors along the specified axis.

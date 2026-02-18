@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import arkouda as ak
+from arkouda.testing import assert_arkouda_array_equivalent
 
 NUMERIC_TYPES = ["int64", "uint64", "float64", "bool"]
 
@@ -22,7 +23,7 @@ def make_np_edge_cases(dtype):
     if dtype == "int64":
         return np.array([np.iinfo(np.int64).min, -1, 0, 3, np.iinfo(np.int64).max])
     elif dtype == "uint64":
-        return np.array([17, 2**64-1, 0, 3, 2**63 + 10], dtype=np.uint64)
+        return np.array([17, 2**64 - 1, 0, 3, 2**63 + 10], dtype=np.uint64)
     elif dtype == "float64":
         return np.array(
             [
@@ -92,6 +93,26 @@ class TestExtrema:
 
         assert np_arr.argmin() == ak_arr.argmin()
         assert np_arr.argmax() == ak_arr.argmax()
+
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
+    def test_argmin_and_argmax_2dim(self, dtype):
+        np_arr = make_np_arrays(1000, dtype).reshape(10, 100)
+        ak_arr = ak.array(np_arr)
+
+        for axis in range(-2, 2):
+            assert_arkouda_array_equivalent(ak_arr.argmin(axis=axis), np_arr.argmin(axis=axis))
+            assert_arkouda_array_equivalent(ak_arr.argmax(axis=axis), np_arr.argmax(axis=axis))
+
+    @pytest.mark.skip_if_rank_not_compiled([3])
+    @pytest.mark.parametrize("dtype", NUMERIC_TYPES)
+    def test_argmin_and_argmax_3dim(self, dtype):
+        np_arr = make_np_arrays(1000, dtype).reshape(10, 10, 10)
+        ak_arr = ak.array(np_arr)
+
+        for axis in range(-3, 3):
+            assert_arkouda_array_equivalent(ak_arr.argmin(axis=axis), np_arr.argmin(axis=axis))
+            assert_arkouda_array_equivalent(ak_arr.argmax(axis=axis), np_arr.argmax(axis=axis))
 
     def test_error_handling(self):
         test_array = ak.randint(0, 100, 100)

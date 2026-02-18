@@ -1,10 +1,11 @@
 import os
+import shutil
 from glob import glob
 
 import pytest
 
 import arkouda as ak
-from arkouda.io import to_parquet
+from arkouda.pandas.io import to_parquet
 
 TYPES = ("int64", "float64", "uint64", "str")
 FILETYPES = ("HDF5", "PARQUET")
@@ -13,10 +14,15 @@ COMPRESSIONS = (None, "snappy", "gzip", "brotli", "zstd", "lz4")
 
 def _write_files(a, ftype, dtype, compression=None):
     for i in range(pytest.io_files):
-        a.to_hdf(f"{pytest.io_path}_hdf_{dtype}_{i:04}") if ftype == "HDF5" else to_parquet(
-            [a],
-            f"{pytest.io_path}_par_{compression}_{dtype}_{i:04}",
-            compression=compression,
+        fname = f"{_build_prefix(ftype, dtype, compression)}_{i:04}"
+        (
+            a.to_hdf(fname)
+            if ftype == "HDF5"
+            else to_parquet(
+                [a],
+                fname,
+                compression=compression,
+            )
         )
 
 
@@ -65,10 +71,23 @@ def _generate_df(N, dtype, returnDict=False):
     }
     return df_dict if returnDict else ak.DataFrame(df_dict)
 
-@pytest.mark.skip_correctness_only(True)
+
+def _build_prefix(ftype: str, dtype: str, compression=None, multi=False, append=False):
+    base = f"{pytest.io_path}_"
+    if ftype == "HDF5":
+        return base + f"hdf_{dtype}"
+    if multi:
+        path = base + f"par_multi_{compression}_{dtype}"
+        if append:
+            path += "_app"
+        return path
+    return base + f"par_{compression}_{dtype}"
+
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_write_hdf(benchmark, dtype):
+def bench_write_hdf(benchmark, dtype):
     if pytest.io_write or (not pytest.io_read and not pytest.io_delete) and dtype in pytest.dtype:
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]
@@ -82,21 +101,26 @@ def bench_ak_write_hdf(benchmark, dtype):
         else:
             nbytes = a.nbytes * a.entry.itemsize * pytest.io_files
 
-        benchmark.extra_info[
-            "description"
-        ] = f"Measures the performance of IO write {dtype} to HDF5 file"
+        benchmark.extra_info["description"] = (
+            f"Measures the performance of IO write {dtype} to HDF5 file"
+        )
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-@pytest.mark.skip_correctness_only(True)
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_write_parquet(benchmark, dtype, comp):
-    if pytest.io_write or (not pytest.io_read and not pytest.io_delete) \
-            and dtype in pytest.dtype and comp in pytest.io_compression:
+def bench_write_parquet(benchmark, dtype, comp):
+    if (
+        pytest.io_write
+        or (not pytest.io_read and not pytest.io_delete)
+        and dtype in pytest.dtype
+        and comp in pytest.io_compression
+    ):
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]
 
@@ -109,21 +133,26 @@ def bench_ak_write_parquet(benchmark, dtype, comp):
         else:
             nbytes = a.nbytes * a.entry.itemsize * pytest.io_files
 
-        benchmark.extra_info[
-            "description"
-        ] = f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
+        benchmark.extra_info["description"] = (
+            f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
+        )
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-@pytest.mark.skip_correctness_only(True)
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_write_parquet_multi(benchmark, dtype, comp):
-    if pytest.io_write or (not pytest.io_read and not pytest.io_delete) \
-            and dtype in pytest.dtype and comp in pytest.io_compression:
+def bench_write_parquet_multi(benchmark, dtype, comp):
+    if (
+        pytest.io_write
+        or (not pytest.io_read and not pytest.io_delete)
+        and dtype in pytest.dtype
+        and comp in pytest.io_compression
+    ):
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]
 
@@ -139,21 +168,26 @@ def bench_ak_write_parquet_multi(benchmark, dtype, comp):
             else:
                 nbytes = col.nbytes * col.entry.itemsize * pytest.io_files
 
-        benchmark.extra_info[
-            "description"
-        ] = f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
+        benchmark.extra_info["description"] = (
+            f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
+        )
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-@pytest.mark.skip_correctness_only(True)
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Write_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_write_parquet_append(benchmark, dtype, comp):
-    if pytest.io_write or (not pytest.io_read and not pytest.io_delete) \
-            and dtype in pytest.dtype and comp in pytest.io_compression:
+def bench_write_parquet_append(benchmark, dtype, comp):
+    if (
+        pytest.io_write
+        or (not pytest.io_read and not pytest.io_delete)
+        and dtype in pytest.dtype
+        and comp in pytest.io_compression
+    ):
         cfg = ak.get_config()
         N = pytest.prob_size * cfg["numLocales"]
 
@@ -168,18 +202,19 @@ def bench_ak_write_parquet_append(benchmark, dtype, comp):
             else:
                 nbytes = col.nbytes * col.entry.itemsize * pytest.io_files
 
-        benchmark.extra_info[
-            "description"
-        ] = f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
+        benchmark.extra_info["description"] = (
+            f"Measures the performance of IO write {dtype} to Parquet file using {comp} compression"
+        )
         benchmark.extra_info["problem_size"] = pytest.prob_size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-@pytest.mark.skip_correctness_only(True)
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_HDF5")
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_read_hdf(benchmark, dtype):
+def bench_read_hdf(benchmark, dtype):
     if pytest.io_read or (not pytest.io_write and not pytest.io_delete) and dtype in pytest.dtype:
         dataset = "strings_array" if dtype == "str" else "array"
         a = benchmark.pedantic(
@@ -198,13 +233,18 @@ def bench_ak_read_hdf(benchmark, dtype):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-@pytest.mark.skip_correctness_only(True)
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_read_parquet(benchmark, dtype, comp):
-    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) \
-            and comp in pytest.io_compression and dtype in pytest.dtype:
+def bench_read_parquet(benchmark, dtype, comp):
+    if (
+        pytest.io_read
+        or (not pytest.io_write and not pytest.io_delete)
+        and comp in pytest.io_compression
+        and dtype in pytest.dtype
+    ):
         a = benchmark.pedantic(
             ak.read_parquet, args=[pytest.io_path + f"_par_{comp}_{dtype}_*"], rounds=pytest.trials
         )
@@ -221,16 +261,21 @@ def bench_ak_read_parquet(benchmark, dtype, comp):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-@pytest.mark.skip_correctness_only(True)
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Read_Parquet")
 @pytest.mark.parametrize("dtype", TYPES)
 @pytest.mark.parametrize("comp", COMPRESSIONS)
-def bench_ak_read_parquet_multi_column(benchmark, dtype, comp):
+def bench_read_parquet_multi_column(benchmark, dtype, comp):
     """
     Read files written by parquet multicolumn and parquet append modes
     """
-    if pytest.io_read or (not pytest.io_write and not pytest.io_delete) \
-            and comp in pytest.io_compression and dtype in pytest.dtype:
+    if (
+        pytest.io_read
+        or (not pytest.io_write and not pytest.io_delete)
+        and comp in pytest.io_compression
+        and dtype in pytest.dtype
+    ):
         a = benchmark.pedantic(
             ak.read_parquet, args=[pytest.io_path + f"_par_multi_{comp}_{dtype}_*"], rounds=pytest.trials
         )
@@ -248,9 +293,10 @@ def bench_ak_read_parquet_multi_column(benchmark, dtype, comp):
             (nbytes / benchmark.stats["mean"]) / 2**30
         )
 
-@pytest.mark.skip_correctness_only(True)
+
+@pytest.mark.skip_numpy(True)
 @pytest.mark.benchmark(group="Arkouda_IO_Delete")
-def bench_ak_delete(benchmark):
+def bench_delete(benchmark):
     if pytest.io_delete or (not pytest.io_write and not pytest.io_read):
         benchmark.pedantic(_remove_files, rounds=1)
 
@@ -262,7 +308,13 @@ def bench_ak_delete(benchmark):
 
 def _remove_files():
     for f in glob(pytest.io_path + "*"):
-        os.remove(f)
+        try:
+            if os.path.isdir(f):
+                shutil.rmtree(f)
+            else:
+                os.remove(f)
+        except Exception as e:
+            print(f"Warning: Could not delete {f}: {e}")
 
 
 def _remove_append_test_files(compression, dtype):

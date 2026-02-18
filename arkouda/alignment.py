@@ -1,25 +1,106 @@
+"""
+Alignment and lookup utilities for Arkouda arrays.
+
+This module provides functions to align multiple arrays to a common
+0-up index, perform lookups and mappings across sparse identifiers,
+and search within defined intervals. It supports single and multi-dimensional
+key matching, including hierarchical keys, and interval-based function evaluation.
+
+Functions
+---------
+- align: Align multiple arrays to a common index.
+- left_align: Align two arrays to the index defined by the left array.
+- right_align: Align two arrays to the index defined by the right array.
+- zero_up: Map sparse identifiers to 0-up indices.
+- lookup: Evaluate a function defined by keys and values on input arguments.
+- interval_lookup: Evaluate a function defined over intervals.
+- search_intervals: Return index of best interval for each query value.
+- in1d_intervals: Check membership of values in half-open intervals.
+- find: Locate indices of query values in a search space.
+- is_cosorted: Determine if a list of arrays are cosorted.
+- unsqueeze: Wrap a pdarray in a list if not already a sequence.
+
+Classes
+-------
+- NonUniqueError: Raised when duplicate values are found in keys.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> a = ak.array([10, 20, 30, 40])
+>>> b = ak.array([20, 10, 40, 50])
+>>> keep, (a_aligned, b_aligned) = ak.right_align(a, b)
+>>> a[keep], a_aligned, b_aligned
+(array([10 20 40]), array([0 1 2]), array([1 0 2 3]))
+
+>>> starts = ak.array([0, 5])
+>>> ends = ak.array([3, 10])
+>>> values = ak.array([100, 200])
+>>> x = ak.array([1, 6, 8])
+>>> ak.interval_lookup((starts, ends), values, x)
+array([100 200 200])
+
+"""
+
 import functools
 from typing import Sequence
 from warnings import warn
 
 import numpy as np
 
-from arkouda.categorical import Categorical
-from arkouda.client import generic_msg
-from arkouda.groupbyclass import GroupBy, broadcast, unique
-from arkouda.numpy import cumsum, where
 from arkouda.numpy.dtypes import bigint
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.numpy.dtypes import int64 as akint64
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import create_pdarray, pdarray
-from arkouda.pdarraycreation import arange, full, ones, zeros
-from arkouda.pdarraysetops import concatenate, in1d
-from arkouda.sorting import argsort, coargsort
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
+from arkouda.numpy.pdarraycreation import arange, full, ones, zeros
+from arkouda.numpy.pdarraysetops import concatenate, in1d
+from arkouda.numpy.sorting import argsort, coargsort
+from arkouda.numpy.strings import Strings
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.groupbyclass import GroupBy, broadcast, unique
+
+__all__ = [
+    "NonUniqueError",
+    "align",
+    "find",
+    "in1d_intervals",
+    "interval_lookup",
+    "is_cosorted",
+    "left_align",
+    "lookup",
+    "right_align",
+    "search_intervals",
+    "unsqueeze",
+    "zero_up",
+]
 
 
 def unsqueeze(p):
+    """
+    Ensure that the input is returned as a list.
+
+    If the input is a single pdarray, Strings, or Categorical object, wrap it in a list.
+    Otherwise, return the input unchanged.
+
+    Parameters
+    ----------
+    p : pdarray, Strings, Categorical, or Sequence
+        The input object to be wrapped or returned as-is.
+
+    Returns
+    -------
+    Sequence
+        A list containing the input, or the input itself if it is already a sequence.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.array([1, 2, 3])
+    >>> unsqueeze(a)
+    [array([1 2 3])]
+
+    """
     if isinstance(p, pdarray) or isinstance(p, Strings) or isinstance(p, Categorical):
         return [p]
     else:
@@ -39,6 +120,7 @@ def zero_up(vals):
     -------
     aligned : pdarray
         Array with values replaced by 0-up indices
+
     """
     g = GroupBy(vals)
     unique_size = g.unique_keys.size if not isinstance(vals, Sequence) else g.unique_keys[0].size
@@ -60,6 +142,7 @@ def align(*args):
     -------
     aligned : list of pdarrays
         Arrays with values replaced by 0-up indices
+
     """
     if not any(isinstance(arg, Sequence) for arg in args):
         key = concatenate([full(arg.size, i, akint64) for i, arg in enumerate(args)], ordered=False)
@@ -74,6 +157,8 @@ def align(*args):
 
 def right_align(left, right):
     """
+    Map two arrays of sparse values to the 0-up index.
+
     Map two arrays of sparse values to the 0-up index set implied by the right array,
     discarding values from left that do not appear in right.
 
@@ -86,10 +171,12 @@ def right_align(left, right):
 
     Returns
     -------
-    keep : pdarray, bool
-        Logical index of left-hand values that survived
-    aligned : (pdarray, pdarray)
-        Left and right arrays with values replaced by 0-up indices
+    pdarray, (pdarray, pdarray)
+        keep : pdarray, bool
+            Logical index of left-hand values that survived
+        aligned : (pdarray, pdarray)
+            Left and right arrays with values replaced by 0-up indices
+
     """
     is_sequence = isinstance(left, Sequence) and isinstance(right, Sequence)
     uright = unique(right)
@@ -100,6 +187,8 @@ def right_align(left, right):
 
 def left_align(left, right):
     """
+    Map two arrays of sparse identifiers to the 0-up index.
+
     Map two arrays of sparse identifiers to the 0-up index set implied by the left array,
     discarding values from right that do not appear in left.
     """
@@ -107,6 +196,22 @@ def left_align(left, right):
 
 
 class NonUniqueError(ValueError):
+    """
+    Exception raised when duplicate values are found in a set of keys that are expected to be unique.
+
+    This is typically raised in lookup and alignment operations that assume
+    a one-to-one mapping between keys and values.
+
+    Examples
+    --------
+    >>> from arkouda.alignment import NonUniqueError
+    >>> raise NonUniqueError("Duplicate values found in key array.")
+    Traceback (most recent call last):
+        ...
+    arkouda.alignment.NonUniqueError: Duplicate values found in key array.
+
+    """
+
     pass
 
 
@@ -142,26 +247,32 @@ def find(query, space, all_occurrences=False, remove_missing=False):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> select_from = ak.arange(10)
     >>> arr1 = select_from[ak.randint(0, select_from.size, 20, seed=10)]
     >>> arr2 = select_from[ak.randint(0, select_from.size, 20, seed=11)]
-    # remove some values to ensure we have some values
-    # which don't appear in the search space
+
+    Remove some values to ensure we have some values
+    which don't appear in the search space
+
     >>> arr2 = arr2[arr2 != 9]
     >>> arr2 = arr2[arr2 != 3]
 
-    # find with defaults (all_occurrences and remove_missing both False)
+    Find with defaults (all_occurrences and remove_missing both False)
+
     >>> ak.find(arr1, arr2)
     array([-1 -1 -1 0 1 -1 -1 -1 2 -1 5 -1 8 -1 5 -1 -1 11 5 0])
 
-     # set remove_missing to True, only difference from default
-     # is missing values are excluded
-     >>> ak.find(arr1, arr2, remove_missing=True)
+    Set remove_missing to True, only difference from default
+    is missing values are excluded
+
+    >>> ak.find(arr1, arr2, remove_missing=True)
     array([0 1 2 5 8 5 11 5 0])
 
-    # set both remove_missing and all_occurrences to True, missing values
-    # will be empty segments
-    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).to_list()
+    Set both remove_missing and all_occurrences to True, missing values
+    will be empty segments
+
+    >>> ak.find(arr1, arr2, remove_missing=True, all_occurrences=True).tolist()
     [[],
      [],
      [],
@@ -182,7 +293,11 @@ def find(query, space, all_occurrences=False, remove_missing=False):
      [11, 15],
      [5, 7],
      [0, 4]]
+
     """
+    from arkouda.client import generic_msg
+    from arkouda.numpy import cumsum, where
+
     # Concatenate the space and query in fast (block interleaved) mode
     if isinstance(query, (pdarray, Strings, Categorical)):
         if type(query) is not type(space):
@@ -232,7 +347,7 @@ def find(query, space, all_occurrences=False, remove_missing=False):
             if isinstance(query, Sequence):
                 raise TypeError("finding all_occurrences is not yet supported on sequences of arrays")
 
-            from arkouda.segarray import SegArray
+            from arkouda.numpy.segarray import SegArray
 
             # create a segarray which contains all the indices from query
             # in our search space, instead of just the min for each segment
@@ -291,23 +406,26 @@ def lookup(keys, values, arguments, fillvalue=-1):
 
     Examples
     --------
-    # Lookup numbers by two-word name
+    >>> import arkouda as ak
+
+    Lookup numbers by two-word name
     >>> keys1 = ak.array(['twenty' for _ in range(5)])
     >>> keys2 = ak.array(['one', 'two', 'three', 'four', 'five'])
     >>> values = ak.array([21, 22, 23, 24, 25])
     >>> args1 = ak.array(['twenty', 'thirty', 'twenty'])
     >>> args2 = ak.array(['four', 'two', 'two'])
-    >>> aku.lookup([keys1, keys2], values, [args1, args2])
-    array([24, -1, 22])
+    >>> ak.lookup([keys1, keys2], values, [args1, args2])
+    array([24 -1 22])
 
-    # Other direction requires an intermediate index
+    Other direction requires an intermediate index
     >>> revkeys = values
     >>> revindices = ak.arange(values.size)
     >>> revargs = ak.array([24, 21, 22])
-    >>> idx = aku.lookup(revkeys, revindices, revargs)
+    >>> idx = ak.lookup(revkeys, revindices, revargs)
     >>> keys1[idx], keys2[idx]
     (array(['twenty', 'twenty', 'twenty']),
     array(['four', 'one', 'two']))
+
     """
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
@@ -324,8 +442,7 @@ def lookup(keys, values, arguments, fillvalue=-1):
 
 def in1d_intervals(vals, intervals, symmetric=False):
     """
-    Test each value for membership in *any* of a set of half-open (pythonic)
-    intervals.
+    Test each value for membership in *any* of a set of half-open (pythonic) intervals.
 
     Parameters
     ----------
@@ -362,6 +479,7 @@ def in1d_intervals(vals, intervals, symmetric=False):
         ...
         ((intervals[0] <= vals[-1]) & (intervals[1] > vals[-1]))
     But much faster when vals is non-trivial size.
+
     """
     idx = search_intervals(vals, intervals)
     found = idx > -1
@@ -374,6 +492,8 @@ def in1d_intervals(vals, intervals, symmetric=False):
 
 def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     """
+    Return the index of the best interval containing each query value.
+
     Given an array of query vals and non-overlapping, closed intervals, return
     the index of the best (see tiebreak) interval containing each query value,
     or -1 if not present in any interval.
@@ -409,6 +529,7 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
     >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
     >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
@@ -420,14 +541,15 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     >>> bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
     >>> bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
     >>> bi_starts, bi_ends, bi_vals
-    (array(["0" "92233720368547758091"]),
-    array(["92233720368547758090" "166020696663385964564"]),
-    array(["0" "20" "36893488147419103233" "92233720368547758085" "92233720368547758095"
-    "110680464442257309696" "110680464442257309708" "166020696663385964574"]))
+    (array([0 92233720368547758091]),
+    array([92233720368547758090 166020696663385964564]),
+    array([0 20 36893488147419103233 92233720368547758085 92233720368547758095
+    110680464442257309696 110680464442257309708 166020696663385964574]))
     >>> ak.search_intervals(bi_vals, (bi_starts, bi_ends))
     array([0 0 0 0 1 1 1 -1])
+
     """
-    from arkouda.join import gen_ranges
+    from arkouda.pandas.join import gen_ranges
 
     if len(intervals) != 2:
         raise ValueError("intervals must be 2-tuple of (lower_bound_inclusive, upper_bounds_inclusive)")
@@ -644,6 +766,8 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
 
 def is_cosorted(arrays):
     """
+    Return True iff the arrays are cosorted.
+
     Return True iff the arrays are cosorted, i.e., if the arrays were columns in a table
     then the rows are sorted.
 
@@ -663,8 +787,8 @@ def is_cosorted(arrays):
         Raised if arrays are not the same length
     TypeError
         Raised if arrays is not a list-like of pdarrays
-    """
 
+    """
     if not isinstance(arrays, Sequence) or not all(isinstance(array, pdarray) for array in arrays):
         raise TypeError("Input must be a list-like of pdarrays")
 
@@ -714,6 +838,7 @@ def interval_lookup(keys, values, arguments, fillvalue=-1, tiebreak=None, hierar
         Value of function corresponding to the keys interval
         containing each argument, or fillvalue if argument not
         in any interval.
+
     """
     if isinstance(values, Categorical):
         codes = interval_lookup(keys, values.codes, arguments, fillvalue=values._NAcode)

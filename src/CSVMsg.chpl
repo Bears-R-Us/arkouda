@@ -176,7 +176,7 @@ module CSVMsg {
         const overwrite = msgArgs.get("overwrite").getBoolValue();
 
         // access the first SymEntry -> all SymEntries should have same locality due to them being required to be the same size.
-        var gse = toGenSymEntry(st.lookup(datasets[0]));
+        var gse = toGenSymEntry(st[datasets[0]]);
         var filenames;
         select gse.dtype {
             when DType.Int64 {
@@ -220,7 +220,7 @@ module CSVMsg {
         var numStrings = 0;
         for (cname, dt) in zip(datasets, dtypes) {
             if dt == "str" {
-                var ss = new SegString("", toSegStringSymEntry(st.lookup(cname)));
+                var ss = new SegString("", toSegStringSymEntry(st[cname]));
                 // strings vals are uint(8), so they're only one byte but overcount
                 // because they're not evenly distributed across locales
                 memRequired += (ss.values.a.size * 1.5):int;
@@ -549,7 +549,7 @@ module CSVMsg {
     proc generate_subdoms(filenames: [?D] string, row_counts: [D] int, validFiles: [D] bool) throws {
         var skips = new set(string);
         var offsets = (+ scan row_counts) - row_counts;
-        var subdoms = makeDistArray(D, domain(1));
+        var subdoms = D.tryCreateArray(domain(1)); // Non dist array
         for (i, fname, off, ct, vf) in zip(D, filenames, offsets, row_counts, validFiles) {
             if (!vf) {
                 skips.add(fname);

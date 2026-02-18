@@ -7,10 +7,10 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 from numpy import dtype as npdtype
 
-from arkouda import io_util
-from arkouda.dtypes import dtype
-from arkouda.index import Index
-from arkouda.pdarrayclass import pdarray
+from arkouda.pandas import io_util
+from arkouda.numpy.dtypes import dtype
+from arkouda.pandas.index import Index
+from arkouda.numpy.pdarrayclass import pdarray
 
 
 class IndexTest(ArkoudaTest):
@@ -104,7 +104,7 @@ class IndexTest(ArkoudaTest):
         i3 = ak.Index(["a", "b", "c"], allow_list=True)
         self.assertEqual(i3.inferred_type, "string")
 
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         i4 = ak.Index(Categorical(ak.array(["a", "b", "c"])))
         self.assertEqual(i4.inferred_type, "categorical")
@@ -269,8 +269,8 @@ class IndexTest(ArkoudaTest):
             m2.get_level_values(-1 * m2.nlevels)
 
     def test_memory_usage(self):
-        from arkouda.dtypes import BigInt
-        from arkouda.index import Index, MultiIndex
+        from arkouda.numpy.dtypes import BigInt
+        from arkouda.pandas.index import Index, MultiIndex
 
         idx = Index(ak.cast(ak.array([1, 2, 3]), dt="bigint"))
         self.assertEqual(idx.memory_usage(), 3 * BigInt.itemsize)

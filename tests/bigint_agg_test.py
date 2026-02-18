@@ -15,12 +15,35 @@ def gather_scatter(a):
 
 class TestBigInt:
     @pytest.mark.parametrize("size", pytest.prob_size)
-    def test_negative(self, size):
-        # test with negative bigint values
+    def test_negative_bug_reproducer(self, size):
+        # test with negative bigint values.
+        arr = ak.array([-1, -2, -3], dtype=ak.bigint)  # if this returns a value, the bug was fixed
+        brr = ak.array([1, 2, 3], dtype=ak.bigint)
+        assert ((arr + brr) == 0).all()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_negative_cast(self, size):
+        # test with negative bigint values.
         arr = -1 * ak.randint(0, 2**32, size)
         bi_neg = ak.cast(arr, ak.bigint)
         res = gather_scatter(bi_neg)
-        assert bi_neg.to_list() == res.to_list()
+        assert bi_neg.tolist() == res.tolist()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_negative_arraycreation(self, size):
+        # test with negative bigint values.
+        arr = -1 * ak.randint(0, 2**32, size)
+        bi_neg = ak.array(arr, dtype=ak.bigint)
+        res = gather_scatter(bi_neg)
+        assert bi_neg.tolist() == res.tolist()
+
+    @pytest.mark.parametrize("size", pytest.prob_size)
+    def test_negative_astype(self, size):
+        # test with negative bigint values.
+        arr = -1 * ak.randint(0, 2**32, size)
+        bi_neg = arr.astype(ak.bigint)
+        res = gather_scatter(bi_neg)
+        assert bi_neg.tolist() == res.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_large(self, size):
@@ -31,14 +54,14 @@ class TestBigInt:
         bot_bits = ak.randint(0, 2**32, size, dtype=ak.uint64)
         bi_arr = ak.bigint_from_uint_arrays([top_bits, mid_bits1, mid_bits2, bot_bits])
         res = gather_scatter(bi_arr)
-        assert bi_arr.to_list() == res.to_list()
+        assert bi_arr.tolist() == res.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_zero(self, size):
         # test all zero bigint assignments
         all_zero = ak.zeros(size, dtype=ak.bigint)
         res = gather_scatter(all_zero)
-        assert all_zero.to_list() == res.to_list()
+        assert all_zero.tolist() == res.tolist()
 
     def test_variable_sized(self):
         # 5 bigints of differing number of limbs
@@ -49,7 +72,7 @@ class TestBigInt:
         bits5 = ak.array([1, 1, 1, 1, 1], dtype=ak.uint64)
         bi_arr = ak.bigint_from_uint_arrays([bits1, bits2, bits3, bits4, bits5])
         res = gather_scatter(bi_arr)
-        assert bi_arr.to_list() == res.to_list()
+        assert bi_arr.tolist() == res.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_change_size(self, size):
@@ -58,4 +81,4 @@ class TestBigInt:
         bi_arr = ak.bigint_from_uint_arrays([bits, bits, bits, bits])
         res = ak.ones_like(bi_arr)
         bi_arr[:] = res
-        assert bi_arr.to_list() == res.to_list()
+        assert bi_arr.tolist() == res.tolist()

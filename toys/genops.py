@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-from string import Template
 import os
+from string import Template
 
-OPEQUAL = ['+=', '-=', '*=', '/=']
-BINOP = ['+', '-', '*', '/']
+OPEQUAL = ["+=", "-=", "*=", "/="]
+BINOP = ["+", "-", "*", "/"]
 
 opeqGenSym = Template("""
     proc ${opeq}(left : GenSymEntry, right : GenSymEntry) {
@@ -175,20 +175,24 @@ ${body}
 }
 """)
 
+
 def gen_module(name):
     body = [opeqGenSym.substitute(opeq=op) for op in OPEQUAL]
     body += [binopGenSym.substitute(binop=op) for op in BINOP]
     body += [opeqScalar.substitute(opeq=op) for op in OPEQUAL]
     body += [binopScalar.substitute(binop=op) for op in BINOP]
-    return modTemplate.substitute(name=name, body='\n'.join(body))
+    return modTemplate.substitute(name=name, body="\n".join(body))
+
 
 def write_module(path):
     name, ext = os.path.splitext(os.path.basename(path))
-    with open(path, 'w') as f:
+    with open(path, "w") as f:
         f.write(gen_module(name))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
+
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} output_filename")
         sys.exit()

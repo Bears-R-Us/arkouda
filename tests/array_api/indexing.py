@@ -1,5 +1,3 @@
-import json
-
 import numpy as np
 import pytest
 
@@ -17,7 +15,17 @@ def randArr(shape):
 
 
 class TestIndexing:
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    def test_indexing_functions_docstrings(self):
+        import doctest
+
+        from arkouda.array_api import indexing_functions
+
+        result = doctest.testmod(
+            indexing_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_rank_changing_assignment(self):
         a = randArr((5, 6, 7))
         b = randArr((5, 6))
@@ -37,7 +45,7 @@ class TestIndexing:
         a[:, :, :] = e
         assert a.tolist() == e.tolist()
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_nd_assignment(self):
         a = randArr((5, 6, 7))
         bnp = randArr((5, 6, 7)).to_ndarray()
@@ -51,7 +59,7 @@ class TestIndexing:
         a[:] = 5
         assert (a == 5).all()
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_pdarray_index(self):
         a = randArr((5, 6, 7))
         anp = np.asarray(a.tolist())
@@ -82,7 +90,7 @@ class TestIndexing:
         xnp = anp[:]
         assert x.tolist() == xnp.tolist()
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_none_index(self):
         a = randArr((10, 10))
         anp = np.asarray(a.tolist())

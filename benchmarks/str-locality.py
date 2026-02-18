@@ -76,7 +76,7 @@ def time_all_ops(N_per_locale, trials, seed, correctnessOnly):
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Measure the performance of various string operations on "
-                    "strings with good locality (random) and poor locality (sorted)."
+        "strings with good locality (random) and poor locality (sorted)."
     )
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")

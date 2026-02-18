@@ -6,6 +6,8 @@ module ServerConfig
     use SymArrayDmap only makeDistDomType;
 
     public use IO;
+    public use RegistrationConfig;
+
     use ServerErrorStrings;
     use Reflection;
     use ServerErrors;
@@ -85,11 +87,16 @@ module ServerConfig
     Bit width of digits for the LSD radix sort and related ops
      */
     config param RSLSD_bitsPerDigit = 16;
-    
+
     /*
     Arkouda version
     */
     config param arkoudaVersion:string = "Please set during compilation";
+
+    /*
+    Python version
+    */
+    config const pythonVersion:string = "Please set during compilation";
 
     /*
     Write the server `hostname:port` to this file.
@@ -183,6 +190,7 @@ module ServerConfig
         class Config {
             const arkoudaVersion: string;
             const chplVersion: string;
+            const pythonVersion: string;
             const ZMQVersion: string;
             const HDF5Version: string;
             const serverHostname: string;
@@ -206,10 +214,11 @@ module ServerConfig
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
         H5get_libversion(H5major, H5minor, H5micro);
-        
+
         const cfg = new owned Config(
             arkoudaVersion = (ServerConfig.arkoudaVersion:string),
             chplVersion = chplVersionArkouda,
+            pythonVersion = (ServerConfig.pythonVersion:string),
             ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro),
             HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro),
             serverHostname = serverHostname,
@@ -371,6 +380,22 @@ module ServerConfig
         }
     }
 
+    // use this arrayDimIsSupported() instead of MaxArrayDims
+    // could clone it for a non-param argument
+    proc arrayDimIsSupported(param dim: int) param : bool {
+      for param idx in 0..arrayDimensionsTy.size-1 do
+        if dim == arrayDimensionsTy[idx].size then
+          return true;
+      return false;
+    }
+
+    proc arrayElmTypeIsSupported(type eltType) param : bool {
+      for param idx in 0..arrayElementsTy.size-1 do
+        if eltType == arrayElementsTy[idx] then
+          return true;
+      return false;
+    }
+
     proc string.splitMsgToTuple(param numChunks: int) {
       var tup: numChunks*string;
       var count = tup.indices.low;
@@ -463,5 +488,11 @@ module ServerConfig
       var idx_close = cfgStr.rfind("}"):int;
       var tmp_json = cfgStr(0..idx_close-1);
       cfgStr = tmp_json + "," + Q + key + QCQ + val + Q + "}";
+    }
+
+    /* proposed replacement for `timeSinceEpoch().totalSeconds()` */
+    proc currentTime() {
+      use Time;
+      return timeSinceEpoch().totalSeconds();
     }
 }

@@ -4,7 +4,7 @@ import argparse
 
 from base_test import ArkoudaTest
 from context import arkouda as ak
-from arkouda.sorting import SortingAlgorithm
+from arkouda.numpy.sorting import SortingAlgorithm
 
 
 def check_integral(N, algo, dtype):

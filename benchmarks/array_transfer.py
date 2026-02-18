@@ -12,7 +12,7 @@ TYPES = ("int64", "float64")
 
 
 def time_ak_array_transfer(N, trials, dtype, seed, max_bits=-1):
-    print(">>> arkouda {} array creation".format(dtype))
+    print(">>> arkouda {} array transfer".format(dtype))
     cfg = ak.get_config()
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
 

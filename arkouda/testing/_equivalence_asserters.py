@@ -37,9 +37,41 @@ __all__ = [
 
 def _convert_to_arkouda(obj):
     """
-    Convert a numpy or pandas object to an arkouda object.
-    """
+    Convert a NumPy or pandas object to an Arkouda object.
 
+    This function attempts to convert a supported NumPy or pandas object
+    (including arrays, Series, DataFrames, Index types, or categoricals)
+    into an Arkouda-compatible equivalent.
+
+    Parameters
+    ----------
+    obj : object
+        A NumPy or pandas object to convert. Must be one of the supported types
+        including np.ndarray, pd.Series, pd.DataFrame, pd.Index, pd.Categorical,
+        or their Arkouda equivalents.
+
+    Returns
+    -------
+    object
+        An Arkouda object of the same logical structure as the input.
+
+    Raises
+    ------
+    TypeError
+        If the input object is not a recognized Arkouda, NumPy, or pandas type.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import arkouda as ak
+    >>> from arkouda.testing._equivalence_asserters import _convert_to_arkouda
+    >>> _convert_to_arkouda(pd.Series([1, 2, 3]))
+    0    1
+    1    2
+    2    3
+    dtype: int64
+
+    """
     if isinstance(
         obj,
         (
@@ -62,7 +94,8 @@ def _convert_to_arkouda(obj):
         return obj
 
     if not isinstance(
-        obj, (pd.MultiIndex, pd.Index, pd.Series, pd.DataFrame, pd.Categorical, np.ndarray)
+        obj,
+        (pd.MultiIndex, pd.Index, pd.Series, pd.DataFrame, pd.Categorical, np.ndarray),
     ):
         raise TypeError(f"obj must be an arkouda, numpy or pandas object, but was type: {type(obj)}")
 
@@ -77,7 +110,9 @@ def _convert_to_arkouda(obj):
     elif isinstance(obj, pd.Categorical):
         return Categorical(obj)
     elif isinstance(obj, np.ndarray):
-        return array(obj)
+        return array(
+            obj if obj.flags.c_contiguous else np.ascontiguousarray(obj)
+        )  # required for some multi-dim cases
     return None
 
 
@@ -88,31 +123,45 @@ def assert_almost_equivalent(
     atol: float = 1.0e-8,
 ) -> None:
     """
-    Check that the left and right objects are approximately equal.
+    Check that two objects are approximately equal.
 
     By approximately equal, we refer to objects that are numbers or that
     contain numbers which may be equivalent to specific levels of precision.
 
-    If the objects are pandas or numpy objects, they are converted to arkouda objects.
+    If the objects are pandas or numpy objects, they are converted to Arkouda objects.
     Then assert_almost_equal is applied to the result.
 
     Parameters
     ----------
     left : object
+        First object to compare.
     right : object
-    rtol : float, default 1e-5
-        Relative tolerance.
-    atol : float, default 1e-8
-        Absolute tolerance.
+        Second object to compare.
+    rtol : float
+        Relative tolerance. Default is 1e-5.
+    atol : float
+        Absolute tolerance. Default is 1e-8.
+
+    Raises
+    ------
+    TypeError
+        If either input is not a supported numeric-like type.
 
     Warning
     -------
-    This function cannot be used on pdarray of size > ak.client.maxTransferBytes
+    This function cannot be used on pdarrays of size > ak.client.maxTransferBytes
     because it converts pdarrays to numpy arrays and calls np.allclose.
 
     See Also
     --------
     assert_almost_equal
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> from arkouda.testing import assert_almost_equivalent
+    >>> assert_almost_equivalent(0.123456, 0.123457, rtol=1e-4)
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -137,35 +186,38 @@ def assert_index_equivalent(
     obj: str = "Index",
 ) -> None:
     """
-    Check that left and right Index are equal.
+    Check that two Index objects are equal.
 
-    If the objects are pandas.Index, they are converted to arkouda.Index.
-    Then assert_almost_equal is applied to the result.
+    If the objects are pandas Index, they are converted to Arkouda Index.
+    Then assert_index_equal is applied to the result.
 
     Parameters
     ----------
-    left : Index or pandas.Index
-    right : Index or pandas.Index
-    exact : True
-        Whether to check the Index class, dtype and inferred_type
-        are identical.
-    check_names : bool, default True
-        Whether to check the names attribute.
-    check_exact : bool, default True
-        Whether to compare number exactly.
-    check_categorical : bool, default True
-        Whether to compare internal Categorical exactly.
-    check_order : bool, default True
-        Whether to compare the order of index entries as well as their values.
-        If True, both indexes must contain the same elements, in the same order.
-        If False, both indexes must contain the same elements, but in any order.
-    rtol : float, default 1e-5
-        Relative tolerance. Only used when check_exact is False.
-    atol : float, default 1e-8
-        Absolute tolerance. Only used when check_exact is False.
-    obj : str, default 'Index'
-        Specify object name being compared, internally used to show appropriate
-        assertion message.
+    left : Index or pd.Index
+        First Index to compare.
+    right : Index or pd.Index
+        Second Index to compare.
+    exact : bool
+        Whether to check that class, dtype, and inferred type are identical. Default is True.
+    check_names : bool
+        Whether to check the names attribute. Default is True.
+    check_exact : bool
+        Whether to compare values exactly. Default is True.
+    check_categorical : bool
+        Whether to compare internal Categoricals exactly. Default is True.
+    check_order : bool
+        Whether to require identical order in index values. Default is True.
+    rtol : float
+        Relative tolerance used when check_exact is False. Default is 1e-5.
+    atol : float
+        Absolute tolerance used when check_exact is False. Default is 1e-8.
+    obj : str
+        Object name used in error messages. Default is "Index".
+
+    Raises
+    ------
+    TypeError
+        If either input is not an Index or pd.Index.
 
     See Also
     --------
@@ -173,11 +225,13 @@ def assert_index_equivalent(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> from arkouda import testing as tm
     >>> import pandas as pd
     >>> a = ak.Index([1, 2, 3])
     >>> b = pd.Index([1, 2, 3])
     >>> tm.assert_index_equivalent(a, b)
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -211,31 +265,48 @@ def assert_arkouda_array_equivalent(
     index_values=None,
 ) -> None:
     """
-    Check that 'np.array', 'pd.Categorical', 'ak.pdarray', 'ak.Strings',
-    'ak.Categorical', or 'ak.SegArray' is equivalent.
+     Check that two Arkouda-compatible arrays are equal.
 
-    np.nparray's and pd.Categorical's will be converted to the arkouda equivalent.
-    Then assert_arkouda_pdarray_equal will be applied to the result.
+    Supported types include numpy arrays, pandas Categorical, and Arkouda arrays.
 
     Parameters
     ----------
-    left, right : np.ndarray, pd.Categorical, arkouda.pdarray or arkouda.Strings or arkouda.Categorical
-        The two arrays to be compared.
-    check_dtype : bool, default True
-        Check dtype if both a and b are ak.pdarray or np.ndarray.
-    err_msg : str, default None
-        If provided, used as assertion message.
-    check_same : None|'copy'|'same', default None
-        Ensure left and right refer/do not refer to the same memory area.
-    obj : str, default 'numpy array'
-        Specify object name being compared, internally used to show appropriate
-        assertion message.
-    index_values : Index | arkouda.pdarray, default None
-        optional index (shared by both left and right), used in output.
+    left : pdarray, Strings, Categorical, SegArray, np.ndarray, or pd.Categorical
+        First array to compare.
+    right : pdarray, Strings, Categorical, SegArray, np.ndarray, or pd.Categorical
+        Second array to compare.
+    check_dtype : bool
+        Whether to verify that dtypes match. Default is True.
+    err_msg : str or None
+        Optional message to display on failure.
+    check_same : None or {"copy", "same"}
+        Whether to ensure identity or separation in memory. Default is None.
+    obj : str
+        Object label for error messages. Default is "pdarray".
+    index_values : Index or pdarray, optional
+        Shared index used in error output. Default is None.
+
+    Raises
+    ------
+    TypeError
+        If either input is not a supported array type.
 
     See Also
     --------
     assert_arkouda_array_equal
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> from arkouda import Strings
+    >>> from arkouda.testing import assert_arkouda_array_equivalent
+    >>> a = ak.array([1, 2, 3])
+    >>> b = ak.array([1, 2, 3])
+    >>> assert_arkouda_array_equivalent(a, b)
+    >>> s1 = ak.array(['x', 'y'])
+    >>> s2 = ak.array(['x', 'y'])
+    >>> assert_arkouda_array_equivalent(s1, s2)
+
     """
     __tracebackhide__ = not DEBUG
 
@@ -277,42 +348,48 @@ def assert_series_equivalent(
     check_like: bool = False,
 ) -> None:
     """
-    Check that left and right Series are equal.
+    Check that two Series are equal.
 
-    pd.Series's will be converted to the arkouda equivalent.
-    Then assert_series_equal will be applied to the result.
+    This function compares two Series and raises an assertion if they differ.
+    pandas Series are converted to Arkouda equivalents before comparison.
+    The comparison can be customized using the provided keyword arguments.
 
     Parameters
     ----------
     left : Series or pd.Series
+        First Series to compare.
     right : Series or pd.Series
-    check_dtype : bool, default True
-        Whether to check the Series dtype is identical.
-    check_index_type : bool, default True
-        Whether to check the Index class, dtype and inferred_type
-        are identical.
-    check_series_type : bool, default True
-         Whether to check the Series class is identical.
-    check_names : bool, default True
-        Whether to check the Series and Index names attribute.
-    check_exact : bool, default False
-        Whether to compare number exactly.
-    check_categorical : bool, default True
-        Whether to compare internal Categorical exactly.
-    check_category_order : bool, default True
-        Whether to compare category order of internal Categoricals.
-    rtol : float, default 1e-5
-        Relative tolerance. Only used when check_exact is False.
-    atol : float, default 1e-8
-        Absolute tolerance. Only used when check_exact is False.
-    obj : str, default 'Series'
-        Specify object name being compared, internally used to show appropriate
-        assertion message.
-    check_index : bool, default True
-        Whether to check index equivalence. If False, then compare only values.
-    check_like : bool, default False
+        Second Series to compare.
+    check_dtype : bool
+        Whether to check that dtypes are identical. Default is True.
+    check_index_type : bool
+        Whether to check that index class, dtype, and inferred type are identical. Default is True.
+    check_series_type : bool
+        Whether to check that the Series class is identical. Default is True.
+    check_names : bool
+        Whether to check that the Series and Index name attributes are identical. Default is True.
+    check_exact : bool
+        Whether to compare numbers exactly. Default is False.
+    check_categorical : bool
+        Whether to compare internal Categoricals exactly. Default is True.
+    check_category_order : bool
+        Whether to compare category order in internal Categoricals. Default is True.
+    rtol : float
+        Relative tolerance used when check_exact is False. Default is 1e-5.
+    atol : float
+        Absolute tolerance used when check_exact is False. Default is 1e-8.
+    obj : str
+        Object name used in error messages. Default is "Series".
+    check_index : bool
+        Whether to check index equivalence. If False, only values are compared. Default is True.
+    check_like : bool
         If True, ignore the order of the index. Must be False if check_index is False.
-        Note: same labels must be with the same data.
+        Note: identical labels must still correspond to the same data. Default is False.
+
+    Raises
+    ------
+    TypeError
+        If either input is not a Series or pd.Series.
 
     See Also
     --------
@@ -320,17 +397,19 @@ def assert_series_equivalent(
 
     Examples
     --------
+    >>> import arkouda as ak
     >>> from arkouda import testing as tm
     >>> import pandas as pd
     >>> a = ak.Series([1, 2, 3, 4])
     >>> b = pd.Series([1, 2, 3, 4])
     >>> tm.assert_series_equivalent(a, b)
+
     """
     __tracebackhide__ = not DEBUG
 
     if not isinstance(left, (Series, pd.Series)) or not isinstance(right, (Series, pd.Series)):
         raise TypeError(
-            f"left and right must be type arkouda.Series or pandas.Series.  "
+            f"left and right must be type arkouda.pandas.Series or pandas.pandas.Series.  "
             f"Instead types were {type(left)} and {type(right)}."
         )
 
@@ -368,15 +447,11 @@ def assert_frame_equivalent(
     obj: str = "DataFrame",
 ) -> None:
     """
-    Check that left and right DataFrame are equal.
+    Check that two DataFrames are equal.
 
-    This function is intended to compare two DataFrames and output any
-    differences. It is mostly intended for use in unit tests.
-    Additional parameters allow varying the strictness of the
-    equality checks performed.
-
-    pd.DataFrame's will be converted to the arkouda equivalent.
-    Then assert_frame_equal will be applied to the result.
+    This function compares two DataFrames and raises an assertion if they differ.
+    It is intended primarily for use in unit tests. pandas DataFrames are converted to
+    Arkouda equivalents before comparison.
 
     Parameters
     ----------
@@ -384,35 +459,34 @@ def assert_frame_equivalent(
         First DataFrame to compare.
     right : DataFrame or pd.DataFrame
         Second DataFrame to compare.
-    check_dtype : bool, default True
-        Whether to check the DataFrame dtype is identical.
-    check_index_type : bool, default = True
-        Whether to check the Index class, dtype and inferred_type
-        are identical.
-    check_column_type : bool or {'equiv'}, default 'equiv'
-        Whether to check the columns class, dtype and inferred_type
-        are identical. Is passed as the ``exact`` argument of
-        :func:`assert_index_equal`.
-    check_frame_type : bool, default True
-        Whether to check the DataFrame class is identical.
-    check_names : bool, default True
-        Whether to check that the `names` attribute for both the `index`
-        and `column` attributes of the DataFrame is identical.
-    check_exact : bool, default False
-        Whether to compare number exactly.
-    check_categorical : bool, default True
-        Whether to compare internal Categorical exactly.
-    check_like : bool, default False
-        If True, ignore the order of index & columns.
-        Note: index labels must match their respective rows
-        (same as in columns) - same labels must be with the same data.
-    rtol : float, default 1e-5
-        Relative tolerance. Only used when check_exact is False.
-    atol : float, default 1e-8
-        Absolute tolerance. Only used when check_exact is False.
-    obj : str, default 'DataFrame'
-        Specify object name being compared, internally used to show appropriate
-        assertion message.
+    check_dtype : bool
+        Whether to check that dtypes are identical. Default is True.
+    check_index_type : bool
+        Whether to check that index class, dtype, and inferred type are identical. Default is True.
+    check_column_type : bool
+        Whether to check that column class, dtype, and inferred type are identical. Default is True.
+    check_frame_type : bool
+        Whether to check that the DataFrame class is identical. Default is True.
+    check_names : bool
+        Whether to check that the index and column names are identical. Default is True.
+    check_exact : bool
+        Whether to compare values exactly. Default is True.
+    check_categorical : bool
+        Whether to compare internal categoricals exactly. Default is True.
+    check_like : bool
+        Whether to ignore the order of index and columns. Labels must still match their data. /
+        Default is False.
+    rtol : float
+        Relative tolerance used when check_exact is False. Default is 1e-5.
+    atol : float
+        Absolute tolerance used when check_exact is False. Default is 1e-8.
+    obj : str
+        Object name used in error messages. Default is "DataFrame".
+
+    Raises
+    ------
+    TypeError
+        If either input is not a DataFrame or pd.DataFrame.
 
     See Also
     --------
@@ -420,14 +494,14 @@ def assert_frame_equivalent(
 
     Examples
     --------
-    This example shows comparing two DataFrames that are equal
-    but with columns of differing dtypes.
-
-    >>> from arkouda.testing import assert_frame_equivalent
+    >>> import arkouda as ak
     >>> import pandas as pd
+    >>> from arkouda.testing import assert_frame_equivalent
     >>> df1 = ak.DataFrame({'a': [1, 2], 'b': [3, 4]})
     >>> df2 = pd.DataFrame({'a': [1, 2], 'b': [3.0, 4.0]})
-    >>> assert_frame_equivalent(df1, df1)
+
+    Fails because dtypes are different:
+    >>> assert_frame_equivalent(df1, df2)  # doctest: +SKIP
 
     """
     __tracebackhide__ = not DEBUG
@@ -436,7 +510,7 @@ def assert_frame_equivalent(
         right, (DataFrame, pd.DataFrame)
     ):
         raise TypeError(
-            f"left and right must be type arkouda.DataFrame or pandas.DataFrame.  "
+            f"left and right must be type arkouda.pandas.DataFrame or pandas.DataFrame.  "
             f"Instead types were {type(left)} and {type(right)}."
         )
 
@@ -459,15 +533,31 @@ def assert_frame_equivalent(
 
 def assert_equivalent(left, right, **kwargs) -> None:
     """
-    Wrapper for tm.assert_*_equivalent to dispatch to the appropriate test function.
+    Dispatch to the appropriate assertion function depending on object types.
 
     Parameters
     ----------
-    left, right : Index, pd.Index, Series, pd.Series, DataFrame, pd.DataFrame,
-    Strings, Categorical, pd.Categorical, SegArray, pdarray, np.ndarray,
-        The two items to be compared.
-    **kwargs
-        All keyword arguments are passed through to the underlying assert method.
+    left : Any
+        First object to compare. Type determines which assertion function is used.
+    right : Any
+        Second object to compare.
+    **kwargs : dict
+        Keyword arguments passed to the specific assertion function.
+
+    Raises
+    ------
+    AssertionError
+        If values are not equivalent.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import pandas as pd
+    >>> from arkouda.testing import assert_equivalent
+    >>> ak_series = ak.Series([1, 2, 3])
+    >>> pd_series = pd.Series([1, 2, 3])
+    >>> assert_equivalent(ak_series, pd_series)
+
     """
     __tracebackhide__ = not DEBUG
 

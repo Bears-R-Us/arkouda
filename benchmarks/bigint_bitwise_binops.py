@@ -39,7 +39,7 @@ def time_ak_bitwise_binops(N_per_locale, trials, max_bits, seed):
         or_timings.append(end - start)
 
         start = time.time()
-        c = a >> 10
+        c = a >> 10  # noqa: F841
         end = time.time()
         shift_timings.append(end - start)
 
@@ -83,16 +83,25 @@ def create_parser():
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
     parser.add_argument(
-        "-n", "--size", type=int, default=10**8, help="Problem size: length of arrays A and B"
+        "-n",
+        "--size",
+        type=int,
+        default=10**8,
+        help="Problem size: length of arrays A and B",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=6, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=6,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
         "--max-bits",
         type=int,
         default=-1,
-        help="Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum",
+        help="Maximum number of bits, so values > 2**max_bits will wraparound. "
+        "-1 is interpreted as no maximum",
     )
     parser.add_argument(
         "--correctness-only",
@@ -101,7 +110,11 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     return parser
 

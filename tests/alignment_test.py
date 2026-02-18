@@ -6,6 +6,14 @@ DATA_TYPES = [ak.int64, ak.uint64, ak.float64]
 
 
 class TestAlignment:
+    def test_alignment_docstrings(self):
+        import doctest
+
+        from arkouda import alignment
+
+        result = doctest.testmod(alignment, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @staticmethod
     def get_interval_info(lower_bound, upper_bound, vals, dtype):
         lb = ak.array(lower_bound, dtype)
@@ -31,7 +39,7 @@ class TestAlignment:
 
         lower_bound, upper_bound, vals = self.get_interval_info(lb, ub, v, dtype)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        assert expected_result == interval_idxs.to_list()
+        assert expected_result == interval_idxs.tolist()
 
     @pytest.mark.parametrize("dtype", DATA_TYPES)
     def test_multi_array_search_interval(self, dtype):
@@ -40,28 +48,31 @@ class TestAlignment:
         ends = (ak.array([4, 14, 24], dtype), ak.array([4, 14, 24], dtype))
         vals = (ak.array([3, 13, 23], dtype), ak.array([23, 13, 3], dtype))
         ans = [-1, 1, -1]
-        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
-        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
+        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
+        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
 
         vals = (ak.array([23, 13, 3], dtype), ak.array([23, 13, 3], dtype))
         ans = [2, 1, 0]
-        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
-        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
+        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
+        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
 
         vals = (ak.array([23, 13, 33], dtype), ak.array([23, 13, 3], dtype))
         ans = [2, 1, -1]
-        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
-        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).to_list()
+        assert ans == ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
+        assert ans == ak.interval_lookup((starts, ends), ak.arange(3), vals).tolist()
 
         # test hierarchical flag
         starts = (ak.array([0, 5], dtype), ak.array([0, 11], dtype))
         ends = (ak.array([5, 9], dtype), ak.array([10, 20], dtype))
-        vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9], dtype), ak.array([0, 20, 1, 5, 15, 0, 12, 30], dtype))
+        vals = (
+            ak.array([0, 0, 2, 5, 5, 6, 6, 9], dtype),
+            ak.array([0, 20, 1, 5, 15, 0, 12, 30], dtype),
+        )
 
-        search_intervals = ak.search_intervals(vals, (starts, ends), hierarchical=False).to_list()
+        search_intervals = ak.search_intervals(vals, (starts, ends), hierarchical=False).tolist()
         assert search_intervals == [0, -1, 0, 0, 1, -1, 1, -1]
 
-        search_intervals_hierarchical = ak.search_intervals(vals, (starts, ends)).to_list()
+        search_intervals_hierarchical = ak.search_intervals(vals, (starts, ends)).tolist()
         assert search_intervals_hierarchical == [0, 0, 0, 0, 1, 1, 1, -1]
 
         # bigint is equivalent to hierarchical=True case
@@ -69,7 +80,7 @@ class TestAlignment:
         bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
         bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
         assert (
-            ak.search_intervals(bi_vals, (bi_starts, bi_ends)).to_list() == search_intervals_hierarchical
+            ak.search_intervals(bi_vals, (bi_starts, bi_ends)).tolist() == search_intervals_hierarchical
         )
 
     @pytest.mark.parametrize("dtype", DATA_TYPES)
@@ -81,7 +92,7 @@ class TestAlignment:
 
         lower_bound, upper_bound, vals = self.get_interval_info(lb, ub, v, dtype)
         interval_idxs = ak.search_intervals(vals, (lower_bound, upper_bound))
-        assert expected_result == interval_idxs.to_list()
+        assert expected_result == interval_idxs.tolist()
 
     def test_error_handling(self):
         lb = [0, 10, 20, 30, 40, 50]
@@ -154,8 +165,8 @@ class TestAlignment:
         first_answer = [-1, -1, 0, 0, -1, 0, 2, 0, -1, 0, 0, 3, -1]
         smallest_answer = [-1, -1, 0, 2, -1, 2, 2, 1, -1, 0, 0, 3, -1]
         first_result = ak.search_intervals(values, intervals, hierarchical=False)
-        assert first_result.to_list() == first_answer
+        assert first_result.tolist() == first_answer
         smallest_result = ak.search_intervals(
             values, intervals, tiebreak=tiebreak_smallest, hierarchical=False
         )
-        assert smallest_result.to_list() == smallest_answer
+        assert smallest_result.tolist() == smallest_answer

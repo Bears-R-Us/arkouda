@@ -1,18 +1,80 @@
 from __future__ import annotations
 
-from ._dtypes import (
+import arkouda as ak
+
+from ._dtypes import (  # _complex_floating_dtypes,
     _boolean_dtypes,
     _floating_dtypes,
-    _real_floating_dtypes,
-    # _complex_floating_dtypes,
     _integer_dtypes,
     _integer_or_boolean_dtypes,
-    _real_numeric_dtypes,
     _numeric_dtypes,
+    _real_floating_dtypes,
+    _real_numeric_dtypes,
     _result_type,
 )
 from .array_object import Array
-import arkouda as ak
+
+__all__ = [
+    "abs",
+    "acos",
+    "acosh",
+    "add",
+    "asin",
+    "asinh",
+    "atan",
+    "atan2",
+    "atanh",
+    "bitwise_and",
+    "bitwise_invert",
+    "bitwise_left_shift",
+    "bitwise_or",
+    "bitwise_right_shift",
+    "bitwise_xor",
+    "ceil",
+    "conj",
+    "cos",
+    "cosh",
+    "divide",
+    "equal",
+    "exp",
+    "expm1",
+    "floor",
+    "floor_divide",
+    "greater",
+    "greater_equal",
+    "imag",
+    "isfinite",
+    "isinf",
+    "isnan",
+    "less",
+    "less_equal",
+    "log",
+    "log10",
+    "log1p",
+    "log2",
+    "logaddexp",
+    "logical_and",
+    "logical_not",
+    "logical_or",
+    "logical_xor",
+    "multiply",
+    "negative",
+    "not_equal",
+    "positive",
+    "pow",
+    "real",
+    "remainder",
+    "round",
+    "sign",
+    "sin",
+    "sinh",
+    "sqrt",
+    "square",
+    "subtract",
+    "tan",
+    "tanh",
+    "trunc",
+]
 
 
 def abs(x: Array, /) -> Array:
@@ -106,10 +168,7 @@ def bitwise_and(x1: Array, x2: Array, /) -> Array:
     """
     Compute the element-wise bitwise AND of two arrays.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_and")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -141,10 +200,7 @@ def bitwise_or(x1: Array, x2: Array, /) -> Array:
     """
     Compute the element-wise bitwise OR of two arrays.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_or")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -169,10 +225,7 @@ def bitwise_xor(x1: Array, x2: Array, /) -> Array:
     """
     Compute the element-wise bitwise XOR of two arrays.
     """
-    if (
-        x1.dtype not in _integer_or_boolean_dtypes
-        or x2.dtype not in _integer_or_boolean_dtypes
-    ):
+    if x1.dtype not in _integer_or_boolean_dtypes or x2.dtype not in _integer_or_boolean_dtypes:
         raise TypeError("Only integer or boolean dtypes are allowed in bitwise_xor")
     # Call result type here just to raise on disallowed type combinations
     _result_type(x1.dtype, x2.dtype)
@@ -410,14 +463,7 @@ def logical_not(x: Array, /) -> Array:
     """
     Compute the element-wise logical NOT of a boolean array.
     """
-    repMsg = ak.generic_msg(
-        cmd=f"efunc{x._array.ndim}D",
-        args={
-            "func": "not",
-            "array": x._array,
-        },
-    )
-    return Array._new(ak.create_pdarray(repMsg))
+    return ~x
 
 
 def logical_or(x1: Array, x2: Array, /) -> Array:

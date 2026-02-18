@@ -12,6 +12,7 @@ module ArgSortMsg
     use Time;
     use Math only;
     private use ArkoudaSortCompat;
+    private use DynamicSort;
     
     use Reflection only;
     
@@ -37,13 +38,6 @@ module ArgSortMsg
     private config const logChannel = ServerConfig.logChannel;
     const asLogger = new Logger(logLevel, logChannel);
 
-    proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=new DefaultComparator()) {
-      if Data._instance.isDefaultRectangular() {
-        ArkoudaSortCompat.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
-      } else {
-        ArkoudaSortCompat.TwoArrayDistributedRadixSort.twoArrayDistributedRadixSort(Data, comparator);
-      }
-    }
 
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -61,7 +55,7 @@ module ArgSortMsg
     enum SortingAlgorithm {
       RadixSortLSD,
       TwoArrayRadixSort
-    };
+    }
     config const defaultSortAlgorithm: SortingAlgorithm = SortingAlgorithm.RadixSortLSD;
 
     proc getSortingAlgorithm(algoName:string) throws{
@@ -79,15 +73,15 @@ module ArgSortMsg
               );
           }
         }
-        return algorithm;
+      return algorithm;
     }
 
-    // proc DefaultComparator.keyPart(x: _tuple, i:int) where !isHomogeneousTuple(x) &&
+    // proc defaultComparator.keyPart(x: _tuple, i:int) where !isHomogeneousTuple(x) &&
     // (isInt(x(0)) || isUint(x(0)) || isReal(x(0))) {
     
     import Reflection.canResolveMethod;
-    record ContrivedComparator: keyPartComparator {
-      const dc = new DefaultComparator();
+    record contrivedComparator: keyPartComparator {
+      const dc = new defaultComparator();
       proc keyPart(a, i: int) {
         if canResolveMethod(dc, "keyPart", a, 0) {
           return dc.keyPart(a, i);
@@ -142,7 +136,7 @@ module ArgSortMsg
       }
     }
     
-    const myDefaultComparator = new ContrivedComparator();
+    const myDefaultComparator = new contrivedComparator();
 
     /* Perform one step in a multi-step argsort, starting with an initial 
        permutation vector and further permuting it in the manner required
@@ -249,6 +243,7 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
+    @chplcheck.ignore("UnusedFormal")
     proc coargsortMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
@@ -270,9 +265,10 @@ module ArgSortMsg
       var n = msgArgs.get("nstr").getIntValue();  // number of arrays to sort
       var arrNames = msgArgs.get("arr_names").getList(n);
       var arrTypes = msgArgs.get("arr_types").getList(n);
-      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                   "number of arrays: %i arrNames: %?, arrTypes: %?".format(n,arrNames, arrTypes));
-      var (arrSize, hasStr, allSmallStrs, extraArraysNeeded, numStrings, names, types) = validateArraysSameLength(n, arrNames, arrTypes, st);
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+        "number of arrays: %i arrNames: %?, arrTypes: %?".format(n,arrNames, arrTypes));
+      var (arrSize, hasStr, allSmallStrs, extraArraysNeeded, numStrings, names, types) 
+          = validateArraysSameLength(n, arrNames, arrTypes, st);
 
       // If there were no string arrays, merge the arrays into a single array and sort
       // that. This eliminates having to merge index vectors, but has a memory overhead
@@ -324,7 +320,7 @@ module ArgSortMsg
       // Starting with the last array, incrementally permute the IV by sorting each array
       for (i, j) in zip(names.domain.low..names.domain.high by -1,
                         types.domain.low..types.domain.high by -1) {
-        if (types[j].toUpper(): ObjType == ObjType.STRINGS) {
+        if types[j].toUpper(): ObjType == ObjType.STRINGS {
           var strings = getSegString(names[i], st);
           iv.a = incrementalArgSort(strings, iv.a);
         } else {
@@ -338,8 +334,13 @@ module ArgSortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, axis: int = 0):[D] int throws
-      where D.rank == 1
+    @chplcheck.ignore("UnusedFormal")
+    proc argsortDefault(
+      A:[?D] ?t,
+      algorithm:SortingAlgorithm=defaultSortAlgorithm,
+      axis: int = 0 // axis is unused
+    ): [D] int throws
+      where(D.rank == 1)
     {
       var t1 = Time.timeSinceEpoch().totalSeconds();
       var iv = makeDistArray(D, int);
@@ -347,8 +348,8 @@ module ArgSortMsg
         when SortingAlgorithm.TwoArrayRadixSort {
           var AI = makeDistArray(D, (t,int));
           AI = [(a, i) in zip(A, D)] (a, i);
-          dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
-          iv = [(a, i) in AI] i;
+          DynamicSort.dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
+          iv = [(_, i) in AI] i;
         }
         when SortingAlgorithm.RadixSortLSD {
           iv = radixSortLSD_ranks(A);
@@ -363,13 +364,17 @@ module ArgSortMsg
                   );
         }
       }
-      try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "argsort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "argsort time = ", (Time.timeSinceEpoch().totalSeconds() - t1): string);
       return iv;
     }
 
-    proc argsortDefault(A:[?D] ?t, algorithm:SortingAlgorithm=defaultSortAlgorithm, axis: int = 0):[D] int throws
-      where D.rank > 1
+    proc argsortDefault(
+      A:[?D] ?t, 
+      algorithm:SortingAlgorithm=defaultSortAlgorithm, 
+      axis: int = 0
+    ):[D] int throws
+      where (D.rank > 1)
     {
       var t1 = Time.timeSinceEpoch().totalSeconds();
       var iv = makeDistArray(D, int);
@@ -388,7 +393,7 @@ module ArgSortMsg
             }
 
             // sort the array
-            dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
+            DynamicSort.dynamicTwoArrayRadixSort(AI, comparator=myDefaultComparator);
 
             // store result in 'iv'
             forall i in D.dim(axis) with (var perpIdx = idx) {
@@ -418,13 +423,14 @@ module ArgSortMsg
                   );
         }
       }
-      try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "argsort time = %i".format(Time.timeSinceEpoch().totalSeconds() - t1));
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "argsort time = ", (Time.timeSinceEpoch().totalSeconds() - t1): string);
       return iv;
     }
 
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
     @arkouda.instantiateAndRegister
+    @chplcheck.ignore("UnusedFormal")
     proc argsort(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws 
       where (array_dtype != BigInteger.bigint) && (array_dtype != uint(8))
     {
@@ -433,13 +439,18 @@ module ArgSortMsg
               algorithm = getSortingAlgorithm(algoName),
               axis =  msgArgs["axis"].toScalar(int),
               symEntry = st[msgArgs["name"]]: SymEntry(array_dtype, array_nd),
-              vals = if (array_dtype == bool) then (symEntry.a:int) else (symEntry.a: array_dtype);
+              vals = if array_dtype == bool then (symEntry.a:int) else (symEntry.a: array_dtype);
 
         const iv = argsortDefault(vals, algorithm=algorithm, axis);
         return st.insert(new shared SymEntry(iv));
     }
 
-    proc argsortStrings(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+    @chplcheck.ignore("UnusedFormal")
+    proc argsortStrings(
+      cmd: string,
+      msgArgs: borrowed MessageArgs,
+      st: borrowed SymTab
+    ): MsgTuple throws {
         const name = msgArgs["name"].toScalar(string),
               strings = getSegString(name, st),
               algoName = msgArgs["algoName"].toScalar(string),

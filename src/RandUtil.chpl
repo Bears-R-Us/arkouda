@@ -36,10 +36,11 @@ module RandUtil {
     }
 
     enum GenerationFunction {
-      ExponentialGenerator,
-      LogisticGenerator,
-      NormalGenerator,
-      PoissonGenerator,
+        ExponentialGenerator,
+        GammaGenerator,
+        LogisticGenerator,
+        NormalGenerator,
+        PoissonGenerator,
     }
 
     // TODO how to update this to handle randArr being a multi-dim array??
@@ -48,12 +49,22 @@ module RandUtil {
     proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool,
                                                                 const lam: scalarOrArray(?) = new scalarOrArray(),
                                                                 const mu: scalarOrArray(?) = new scalarOrArray(),
-                                                                const scale: scalarOrArray(?) = new scalarOrArray()) throws {
-        if hasSeed {
+                                                                const scale: scalarOrArray(?) = new scalarOrArray(),
+                                                                const kArg: scalarOrArray(?) = new scalarOrArray()) throws 
+        where D.rank == 1 {
             // use a fixed number of elements per stream instead of relying on number of locales or numTasksPerLoc because these
             // can vary from run to run / machine to mahchine. And it's important for the same seed to give the same results
-            const generatorSeed = (rng.next() * 2**62):int,
-                elemsPerStream = max(minPerStream, 2**(2 * ceil(log10(D.size)):int));
+            use ArkoudaTimeCompat;
+            var next: rng.eltType;
+            if hasSeed {
+                next = rng.next();
+            }
+            else{
+                const seed =  timeSinceEpoch().totalMicroseconds();
+                var randStream0 = new randomStream(rng.eltType, seed);
+                next = randStream0.next();
+            }
+            const generatorSeed = (next * 2**62):int, elemsPerStream = max(minPerStream, 2**(2 * ceil(log10(D.size)):int));
 
             // using nested coforalls over locales and tasks so we know how to generate taskSeed
             coforall loc in Locales do on loc {
@@ -83,6 +94,10 @@ module RandUtil {
                                     when GenerationFunction.ExponentialGenerator {
                                         agg.copy(randArr[i], standardExponentialZig(realRS, uintRS));
                                     }
+                                    when GenerationFunction.GammaGenerator {
+                                        const x = gammaGenerator(kArg[i], realRS);
+                                        agg.copy(randArr[i], gammaGenerator(kArg[i], realRS));
+                                    }
                                     when GenerationFunction.LogisticGenerator {
                                         agg.copy(randArr[i], logisticGenerator(mu[i], scale[i], realRS));
                                     }
@@ -108,6 +123,10 @@ module RandUtil {
                                     when GenerationFunction.ExponentialGenerator {
                                         randArr[i] = standardExponentialZig(realRS, uintRS);
                                     }
+                                    when GenerationFunction.GammaGenerator {
+                                        const x = gammaGenerator(kArg[i], realRS);
+                                        randArr[i] = gammaGenerator(kArg[i], realRS);
+                                    }
                                     when GenerationFunction.LogisticGenerator {
                                         randArr[i] = logisticGenerator(mu[i], scale[i], realRS);
                                     }
@@ -126,28 +145,13 @@ module RandUtil {
                     }  // coforall over randomStreams created
                 }
             }  // coforall over locales
-        }
-        else {  // non-seeded case, we can just use task private variables for our random streams
-            forall (rv, i) in zip(randArr, randArr.domain) with (var realRS = new randomStream(real),
-                                                                 var uintRS = new randomStream(uint)) {
-                select function {
-                    when GenerationFunction.ExponentialGenerator {
-                        rv = standardExponentialZig(realRS, uintRS);
-                    }
-                    when GenerationFunction.LogisticGenerator {
-                        rv = logisticGenerator(mu[i], scale[i], realRS);
-                    }
-                    when GenerationFunction.NormalGenerator {
-                        rv = standardNormZig(realRS, uintRS);
-                    }
-                    when GenerationFunction.PoissonGenerator {
-                        rv = poissonGenerator(lam[i], realRS);
-                    }
-                    otherwise {
-                        compilerError("Unrecognized generation function");
-                    }
-                }
-            }
-        }
+    }
+    proc uniformStreamPerElem(ref randArr: [?D] ?t, ref rng, param function: GenerationFunction, hasSeed: bool,
+                                                                const lam: scalarOrArray(?) = new scalarOrArray(),
+                                                                const mu: scalarOrArray(?) = new scalarOrArray(),
+                                                                const scale: scalarOrArray(?) = new scalarOrArray(),
+                                                                const kArg: scalarOrArray(?) = new scalarOrArray()) throws 
+        where D.rank > 1 {
+            throw new Error ("uniformStreamPerElem does not support multidimensional arrays.");
     }
 }

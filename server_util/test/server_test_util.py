@@ -20,6 +20,7 @@ import os
 import socket
 import subprocess
 import time
+from collections import namedtuple
 from enum import Enum
 
 
@@ -32,8 +33,6 @@ class TestRunningMode(Enum):
     CLASS_SERVER = "CLASS_SERVER"
     GLOBAL_SERVER = "GLOBAL_SERVER"
 
-
-from collections import namedtuple
 
 util_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -106,7 +105,30 @@ def get_arkouda_server_info_file():
     return os.getenv("ARKOUDA_SERVER_CONNECTION_INFO", dflt)
 
 
-def read_server_and_port_from_file(server_connection_info):
+def _server_output_to_string(p):
+    """
+    Returns the annotated stdout and stderr, when available from `p`, as a string.
+    """
+
+    def s2s(stream, name):
+        return (
+            f"\n  server {name} is shown between angle brackets: <<<\n"
+            + f"{stream.read().decode(errors='backslashreplace')}>>>"
+        )
+
+    if p.stdout:
+        if p.stderr:
+            return s2s(p.stdout, "stdout") + s2s(p.stderr, "stderr")
+        else:
+            return s2s(p.stdout, "output")
+    else:
+        if p.stderr:
+            return s2s(p.stderr, "output")
+        else:
+            return ""
+
+
+def read_server_and_port_from_file(server_connection_info, process=None, server_cmd=None):
     """
     Reads the server hostname and port from a file, which must contain
     'hostname port'. Sleeps if the file doesn't exist or formatting was off (so
@@ -114,6 +136,7 @@ def read_server_and_port_from_file(server_connection_info):
 
     :return: tuple containing hostname and port
     :rtype: Tuple
+    :raise: RuntimeError if Arkouda server is not running
     """
     while True:
         try:
@@ -123,9 +146,25 @@ def read_server_and_port_from_file(server_connection_info):
                 if hostname == socket.gethostname():
                     hostname = "localhost"
                 return (hostname, port, connect_url)
-        except (ValueError, FileNotFoundError) as e:
+        except (ValueError, FileNotFoundError):
             time.sleep(1)
+            if process is not None and process.poll() is not None:
+                logging.error(
+                    "Arkouda server exited without creating the connection file"
+                    + f"\n  exit code: {str(process.returncode)}"
+                    + (f"\n  launch command was: {str(server_cmd)}" if server_cmd else "")
+                    + _server_output_to_string(process)
+                )
+                raise RuntimeError("Arkouda server exited without creating the connection file")
             continue
+
+
+def get_default_temp_directory():
+    """
+    Get the default temporary directory for arkouda server and client
+    """
+    dflt = os.getcwd()
+    return os.getenv("ARKOUDA_DEFAULT_TEMP_DIRECTORY", dflt)
 
 
 ####################
@@ -174,7 +213,7 @@ def kill_server(server_process):
         try:
             logging.info("Attempting clean server shutdown")
             stop_arkouda_server()
-        except ValueError as e:
+        except ValueError:
             pass
 
         if server_process.poll() is None:
@@ -189,9 +228,7 @@ def get_server_launch_cmd(numlocales):
     import re
 
     # get the srun command for 'arkouda_server_real'
-    p = subprocess.Popen(
-        ["./arkouda_server", f"-nl{numlocales}", "--dry-run"], stdout=subprocess.PIPE
-    )
+    p = subprocess.Popen(["./arkouda_server", f"-nl{numlocales}", "--dry-run"], stdout=subprocess.PIPE)
     srun_cmd, err = p.communicate()
     srun_cmd = srun_cmd.decode()
 
@@ -234,7 +271,7 @@ def start_arkouda_server(
     :param int numlocals: the number of arkouda_server locales
     :param bool trace: indicates whether to start the arkouda_server with tracing
     :param int port: the desired arkouda_server port, defaults to 5555
-    :param str host: the desired arkouda_server host, defaults to None
+    :param str host: the host that arkouda_server will run on, if known, None (default) otherwise
     :param list server_args: additional arguments to pass to the server
     :param within_slurm_alloc: whether the current script is running within a slurm allocation.
                                in which case, special care needs to be taken when launching the server.
@@ -245,24 +282,35 @@ def start_arkouda_server(
     with contextlib.suppress(FileNotFoundError):
         os.remove(connection_file)
 
+    launch_prefix = os.getenv("ARKOUDA_SERVER_LAUNCH_PREFIX", default="")
+
     if within_slurm_alloc:
         raw_server_cmd, env, _ = get_server_launch_cmd(numlocales)
         raw_server_cmd = raw_server_cmd.strip().strip().split(" ")
     else:
-        raw_server_cmd = [get_arkouda_server(),]
+        raw_server_cmd = [
+            get_arkouda_server(),
+        ]
         env = None
 
-    cmd = raw_server_cmd + [
-        "--trace={}".format("true" if trace else "false"),
-        "--serverConnectionInfo={}".format(connection_file),
-        "-nl {}".format(numlocales),
-        "--ServerPort={}".format(port),
-    ]
+    cmd = (
+        launch_prefix.split()
+        + raw_server_cmd
+        + [
+            "--trace={}".format("true" if trace else "false"),
+            "--serverConnectionInfo={}".format(connection_file),
+            "-nl",
+            "{}".format(numlocales),
+            "--ServerPort={}".format(port),
+            "--logChannel=LogChannel.FILE",
+        ]
+    )
+
     if server_args:
         cmd += server_args
 
     logging.info('Starting "{}"'.format(cmd))
-    process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, env=env)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
     atexit.register(kill_server, process)
 
     if not host:
@@ -270,7 +318,13 @@ def start_arkouda_server(
         If host is None, this means the host and port are to be retrieved
         via the read_server_and_port_from_file method
         """
-        host, port, connect_url = read_server_and_port_from_file(connection_file)
+        requested_port = port
+        host, port, connect_url = read_server_and_port_from_file(
+            connection_file, process=process, server_cmd=cmd
+        )
+        if port != requested_port:
+            logging.error(f"requested port {requested_port}, got {port}")
+
     server_info = ServerInfo(host, port, process)
     set_server_info(server_info)
     return server_info
@@ -286,7 +340,7 @@ def stop_arkouda_server():
     try:
         run_client(os.path.join(util_dir, "shutdown.py"), timeout=60)
         server_process.wait(5)
-    except subprocess.TimeoutExpired as e:
+    except subprocess.TimeoutExpired:
         server_process.kill()
 
 
@@ -316,7 +370,7 @@ def run_client(client, client_args=None, timeout=get_client_timeout()):
     :rtype: str
     """
     server_info = get_server_info()
-    cmd = ["python3"] + [client] + [server_info.host, str(server_info.port)]
+    cmd = ["python3", client, server_info.host, str(server_info.port)]
     if client_args:
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))
@@ -334,14 +388,14 @@ def run_client_live(client, client_args=None, timeout=get_client_timeout()):
     :rtype: int
     """
     server_info = get_server_info()
-    cmd = ["python3"] + [client] + [server_info.host, str(server_info.port)]
+    cmd = ["python3", client, server_info.host, str(server_info.port)]
     if client_args:
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))
     try:
         subprocess.check_call(cmd, encoding="utf-8", timeout=timeout)
         return 0
-    except subprocess.TimeoutExpired as e:
+    except subprocess.TimeoutExpired:
         return 1
     except subprocess.CalledProcessError as e:
         return e.returncode

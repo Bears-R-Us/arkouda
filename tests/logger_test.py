@@ -1,17 +1,23 @@
-import os
 import tempfile
 from logging import DEBUG, INFO, WARN, FileHandler, StreamHandler
 
 import pytest
 
 import arkouda as ak
-from arkouda import io_util
+from arkouda import logger
 from arkouda.logger import LogLevel, getArkoudaClientLogger, getArkoudaLogger
+from arkouda.pandas import io_util
 
 
 class TestLogger:
-    logger_test_base_tmp = f"{os.getcwd()}/logger_io_test"
+    logger_test_base_tmp = f"{pytest.temp_directory}/logger_io_test"
     io_util.get_directory(logger_test_base_tmp)
+
+    def test_logger_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(logger, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     def test_log_level(self):
         assert "DEBUG" == LogLevel.DEBUG.value

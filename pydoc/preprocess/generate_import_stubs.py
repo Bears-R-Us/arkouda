@@ -10,7 +10,7 @@ def insert_spaces_after_newlines(input_string, spaces):
         if len(starting_indents) > 0:
             old_indent_pattern = "^" + starting_indents[0]
         else:
-            return input_string
+            old_indent_pattern = "^"
 
         lines = input_string.split("\n")
         result = []
@@ -145,23 +145,34 @@ def write_stub(module, filename, all_only=False, allow_arkouda=False):
 
 
 def main():
-    import arkouda.dataframe as akDataframe
-    import arkouda.groupbyclass as akGroupbyclass
+    import arkouda as ak
     import arkouda.numpy as aknp
+    import arkouda.pandas.dataframe as akDataframe
+    import arkouda.pandas.groupbyclass as akGroupbyclass
+    import arkouda.pandas.series as akSeries
     import arkouda.scipy as akscipy
     import arkouda.scipy.special as akscipySpecial
     import arkouda.scipy.stats as akscipyStats
-    import arkouda.series as akSeries
 
-    write_stub(aknp, "arkouda/numpy.pyi", all_only=False, allow_arkouda=True)
-    write_stub(aknp.dtypes, "arkouda/numpy/dtypes.pyi", all_only=False, allow_arkouda=True)
-    write_stub(aknp.random, "arkouda/numpy/random.pyi", all_only=False, allow_arkouda=True)
+    write_stub(
+        aknp.dtypes,
+        "arkouda/numpy/dtypes.pyi",
+        all_only=False,
+        allow_arkouda=True,
+    )
     write_stub(akscipy, "arkouda/scipy.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipyStats, "arkouda/scipy/stats.pyi", all_only=True, allow_arkouda=True)
     write_stub(akscipySpecial, "arkouda/scipy/special.pyi", all_only=True, allow_arkouda=True)
-    write_stub(akDataframe, "arkouda/dataframe.pyi", all_only=True, allow_arkouda=True)
-    write_stub(akGroupbyclass, "arkouda/groupbyclass.pyi", all_only=True, allow_arkouda=True)
+    write_stub(akDataframe, "arkouda/pandas/dataframe.pyi", all_only=True, allow_arkouda=True)
+    write_stub(akGroupbyclass, "arkouda/pandas/groupbyclass.pyi", all_only=True, allow_arkouda=True)
     write_stub(akSeries, "arkouda/series.pyi", all_only=True, allow_arkouda=True)
+    write_stub(
+        aknp.pdarrayclass,
+        "arkouda/numpy/pdarrayclass.pyi",
+        all_only=True,
+        allow_arkouda=True,
+    )
+    write_stub(aknp.imports, "arkouda/numpy/imports.pyi", all_only=True, allow_arkouda=False)
 
 
 if __name__ == "__main__":

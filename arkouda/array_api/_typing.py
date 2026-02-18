@@ -8,6 +8,24 @@ valid for inputs that match the given type annotations.
 
 from __future__ import annotations
 
+from typing import Any, Literal, Protocol, TypeVar, Union
+
+from numpy import (
+    dtype,
+    float32,
+    float64,
+    int8,
+    int16,
+    int32,
+    int64,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+)
+
+from .array_object import Array
+
 __all__ = [
     "Array",
     "Device",
@@ -17,28 +35,6 @@ __all__ = [
     "PyCapsule",
 ]
 
-from typing import (
-    Any,
-    Literal,
-    Union,
-    TypeVar,
-    Protocol,
-)
-
-from .array_object import Array
-from numpy import (
-    dtype,
-    int8,
-    int16,
-    int32,
-    int64,
-    uint8,
-    uint16,
-    uint32,
-    uint64,
-    float32,
-    float64,
-)
 
 _T_co = TypeVar("_T_co", covariant=True)
 

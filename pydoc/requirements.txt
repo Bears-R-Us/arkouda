@@ -1,6 +1,6 @@
 # dependencies
-python>=3.9,<3.12.4
-numpy>=1.24.1,<2.0
+python>=3.10
+numpy>=2.0
 pandas>=1.4.0,!=2.2.0
 pyzmq>=20.0.0
 typeguard==2.10.0
@@ -12,14 +12,15 @@ h5py>=3.7.0
 hdf5>=1.12.2
 pip
 types-tabulate
-pytables>=3.8.0
+pytables>=3.10.0
 pyarrow
 libiconv
 libidn2
 jupyter
-scipy<=1.13.1
+scipy
 pytest>=6.0
 pytest-env
+cloudpickle
 # chapel-py
 
 # Developer dependencies
@@ -33,7 +34,6 @@ sphinx-autopackagesummary
 furo # sphinx theme
 myst-parser
 linkify-it-py
-typed-ast
 flake8
 mypy>=0.931
 black

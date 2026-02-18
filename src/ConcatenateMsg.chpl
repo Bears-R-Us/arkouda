@@ -18,32 +18,108 @@ module ConcatenateMsg
     use PrivateDist;
     
     use AryUtil;
-    
+    use CTypes;
+    use Set;
+    use List;
+
+    use Repartition;
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const cmLogger = new Logger(logLevel, logChannel);
 
+    use CommandMap;
+
+    // https://data-apis.org/array-api/latest/API_specification/generated/array_api.concat.html#array_api.concat
+    /* Concatenate a list of arrays together
+       to form one array
+    */
+    @arkouda.instantiateAndRegister(prefix='concatenate')
+    proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+
+        const names = msgArgs["names"].toScalarList(string),
+              nArrays = names.size,
+              axis = msgArgs["axis"].getPositiveIntValue(array_nd),
+              offsets = msgArgs["offsets"].toScalarArray(int, nArrays);
+
+        const arrNames = names.toArray();
+
+        var dtype: DType;
+        dtype = getGenericTypedArrayEntry(arrNames[0], st).dtype;
+        var same: bool = true;
+        for n in arrNames {
+          if getGenericTypedArrayEntry(n, st).dtype != dtype {
+            same = false;
+          }
+        }
+
+        if !same {
+          const errMsg = "All arrays must have the same data type.";
+          cmLogger.error(getModuleName(), pn, getLineNumber(), errMsg);
+          return MsgTuple.error(errMsg);
+        }
+
+        // Retrieve the arrays from the symbol table
+        const eIns = for n in arrNames do st[n]: borrowed SymEntry(array_dtype, array_nd),
+              shapes = [i in 0..<nArrays] eIns[i].tupShape,
+              (valid, shapeOut) = concatenatedShape(shapes, axis, array_nd);
+        var eOut = createSymEntry((...shapeOut), array_dtype);
+
+        if !valid {
+            const errMsg = "All arrays must have the same shape except in the concatenation axis.";
+            cmLogger.error(getModuleName(), pn, getLineNumber(), errMsg);
+            return MsgTuple.error(errMsg);
+        } else {
+            for (arrIdx, arr) in zip(eIns.domain, eIns) {
+                const offset = offsets[arrIdx];
+                const arrDomain = arr.a.domain;
+                var translation: array_nd * int;
+                translation[axis] = offset;
+                const domainTranslated = arrDomain.translate(translation);
+                eOut.a[domainTranslated] = arr.a;
+            }
+            return st.insert(eOut);
+        }
+    }
+
+    // Function to validate shapes and determine output shape
+    private proc concatenatedShape(shapes: [?d] ?t, axis: int, param N: int): (bool, N*int)
+        where isHomogeneousTuple(t)
+    {
+        var shapeOut: N*int,
+            firstShape = shapes[0];
+
+        // Ensure all shapes match except for the concatenation axis
+        for i in 1..d.last {
+            for param j in 0..<N {
+                if j != axis && shapes[i][j] != firstShape[j] {
+                    return (false, shapeOut);
+                }
+            }
+        }
+
+        // Compute output shape
+        shapeOut = firstShape;
+        shapeOut[axis] = + reduce [i in 0..<d.size] shapes[i][axis]; // Sum sizes along axis
+
+        return (true, shapeOut);
+    }
+
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
+    proc concatenateStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab) : MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var objtype = msgArgs.getValueOf("objType").toUpper(): ObjType;
         var mode = msgArgs.getValueOf("mode");
-        var n = msgArgs.get("nstr").getIntValue(); // number of arrays to sort
-        var names = msgArgs.get("names").getList(n);
+        var names = msgArgs.get("names").toScalarList(string);
+        var n = names.size;
         
         cmLogger.debug(getModuleName(),getRoutineName(), getLineNumber(), 
               "number of arrays: %i names: %?".format(n,names));
 
-        // Check that fields contains the stated number of arrays
-        if (n != names.size) { 
-            var errorMsg = incompatibleArgumentsError(pn, 
-                             "Expected %i arrays but got %i".format(n, names.size)); 
-            cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
         var size: int = 0;
         var blocksizes: [PrivateSpace] int;
@@ -82,8 +158,8 @@ module ConcatenateMsg
                 }
             }
 
-            st.checkTable(name, "concatenateMsg");
-            var abstractEntry = st.lookup(name);
+            st.checkTable(name, "concatenateStrMsg");
+            var abstractEntry = st[name];
             var (entryDtype, entrySize, entryItemSize) = getArraySpecFromEntry(abstractEntry);
             
             if (i == 1) {
@@ -391,7 +467,190 @@ module ConcatenateMsg
             }
         }
     }
+    registerFunction("concatenateStr", concatenateStrMsg, getModuleName());
 
-    use CommandMap;
-    registerFunction("concatenate", concatenateMsg, getModuleName());
+    proc concatenateUniqueStrMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab): MsgTuple throws {
+        param pn = Reflection.getRoutineName();
+
+        var repMsg: string;
+        var names = msgArgs.get("names").toScalarList(string);
+        var n = names.size;
+
+
+        cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                    "concatenate unique strings from %i arrays: %?".format(n, names));
+
+        // Each locale gets its own set
+        var localeSets = makeDistArray(numLocales, set(string));
+
+        // Initialize sets
+        coforall loc in Locales do on loc {
+            localeSets[here.id] = new set(string);
+        }
+
+        var strOffsetInLocale: [PrivateSpace] list(int);
+        var strBytesInLocale: [PrivateSpace] list(uint(8));
+
+        // Collect all unique strings from each input SegmentedString
+        for i in 0..#names.size {
+            var rawName = names[i];
+            var (strName, _) = rawName.splitMsgToTuple('+', 2);
+            try {
+                var segString = getSegString(strName, st);
+                cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                            "Processing SegString: %s".format(strName));
+
+                // Grab the strings by locale and throw them in the sets.
+                coforall loc in Locales do on loc {
+                    ref globalOffsets = segString.offsets.a;
+                    const offsetsDom = segString.offsets.a.domain.localSubdomain();
+                    const offsets = segString.offsets.a.localSlice[offsetsDom];
+                    const topEnd = if offsetsDom.high >= segString.offsets.a.domain.high then segString.values.a.size else globalOffsets[offsetsDom.high + 1];
+                    var locSet = new set(string);
+                    forall idx in offsetsDom with (+ reduce locSet) {
+                        const start = offsets[idx];
+                        const end = if idx == offsetsDom.high then topEnd else offsets[idx + 1];
+                        var str = interpretAsString(segString.values.a, start..<end);
+                        locSet.add(str);
+                    }
+                    localeSets[here.id] |= locSet;
+
+                    if i == names.size - 1 {
+
+                        const strArray = localeSets[here.id].toArray();
+                        var strOffsets: [0..#strArray.size] int;
+                        var strSize: [0..#strArray.size] int;
+
+                        forall strIdx in strArray.domain {
+                            const str = strArray[strIdx];
+                            const strBytes = str.bytes();
+                            strSize[strIdx] = strBytes.size + 1;
+                        }
+
+                        var numStrBytes = + reduce strSize;
+                        strOffsets = (+ scan strSize) - strSize;
+
+                        var strBytes: [0..#numStrBytes] uint(8);
+
+                        forall strIdx in strArray.domain {
+                            const str = strArray[strIdx];
+                            const currStrBytes = str.bytes();
+                            strBytes[strOffsets[strIdx]..#(strSize[strIdx] - 1)] = currStrBytes;
+                        }
+
+                        strOffsetInLocale[here.id] = new list(strOffsets);
+                        strBytesInLocale[here.id] = new list(strBytes);
+
+                    }
+                }
+
+            } catch e: Error {
+                throw getErrorWithContext(
+                    msg="lookup for %s failed".format(rawName),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");
+            }
+        }
+
+        var (strOffsetInLocaleOut, strBytesInLocaleOut) = repartitionByHashString(strOffsetInLocale, strBytesInLocale);
+
+        // I need variables to store how many strings each locale has
+        // how many bytes each locale has
+        // It'd be nice to store the set as an array on each Locale so I only have to convert once.
+        // Then I can convert the string array to uint(8) on each locale
+        // Use some global ref to how many bytes per and do some kinda + scan numBytes thing
+        // And I think I'm done. I don't care about rebalancing, the bytes array is already distributed.
+        // So ship data via domains and I don't think that can really be beat with the aggregators.
+        // Certainly not beat by one byte at a time.
+        // This also beats the calculation of which locale to send data to. Who cares? Just send it.
+        // offsets by locale does not line up with bytes by locale. So it doesn't matter.
+
+        // Intentionally not distributed because I'm going to need these available to every locale.
+
+        var numStringsPerLocale: [0..#numLocales] int;
+        var numBytesPerLocale: [0..#numLocales] int;
+
+        coforall loc in Locales with (ref numStringsPerLocale, ref numBytesPerLocale) do on loc {
+
+            var strSet = new set(string);
+            ref myOffsets = strOffsetInLocaleOut[here.id];
+            var myBytes = strBytesInLocaleOut[here.id].toArray();
+
+            forall i in 0..#myOffsets.size with (+ reduce strSet) {
+              const start = myOffsets[i];
+              const end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
+              var str = interpretAsString(myBytes, start..<end);
+              strSet.add(str);
+            }
+
+            const strArray = strSet.toArray();
+            numStringsPerLocale[here.id] = strArray.size;
+            var size = 0;
+
+            forall str in strArray with (+ reduce size) {
+                size += str.size + 1;
+            }
+
+            numBytesPerLocale[here.id] = size;
+
+            localeSets[here.id] = strSet;
+        }
+
+        // I need to set up the segString here.
+        // I need to create the running sum of strings per locale
+        var stringOffsetByLocale = + scan numStringsPerLocale;
+        var bytesOffsetByLocale = + scan numBytesPerLocale;
+        // I need to create the running sum of bytes per locale.
+
+        var esegs = createTypedSymEntry(stringOffsetByLocale.last, int);
+        var evals = createTypedSymEntry(bytesOffsetByLocale.last, uint(8));
+        ref esa = esegs.a;
+        ref eva = evals.a;
+
+        stringOffsetByLocale -= numStringsPerLocale;
+        bytesOffsetByLocale -= numBytesPerLocale;
+
+        // Let's allocate a new SegString for the return object
+        var retString = assembleSegStringFromParts(esegs, evals, st);
+
+        coforall loc in Locales do on loc {
+
+            const strArray = localeSets[here.id].toArray();
+            var myBytes: [0..#numBytesPerLocale[here.id]] uint(8);
+            var strOffsets: [0..#strArray.size] int;
+            var strSizes: [0..#strArray.size] int;
+
+            forall (i, str) in zip(0..#strArray.size, strArray) {
+
+                strSizes[i] = str.size + 1;
+
+            }
+
+            strOffsets = (+ scan strSizes) - strSizes;
+
+            forall (i, str) in zip(0..#strArray.size, strArray) {
+
+                const strBytes = str.bytes();
+                const size = strSizes[i];
+
+                myBytes[strOffsets[i]..#size] = strBytes[0..#size];
+
+            }
+
+            esa[stringOffsetByLocale[here.id]..#strArray.size] = strOffsets[0..#strArray.size] + bytesOffsetByLocale[here.id];
+            eva[bytesOffsetByLocale[here.id]..#numBytesPerLocale[here.id]] = myBytes[0..#numBytesPerLocale[here.id]];
+
+        }
+
+        // Store the result in the symbol table and return
+        repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);
+
+        cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                    "Created unique concatenated SegmentedString: %s".format(st.attrib(retString.name)));
+
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+    registerFunction("concatenateUniquely", concatenateUniqueStrMsg, getModuleName());
 }

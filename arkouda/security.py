@@ -1,3 +1,56 @@
+"""
+Security and user identity utilities for Arkouda clients.
+
+The `arkouda.security` module provides functionality for managing access credentials,
+user identity, and secure client-side metadata used in communicating with the Arkouda server.
+
+Features
+--------
+- Platform-independent retrieval of the current user’s username and home directory.
+- Creation and management of a `.arkouda` directory for client-specific data.
+- Secure generation of authentication tokens using Python’s `secrets` module.
+- Serialization of user credentials for use with token-based server authentication.
+
+Functions
+---------
+generate_token(length=32)
+    Generate a secure hexadecimal token using `secrets.token_hex`.
+
+generate_username_token_json(token)
+    Return a JSON-formatted string containing both the current user's username and a token.
+
+get_home_directory()
+    Return the user's home directory in a cross-platform manner.
+
+get_arkouda_client_directory()
+    Get or create the `.arkouda` directory where client configuration and credentials are stored.
+
+get_username()
+    Determine the system username based on the user's home directory path.
+
+Notes
+-----
+- The `.arkouda` directory can be overridden using the `ARKOUDA_CLIENT_DIRECTORY` environment variable.
+- This module supports Linux, macOS (Darwin), and Windows platforms.
+- Token storage conventions in this module differ from the Arkouda server’s expectations /
+and must not be confused.
+
+Examples
+--------
+>>> from arkouda.security import generate_token, get_username, generate_username_token_json
+>>> token = generate_token()
+>>> print(token)  # doctest: +SKIP
+'8f3a52e1b75f44d1a3a57a869488b637'
+
+>>> user = get_username()
+>>> print(user)  # doctest: +SKIP
+'emma'
+
+>>> generate_username_token_json(token)  # doctest: +SKIP
+'{"username": "emma", "token": "8f3a52e1b75f44d1a3a57a869488b637"}'
+
+"""
+
 import json
 import os
 import platform
@@ -8,7 +61,16 @@ from pathlib import Path
 
 from typeguard import typechecked
 
-from arkouda import io_util
+from arkouda.pandas import io_util
+
+__all__ = [
+    "generate_token",
+    "generate_username_token_json",
+    "get_arkouda_client_directory",
+    "get_home_directory",
+    "get_username",
+]
+
 
 username_tokenizer = defaultdict(lambda x: x.split("/"))  # type:ignore
 username_tokenizer["Windows"] = lambda x: x.split("\\")
@@ -19,8 +81,7 @@ username_tokenizer["Darwin"] = lambda x: x.split("/")
 @typechecked
 def generate_token(length: int = 32) -> str:
     """
-    Uses the secrets.token_hex() method to generate a
-    a hexidecimal token
+    Use the secrets.token_hex() method to generate a hexidecimal token.
 
     Parameters
     ----------
@@ -35,14 +96,14 @@ def generate_token(length: int = 32) -> str:
     Notes
     -----
     This method uses the Python secrets.token_hex method
+
     """
     return secrets.token_hex(length // 2)
 
 
 def get_home_directory() -> str:
     """
-    A platform-independent means of finding path to
-    the current user's home directory
+    Find a path to the current user's home directory in a platform-independent manner.
 
     Returns
     -------
@@ -53,15 +114,17 @@ def get_home_directory() -> str:
     -----
     This method uses the Python os.path.expanduser method
     to retrieve the user's home directory
+
     """
     return expanduser("~")
 
 
 def get_arkouda_client_directory() -> Path:
     """
-    A platform-independent means of finding path to
-    the current user's .arkouda directory where artifacts
-    such as server access tokens are stored.
+    Find a path to the current user's .arkouda directory.
+
+    Artifacts such as server access tokens are stored in a platform-independent manner
+    in the .arkouda directory.
 
     Returns
     -------
@@ -75,6 +138,7 @@ def get_arkouda_client_directory() -> Path:
     default can be overridden by setting the ARKOUDA_CLIENT_DIRECTORY
     environment variable.  It is important this is not the same location
     as the server's token directory as the file format is different.
+
     """
     arkouda_parent_dir = os.getenv("ARKOUDA_CLIENT_DIRECTORY")
     if not arkouda_parent_dir:
@@ -84,8 +148,7 @@ def get_arkouda_client_directory() -> Path:
 
 def get_username() -> str:
     """
-    A platform-independent means of retrieving the current
-    user's username for the host system.
+    Retrieve the current user's username for the host system in a platform-independent manner.
 
     Returns
     -------
@@ -101,6 +164,7 @@ def get_username() -> str:
     -----
     The currently supported operating systems are Windows, Linux,
     and MacOS AKA Darwin
+
     """
     try:
         u_tokens = username_tokenizer[platform.system()](get_home_directory())
@@ -112,9 +176,10 @@ def get_username() -> str:
 @typechecked
 def generate_username_token_json(token: str) -> str:
     """
-    Generates a JSON object encapsulating the user's username
-    and token for connecting to an arkouda server with basic
-    authentication enabled
+    Generate a JSON object encapsulating the user's username and token.
+
+    These credentials are for connecting to an arkouda server with basic
+    authentication enabled.
 
     Parameters
     ----------
@@ -125,5 +190,6 @@ def generate_username_token_json(token: str) -> str:
     -------
     str
         The JSON-formatted string encapsulating username and token
+
     """
     return json.dumps({"username": get_username(), "token": token})

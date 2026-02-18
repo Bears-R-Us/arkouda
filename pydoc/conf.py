@@ -13,7 +13,6 @@
 import os
 import sys
 
-
 sys.path.insert(0, os.path.abspath("../benchmarks"))
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -60,7 +59,7 @@ mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS
 
 
 # Include __init__.pyi files
-autodoc_mock_imports = ["arkouda.numpy", "arkouda.scipy"]
+autodoc_mock_imports = ["arkouda.numpy", "arkouda.pandas", "arkouda.scipy"]
 
 source_suffix = [".rst", ".md"]
 
@@ -86,13 +85,27 @@ autoapi_ignore = [
     "*_version.py",
     "*decorators.py",
     "*message.py",
+    "*arkouda/numpy/dtypes.py",
+    "*arkouda/numpy/imports/*",
     "*arkouda/dataframe.py",
     "*arkouda/groupbyclass.py",
     "*arkouda/series.py",
-    "*arkouda/numpy/*py",
     "*arkouda/scipy/*py",
     "*arkouda/scipy/stats/*py",
     "*arkouda/scipy/special/*py",
+    #   Do not include the old module locations to reduce cross-reference WARNINGS
+    "*arkouda/dtypes/*",
+    "*arkouda/numeric/*",
+    "*arkouda/pdarrayclass/*",
+    "*arkouda/pdarraycreation/*",
+    "*arkouda/pdarraymanipulation/*",
+    "*arkouda/pdarraysetops/*",
+    "*arkouda/random/*",
+    "*arkouda/segarray/*",
+    "*arkouda/sorting/*",
+    "*arkouda/strings/*",
+    "*arkouda/timeclass/*",
+    "*arkouda/util/*",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

@@ -143,7 +143,22 @@ module ParquetMsg {
     return (rgSubdomains, offset);
   }
 
-  proc readFilesByName(ref A: [] ?t, ref whereNull: [] bool, filenames: [] string, sizes: [] int, dsetname: string, ty, byteLength=-1, hasNonFloatNulls=false) throws {
+  inline proc readFilesByName(ref A: [] ?t, filenames: [] string, sizes: [] int,
+                              dsetname: string, ty, byteLength=-1,
+                              hasNonFloatNulls=false) throws {
+    var dummy = [false];
+    readFilesByName(A, dummy, filenames, sizes, dsetname, ty, byteLength,
+                    hasNonFloatNulls, hasWhereNull=false);
+  }
+
+  /*
+     whereNull will be populated by the CPP interface, where `true` would mean a
+   0 (null) having been read.
+   */
+  proc readFilesByName(ref A: [] ?t, ref whereNull: [] bool,
+                       filenames: [] string, sizes: [] int, dsetname: string,
+                       ty, byteLength=-1, hasNonFloatNulls=false,
+                       param hasWhereNull=true) throws {
     extern proc c_readColumnByName(filename, arr_chpl, where_null_chpl, colNum, numElems, startIdx, batchSize, byteLength, hasNonFloatNulls, errMsg): int;
 
     var (subdoms, length) = getSubdomains(sizes);
@@ -159,8 +174,14 @@ module ParquetMsg {
           const intersection = domain_intersection(locdom, filedom);
           if intersection.size > 0 {
             var pqErr = new parquetErrorMsg();
-            if c_readColumnByName(filename.localize().c_str(), c_ptrTo(A[intersection.low]), c_ptrTo(whereNull[intersection.low]),
-                                  dsetname.localize().c_str(), intersection.size, intersection.low - off,
+            var whereNullPtr = if hasWhereNull
+                                  then c_ptrTo(whereNull[intersection.low])
+                                  else nil;
+            if c_readColumnByName(filename.localize().c_str(),
+                                  c_ptrTo(A[intersection.low]),
+                                  whereNullPtr,
+                                  dsetname.localize().c_str(),
+                                  intersection.size, intersection.low - off,
                                   batchSize, byteLength, hasNonFloatNulls,
                                   c_ptrTo(pqErr.errMsg)) == ARROWERROR {
               pqErr.parquetError(getLineNumber(), getRoutineName(), getModuleName());
@@ -469,6 +490,7 @@ module ParquetMsg {
 
     // Generate the filenames based upon the number of targetLocales.
     var filenames = generateFilenames(prefix, extension, A.targetLocales().size);
+    var numElemsPerFile: [filenames.domain] int;
 
     //Generate a list of matching filenames to test against. 
     var matchingFilenames = getMatchingFilenames(prefix, extension);
@@ -494,6 +516,9 @@ module ParquetMsg {
 
         var locDom = A.localSubdomain();
         var locArr = A[locDom];
+
+        numElemsPerFile[idx] = locDom.size;
+
         var valPtr: c_ptr(void) = nil;
         if locArr.size != 0 {
           valPtr = c_ptrTo(locArr);
@@ -513,7 +538,7 @@ module ParquetMsg {
         }
       }
     // Only warn when files are being overwritten in truncate mode
-    return filesExist && mode == TRUNCATE;
+    return (filesExist && mode == TRUNCATE, filenames, numElemsPerFile);
   }
 
   proc createEmptyParquetFile(filename: string, dsetname: string, dtype: int, compression: int) throws {
@@ -1127,7 +1152,7 @@ module ParquetMsg {
   proc pdarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
-    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var entry = st[msgArgs.getValueOf("values")];
     var dsetname = msgArgs.getValueOf("dset");
     var dataType = str2dtype(msgArgs.getValueOf("dtype"));
     var dtypestr = msgArgs.getValueOf("dtype");
@@ -1147,18 +1172,22 @@ module ParquetMsg {
     select dataType {
       when DType.Int64 {
         var e = toSymEntry(toGenSymEntry(entry), int);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       }
       when DType.UInt64 {
         var e = toSymEntry(toGenSymEntry(entry), uint);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       }
       when DType.Bool {
         var e = toSymEntry(toGenSymEntry(entry), bool);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       } when DType.Float64 {
         var e = toSymEntry(toGenSymEntry(entry), real);
-        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr, compression:int, mode, e.a);
+        warnFlag = write1DDistArrayParquet(filename, dsetname, dtypestr,
+                                           compression:int, mode, e.a)[0];
       } otherwise {
         var errorMsg = "Writing Parquet files not supported for %s type".format(msgArgs.getValueOf("dtype"));
         pqLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -1176,7 +1205,7 @@ module ParquetMsg {
   proc strings_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
-    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var entry = st[msgArgs.getValueOf("values")];
     var dsetname = msgArgs.getValueOf("dset");
     var dataType = msgArgs.getValueOf("dtype");
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
@@ -1383,7 +1412,7 @@ module ParquetMsg {
   proc segarray_toParquetMsg(msgArgs: MessageArgs, st: borrowed SymTab): bool throws {
     var mode = msgArgs.get("mode").getIntValue();
     var filename: string = msgArgs.getValueOf("prefix");
-    var entry = st.lookup(msgArgs.getValueOf("values"));
+    var entry = st[msgArgs.getValueOf("values")];
     var dsetname = msgArgs.getValueOf("dset");
     var compression = msgArgs.getValueOf("compression").toUpper(): CompressionType;
 
@@ -1398,9 +1427,9 @@ module ParquetMsg {
     }
 
     // segments is always int64
-    var segments = toSymEntry(toGenSymEntry(st.lookup(msgArgs.getValueOf("segments"))), int);
+    var segments = toSymEntry(toGenSymEntry(st[msgArgs.getValueOf("segments")]), int);
 
-    var genVal = toGenSymEntry(st.lookup(msgArgs.getValueOf("values")));
+    var genVal = toGenSymEntry(st[msgArgs.getValueOf("values")]);
     
     var warnFlag: bool;
     select genVal.dtype {
@@ -1534,7 +1563,7 @@ module ParquetMsg {
         var objType = ot.toUpper(): ObjType;
 
         if objType == ObjType.STRINGS {
-          var entry = st.lookup(column);
+          var entry = st[column];
           var e: SegStringSymEntry = toSegStringSymEntry(entry);
           var segStr = new SegString("", e);
           ref ss = segStr;
@@ -1632,7 +1661,7 @@ module ParquetMsg {
 
         select ot.toUpper(): ObjType {
           when ObjType.STRINGS {
-            var entry = st.lookup(column);
+            var entry = st[column];
             var e: SegStringSymEntry = toSegStringSymEntry(entry);
             var segStr = new SegString("", e);
             ref ss = segStr;
@@ -1902,7 +1931,7 @@ module ParquetMsg {
     var targetLocales;
     select objType.toUpper(): ObjType {
       when ObjType.STRINGS {
-        var entry = st.lookup(name);
+        var entry = st[name];
         var e: SegStringSymEntry = toSegStringSymEntry(entry);
         var segStr = new SegString("", e);
         targetLocales = segStr.offsets.a.targetLocales();
@@ -1917,7 +1946,7 @@ module ParquetMsg {
         targetLocales = segments.a.targetLocales();
       }
       when ObjType.PDARRAY {
-        var entry = st.lookup(name);
+        var entry = st[name];
         var entryDtype = (entry: borrowed GenSymEntry).dtype;
         select entryDtype {
           when DType.Int64 {

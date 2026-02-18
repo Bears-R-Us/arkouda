@@ -1,19 +1,22 @@
-import json
-import os
-import warnings
-from enum import Enum
-from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
+"""
+Client interface for connecting to and communicating with the Arkouda server.
 
-from arkouda import __version__, io_util, security
-from arkouda.logger import LogLevel, getArkoudaLogger
-from arkouda.message import (
-    MessageFormat,
-    MessageType,
-    ParameterObject,
-    ReplyMessage,
-    RequestMessage,
-)
+The `arkouda.client` module provides the core logic for managing a client-server
+session in Arkouda. It includes methods to connect, disconnect, send commands,
+check system status, and retrieve configuration details from the server. The client
+communicates with the server via ZMQ by default and handles both string and binary
+message formats.
 
+Key Responsibilities
+--------------------
+- Establish and manage server connections via different `Channel` types (e.g., ZMQ)
+- Format and send commands using Arkouda’s request-response protocol
+- Retrieve memory and configuration metrics from the server
+- Provide a health check (`ruok`) and shutdown mechanism
+- Maintain client-side logging, verbosity, and session parameters
+
+Main API
+--------
 __all__ = [
     "connect",
     "disconnect",
@@ -29,9 +32,106 @@ __all__ = [
     "ruok",
 ]
 
+Classes
+-------
+Channel
+    Abstract base class for communication between the client and the server.
+
+ZmqChannel
+    Default implementation of `Channel` using ZeroMQ request-reply pattern.
+
+ClientMode, ShellMode, RequestMode, RequestStatus, ChannelType
+    Enum classes defining modes of client interaction, shell type detection, and channel selection.
+
+Functions
+---------
+connect(...)
+    Establish a connection to an Arkouda server.
+
+disconnect()
+    Cleanly disconnect from the server and reset session state.
+
+shutdown()
+    Shut down the server, delete its symbol table, and disconnect the client.
+
+get_config()
+    Return server runtime configuration and environment settings.
+
+get_mem_used(), get_mem_avail(), get_mem_status()
+    Retrieve memory usage and availability statistics from the server.
+
+get_server_commands()
+    Get a mapping of available server commands and their functions.
+
+print_server_commands()
+    Print a list of all supported server-side commands.
+
+generate_history(...)
+    Retrieve interactive shell or notebook command history.
+
+ruok()
+    Send a health check to the server ("ruok") and receive status.
+
+Notes
+-----
+- This module is foundational to all Arkouda workflows.
+- The `generic_msg()` function is used internally to handle message transmission.
+- Clients must call `connect()` before performing any server operations.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> ak.connect() # doctest: +SKIP
+>>> ak.get_config() # doctest: +SKIP
+{'serverHostname': 'localhost', 'numLocales': 4, ...}
+>>> ak.disconnect() # doctest: +SKIP
+
+See Also
+--------
+- arkouda.pdarray
+- arkouda.dtypes
+- arkouda.pandas.dataframe
+- arkouda.security
+
+"""
+
+import json
+import os
+import warnings
+from enum import Enum
+from typing import Dict, List, Mapping, Optional, Tuple, Union, cast
+
+from arkouda import __version__, security
+from arkouda.logger import ArkoudaLogger, LogLevel, getArkoudaLogger
+from arkouda.message import (
+    MessageFormat,
+    MessageType,
+    ParameterObject,
+    ReplyMessage,
+    RequestMessage,
+)
+from arkouda.pandas import io_util
+
+__all__ = [
+    "connect",
+    "disconnect",
+    "shutdown",
+    "get_config",
+    "get_max_array_rank",
+    "get_mem_used",
+    "get_mem_avail",
+    "get_mem_status",
+    "wait_for_async_activity",
+    "get_server_commands",
+    "print_server_commands",
+    "generate_history",
+    "ruok",
+]
+
 username = security.get_username()
 connected = False
 serverConfig = None
+registrationConfig = None
 # verbose flag for arkouda module
 verboseDefVal = False
 verbose = verboseDefVal
@@ -84,8 +184,9 @@ clientLogger = getArkoudaLogger(name="Arkouda User Logger", logFormat="%(message
 
 class ClientMode(Enum):
     """
-    The ClientMode enum provides controlled vocabulary indicating whether the
-    Arkouda client is in UI mode or API mode. If in API mode, it is assumed the
+    Provide controlled vocabulary indicating whether the Arkouda client is in UI mode or API mode.
+
+    If in API mode, it is assumed the
     Arkouda client is being used via an API call instead of a Python shell or notebook.
     """
 
@@ -93,96 +194,71 @@ class ClientMode(Enum):
     API = "API"
 
     def __str__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
     def __repr__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
 
 class ShellMode(Enum):
-    """
-    The ShellMode Enum indicates whether the Python shell corresponds
-    to a REPL shell, Jupyter notebook, or IPython shell.
-    """
+    """Indicate whether the Python shell corresponds to a Jupyter notebook, or REPL or IPython shell."""
 
     IPYTHON_NOTEBOOK = "TerminalInteractiveShell"
     JUPYTER_NOTEBOOK = "ZMQInteractiveShell"
     REPL_SHELL = "REPL_SHELL"
 
     def __str__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
     def __repr__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
 
 class RequestMode(Enum):
-    """
-    The RequestMode Enum indicates whether the Arkouda client-server
-    communication pattern will be synchronous or asynchronous.
-    """
+    """The Arkouda client-server communication pattern (synchronous or asynchronous)."""
 
     SYNCHRONOUS = "SYNCHRONOUS"
     ASYNCHRONOUS = "ASYNCHRONOUS"
 
     def __str__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
     def __repr__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
 
 class RequestStatus(Enum):
-    """
-    The RequestStatus Enum indicates whether an asynchronous method
-    invocation has completed.
-    """
+    """The RequestStatus Enum indicates whether an asynchronous method invocation has completed."""
 
     PENDING = "PENDING"
     RUNNING = "RUNNING"
     COMPLETE = "COMPLETE"
 
     def __str__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
     def __repr__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
 
 def get_shell_mode():
     """
-    Determines the Python shell type and returns the corresponding
-    ShellMode enum.
+    Determine the Python shell type and returns the corresponding ShellMode enum.
 
     Returns
     -------
     ShellMode
         The shell mode corresponding to a Python shell, Jupyter notebook,
         or IPython notebook
+
     """
     shell_mode = None
     try:
@@ -206,14 +282,7 @@ if mode == ClientMode.UI:
 
 # reset settings to default values
 def set_defaults() -> None:
-    """
-    Sets client variables including verbose, maxTransferBytes and
-    pdarrayIterThresh to default values.
-
-    Returns
-    -------
-    None
-    """
+    """Set client variables including verbose, maxTransferBytes, pdarrayIterThresh to default values."""
     global verbose, maxTransferBytes, pdarrayIterThresh
     verbose = verboseDefVal
     pdarrayIterThresh = pdarrayIterThreshDefVal
@@ -221,10 +290,7 @@ def set_defaults() -> None:
 
 
 class ChannelType(Enum):
-    """
-    The ChannelType Enum specifies which Channel implementation is
-    to be used for an Arkouda client deployment.
-    """
+    """Specify which Channel implementation is to be used for an Arkouda client deployment."""
 
     ZMQ = "ZMQ"
     GRPC = "GRPC"
@@ -232,22 +298,17 @@ class ChannelType(Enum):
     STREAMING_GRPC = "STREAMING_GRPC"
 
     def __str__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
     def __repr__(self) -> str:
-        """
-        Overridden method returns value.
-        """
+        """Overridden method returns value."""
         return self.value
 
 
 class Channel:
     """
-    The Channel class defines methods for connecting to and communicating with
-    the Arkouda server.
+    The Channel class defines methods for connecting to and communicating with the Arkouda server.
 
     Attributes
     ----------
@@ -256,11 +317,17 @@ class Channel:
         to the connect_url or generated from supplied server and port values
     user : str
         Arkouda user who will use the Channel to connect to the arkouda_server
-    token : str, optional
+    token : Union[str, None]
         Token used to connect to the arkouda_server if authentication is enabled
     logger : ArkoudaLogger
         ArkoudaLogger used for logging
+
     """
+
+    url: str
+    user: str
+    token: Union[str, None]
+    logger: ArkoudaLogger
 
     __slots__ = ("url", "user", "token", "logger")
 
@@ -273,18 +340,22 @@ class Channel:
         connect_url: Optional[str] = None,
     ) -> None:
         """
+        Initiate chanel for connecting to and communicating with the Arkouda server.
+
+        Parameters
+        ----------
         user : str
             Arkouda user who will use the Channel to connect to the arkouda_server
-        server : str, optional
+        server : str, default='localhost'
             The hostname of the server (must be visible to the current machine).
-            Defaults to `localhost`.
-        port : int, optional
-            The port of the server. Defaults to 5555.
+        port : int, default=5555
+            The port of the server.
         token : str, optional
             Token used to connect to the arkouda_server if authentication is enabled
         connect_url : str, optional
             The complete url in the format of tcp://server:port?token=<token_value>
             where the token is optional
+
         """
         self._set_url(server, port, connect_url)
         self.user = user
@@ -293,6 +364,8 @@ class Channel:
 
     def _set_url(self, server: str, port: int, connect_url: Optional[str] = None) -> None:
         """
+        Generate and sets the Channel url.
+
         If the connect_url is None, generates and sets the Channel url per the
         Channel protocol as well as host and port. Otherwise, sets the Channel url
         to the supplied connect_url value.
@@ -307,15 +380,14 @@ class Channel:
             The complete url in the format of tcp://server:port?token=<token_value>
             where the token is optional
 
-        Returns
-        -------
-        None
         """
         self.url = connect_url if connect_url else f"tcp://{server}:{port}"
 
     def _set_access_token(self, server: str, port: int, token: Optional[str]) -> None:
         """
-        Sets the token for the Channel by doing the following:
+        Set the access token.
+
+        Set the token for the Channel by doing the following:
 
         1. retrieves the token configured for the connect_string from the
            .arkouda/tokens.txt file, if any
@@ -330,21 +402,16 @@ class Channel:
             The hostname of the server (must be visible to the current machine)
         port : int
             The port of the server
-        username : str
-            The username retrieved from the user's home directory
         token : str, optional
             The token supplied by the user, which is required if authentication
             is enabled, defaults to None
-
-        Returns
-        -------
-        None
 
         Raises
         ------
         IOError
             If there's an error writing host:port -> access_token mapping to
             the user's tokens.txt file or retrieving the user's tokens
+
         """
         path = f"{security.get_arkouda_client_directory()}/tokens.txt"
         url = f"{server}:{port}"
@@ -379,7 +446,9 @@ class Channel:
         request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         """
-        Generates a RequestMessage encapsulating command and requesting
+        Generate and send a RequestMessage encapsulating to the Arkouda server.
+
+        Generate a RequestMessage encapsulating command and requesting
         user information, sends it to the Arkouda server, and returns
         either a string or binary depending upon the message format.
 
@@ -387,17 +456,16 @@ class Channel:
         ----------
         cmd : str
             The name of the command to be executed by the Arkouda server
-        recv_binary : bool, defaults to False
+        recv_binary : bool, default=False
             Indicates if the return message will be a string or binary data
-        args : str, defaults to None
+        args : str, default=None
             A delimited string containing 1..n command arguments
-        size : int
-            Default -1
+        size : int, default=-1
             Number of parameters contained in args. Only set if args is json.
-        request_id: str, defaults to None
+        request_id : str, default=None
             Specifies an identifier for each request submitted to Arkouda
 
-        Returns
+        Returns  # noqa: DAR202
         -------
         Union[str,memoryview]
             The response string or binary data sent back from the Arkouda server
@@ -414,6 +482,7 @@ class Channel:
         Notes
         -----
         s- Size is not yet utilized. It is being provided in preparation for further development.
+
         """
         raise NotImplementedError("send_string_message must be implemented in derived class")
 
@@ -427,7 +496,9 @@ class Channel:
         request_id: Optional[str] = None,
     ) -> Union[str, memoryview]:
         """
-        Generates a RequestMessage encapsulating command and requesting user information,
+        Generate and send a RequestMessage binary request to the Arkouda server.
+
+        Generate a RequestMessage encapsulating command and requesting user information,
         information prepends the binary payload, sends the binary request to the Arkouda
         server, and returns either a string or binary depending upon the message format.
 
@@ -438,14 +509,16 @@ class Channel:
         payload : memoryview
             The binary data to be converted to a pdarray, Strings, or Categorical
             object on the Arkouda server
-        recv_binary : bool, defaults to False
+        recv_binary : bool, default=False
             Indicates if the return message will be a string or binary data
         args : str, default=None
             A delimited string containing 1..n command arguments
-        request_id: str, defaults to None
+        size : int, default=-1
+            Number of parameters contained in args. Only set if args is json.
+        request_id : str, default=None
             Specifies an identifier for each request submitted to Arkouda
 
-        Returns
+        Returns  # noqa: DAR202
         -------
         Union[str,memoryview]
             The response string or binary data sent back from the Arkouda server
@@ -458,16 +531,17 @@ class Channel:
         ValueError
             Raised if the return message is malformed JSON or is missing 1..n
             expected fields
+
         """
         raise NotImplementedError("send_binary_message must be implemented in derived class")
 
     def connect(self, timeout: int = 0) -> None:
         """
-        Establishes a connection to the Arkouda server
+        Establish a connection to the Arkouda server.
 
         Parameters
         ----------
-        timeout : int
+        timeout : int, default=0
             Connection timeout
 
         Raises
@@ -475,26 +549,29 @@ class Channel:
         RuntimeError
             Raised if the return message contains the word "Error", indicating
             a server-side error was thrown
+
         """
         raise NotImplementedError("connect must be implemented in derived class")
 
     def disconnect(self) -> None:
         """
-        Disconnects from the Arkouda server
+        Disconnects from the Arkouda server.
 
         Raises
         ------
         RuntimeError
             Raised if the return message contains the word "Error", indicating
             a server-side error was thrown
+
         """
         raise NotImplementedError("connect must be implemented in derived class")
 
 
 class ZmqChannel(Channel):
     """
-    The ZmqChannel class implements the Channel methods for ZMQ request/reply communication
-    patterns, which is the Arkouda-Chapel default
+    Implement the Channel methods for ZMQ request/reply communication patterns.
+
+    ZMQ the Arkouda-Chapel default.
     """
 
     __slots__ = "socket"
@@ -625,15 +702,15 @@ def get_channel(
     connect_url: Optional[str] = None,
 ) -> Channel:
     """
-    Returns the configured Channel implementation
+    Return the configured Channel implementation.
 
     Parameters
     ----------
-    server : str
+    server : str, default="localhost"
         The hostname of the server (must be visible to the current
-        machine). Defaults to `localhost`.
-    port : int
-        The port of the server. Defaults to 5555.
+        machine).
+    port : int, default=5555
+        The port of the server.
     token : str, optional
         The token used to connect to an existing socket to enable access to
         an Arkouda server where authentication is enabled. Defaults to None.
@@ -651,6 +728,7 @@ def get_channel(
     ------
     EnvironmentError
         Raised if the ARKOUDA_CHANNEL_TYPE references an invalid ChannelType
+
     """
     if channelType == ChannelType.ZMQ:
         return ZmqChannel(server=server, port=port, user=username, token=token, connect_url=connect_url)
@@ -671,14 +749,14 @@ def connect(
 
     Parameters
     ----------
-    server : str, optional
+    server : str, default="localhost"
         The hostname of the server (must be visible to the current
-        machine). Defaults to `localhost`.
-    port : int, optional
-        The port of the server. Defaults to 5555.
-    timeout : int, optional
+        machine).
+    port : int, default=5555
+        The port of the server.
+    timeout : int, default=0
         The timeout in seconds for client send and receive operations.
-        Defaults to 0 seconds, whicn is interpreted as no timeout.
+        Defaults to 0 seconds, which is interpreted as no timeout.
     access_token : str, optional
         The token used to connect to an existing socket to enable access to
         an Arkouda server where authentication is enabled. Defaults to None.
@@ -687,10 +765,6 @@ def connect(
         where the token is optional
     access_channel : Channel, optional
         The desired Channel implementation that differs from the default ZmqChannel
-
-    Returns
-    -------
-    None
 
     Raises
     ------
@@ -705,8 +779,9 @@ def connect(
     -----
     On success, prints the connected address, as seen by the server. If called
     with an existing connection, the socket will be re-initialized.
+
     """
-    global connected, serverConfig, verbose, regexMaxCaptures, channel
+    global connected, serverConfig, regexMaxCaptures, channel, registrationConfig
 
     # send the connect message
     cmd = "connect"
@@ -714,7 +789,7 @@ def connect(
 
     """
     If access-channel is not None, set global channel to access_channel. If not,
-    set the global channel object via the get_channel factory method
+    set the global channel object via the get_channel factory method.
     """
     if access_channel:
         channel = access_channel
@@ -741,12 +816,15 @@ def connect(
             RuntimeWarning,
         )
     regexMaxCaptures = serverConfig["regexMaxCaptures"]  # type: ignore
+    registrationConfig = _get_registration_config_msg()
     clientLogger.info(return_message)
 
 
 def _parse_url(url: str) -> Tuple[str, int, Optional[str]]:
     """
-    Parses the url in the following format if authentication enabled:
+    Parse the url.
+
+    Parse the url in the following format if authentication enabled:
 
     tcp://<hostname/url>:<port>?token=<token>
 
@@ -771,6 +849,7 @@ def _parse_url(url: str) -> Tuple[str, int, Optional[str]]:
         if the url does not match one of the above formats, if the port is not an
         integer, or if there's a general string parse error raised in the parsing
         of the url parameter
+
     """
     try:
         # split on tcp:// and if missing or malformmed, raise ValueError
@@ -802,25 +881,27 @@ def _parse_url(url: str) -> Tuple[str, int, Optional[str]]:
 
 def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
     """
-    Starts ssh tunnel
+    Start an ssh tunnel.
 
     Parameters
     ----------
+    addr : str
+        The address (host:port) of the Arkouda server to which the tunnel should connect
     tunnel_server : str
         The ssh server url
 
     Returns
     -------
-    str
-        The new tunneled-version of connect string
-    object
-        The ssh tunnel object
+    Tuple[str, object]
+        str: The new tunneled-version of connect string
+        object: The ssh tunnel object
 
     Raises
     ------
     ConnectionError
         If the ssh tunnel could not be created given the tunnel_server
         url and credentials (either password or key file)
+
     """
     from zmq import ssh
 
@@ -842,18 +923,15 @@ def _start_tunnel(addr: str, tunnel_server: str) -> Tuple[str, object]:
 # message arkouda server the client is disconnecting from the server
 def disconnect() -> None:
     """
-    Disconnects the client from the Arkouda server
-
-    Returns
-    -------
-    None
+    Disconnects the client from the Arkouda server.
 
     Raises
     ------
     ConnectionError
         Raised if there's an error disconnecting from the Arkouda server
+
     """
-    global connected, serverConfig, verbose
+    global connected, serverConfig
 
     if connected:
         # send disconnect message to server
@@ -874,24 +952,23 @@ def disconnect() -> None:
 
 def shutdown() -> None:
     """
-    Sends a shutdown message to the Arkouda server that does the
+    Send a shutdown message.
+
+    Send a shutdown message to the Arkouda server that does the
     following:
 
     1. Delete all objects in the SymTable
     2. Shuts down the Arkouda server
     3. Disconnects the client from the stopped Arkouda Server
 
-    Returns
-    -------
-    None
-
     Raises
     ------
     RuntimeError
         Raised if the client is not connected to the Arkouda server or
         there is an error in disconnecting from the server
+
     """
-    global socket, pspStr, connected, serverConfig, verbose
+    global connected, serverConfig
 
     if not connected:
         raise RuntimeError("not connected, cannot shutdown server")
@@ -912,12 +989,14 @@ def shutdown() -> None:
 
 def _json_args_to_str(json_obj: Optional[Dict] = None) -> Tuple[int, str]:
     """
+    Convert Python Dictionary into a JSON formatted string.
+
     Convert Python Dictionary into a JSON formatted string that can be parsed by the msg
-    processing system on the Arkouda Server
+    processing system on the Arkouda Server.
 
     Parameters
     ----------
-    json_obj : dict = None
+    json_obj : dict, optional
         Python dictionary of key:val representing command arguments
 
     Return
@@ -935,6 +1014,7 @@ def _json_args_to_str(json_obj: Optional[Dict] = None) -> Tuple[int, str]:
     -----
     - Nested dictionaries are not yet supported, but are planned for future support.
     - Support for lists of pdarray or Strings objects does not yet exist.
+
     """
     j: List[str] = []
     if json_obj is None:
@@ -957,20 +1037,22 @@ def generic_msg(
     recv_binary: bool = False,
 ) -> Union[str, memoryview]:
     """
-    Sends a binary or string message composed of a command and corresponding
+    Send a binary or string message to the arkouda_server, returning the response sent by the server.
+
+    Send a binary or string message composed of a command and corresponding
     arguments to the arkouda_server, returning the response sent by the server.
 
     Parameters
     ----------
     cmd : str
         The server-side command to be executed
-    args : str
-        A space-delimited list of command arguments
-    payload : memoryview
+    args : dict, optional
+        Python dictionary of key:val representing command arguments
+    payload : memoryview, optional
         The payload when sending binary data
-    send_binary : bool
+    send_binary : bool, default=False
         Indicates if the message to be sent is a string or binary
-    recv_binary : bool
+    recv_binary : bool, default=False
         Indicates if the return message will be a string or binary
 
     Returns
@@ -991,29 +1073,29 @@ def generic_msg(
     If the server response is a string, the string corresponds to a success
     confirmation, warn message, or error message. A memoryview response
     corresponds to an Arkouda array output as a numpy array.
-    """
-    global socket, pspStr, connected, verbose
 
+    """
     if not connected:
         raise RuntimeError("client is not connected to a server")
 
     size, msg_args = _json_args_to_str(args)
+    from typing import cast as type_cast
 
     try:
         if send_binary:
             assert payload is not None
-            return cast(Channel, channel).send_binary_message(
+            return type_cast(Channel, channel).send_binary_message(
                 cmd=cmd, payload=payload, recv_binary=recv_binary, args=msg_args, size=size
             )
         else:
             assert payload is None
-            return cast(Channel, channel).send_string_message(
+            return type_cast(Channel, channel).send_string_message(
                 cmd=cmd, args=msg_args, size=size, recv_binary=recv_binary
             )
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out
         # of sync reset the socket before raising the interrupt exception
-        cast(Channel, channel).connect(timeout=0)
+        type_cast(Channel, channel).connect(timeout=0)
         raise e
 
 
@@ -1035,8 +1117,8 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
     ------
     RuntimeError
         Raised if the client is not connected to a server
-    """
 
+    """
     if serverConfig is None:
         raise RuntimeError("client is not connected to a server")
 
@@ -1045,7 +1127,7 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
 
 def get_max_array_rank() -> int:
     """
-    Get the maximum pdarray rank the server was compiled to support
+    Get the maximum pdarray rank the server was compiled to support.
 
     This value corresponds to the maximum number in
     parameter_classes -> array -> nd in the `registration-config.json`
@@ -1055,12 +1137,35 @@ def get_max_array_rank() -> int:
     -------
     int
         The maximum pdarray rank supported by the server
-    """
 
+    """
     if serverConfig is None:
         raise RuntimeError("client is not connected to a server")
 
-    return int(serverConfig["maxArrayDims"])
+    return max(get_array_ranks())
+
+
+def get_array_ranks() -> list[int]:
+    """
+    Get the list of pdarray ranks the server was compiled to support.
+
+    This value corresponds to
+    parameter_classes -> array -> nd in the `registration-config.json`
+    file when the server was compiled.
+
+    Returns
+    -------
+    list of int
+        The pdarray ranks supported by the server
+
+    """
+    if registrationConfig is None:
+        raise RuntimeError(
+            "There was a problem loading registrationConfig."
+            "Make sure the client is connected to a server."
+        )
+
+    return registrationConfig["parameter_classes"]["array"]["nd"]
 
 
 def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
@@ -1073,9 +1178,42 @@ def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
         Raised if there is a server-side error in getting memory used
     ValueError
         Raised if there's an error in parsing the JSON-formatted server config
+
     """
     try:
         raw_message = cast(str, generic_msg(cmd="getconfig"))
+        return json.loads(raw_message)
+    except json.decoder.JSONDecodeError:
+        raise ValueError(f"Returned config is not valid JSON: {raw_message}")
+    except Exception as e:
+        raise RuntimeError(f"{e} in retrieving Arkouda server config")
+
+
+def wait_for_async_activity() -> None:
+    """
+    Wait for the completion of asynchronous activities on the server.
+
+    Intended to help with testing of automatic checkpointing.
+    The server will consider itself "idle" despite serving this message.
+
+    """
+    generic_msg("wait_for_async_activity")
+
+
+def _get_registration_config_msg() -> dict:
+    """
+    Get runtime information about the command registration configuration.
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory used
+    ValueError
+        Raised if there's an error in parsing the JSON-formatted server config
+
+    """
+    try:
+        raw_message = cast(str, generic_msg(cmd="getRegistrationConfig"))
         return json.loads(raw_message)
     except json.decoder.JSONDecodeError:
         raise ValueError(f"Returned config is not valid JSON: {raw_message}")
@@ -1088,24 +1226,25 @@ def get_mem_used(unit: str = "b", as_percent: bool = False) -> int:
     Compute the amount of memory used by objects in the server's symbol table.
 
     Parameters
-     ----------
-     unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
-         unit of return ('b' by default)
-     as_percent : bool
-         If True, return the percent (as an int) of the available memory that's been used
-         False by default
+    ----------
+    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+        unit of return ('b' by default)
+    as_percent : bool
+        If True, return the percent (as an int) of the available memory that's been used
+        False by default
 
-     Returns
-     -------
-     int
-         Indicates the amount of memory allocated to symbol table objects.
+    Returns
+    -------
+    int
+        Indicates the amount of memory allocated to symbol table objects.
 
-     Raises
-     ------
-     RuntimeError
-         Raised if there is a server-side error in getting memory used
-     ValueError
-         Raised if the returned value is not an int-formatted string
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory used
+    ValueError
+        Raised if the returned value is not an int-formatted string
+
     """
     mem_used_message = cast(
         str,
@@ -1119,24 +1258,25 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
     Compute the amount of memory available to be used.
 
     Parameters
-     ----------
-     unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
-         unit of return ('b' by default)
-     as_percent : bool
-         If True, return the percent (as an int) of the memory that's available to be used
-         False by default
+    ----------
+    unit : str {'b', 'kb', 'mb', 'gb', 'tb', 'pb'}
+        unit of return ('b' by default)
+    as_percent : bool
+        If True, return the percent (as an int) of the memory that's available to be used
+        False by default
 
-     Returns
-     -------
-     int
-         Indicates the amount of memory available to be used.
+    Returns
+    -------
+    int
+        Indicates the amount of memory available to be used.
 
-     Raises
-     ------
-     RuntimeError
-         Raised if there is a server-side error in getting memory available
-     ValueError
-         Raised if the returned value is not an int-formatted string
+    Raises
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting memory available
+    ValueError
+        Raised if the returned value is not an int-formatted string
+
     """
     mem_avail_message = cast(
         str,
@@ -1147,23 +1287,24 @@ def get_mem_avail(unit: str = "b", as_percent: bool = False) -> int:
 
 def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
     """
-    Retrieves the memory status for each locale
+    Retrieve the memory status for each locale.
 
     Returns
-     -------
-     List[Mapping[str, Union[str, int, float]]]
-         total_mem: total physical memory on locale host
-         avail_mem: current available memory on locale host
-         arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
-         pct_avail_mem: percentage of physical memory currently available on locale host
-         locale_id: locale id which is between 0 and numLocales-1
-         locale_hostname: host name of locale host
+    -------
+    List[Mapping[str, Union[str, int, float]]]
+        total_mem: total physical memory on locale host
+        avail_mem: current available memory on locale host
+        arkouda_mem_alloc: memory allocated to Arkouda chapel process on locale host
+        pct_avail_mem: percentage of physical memory currently available on locale host
+        locale_id: locale id which is between 0 and numLocales-1
+        locale_hostname: host name of locale host
 
     Raises
-     ------
-     RuntimeError
-         Raised if there is a server-side error in getting per-locale
-         memory status information
+    ------
+    RuntimeError
+        Raised if there is a server-side error in getting per-locale
+        memory status information
+
     """
     try:
         raw_message = cast(str, generic_msg(cmd="getmemstatus"))
@@ -1176,7 +1317,7 @@ def get_mem_status() -> List[Mapping[str, Union[str, int, float]]]:
 
 def get_server_commands() -> Mapping[str, str]:
     """
-    Return a dictionary of available server commands and the functions they map to
+    Return a dictionary of available server commands and the functions they map to.
 
     Returns
     -------
@@ -1189,6 +1330,7 @@ def get_server_commands() -> Mapping[str, str]:
         Raised if there is a server-side error in retrieving and formatting the CommandMap
     ValueError
         Raised if there's an error in parsing the JSON-formatted server string
+
     """
     try:
         raw_message = cast(str, generic_msg(cmd="getCmdMap"))
@@ -1200,9 +1342,7 @@ def get_server_commands() -> Mapping[str, str]:
 
 
 def print_server_commands():
-    """
-    Print the list of the available Server commands
-    """
+    """Print the list of the available Server commands."""
     cmdMap = get_server_commands()
     cmds = [k for k in sorted(cmdMap.keys())]
     print(f"Total available server commands: {len(cmds)}")
@@ -1212,7 +1352,7 @@ def print_server_commands():
 
 def _no_op() -> str:
     """
-    Send a no-op message just to gather round trip time
+    Send a no-op message just to gather round trip time.
 
     Returns
     -------
@@ -1223,13 +1363,16 @@ def _no_op() -> str:
     ------
     RuntimeError
         Raised if there is a server-side error in executing noop request
+
     """
     return cast(str, generic_msg(cmd="noop"))
 
 
 def ruok() -> str:
     """
-    Simply sends an "ruok" message to the server and, if the return message is
+    Send a "ruok" message to the arkouda_server.
+
+    Simply sends a "ruok" message to the server and, if the return message is
     "imok", this means the arkouda_server is up and operating normally. A return
     message of "imnotok" indicates an error occurred or the connection timed out.
 
@@ -1242,6 +1385,7 @@ def ruok() -> str:
         A string indicating if the server is operating normally (imok), if there's
         an error server-side, or if ruok did not return a response (imnotok) in
         both of the latter cases
+
     """
     try:
         res = cast(str, generic_msg(cmd="ruok"))
@@ -1257,14 +1401,16 @@ def generate_history(
     num_commands: Optional[int] = None, command_filter: Optional[str] = None
 ) -> List[str]:
     """
-    Generates list of commands executed within the the Python shell, Jupyter notebook,
+    Generate list of commands executed.
+
+    Generate list of commands executed within the Python shell, Jupyter notebook,
     or IPython notebook, with an optional cmd_filter and number of commands to return.
 
     Parameters
     ----------
-    num_commands : int
+    num_commands : int, optional
         The number of commands from history to retrieve
-    command_filter : str
+    command_filter : str, optional
         String containing characters used to select a subset of commands.
 
     Returns
@@ -1274,17 +1420,29 @@ def generate_history(
 
     Examples
     --------
-    >>> ak.connect()
+    >>> import arkouda as ak
+    >>> ak.connect()    # doctest: +SKIP
     connected to arkouda server tcp://*:5555
-    >>> ak.get_config()
-    >>> ak.ones(10000)
+    >>> ak.get_config()    # doctest: +SKIP
+    {'arkoudaVersion': 'v2025.01.13+165.g23ccdfd6c', 'chplVersion': '2.4.0',
+        ... 'pythonVersion': '3.13', 'ZMQVersion': '4.3.5', 'HDF5Version': '1.14.4',
+        ... 'serverHostname': 'pop-os', 'ServerPort': 5555, 'numLocales': 1,
+        ... 'numPUs': 8, 'maxTaskPar': 8, 'physicalMemory': 67258408960,
+        ... 'distributionType': 'domain(1,int(64),one)',
+        ... 'LocaleConfigs': [{'id': 0, 'name': 'pop-os', 'numPUs': 8,
+        ... 'maxTaskPar': 8, 'physicalMemory': 67258408960}], 'authenticate': False,
+        ... 'logLevel': 'INFO', 'logChannel': 'FILE', 'regexMaxCaptures': 20,
+        ... 'byteorder': 'little', 'autoShutdown': False, 'serverInfoNoSplash': False,
+        ... 'maxArrayDims': 1, 'ARROW_VERSION': '19.0.0'}
+    >>> ak.ones(10000, dtype=int)
     array([1 1 1 ... 1 1 1])
-    >>> nums = ak.randint(0,500,10000)
+    >>> nums = ak.randint(0,500,10000, seed=1)
     >>> ak.argsort(nums)
-    array([105 457 647 ... 9362 9602 9683])
-    >>> ak.generate_history(num_commands=5, command_filter='ak.')
-    ['ak.connect()', 'ak.get_config()', 'ak.ones(10000)', 'nums = ak.randint(0,500,10000)',
+    array([1984 2186 3574 ... 9298 9600 9651])
+    >>> ak.generate_history(num_commands=5, command_filter='ak.')    # doctest: +SKIP
+    ['ak.connect()', 'ak.get_config()', 'ak.ones(10000, dtype=int)', 'nums = ak.randint(0,500,10000)',
     'ak.argsort(nums)']
+
     """
     shell_mode = get_shell_mode()
 

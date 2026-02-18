@@ -15,6 +15,7 @@ module AryUtil
     use List;
     use CommAggregation;
     use CommPrimitives;
+    use BigInteger;
 
 
     param bitsPerDigit = RSLSD_bitsPerDigit;
@@ -40,9 +41,9 @@ module AryUtil
     proc formatAry(A: [?d]):string throws {
         if d.rank == 1 {
             var s:string = "";
-            if (d.size == 0) {
+            if d.size == 0 {
                 s =  ""; // Unnecessary, but left for clarity
-            } else if (d.size < printThresh || d.size <= 6) {
+            } else if d.size < printThresh || d.size <= 6 {
                 for i in 0..(d.size-2) {s += try! "%?".format(A[i]) + " ";}
                 s += try! "%?".format(A[d.size-1]);
             } else {
@@ -96,7 +97,7 @@ module AryUtil
       :arg A: array to check
 
     */
-    proc isSorted(A:[?D] ?t): bool {
+    proc isSorted(A:[?D] ?t): bool where D.rank == 1 {
         var sorted: bool;
         sorted = true;
         forall (a,i) in zip(A,D) with (&& reduce sorted) {
@@ -115,7 +116,7 @@ module AryUtil
       :arg slice: a slice domain (only the indices in this domain are checked)
       :arg axisIdx: the axis to check
     */
-    proc isSortedOver(A: [?D] ?t, slice, axisIdx: int) {
+    proc isSortedOver(const ref A: [?D] ?t, const ref slice, axisIdx: int) {
         var sorted = true;
         forall i in slice with (&& reduce sorted, var im1: D.rank*int) {
             if i[axisIdx] > slice.dim(axisIdx).low {
@@ -141,6 +142,15 @@ module AryUtil
       :returns: a tuple of a boolean indicating whether the axes are valid,
                 and the array of modified axes
     */
+
+    proc validateNegativeAxes(axis: int, param nd: int): (bool, int) {
+      var ret: int;
+      ret = if axis >= 0 then axis else nd + axis;
+      if ret >= nd then return (false, ret);
+      if ret <0    then return (false, ret);
+      return (true, ret);
+      }
+
     proc validateNegativeAxes(axes: [?d] int, param nd: int): (bool, [d] int) {
       var ret: [d] int;
       if axes.size > nd then return (false, ret);
@@ -413,7 +423,7 @@ module AryUtil
       on the locale id. Can be used to avoid doing communication in lockstep.
     */
     iter offset(ind) where isRange(ind) || isDomain(ind) {
-        for i in ind + (ind.size/numLocales * here.id) do {
+        for i in ind + (ind.size/numLocales * here.id) {
             yield i % ind.size + ind.first;
         }
     }
@@ -442,7 +452,7 @@ module AryUtil
      */
     proc validateArraysSameLength(n:int, names:[] string, types: [] string, st: borrowed SymTab) throws {
       // Check that fields contains the stated number of arrays
-      if (names.size != n) {
+      if names.size != n {
           var errorMsg = "Expected %i arrays but got %i".format(n, names.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
@@ -451,7 +461,7 @@ module AryUtil
                                            getModuleName(),
                                            "ArgumentError");
       }
-      if (types.size != n) {
+      if types.size != n {
           var errorMsg = "Expected %i types but got %i".format(n, types.size);
           auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           throw new owned ErrorWithContext(errorMsg,
@@ -523,10 +533,10 @@ module AryUtil
           }
         }
 
-        if (i == 1) {
+        if i == 1 {
             size = thisSize;
         } else {
-            if (thisSize != size) {
+            if thisSize != size {
               var errorMsg = "Arrays must all be same size; expected size %?, got size %?".format(size, thisSize);
                 auLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 throw new owned ErrorWithContext(errorMsg,
@@ -564,6 +574,7 @@ module AryUtil
       return (bitWidth, negs);
     }
 
+    @chplcheck.ignore("UnusedFormal")
     inline proc getBitWidth(a: [?aD] bool): (int, bool) {
       return (1, false);
     }
@@ -572,7 +583,7 @@ module AryUtil
       const negs = false;
       var highMax = max reduce [(ai,_) in a] ai;
       var whigh = numBits(uint) - clz(highMax);
-      if (whigh == 0) {
+      if whigh == 0 {
         var lowMax = max reduce [(_,ai) in a] ai;
         var wlow = numBits(uint) - clz(lowMax);
         const bitWidth = wlow: int;
@@ -602,6 +613,7 @@ module AryUtil
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
 
+    // @chplcheck.ignore("UnusedFormal")
     inline proc getDigit(key: uint, rshift: int, last: bool, negs: bool): int {
       return ((key >> rshift) & (maskDigit:uint)):int;
     }
@@ -625,13 +637,14 @@ module AryUtil
 
     inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool): int {
       const (key0,key1) = key;
-      if (rshift >= numBits(uint)) {
+      if rshift >= numBits(uint) {
         return getDigit(key0, rshift - numBits(uint), last, negs);
       } else {
         return getDigit(key1, rshift, last, negs);
       }
     }
 
+    @chplcheck.ignore("UnusedFormal")
     inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int
         where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
       const keyHigh = key.size - 1;
@@ -676,7 +689,7 @@ module AryUtil
       var curDigit = numDigits - totalDigits;
       for (name, nBits, neg) in zip(names, bitWidths, negs) {
         var g: borrowed GenSymEntry = getGenericTypedArrayEntry(name, st);
-        proc mergeArray(type t) {
+        proc mergeArray(type t) throws {
           var e = toSymEntry(g, t);
           ref A = e.a;
 
@@ -905,7 +918,8 @@ module AryUtil
     /*
       unflatten a 1D array into a multi-dimensional array of the given shape
     */
-    proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws {
+    proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws
+      where t!=bigint {
       var unflat = makeDistArray((...shape), t);
 
       if N == 1 {
@@ -952,7 +966,6 @@ module AryUtil
             // flat region is spread across multiple locales, do a get for each source locale
             for locInID in locInStart..locInStop {
               const flatSubSlice = flatSlice[flatLocRanges[locInID]];
-
               get(
                 c_ptrTo(unflat[dufc.orderToIndex(flatSubSlice.low)]),
                 getAddr(a[flatSubSlice.low]),
@@ -967,11 +980,30 @@ module AryUtil
       return unflat;
     }
 
+    proc unflatten(const ref a: [?d] ?t, shape: ?N*int): [] t throws
+      where t==bigint {
+      var unflat = makeDistArray((...shape), t);
+
+      if N == 1 {
+        unflat = a;
+        return unflat;
+      }
+
+      coforall loc in Locales with (ref unflat) do on loc {
+        forall idx in a.localSubdomain() with (var agg = newDstAggregator(t)) {
+          agg.copy(unflat[unflat.domain.orderToIndex(idx)], a[idx]);
+        }
+      }
+
+      return unflat;
+    }
+
     /*
       flatten a multi-dimensional array into a 1D array
     */
-    @arkouda.registerCommand
-    proc flatten(const ref a: [?d] ?t): [] t throws {
+    @arkouda.registerCommand(ignoreWhereClause=true)
+    proc flatten(const ref a: [?d] ?t): [] t throws
+      where t!=bigint {
       if a.rank == 1 then return a;
 
       var flat = makeDistArray(d.size, t);
@@ -1030,6 +1062,22 @@ module AryUtil
       return flat;
     }
 
+
+    proc flatten(const ref a: [?d] ?t): [] t throws
+      where t==bigint {
+      if a.rank == 1 then return a;
+
+      var flat = makeDistArray(d.size, t);
+
+      coforall loc in Locales with (ref flat) do on loc {
+        forall idx in flat.localSubdomain() with (var agg = newSrcAggregator(t)) {
+          agg.copy(flat[idx], a[a.domain.orderToIndex(idx)]);
+        }
+      }
+
+      return flat;
+    }
+
     // helper for computing an array element's index from its order
     record orderer {
       param rank: int;
@@ -1043,10 +1091,15 @@ module AryUtil
 
       // index -> order for the input array's indices
       // e.g., order = k + (nz * j) + (nz * ny * i)
-      inline proc indexToOrder(idx: rank*int): int {
-        var order = 0;
-        for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
-        return order;
-      }
+      inline proc indexToOrder(idx: rank*?t): t
+        where (t==int) || (t==uint(64)) {
+          var order : t = 0;
+          for param i in 0..<rank do order += idx[i] * accumRankSizes[rank - i - 1];
+          return order;
+        }
+      inline proc indexToOrder(idx : ?t) :t  // added to handle the 1D case
+        where (t==int) || (t==uint(64)) {
+          return idx;
+        }
     }
 }

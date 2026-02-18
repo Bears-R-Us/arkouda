@@ -3,8 +3,8 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python>=3.9,<3.12.4   # minimum 3.9
-  - numpy>=1.24.1,<2.0
+  - python>=3.10
+  - numpy>=2.0
   - pandas>=1.4.0,!=2.2.0
   - pyzmq>=20.0.0
   - tabulate
@@ -15,15 +15,19 @@ dependencies:
   - hdf5>=1.12.2
   - pip
   - types-tabulate
-  - pytables>=3.8.0
+  - pytables>=3.10.0
   - pyarrow
   - libiconv
   - libidn2
   - jupyter
-  - scipy<=1.13.1
+  - scipy
   - pytest>=6.0
   - pytest-env
+  - cloudpickle
+  - pre-commit
+  - darglint>=1.8.1
   # - chapel-py
 
   - pip:
       - typeguard==2.10.0
+      - pydoclint==0.6.6

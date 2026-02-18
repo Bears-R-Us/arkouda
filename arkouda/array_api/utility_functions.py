@@ -1,14 +1,24 @@
 from __future__ import annotations
 
-from .array_object import Array
-from .manipulation_functions import concat
-
 from typing import Optional, Tuple, Union
 
-from arkouda.pdarraycreation import scalar_array
-from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray
 import arkouda as ak
+from arkouda.numpy.pdarrayclass import create_pdarray
+from arkouda.numpy.pdarraycreation import scalar_array
+
+from .array_object import Array
+from .manipulation_functions import reshape
+from .statistical_functions import sum
+
+__all__ = [
+    "all",
+    "any",
+    "clip",
+    "diff",
+    "pad",
+    "trapezoid",
+    "trapz",
+]
 
 
 def all(
@@ -68,6 +78,8 @@ def clip(a: Array, a_min, a_max, /) -> Array:
     a_max : scalar
         The maximum value
     """
+    from arkouda.client import generic_msg
+
     if a.dtype == ak.bigint or a.dtype == ak.bool_:
         raise RuntimeError(f"Error executing command: clip does not support dtype {a.dtype}")
 
@@ -101,31 +113,194 @@ def diff(a: Array, /, n: int = 1, axis: int = -1, prepend=None, append=None) -> 
         Array to prepend to `a` along `axis` before calculating the difference.
     append : Array, optional
         Array to append to `a` along `axis` before calculating the difference.
+
+    Returns
+    -------
+    Array
+        The n-th differences. The shape of the output is the same as `a`
+        except along `axis` where the dimension is smaller by `n`. The
+        type of the output is the same as the type of the difference
+        between any two elements of `a`. This is the same as the type of
+        `a` in most cases. A notable exception is `datetime64`, which
+        results in a `timedelta64` output array.
+
+    Notes
+    -----
+    Type is preserved for boolean arrays, so the result will contain
+    `False` when consecutive elements are the same and `True` when they
+    differ.
+
+    For unsigned integer arrays, the results will also be unsigned. This
+    should not be surprising, as the result is consistent with
+    calculating the difference directly.
+
+    If this is not desirable, then the array should be cast to a larger
+    integer type first:
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> import arkouda.array_api as xp
+    >>> x = xp.asarray(ak.array([1, 2, 4, 7, 0]))
+    >>> xp.diff(x)
+    Arkouda Array ((4,), int64)[1 2 3 -7]
+    >>> xp.diff(x, n=2)
+    Arkouda Array ((3,), int64)[1 1 -10]
+
+    >>> x = xp.asarray(ak.array([[1, 3, 6, 10], [0, 5, 6, 8]]))
+    >>> xp.diff(x)
+    Arkouda Array ((2, 3), int64)[[2 3 4] [5 1 2]]
+    >>> xp.diff(x, axis=0)
+    Arkouda Array ((1, 4), int64)[[-1 2 0 -2]]
+
     """
-    if a.dtype == ak.bigint or a.dtype == ak.bool_:
+    from arkouda.numpy.pdarrayclass import diff
+
+    if a.dtype == ak.bigint:
         raise RuntimeError(f"Error executing command: diff does not support dtype {a.dtype}")
 
-    if prepend is not None and append is not None:
-        a_ = concat((prepend, a, append), axis=axis)
-    elif prepend is not None:
-        a_ = concat((prepend, a), axis=axis)
-    elif append is not None:
-        a_ = concat((a, append), axis=axis)
-    else:
-        a_ = a
+    return Array._new(diff(a._array, n, axis, prepend, append))
 
-    return Array._new(
-        create_pdarray(
-            generic_msg(
-                cmd=f"diff<{a.dtype},{a.ndim}>",
-                args={
-                    "x": a_._array,
-                    "n": n,
-                    "axis": axis,
-                },
-            ),
-        )
-    )
+
+def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: int = -1) -> Array:
+    r"""
+    Integrate along the given axis using the composite trapezoidal rule.
+
+    If `x` is provided, the integration happens in sequence along its
+    elements - they are not sorted.
+
+    Integrate `y` (`x`) along each 1d slice on the given axis, compute
+    :math:`\int y(x) dx`.
+    When `x` is specified, this integrates along the parametric curve,
+    computing :math:`\int_t y(t) dt =
+    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.
+
+    See https://numpy.org/doc/1.26/reference/generated/numpy.trapz.html#numpy.trapz
+
+    Parameters
+    ----------
+    y : array_like
+        Input array to integrate.
+    x : array_like, optional
+        The sample points corresponding to the `y` values. If `x` is None,
+        the sample points are assumed to be evenly spaced `dx` apart. The
+        default is None.
+    dx : scalar, optional
+        The spacing between sample points when `x` is None. The default is 1.
+    axis : int, optional
+        The axis along which to integrate.
+
+    Returns
+    -------
+    Array
+        Definite integral of `y` = n-dimensional array as approximated along
+        a single axis by the trapezoidal rule. If `y` is a 1-dimensional array,
+        then the result is a float. If `n` is greater than 1, then the result
+        is an `n`-1 dimensional array.
+
+    Notes
+    -----
+    Image [2]_ illustrates trapezoidal rule -- y-axis locations of points
+    will be taken from `y` array, by default x-axis distances between
+    points will be 1.0, alternatively they can be provided with `x` array
+    or with `dx` scalar.  Return value will be equal to combined area under
+    the red lines.
+
+
+    References
+    ----------
+    .. [1] Wikipedia page: https://en.wikipedia.org/wiki/Trapezoidal_rule
+
+    .. [2] Illustration image:
+           https://en.wikipedia.org/wiki/File:Composite_trapezoidal_rule_illustration.png
+
+    Examples
+    --------
+    >>> from arkouda import array_api as xp
+    >>> y = xp.asarray(ak.array([1, 2, 3]))
+
+    Use the trapezoidal rule on evenly spaced points:
+    >>> xp.trapz(y)
+    Arkouda Array ((), float64)4.0
+
+    The spacing between sample points can be selected by either the
+    ``x`` or ``dx`` arguments:
+
+    >>> x = xp.asarray(ak.array([4, 6, 8]))
+    >>> xp.trapz(y, x)
+    Arkouda Array ((), float64)8.0
+    >>> xp.trapz(y, dx=2.0)
+    Arkouda Array ((), float64)8.0
+
+    Using a decreasing ``x`` corresponds to integrating in reverse:
+
+    >>> x = xp.asarray(ak.array([8, 6, 4]))
+    >>> xp.trapz(y, x)
+    Arkouda Array ((), float64)-8.0
+
+    More generally ``x`` is used to integrate along a parametric curve. We can
+    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:
+
+    >>> x = xp.linspace(0, 1, num=50)
+    >>> y = x**2
+    >>> xp.trapz(y, x)
+    Arkouda Array ((), float64)0.333402748854643...
+
+    Or estimate the area of a circle, noting we repeat the sample which closes
+    the curve:
+
+    >>> theta = xp.linspace(0, 2 * xp.pi, num=1000, endpoint=True)
+    >>> xp.trapz(xp.cos(theta), x=xp.sin(theta))
+    Arkouda Array ((), float64)3.14157194137584...
+
+    ``np.trapz`` can be applied along a specified axis to do multiple
+    computations in one call:
+
+    >>> a = xp.asarray(ak.arange(6).reshape(2, 3))
+    >>> a
+    Arkouda Array ((2, 3), int64)[[0 1 2] [3 4 5]]
+    >>> xp.trapz(a, axis=0)
+    Arkouda Array ((3,), float64)[1.5 2.5 3.5]
+    >>> xp.trapz(a, axis=1)
+    Arkouda Array ((2,), float64)[2.0 8.0]
+
+    """
+    # Implementation is the same as Numpy's implementation of trapezoid
+    # Modified slightly to fit Arkouda
+    # https://github.com/numpy/numpy/blob/d35cd07ea997f033b2d89d349734c61f5de54b0d/numpy/lib/function_base.py#L4857-L4984
+
+    if y.dtype == ak.bigint:
+        raise RuntimeError(f"Error executing command: trapz does not support dtype {y.dtype}")
+
+    nd = y.ndim
+    if axis < 0:
+        axis = nd + axis
+
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+
+    if x is None:
+        if dx is None:
+            raise ValueError("dx cannot be None when x is None for trapz")
+        ret = sum(dx * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis)
+    else:
+        if x.dtype == ak.bigint:
+            raise RuntimeError(f"Error executing command: trapz does not support dtype {x.dtype}")
+        d = diff(x, axis=axis)
+        if x.ndim == 1:
+            shape = [1] * y.ndim
+            shape[axis] = d.shape[0]
+            d = reshape(d, tuple(shape))
+
+        ret = sum(d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0, axis=axis)
+
+    return ret
+
+
+def trapezoid(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: int = -1) -> Array:
+    return trapz(y, x, dx, axis)
 
 
 def pad(
@@ -149,6 +324,8 @@ def pad(
         Padding mode. Only 'constant' is currently supported. Use the `constant_values` keyword argument
         to specify the padding value or values (in the same format as `pad_width`).
     """
+    from arkouda.client import generic_msg
+
     if mode != "constant":
         raise NotImplementedError(f"pad mode '{mode}' is not supported")
 

@@ -3,7 +3,7 @@ from math import isclose
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda.dtypes import npstr
+from arkouda.numpy.dtypes import npstr
 
 """
 Encapsulates unit tests for the numeric module with the exception

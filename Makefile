@@ -1,5 +1,6 @@
 # Makefile for Arkouda
 ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+ARKOUDA_PROJECT_DIR := $(patsubst %/,%,$(ARKOUDA_PROJECT_DIR))
 
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := $(ARKOUDA_PROJECT_DIR)/src
@@ -109,6 +110,9 @@ ARROW_UTIL_O += $(ARKOUDA_SOURCE_DIR)/UtilParquet.o
 .PHONY: install-deps
 install-deps: install-zmq install-hdf5 install-arrow install-iconv install-idn2
 
+.PHONY: deps-download-source
+deps-download-source: zmq-download-source hdf5-download-source arrow-download-source iconv-download-source idn2-download-source
+
 DEP_DIR := dep
 DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
 DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)/build
@@ -118,85 +122,227 @@ ZMQ_NAME_VER := zeromq-$(ZMQ_VER)
 ZMQ_BUILD_DIR := $(DEP_BUILD_DIR)/$(ZMQ_NAME_VER)
 ZMQ_INSTALL_DIR := $(DEP_INSTALL_DIR)/zeromq-install
 ZMQ_LINK := https://github.com/zeromq/libzmq/releases/download/v$(ZMQ_VER)/$(ZMQ_NAME_VER).tar.gz
-install-zmq:
+
+zmq-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${ZMQ_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/${ZMQ_NAME_VER}*.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz
+        #   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf $(ZMQ_NAME_VER)*.tar.gz
+        endif
+    endif
+
+install-zmq: zmq-download-source
 	@echo "Installing ZeroMQ"
-	rm -rf $(ZMQ_BUILD_DIR) $(ZMQ_INSTALL_DIR)
+	rm -rf $(ZMQ_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz
+
 	cd $(ZMQ_BUILD_DIR) && ./configure --prefix=$(ZMQ_INSTALL_DIR) CFLAGS=-O3 CXXFLAGS=-O3 && make && make install
-	rm -r $(ZMQ_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
+
+zmq-clean:
+	rm -r $(ZMQ_BUILD_DIR)
 
 HDF5_MAJ_MIN_VER := 1.14
 HDF5_VER := 1.14.4
 HDF5_NAME_VER := hdf5-$(HDF5_VER)
+
+# new hdf5 path requires underscored delimited and "v" prepended
+UNDERSCORED_LINK_HDF5_MAJ_MIN_VER := v1_14
+UNDERSCORED_LINK_HDF5_VER := v1_14_4
+
 HDF5_BUILD_DIR := $(DEP_BUILD_DIR)/$(HDF5_NAME_VER)
 HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
-HDF5_LINK :=  https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-$(HDF5_MAJ_MIN_VER)/$(HDF5_NAME_VER)/src/$(HDF5_NAME_VER).tar.gz
-install-hdf5:
+
+# I think this seems good, but I don't love the hardcoded "-3" I'd like some input on that
+HDF5_LINK := https://support.hdfgroup.org/releases/hdf5/$(UNDERSCORED_LINK_HDF5_MAJ_MIN_VER)/$(UNDERSCORED_LINK_HDF5_VER)/downloads/$(HDF5_NAME_VER)-3.tar.gz
+
+hdf5-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${HDF5_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/$(HDF5_NAME_VER)*tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz
+        #   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf $(HDF5_NAME_VER)*.tar.gz
+        endif
+    endif
+
+install-hdf5: hdf5-download-source
 	@echo "Installing HDF5"
-	rm -rf $(HDF5_BUILD_DIR) $(HDF5_INSTALL_DIR)
+	rm -rf $(HDF5_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz
-	cd $(HDF5_BUILD_DIR) && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
-	rm -rf $(HDF5_BUILD_DIR)
+
+	cd $(HDF5_BUILD_DIR)* && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
 	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
 
-ARROW_VER := 11.0.0
+
+hdf5-clean:
+	rm -rf $(HDF5_BUILD_DIR)
+
+
+install-arrow-quick:
+	./scripts/install_arrow_quick.sh $(DEP_BUILD_DIR)
+
+
+ARROW_VER := 19.0.1
 ARROW_NAME_VER := apache-arrow-$(ARROW_VER)
 ARROW_FULL_NAME_VER := arrow-apache-arrow-$(ARROW_VER)
 ARROW_BUILD_DIR := $(DEP_BUILD_DIR)/$(ARROW_FULL_NAME_VER)
+ARROW_DEP_DIR :=  $(DEP_BUILD_DIR)/arrow_dependencies
 ARROW_INSTALL_DIR := $(DEP_INSTALL_DIR)/arrow-install
-ARROW_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
-install-arrow:
+ARROW_SOURCE_LINK := https://github.com/apache/arrow/archive/refs/tags/$(ARROW_NAME_VER).tar.gz
+
+NUM_CORES := $(shell nproc --all)
+
+ARROW_DEPENDENCY_SOURCE := BUNDLED
+
+arrow-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+
+    #   If the tar.gz file does not exist, fetch it
+    ifeq (,$(wildcard ${DEP_BUILD_DIR}/$(ARROW_NAME_VER).tar.gz))
+		cd $(DEP_BUILD_DIR) && wget $(ARROW_SOURCE_LINK)
+    endif
+
+	cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
+
+    # if the arrow dependency directory is empty of tar.gz, download the dependencies
+    ifeq (,$(wildcard $(ARROW_DEP_DIR)/*.tar.gz))
+		rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
+		mkdir -p $(ARROW_DEP_DIR)
+		cd $(ARROW_BUILD_DIR)/cpp/thirdparty/ && ./download_dependencies.sh $(ARROW_DEP_DIR) > $(DEP_BUILD_DIR)/arrow_exports.sh
+    endif
+
+	rm -fr $(ARROW_BUILD_DIR)
+
+install-arrow: arrow-download-source
 	@echo "Installing Apache Arrow/Parquet"
-	rm -rf $(ARROW_BUILD_DIR) $(ARROW_INSTALL_DIR)
+	@echo "from build directory: ${DEP_BUILD_DIR}"
+	rm -rf $(ARROW_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ARROW_LINK) | tar xz
-	cd $(ARROW_BUILD_DIR)/cpp && cmake -DARROW_DEPENDENCY_SOURCE=AUTO -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON $(ARROW_OPTIONS) . && make && make install
-	rm -rf $(ARROW_BUILD_DIR)
+
+	cd $(DEP_BUILD_DIR) && tar -xvf $(ARROW_NAME_VER).tar.gz
+	mkdir -p $(ARROW_BUILD_DIR)/cpp/build-release
+
+	cd $(DEP_BUILD_DIR) && . ./arrow_exports.sh && cd $(ARROW_BUILD_DIR)/cpp/build-release && cmake -S $(ARROW_BUILD_DIR)/cpp .. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=$(ARROW_INSTALL_DIR) -DCMAKE_BUILD_TYPE=Release -DARROW_PARQUET=ON -DARROW_WITH_SNAPPY=ON -DARROW_WITH_BROTLI=ON -DARROW_WITH_BZ2=ON -DARROW_WITH_LZ4=ON -DARROW_WITH_ZLIB=ON -DARROW_WITH_ZSTD=ON -DARROW_DEPENDENCY_SOURCE=$(ARROW_DEPENDENCY_SOURCE) $(ARROW_OPTIONS) && make -j$(NUM_CORES)
+
+	cd $(ARROW_BUILD_DIR)/cpp/build-release && make install
+
 	echo '$$(eval $$(call add-path,$(ARROW_INSTALL_DIR)))' >> Makefile.paths
+
+arrow-clean:
+	rm -rf $(DEP_BUILD_DIR)/apache-arrow*
+	rm -rf $(DEP_BUILD_DIR)/arrow-apache-arrow*
+	rm -rf $(ARROW_DEP_DIR)
+	rm -fr $(DEP_BUILD_DIR)/arrow_exports.sh
+
+pytables-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+
+    #   If the PyTables directory does not exist, fetch it
+    ifeq (,$(wildcard ${DEP_BUILD_DIR}/PyTables))
+		cd $(DEP_BUILD_DIR) && git clone https://github.com/PyTables/PyTables.git
+		cd $(DEP_BUILD_DIR)/PyTables && git submodule update --init --recursive
+    endif
+
+install-pytables: pytables-download-source
+	@echo "Installing PyTables"
+	cd $(DEP_BUILD_DIR) && python3 -m pip install PyTables/
+
+pytables-clean:
+	rm -rf $(DEP_BUILD_DIR)/PyTables
+
 
 ICONV_VER := 1.17
 ICONV_NAME_VER := libiconv-$(ICONV_VER)
 ICONV_BUILD_DIR := $(DEP_BUILD_DIR)/$(ICONV_NAME_VER)
 ICONV_INSTALL_DIR := $(DEP_INSTALL_DIR)/libiconv-install
 ICONV_LINK := https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VER).tar.gz
-install-iconv:
+
+iconv-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard ${ICONV_BUILD_DIR}*/.*))
+        #   If the tar.gz not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/libiconv-${ICONV_VER}.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz
+        #   Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf libiconv-$(ICONV_VER).tar.gz
+        endif
+    endif
+
+install-iconv: iconv-download-source
 	@echo "Installing iconv"
-	rm -rf $(ICONV_BUILD_DIR) $(ICONV_INSTALL_DIR)
+	rm -rf $(ICONV_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(ICONV_LINK) | tar xz
+
 	cd $(ICONV_BUILD_DIR) && ./configure --prefix=$(ICONV_INSTALL_DIR) && make && make install
-	rm -rf $(ICONV_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(ICONV_INSTALL_DIR)))' >> Makefile.paths
+
+iconv-clean:
+	rm -rf $(ICONV_BUILD_DIR)
 
 LIBIDN_VER := 2.3.4
 LIBIDN_NAME_VER := libidn2-$(LIBIDN_VER)
 LIBIDN_BUILD_DIR := $(DEP_BUILD_DIR)/$(LIBIDN_NAME_VER)
 LIBIDN_INSTALL_DIR := $(DEP_INSTALL_DIR)/libidn2-install
 LIBIDN_LINK := https://ftp.gnu.org/gnu/libidn/libidn2-$(LIBIDN_VER).tar.gz
-install-idn2:
+
+idn2-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard $(LIBIDN_BUILD_DIR)*/.*))
+        # If the tar.gz is not found, download it
+        ifeq (,$(wildcard ${DEP_BUILD_DIR}/libidn2-$(LIBIDN_VER)*.tar.gz))
+			cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz
+        # Otherwise just unzip it
+        else
+			cd $(DEP_BUILD_DIR) && tar -xzf libidn2-$(LIBIDN_VER)*.tar.gz
+        endif
+    endif
+
+install-idn2: idn2-download-source
 	@echo "Installing libidn2"
-	rm -rf $(LIBIDN_BUILD_DIR) $(LIBIDN_INSTALL_DIR)
+	rm -rf $(LIBIDN_INSTALL_DIR)
 	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
-	cd $(DEP_BUILD_DIR) && curl -sL $(LIBIDN_LINK) | tar xz
+
 	cd $(LIBIDN_BUILD_DIR) && ./configure --prefix=$(LIBIDN_INSTALL_DIR) && make && make install
-	rm -rf $(LIBIDN_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(LIBIDN_INSTALL_DIR)))' >> Makefile.paths
 
+idn2-clean:
+	rm -rf $(LIBIDN_BUILD_DIR)
 
-BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc
+BLOSC_BUILD_DIR := $(DEP_BUILD_DIR)/c-blosc2
 BLOSC_INSTALL_DIR := $(DEP_INSTALL_DIR)/c-blosc-install
 
-install-blosc:
+blosc-download-source:
+	mkdir -p $(DEP_BUILD_DIR)
+
+    #If the build directory does not exist,  create it
+    ifeq (,$(wildcard $(BLOSC_BUILD_DIR)/.*))
+		cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc2.git
+    endif
+
+install-blosc: blosc-download-source
 	@echo "Installing blosc"
-	rm -rf $(BLOSC_INSTALL_DIR) $(BLOSC_BUILD_DIR)
+	rm -rf $(BLOSC_INSTALL_DIR)
 	mkdir -p $(BLOSC_INSTALL_DIR)
-	cd $(DEP_BUILD_DIR) && git clone https://github.com/Blosc/c-blosc.git
+
 	cd $(BLOSC_BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=$(BLOSC_INSTALL_DIR) && make && make install
-	rm -rf $(BLOSC_BUILD_DIR)
 	echo '$$(eval $$(call add-path,$(BLOSC_INSTALL_DIR)))' >> Makefile.paths
+
+blosc-clean:
+	rm -rf $(BLOSC_BUILD_DIR)
 
 # System Environment
 ifdef LD_RUN_PATH
@@ -212,18 +358,36 @@ ifdef LD_LIBRARY_PATH
 CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
 endif
 
+#
+# Flags for Python interop: this is required for ApplyMsg to call into the Python interpreter
+#
+# Adds the include path for the Python.h header file
+CHPL_FLAGS += --ccflags -isystem$(shell python3 -c "import sysconfig; print(sysconfig.get_paths()['include'])")
+# Adds the library path for the Python shared library
+CHPL_FLAGS += -L$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+CHPL_FLAGS += --ldflags -Wl,-rpath,$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+# Adds the Python shared library to the list of libraries to link against
+CHPL_FLAGS += -lpython$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LDVERSION'))")
+# Ignore warnings from the Python headers. This is irrelevant for newer Python versions
+CHPL_FLAGS += --ccflags -Wno-macro-redefined
+
+PYTHON_VERSION := $(shell python3 -c "import sys; print(*sys.version_info[:2], sep='.')")
+
+
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
 CHECK_DEPS = check-chpl check-zmq check-hdf5 check-re2 check-arrow check-iconv check-idn2
 endif
 check-deps: $(CHECK_DEPS)
 
-SANITIZER = $(shell $(CHPL_HOME)/util/chplenv/chpl_sanitizers.py --exe 2>/dev/null)
+ARKOUDA_CHPL_HOME=$(shell $(CHPL) --print-chpl-home 2>/dev/null)
+
+SANITIZER = $(shell $(ARKOUDA_CHPL_HOME)/util/chplenv/chpl_sanitizers.py --exe 2>/dev/null)
 ifneq ($(SANITIZER),none)
 ARROW_SANITIZE=-fsanitize=$(SANITIZER)
 endif
 
-CHPL_CXX = $(shell $(CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
+CHPL_CXX = $(shell $(ARKOUDA_CHPL_HOME)/util/config/compileline --compile-c++ 2>/dev/null)
 ifeq ($(CHPL_CXX),)
 CHPL_CXX=$(CXX)
 endif
@@ -357,7 +521,7 @@ VERSION=$(shell python3 -c "import versioneer; print(versioneer.get_versions()[\
 
 # Version needs to be escape-quoted for chpl to interpret as string
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
-CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
+CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\"" -spythonVersion="\""$(PYTHON_VERSION)"\""
 
 ifdef ARKOUDA_PRINT_PASSES_FILE
 	PRINT_PASSES_FLAGS := --print-passes-file $(ARKOUDA_PRINT_PASSES_FILE)
@@ -378,8 +542,16 @@ ifeq ($(shell expr $(CHPL_MINOR) \= 1),1)
 	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-21
 endif
 
-ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
-	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-22
+ifeq ($(shell expr $(CHPL_MINOR) \= 2),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-22
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \= 3),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/eq-23
+endif
+
+ifeq ($(shell expr $(CHPL_MINOR) \>= 4),1)
+	ARKOUDA_COMPAT_MODULES += -M $(ARKOUDA_SOURCE_DIR)/compat/ge-24
 endif
 
 ifeq ($(shell expr $(CHPL_MINOR) \>= 2),1)
@@ -393,7 +565,7 @@ endif
 SERVER_CONFIG_SCRIPT=$(ARKOUDA_SOURCE_DIR)/parseServerConfig.py
 # This is the main compilation statement section
 $(ARKOUDA_MAIN_MODULE): check-deps register-commands $(ARROW_UTIL_O) $(ARROW_READ_O) $(ARROW_WRITE_O) $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(eval MOD_GEN_OUT=$(shell python3 $(SERVER_CONFIG_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_REGISTRATION_CONFIG) $(ARKOUDA_SOURCE_DIR)))
+	$(eval MOD_GEN_OUT=$(shell python3 $(SERVER_CONFIG_SCRIPT) $(ARKOUDA_CONFIG_FILE) $(ARKOUDA_SOURCE_DIR)))
 
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(REGEX_MAX_CAPTURES_FLAG) $(OPTIONAL_SERVER_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(CHPL_COMPAT_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) $(ARKOUDA_SERVER_USER_MODULES) $(MOD_GEN_OUT) $(ARKOUDA_RW_DEFAULT_FLAG) $(ARKOUDA_KEYPART_FLAG) $(ARKOUDA_REGISTRY_DIR)/Commands.chpl -I$(ARKOUDA_SOURCE_DIR)/parquet -o $@
 
@@ -404,7 +576,7 @@ arkouda-clean:
 
 .PHONY: tags
 tags:
-	-@(cd $(ARKOUDA_SOURCE_DIR) && $(CHPL_HOME)/util/chpltags -r . > /dev/null \
+	-@(cd $(ARKOUDA_SOURCE_DIR) && $(ARKOUDA_CHPL_HOME)/util/chpltags -r . > /dev/null \
 		&& echo "Updated $(ARKOUDA_SOURCE_DIR)/TAGS" \
 		|| echo "Tags utility not available.  Skipping tags generation.")
 
@@ -478,7 +650,7 @@ doc-server: ${DOC_DIR} $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
 	@# Build the documentation to the Chapel output directory
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_SOURCE_DIR)/compat/ge-22/* -o $(DOC_SERVER_OUTPUT_DIR)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_REGISTRY_DIR)/doc-support.chpl $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_SOURCE_DIR)/compat/eq-22/* -o $(DOC_SERVER_OUTPUT_DIR)
 	@# Create the .nojekyll file needed for github pages in the  Chapel output directory
 	touch $(DOC_SERVER_OUTPUT_DIR)/.nojekyll
 	@echo "Completed building documentation for: Server"
@@ -504,11 +676,51 @@ $(DOC_PYTHON_OUTPUT_DIR)/index.html: $(DOC_PYTHON_SOURCES) $(ARKOUDA_MAKEFILES)
 
 CLEAN_TARGETS += doc-clean
 .PHONY: doc-clean
-doc-clean:
+doc-clean: stub-clean
 	$(RM) -r $(DOC_DIR)
 
 check:
 	@$(ARKOUDA_PROJECT_DIR)/server_util/test/checkInstall
+
+ruff-format:
+	ruff format .
+	#  Verify if it will pass the CI check:
+	ruff format --check --diff
+
+isort:
+	isort --gitignore --float-to-top .
+	#  Verify if it will pass the CI check:
+	isort --check-only --diff .
+
+
+.PHONY: check-doc-examples
+check-doc-examples:
+	@# skip binaries, only look in .py files, use extended regex
+	@if grep -R -I -nE '^[[:space:]]*>>>[[:space:]]*#' \
+	     --include="*.py" $(ARKOUDA_PROJECT_DIR)/arkouda; then \
+	  echo "💥 Found comment-only doctest examples (>>> #…); please remove them"; \
+	  exit 1; \
+	fi
+	
+	
+format: isort ruff-format check-doc-examples
+	#   Run docstring linter
+	pydocstyle
+	#   Run flake8
+	flake8 --config=$(ARKOUDA_PROJECT_DIR)/setup.cfg $(ARKOUDA_PROJECT_DIR)/arkouda
+
+darglint: 
+	#   Check darglint linter for doc strings:
+	darglint -v 2 arkouda
+	
+docstr-coverage:
+	#   Check coverage for doc strings:
+	docstr-coverage arkouda --config .docstr.yaml
+
+
+chplcheck:
+	#   Check chapel linter, ignoring files in .chplcheckignore:
+	find src -type f -name '*.chpl'   | grep -v -f .chplcheckignore   | xargs chplcheck --setting LineLength.Max=105 --add-rules src/scripts/chplcheck_ak_prefix.py --disable-rule CamelCaseFunctions  
 
 #################
 #### Test.mk ####
@@ -560,8 +772,10 @@ print-%:
 	$(info $($*)) @trues
 
 size=100
+skip_doctest="False"
 test-python:
-	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
+	python3 -m pytest -c pytest.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS) --skip_doctest=$(skip_doctest) --html=.pytest/report.html --self-contained-html
+	python3 -m pytest -c pytest.opts.ini --size=$(size) $(ARKOUDA_PYTEST_OPTIONS)
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
@@ -569,9 +783,13 @@ test-clean:
 	$(RM) $(TEST_TARGETS) $(addsuffix _real,$(TEST_TARGETS))
 
 size_bm = 10**8
+DATE := $(shell date '+%Y_%m_%d_%H_%M_%S')
+out=benchmark_v2/data/benchmark_stats_$(DATE).json
 .PHONY: benchmark
 benchmark:
-	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm)
+	mkdir -p benchmark_v2/data
+	python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks --size=$(size_bm) --benchmark-json=$(out)
+	python3 benchmark_v2/reformat_benchmark_results.py --benchmark-data $(out)
 
 version:
 	@echo $(VERSION);

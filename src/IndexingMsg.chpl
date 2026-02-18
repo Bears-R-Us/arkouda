@@ -917,11 +917,9 @@ module IndexingMsg
               idx = st[msgArgs['indices']]: SymEntry(array_dtype_idx, 1),
               axis = msgArgs['axis'].getPositiveIntValue(array_nd);
 
-        var y = makeDistArray((...x.tupShape), array_dtype_x);
-
-        if x.tupShape[axis] != idx.size {
-            return MsgTuple.error("index array length does not match x's length along the provided axis");
-        }
+        var newShape = x.tupShape;
+        newShape[axis] = idx.size;
+        var y = makeDistArray((...newShape), array_dtype_x);
 
         const minIdx = min reduce idx.a,
               maxIdx = max reduce idx.a;
@@ -935,18 +933,47 @@ module IndexingMsg
         ref xa = x.a;
         ref idxa = idx.a;
 
-        if array_nd == 1 {
-            forall i in idx.a.domain with (var agg = newSrcAggregator(array_dtype_x)) {
-                agg.copy(y[i], xa[idxa[i]:int]);
+        coforall loc in Locales do on loc {
+
+            var myIdxArr = idx.a[0..#idx.a.size];
+            var m = new map(array_dtype_idx, list(int));
+
+            // This is probably not the most efficient way to handle things, but it works
+            // I can probably improve it later.
+
+            // Here is my idea for improvement: do an argsort on the values of myIdxArr
+            // Apply the argsort to the original indices
+            // Shift the sorted array by one and do a comparison to see where idxa[i] != idxa[i + 1]
+            // Now the forall can work with a map because we just point it at the starting index.
+
+            for i in myIdxArr.domain {
+                var idx = myIdxArr[i];
+                if m.contains(idx) {
+                    m[idx].pushBack(i);
+                } else {
+                    m[idx] = new list([i]);
+                }
             }
-        } else {
-            for sliceIdx in domOffAxis(x.a.domain, axis) {
-                forall i in idx.a.domain with (var agg = newSrcAggregator(array_dtype_x)) {
-                    var yIdx = sliceIdx,
-                        xIdx = sliceIdx;
-                    yIdx[axis] = i;
-                    xIdx[axis] = idxa[i]:int;
-                    agg.copy(y[yIdx], xa[xIdx]);
+
+            if array_nd == 1 {
+                forall i in x.a.domain with (var agg = newDstAggregator(array_dtype_x),
+                                             const ref tempMap = m) {
+                    if tempMap.contains(i: array_dtype_idx) {
+                        for j in tempMap[i: array_dtype_idx] {
+                            agg.copy(y[j], xa[i]);
+                        }
+                    }
+                }
+            } else {
+                forall i in x.a.domain with (var agg = newDstAggregator(array_dtype_x),
+                                             const ref tempMap = m) {
+                    if tempMap.contains(i[axis]: array_dtype_idx) {
+                        for j in tempMap[i[axis]: array_dtype_idx] {
+                            var yIdx = i;
+                            yIdx[axis] = j;
+                            agg.copy(y[yIdx], xa[i]);
+                        }
+                    }
                 }
             }
         }

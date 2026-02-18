@@ -1,25 +1,39 @@
 from __future__ import annotations
 
-from .array_object import Array, implements_numpy
-from ._dtypes import (
-    _all_dtypes,
-    _boolean_dtypes,
-    _signed_integer_dtypes,
-    _unsigned_integer_dtypes,
-    _integer_dtypes,
-    _real_floating_dtypes,
-    _complex_floating_dtypes,
-    _numeric_dtypes,
-    _result_type,
-)
-
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Tuple, Union
 
+import numpy as np
+
+import arkouda as ak
+
+from ._dtypes import (
+    _all_dtypes,
+    _boolean_dtypes,
+    _complex_floating_dtypes,
+    _integer_dtypes,
+    _numeric_dtypes,
+    _real_floating_dtypes,
+    _result_type,
+    _signed_integer_dtypes,
+    _unsigned_integer_dtypes,
+)
+from .array_object import Array, implements_numpy
+
+__all__ = [
+    "astype",
+    "can_cast",
+    "finfo",
+    "finfo_object",
+    "iinfo",
+    "iinfo_object",
+    "isdtype",
+    "result_type",
+]
+
+
 if TYPE_CHECKING:
     from ._typing import Dtype
-import arkouda as ak
-import numpy as np
 
 
 def astype(x: Array, dtype: Dtype, /, *, copy: bool = True) -> Array:
@@ -28,7 +42,7 @@ def astype(x: Array, dtype: Dtype, /, *, copy: bool = True) -> Array:
     """
     if not copy and dtype == x.dtype:
         return x
-    return Array._new(ak.akcast(x._array, dtype))
+    return Array._new(ak.cast(x._array, dtype))
 
 
 def can_cast(from_: Union[Dtype, Array], to: Dtype, /) -> bool:
@@ -86,11 +100,9 @@ def iinfo(type, /) -> iinfo_object:
     return iinfo_object(ii.bits, ii.max, ii.min, ii.dtype)
 
 
-def isdtype(
-    dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]
-) -> bool:
+def isdtype(dtype: Dtype, kind: Union[Dtype, str, Tuple[Union[Dtype, str], ...]]) -> bool:
     """
-    Returns a boolean indicating whether a provided dtype is of a specified data type ``kind``.
+    Return a boolean indicating whether a provided dtype is of a specified data type ``kind``.
     """
     if isinstance(kind, tuple):
         # Disallow nested tuples

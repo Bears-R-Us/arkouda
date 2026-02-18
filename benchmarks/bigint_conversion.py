@@ -1,6 +1,7 @@
 import argparse
-import arkouda as ak
 import time
+
+import arkouda as ak
 
 
 def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
@@ -43,9 +44,7 @@ def time_bigint_conversion(N_per_locale, trials, seed, max_bits):
 
     print("bigint_to_uint_arrays Average time = {:.4f} sec".format(avg_conversion))
     print(
-        "bigint_to_uint_arrays Average rate = {:.4f} GiB/sec".format(
-            tot_bytes / 2**30 / avg_conversion
-        )
+        "bigint_to_uint_arrays Average rate = {:.4f} GiB/sec".format(tot_bytes / 2**30 / avg_conversion)
     )
     if max_bits == -1 or max_bits > 128:
         assert ak.all(a == u_arrays[0])
@@ -87,10 +86,15 @@ def create_parser():
         "--max-bits",
         type=int,
         default=-1,
-        help="Maximum number of bits, so values > 2**max_bits will wraparound. -1 is interpreted as no maximum",
+        help="Maximum number of bits, so values > 2**max_bits will wraparound. "
+        "-1 is interpreted as no maximum",
     )
     parser.add_argument(
-        "-t", "--trials", type=int, default=6, help="Number of times to run the benchmark"
+        "-t",
+        "--trials",
+        type=int,
+        default=6,
+        help="Number of times to run the benchmark",
     )
     parser.add_argument(
         "--correctness-only",
@@ -99,7 +103,11 @@ def create_parser():
         help="Only check correctness, not performance.",
     )
     parser.add_argument(
-        "-s", "--seed", default=None, type=int, help="Value to initialize random number generator"
+        "-s",
+        "--seed",
+        default=None,
+        type=int,
+        help="Value to initialize random number generator",
     )
     return parser
 

@@ -1,14 +1,31 @@
 from __future__ import annotations
 
-from .array_object import Array, implements_numpy
-
 from typing import List, Optional, Tuple, Union, cast
-from arkouda.client import generic_msg
-from arkouda.pdarrayclass import create_pdarray, create_pdarrays
-from arkouda.pdarraycreation import scalar_array, promote_to_common_dtype
-from arkouda.util import broadcast_dims
 
 import numpy as np
+
+from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
+from arkouda.numpy.pdarraycreation import promote_to_common_dtype, scalar_array
+from arkouda.numpy.util import broadcast_dims
+
+from .array_object import Array, implements_numpy
+
+__all__ = [
+    "broadcast_arrays",
+    "broadcast_to",
+    "concat",
+    "expand_dims",
+    "flip",
+    "moveaxis",
+    "permute_dims",
+    "repeat",
+    "reshape",
+    "roll",
+    "squeeze",
+    "stack",
+    "tile",
+    "unstack",
+]
 
 
 def broadcast_arrays(*arrays: Array) -> List[Array]:
@@ -32,6 +49,7 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
 
     See: https://data-apis.org/array-api/latest/API_specification/broadcasting.html for details.
     """
+    from arkouda.client import generic_msg
 
     try:
         return Array._new(
@@ -52,9 +70,7 @@ def broadcast_to(x: Array, /, shape: Tuple[int, ...]) -> Array:
         raise ValueError(f"Failed to broadcast array: {e}")
 
 
-def concat(
-    arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0
-) -> Array:
+def concat(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: Optional[int] = 0) -> Array:
     """
     Concatenate arrays along an axis.
 
@@ -65,14 +81,14 @@ def concat(
     axis : int, optional
         The axis along which to concatenate the arrays. The default is 0. If None, the arrays are
         flattened before concatenation.
+
     """
+    from arkouda.client import generic_msg
 
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
-            raise ValueError(
-                "all input arrays must have the same number of dimensions to concatenate"
-            )
+            raise ValueError("all input arrays must have the same number of dimensions to concatenate")
 
     (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
@@ -109,6 +125,8 @@ def expand_dims(x: Array, /, *, axis: int) -> Array:
         The axis at which to insert the new (size one) dimension. Must be in the range
         `[-x.ndim-1, x.ndim]`.
     """
+    from arkouda.client import generic_msg
+
     try:
         return Array._new(
             create_pdarray(
@@ -139,6 +157,8 @@ def flip(x: Array, /, *, axis: Optional[Union[int, Tuple[int, ...]]] = None) -> 
     axis : int or Tuple[int, ...], optional
         The axis or axes along which to flip the array. If None, flip the array along all axes.
     """
+    from arkouda.client import generic_msg
+
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -192,15 +212,11 @@ def moveaxis(
             for s, d in zip(source, destination):
                 perm[s] = d
         else:
-            raise ValueError(
-                "source and destination must both be tuples if source is a tuple"
-            )
+            raise ValueError("source and destination must both be tuples if source is a tuple")
     elif isinstance(destination, int):
         perm[source] = destination
     else:
-        raise ValueError(
-            "source and destination must both be integers if source is a tuple"
-        )
+        raise ValueError("source and destination must both be integers if source is a tuple")
 
     return permute_dims(x, axes=tuple(perm))
 
@@ -216,6 +232,8 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
     axes : Tuple[int, ...]
         The new order of the dimensions. Must be a permutation of the integers from 0 to `x.ndim-1`.
     """
+    from arkouda.client import generic_msg
+
     try:
         return Array._new(
             create_pdarray(
@@ -235,9 +253,7 @@ def permute_dims(x: Array, /, axes: Tuple[int, ...]) -> Array:
         raise IndexError(f"Failed to permute array dimensions: {e}")
 
 
-def repeat(
-    x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = None
-) -> Array:
+def repeat(x: Array, repeats: Union[int, Array], /, *, axis: Optional[int] = None) -> Array:
     """
     Repeat elements of an array.
 
@@ -253,6 +269,8 @@ def repeat(
     axis : int, optional
         The axis along which to repeat elements. If None, the array is flattened before repeating.
     """
+    from arkouda.client import generic_msg
+
     if isinstance(repeats, int):
         reps = Array._new(scalar_array(repeats))
     else:
@@ -277,9 +295,7 @@ def repeat(
         raise NotImplementedError("repeat with 'axis' argument is not yet implemented")
 
 
-def reshape(
-    x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None
-) -> Array:
+def reshape(x: Array, /, shape: Tuple[int, ...], *, copy: Optional[bool] = None) -> Array:
     """
     Reshape an array to a new shape.
 
@@ -293,6 +309,7 @@ def reshape(
         Whether to create a copy of the array.
         WARNING: currently always creates a copy, ignoring the value of this parameter.
     """
+    from arkouda.client import generic_msg
 
     # TODO: figure out copying semantics (currently always creates a copy)
     try:
@@ -338,6 +355,8 @@ def roll(
         The axis or axes along which to roll the array. If None, the array is flattened before
         rolling.
     """
+    from arkouda.client import generic_msg
+
     axisList = []
     if axis is not None:
         axisList = list(axis) if isinstance(axis, tuple) else [axis]
@@ -355,9 +374,7 @@ def roll(
                         args={
                             "name": x._array,
                             "nShifts": len(shift) if isinstance(shift, tuple) else 1,
-                            "shift": (
-                                list(shift) if isinstance(shift, tuple) else [shift]
-                            ),
+                            "shift": (list(shift) if isinstance(shift, tuple) else [shift]),
                             "nAxes": len(axisList),
                             "axis": axisList,
                         },
@@ -380,25 +397,9 @@ def squeeze(x: Array, /, axis: Union[int, Tuple[int, ...]]) -> Array:
     axis : int or Tuple[int, ...]
         The axis or axes to squeeze (must have a size of one).
     """
-    nAxes = len(axis) if isinstance(axis, tuple) else 1
-    try:
-        return Array._new(
-            create_pdarray(
-                cast(
-                    str,
-                    generic_msg(
-                        cmd=f"squeeze<{x.dtype},{x.ndim},{x.ndim - nAxes}>",
-                        args={
-                            "name": x._array,
-                            "nAxes": nAxes,
-                            "axes": list(axis) if isinstance(axis, tuple) else [axis],
-                        },
-                    ),
-                )
-            )
-        )
-    except RuntimeError as e:
-        raise ValueError(f"Failed to squeeze array: {e}")
+    from arkouda.numpy import squeeze
+
+    return Array._new(squeeze(x._array, axis))
 
 
 def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) -> Array:
@@ -416,13 +417,12 @@ def stack(arrays: Union[Tuple[Array, ...], List[Array]], /, *, axis: int = 0) ->
         The axis along which to stack the arrays. Must be in the range `[-N, N)`, where N is the number
         of dimensions in the input arrays. The default is 0.
     """
+    from arkouda.client import generic_msg
 
     ndim = arrays[0].ndim
     for a in arrays:
         if a.ndim != ndim:
-            raise ValueError(
-                "all input arrays must have the same number of dimensions to stack"
-            )
+            raise ValueError("all input arrays must have the same number of dimensions to stack")
 
     (common_dt, _arrays) = promote_to_common_dtype([a._array for a in arrays])
 
@@ -458,6 +458,8 @@ def tile(x: Array, repetitions: Tuple[int, ...], /) -> Array:
         repetitions. If there are more array dimensions than repetitions, ones are prepended to the
         repetitions tuple to make it's length match the number of array dimensions.
     """
+    from arkouda.client import generic_msg
+
     if len(repetitions) > x.ndim:
         xr = reshape(x, (1,) * (len(repetitions) - x.ndim) + x.shape)
         reps = repetitions
@@ -495,6 +497,8 @@ def unstack(x: Array, /, *, axis: int = 0) -> Tuple[Array, ...]:
     axis : int, optional
         The axis along which to unstack the array. The default is 0.
     """
+    from arkouda.client import generic_msg
+
     return tuple(
         Array._new(
             create_pdarrays(

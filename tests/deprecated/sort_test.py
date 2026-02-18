@@ -2,7 +2,7 @@ import numpy as np
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
-from arkouda.sorting import SortingAlgorithm
+from arkouda.numpy.sorting import SortingAlgorithm
 
 """
 Encapsulates test cases that test sort functionality

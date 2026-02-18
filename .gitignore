@@ -46,3 +46,7 @@ arkouda/*.pyi
 arkouda/numpy/*.pyi
 arkouda/scipy/*.pyi
 arkouda/scipy/stats/*.pyi
+benchmark_v2/data/*
+benchmark_v2/datdir/*.dat
+benchmark_v2/datdir/html/*
+.pytest/*

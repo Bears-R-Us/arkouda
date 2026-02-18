@@ -4,7 +4,7 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 from pandas.testing import assert_frame_equal, assert_series_equal
 
-from arkouda.series import Series
+from arkouda.pandas.series import Series
 
 
 class SeriesTest(ArkoudaTest):

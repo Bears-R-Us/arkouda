@@ -6,18 +6,18 @@ module HistogramMsg
     use ServerErrors;
     use Logging;
     use Message;
-    
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
     use Histogram;
     use Message;
- 
+
     private config const logLevel = ServerConfig.logLevel;
     private config const logChannel = ServerConfig.logChannel;
     const hgmLogger = new Logger(logLevel, logChannel);
-    
+
     private config const sBound = 2**12;
     private config const mBound = 2**25;
 
@@ -27,7 +27,7 @@ module HistogramMsg
         var repMsg: string; // response message
         const bins = msgArgs.get("bins").getIntValue();
         const name = msgArgs.getValueOf("array");
-        
+
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -38,8 +38,8 @@ module HistogramMsg
         // helper nested procedure
         proc histogramHelper(type t) throws {
           var e = toSymEntry(gEnt,t);
-          var aMin = min reduce e.a;
-          var aMax = max reduce e.a;
+          var aMin = msgArgs.get("minVal").toScalar(real);
+          var aMax = msgArgs.get("maxVal").toScalar(real);
           var binWidth:real = (aMax - aMin):real / bins:real;
           hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "binWidth %r".format(binWidth));
@@ -70,11 +70,11 @@ module HistogramMsg
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                return new MsgTuple(errorMsg, MsgType.ERROR);             
+                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-        
+
         repMsg = "created " + st.attrib(rname);
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -101,11 +101,11 @@ module HistogramMsg
         // helper nested procedure
         proc histogramHelper(type t1, type t2) throws {
             var x = toSymEntry(xGenEnt,t1);
-            var y = toSymEntry(yGenEnt,t2);            
-            var xMin = min reduce x.a;
-            var xMax = max reduce x.a;
-            var yMin = min reduce y.a;
-            var yMax = max reduce y.a;
+            var y = toSymEntry(yGenEnt,t2);
+            var xMin = msgArgs.get("xMin").toScalar(real);
+            var xMax = msgArgs.get("xMax").toScalar(real);
+            var yMin = msgArgs.get("yMin").toScalar(real);
+            var yMax = msgArgs.get("yMax").toScalar(real);
             var xBinWidth:real = (xMax - xMin):real / xBins:real;
             var yBinWidth:real = (yMax - yMin):real / yBins:real;
             hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -162,87 +162,80 @@ module HistogramMsg
         const binsStrs = msgArgs.get("bins").getList(numDims);
         const bins = try! [b in binsStrs] b:int;
         const names = msgArgs.get("sample").getList(numDims);
-        const dimProdName = msgArgs.getValueOf("dim_prod");
+        const dimProd = msgArgs.get("dim_prod").toScalarArray(int, numDims);
         const totNumBins = * reduce bins;
-        
+
         // get next symbol name
         var rname = st.nextName();
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "cmd: %s name: %? bins: %? rname: %s".format(cmd, names, bins, rname));
 
         var gEnts = try! [name in names] getGenericTypedArrayEntry(name, st);
-        var dimProdGenEnt = getGenericTypedArrayEntry(dimProdName, st);
-        var dimProd = toSymEntry(dimProdGenEnt,int);
 
         // helper nested procedure
         proc histogramHelper(type t) throws {
+            var rangeMin = msgArgs.get("rangeMin").toScalarArray(real, numDims);
+            var rangeMax = msgArgs.get("rangeMax").toScalarArray(real, numDims);
             var indices = makeDistArray(numSamples, int);
-            // 3 different implementations depending on size of histogram
-            // this is due to the time memory tradeoff between creating one/few atomic arrays
-            // or many non-atomic arrays and reducing them
 
             // compute index into flattened array:
             // for each dimension calculate which bin that value falls into in parallel
             // we can then scale by the product of the previous dimensions to get that dimensions impact on the flattened index
             // summing all these together gives the index into the flattened array
+            hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "compute indices");
+            for (gEnt, stride, bin, aMin, aMax) in zip(gEnts, dimProd, bins, rangeMin, rangeMax) {
+                var e = toSymEntry(gEnt,t);
+                var binWidth:real = (aMax - aMin):real / bin:real;
+                forall (v, idx) in zip(e.a, indices) {
+                  if idx < 0 {
+                    // value for this index was out of bounds in a previous sample, skip
+                  } else if ! histValWithinRange(v, aMin, aMax) {
+                    idx = -1;
+                  } else {
+                    const vBin = histValToBin(v, aMin, aMax, bin, binWidth);
+                    idx += (vBin * stride):int;
+                  }
+                }
+            }
+
+            // The result will be here.
+            const histSE = createSymEntry(totNumBins, real);
+            st.addEntry(rname, histSE);
+            ref hist = histSE.a;
+
+            // 3 different implementations depending on size of histogram
+            // this is due to the time memory tradeoff between creating one/few atomic arrays
+            // or many non-atomic arrays and reducing them
             if (totNumBins <= sBound) {
+                // "histogramReduceIntent"
                 // small number of buckets (so histogram is relatively small):
                 // each task gets it's own copy of the histogram and they're reduced
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%? <= %?".format(bins,sBound));
-                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) with (+ reduce indices) {
-                    var e = toSymEntry(gEnt,t);
-                    var aMin = min reduce e.a;
-                    var aMax = max reduce e.a;
-                    var binWidth:real = (aMax - aMin):real / bin:real;
-                    forall (v, idx) in zip(e.a, indices) {
-                        var vBin = ((v - aMin) / binWidth):int;
-                        if v == aMax {vBin = bin-1;}
-                        idx += (vBin * stride):int;
-                    }
-                }
                 var gHist: [0..#totNumBins] int;
-                
+
                 // count into per-task/per-locale histogram and then reduce as tasks complete
                 forall idx in indices with (+ reduce gHist) {
+                    if idx<0 then continue;
                     gHist[idx] += 1;
                 }
 
-                var hist = makeDistArray(totNumBins,int);        
                 hist = gHist;
-                st.addEntry(rname, createSymEntry(hist));
             }
             else if (totNumBins <= mBound) {
+                // "histogramLocalAtomic"
                 // medium number of buckets:
                 // each locale gets it's own atomic copy of the histogram and these are reduced together
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%? <= %?".format(bins,mBound));
                 use PrivateDist;
-                var atomicIdx: [PrivateSpace] [0..#numSamples] atomic int;
 
-                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
-                    var e = toSymEntry(gEnt,t);
-                    var aMin = min reduce e.a;
-                    var aMax = max reduce e.a;
-                    var binWidth:real = (aMax - aMin):real / bin:real;
-                    forall (v, i) in zip(e.a, 0..) {
-                        var vBin = ((v - aMin) / binWidth):int;
-                        if v == aMax {vBin = bin-1;}
-                        atomicIdx[here.id][i].add((vBin * stride):int);
-                    }
-                }
-
-                var lIdx: [0..#numSamples] int;
-                forall i in PrivateSpace with (+ reduce lIdx) {
-                    lIdx reduce= atomicIdx[i].read();
-                }
-
-                indices = lIdx;
                 // allocate per-locale atomic histogram
                 var atomicHist: [PrivateSpace] [0..#totNumBins] atomic int;
 
                 // count into per-locale private atomic histogram
                 forall idx in indices {
+                    if idx<0 then continue;
                     atomicHist[here.id][idx].add(1);
                 }
 
@@ -252,43 +245,26 @@ module HistogramMsg
                     lHist reduce= atomicHist[i].read();
                 }
 
-                var hist = makeDistArray(totNumBins,int);        
                 hist = lHist;
-                st.addEntry(rname, createSymEntry(hist));
             }
             else {
+
+                // "histogramGlobalAtomic"
                 // large number of buckets:
                 // one global atomic histogram
                 hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                                 "%? > %?".format(bins,mBound));
-                use PrivateDist;
-                var atomicIdx: [makeDistDom(numSamples)] atomic int;
-
-                forall (gEnt, stride, bin) in zip(gEnts, dimProd.a, bins) {
-                    var e = toSymEntry(gEnt,t);
-                    var aMin = min reduce e.a;
-                    var aMax = max reduce e.a;
-                    var binWidth:real = (aMax - aMin):real / bin:real;
-                    forall (v, i) in zip(e.a, 0..) {
-                        var vBin = ((v - aMin) / binWidth):int;
-                        if v == aMax {vBin = bin-1;}
-                        atomicIdx[i].add((vBin * stride):int);
-                    }
-                }
-
-                [(i,ai) in zip(indices, atomicIdx)] i = ai.read();
                 // allocate single global atomic histogram
                 var atomicHist: [makeDistDom(totNumBins)] atomic int;
 
                 // count into atomic histogram
                 forall idx in indices {
+                    if idx<0 then continue;
                     atomicHist[idx].add(1);
                 }
 
-                var hist = makeDistArray(totNumBins,int);
                 // copy from atomic histogram to normal histogram
                 [(e,ae) in zip(hist, atomicHist)] e = ae.read();
-                st.addEntry(rname, createSymEntry(hist));
             }
         }
 
@@ -298,11 +274,11 @@ module HistogramMsg
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnts[0].dtype);
-                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                return new MsgTuple(errorMsg, MsgType.ERROR);             
+                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-        
+
         repMsg = "created " + st.attrib(rname);
         hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);

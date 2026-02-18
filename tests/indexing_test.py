@@ -20,7 +20,7 @@ def value_array(dtype, size):
     elif dtype is ak.bool_:
         return (ak.randint(0, size, size) % 2) == 0
     elif dtype is ak.bigint:
-        return ak.randint(0, size, size, dtype=ak.uint64) + 2**200
+        return ak.arange(2**200, 2**200 + size, dtype=ak.bigint)
     elif dtype is ak.str_:
         return ak.random_strings_uniform(1, 16, size=size)
     return None
@@ -47,14 +47,14 @@ class TestIndexing:
         ikeys, ukeys = key_arrays(prob_size)
         pda = value_array(dtype, prob_size)
         assert pda[np.uint(2)] == pda[2]
-        assert pda[ukeys].to_list() == pda[ikeys].to_list()
+        assert pda[ukeys].tolist() == pda[ikeys].tolist()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     def test_bool_indexing(self, prob_size):
         u = value_array(ak.uint64, prob_size)
         b = value_array(ak.bool_, prob_size)
-        assert u[b].to_list() == ak.cast(u, ak.int64)[b].to_list()
-        assert u[b].to_list() == ak.cast(u, ak.bigint)[b].to_list()
+        assert u[b].tolist() == ak.cast(u, ak.int64)[b].tolist()
+        assert u[b].tolist() == ak.cast(u, ak.bigint)[b].tolist()
 
     @pytest.mark.parametrize("prob_size", pytest.prob_size)
     @pytest.mark.parametrize("dtype", NUM_TYPES)
@@ -69,9 +69,9 @@ class TestIndexing:
 
         # set [slice] = scalar/pdarray
         pda[:test_size] = -2
-        assert pda[ukeys].to_list() == pda[ikeys].to_list()
+        assert pda[ukeys].tolist() == pda[ikeys].tolist()
         pda[:test_size] = ak.cast(ak.arange(test_size), dtype)
-        assert pda[ukeys].to_list() == pda[ikeys].to_list()
+        assert pda[ukeys].tolist() == pda[ikeys].tolist()
 
         # set [int] = val with uint key and value
         val = value_scalar(dtype, prob_size)[0]
@@ -80,17 +80,17 @@ class TestIndexing:
 
         # set [slice] = scalar/pdarray
         pda[:prob_size] = val
-        assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
+        assert pda[:prob_size].tolist() == ak.full(prob_size, val, dtype=dtype).tolist()
         pda_value_array = value_array(dtype, prob_size)
         pda[:prob_size] = pda_value_array
-        assert pda[:prob_size].to_list() == pda_value_array.to_list()
+        assert pda[:prob_size].tolist() == pda_value_array.tolist()
 
         # set [pdarray] = scalar/pdarray with uint key pdarray
         pda[ak.arange(prob_size, dtype=ak.uint64)] = val
-        assert pda[:prob_size].to_list() == ak.full(prob_size, val, dtype=dtype).to_list()
+        assert pda[:prob_size].tolist() == ak.full(prob_size, val, dtype=dtype).tolist()
         pda_value_array = value_array(dtype, prob_size)
         pda[ak.arange(prob_size)] = pda_value_array
-        assert pda[:prob_size].to_list() == pda_value_array.to_list()
+        assert pda[:prob_size].tolist() == pda_value_array.tolist()
 
     def test_indexing_with_uint(self):
         # verify reproducer from #1210 no longer fails
@@ -107,7 +107,7 @@ class TestIndexing:
     def test_handling_bigint_max_bits(self):
         a = ak.arange(2**200 - 1, 2**200 + 11, max_bits=3)
         a[:] = ak.arange(2**200 - 1, 2**200 + 11)
-        assert [7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2] == a.to_list()
+        assert [7, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2] == a.tolist()
 
     @pytest.mark.parametrize("size", pytest.prob_size)
     def test_compare_get_slice(self, size):

@@ -2,7 +2,7 @@ module SymArrayDmap {
     import ChplConfig;
     import SparseMatrix.Layout;
     public use BlockDist;
-    use LayoutCS;
+    use ArkoudaSparseMatrixCompat;
 
     /*
         Available domain maps.
@@ -92,27 +92,39 @@ module SymArrayDmap {
     }
 
     proc makeDistArray(D: domain(?), type etype) throws
-      where D.rank == 1
+      where MyDmap != Dmap.defaultRectangular && D.isDefaultRectangular()
+    {
+      return makeDistArray(makeDistDom(D), etype);
+    }
+
+    proc makeDistArray(D: domain(?), type etype) throws
+      where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
     {
       var res = D.tryCreateArray(etype);
       return res;
     }
 
     proc makeDistArray(D: domain(?), type etype) throws
-      where D.rank > 1
+      where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
     {
       var res: [D] etype;
       return res;
     }
 
+    proc makeDistArray(D: domain(?), initExpr) throws
+      where MyDmap != Dmap.defaultRectangular && D.isDefaultRectangular()
+    {
+      return makeDistArray(makeDistDom(D), initExpr);
+    }
+
     proc makeDistArray(D: domain(?), initExpr: ?t) throws
-      where D.rank == 1
+      where D.rank == 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
     {
       return D.tryCreateArray(t, initExpr);
     }
 
     proc makeDistArray(D: domain(?), initExpr: ?t) throws
-      where D.rank > 1
+      where D.rank > 1 && (MyDmap == Dmap.defaultRectangular || !D.isDefaultRectangular())
     {
       var res: [D] t = initExpr;
       return res;
@@ -134,7 +146,7 @@ module SymArrayDmap {
       const dom = {1..shape[0], 1..shape[1]}; // TODO: change domain to be zero based?
       select MyDmap {
         when Dmap.defaultRectangular {
-          var spsDom: sparse subdomain(dom) dmapped new dmap(new CS(compressRows=(matLayout==Layout.CSR)));
+          var spsDom: sparse subdomain(dom) dmapped getSparseDom(matLayout);
           return (spsDom, dom);
         }
         when Dmap.blockDist {
@@ -142,10 +154,7 @@ module SymArrayDmap {
                 grid = {0..<locsPerDim, 0..<locsPerDim},
                 localeGrid = reshape(Locales[0..<grid.size], grid);
 
-          type layoutType = CS(compressRows=(matLayout==Layout.CSR));
-          const DenseBlkDom = dom dmapped new blockDist(boundingBox=dom,
-                                                        targetLocales=localeGrid,
-                                                        sparseLayoutType=layoutType);
+          const DenseBlkDom = getDenseDom(dom, localeGrid, matLayout);
 
           var SD: sparse subdomain(DenseBlkDom);
           return (SD, DenseBlkDom);

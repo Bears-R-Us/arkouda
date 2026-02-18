@@ -1,24 +1,89 @@
+"""
+Arkouda client-defined dtypes and helper utilities for structured or specialized array semantics.
+
+This module introduces specialized subclasses of `pdarray` for handling and representing
+data with specific interpretations or domain semantics. These include:
+
+- `BitVector`: For representing integers as sets of binary flags.
+- `Fields`: For displaying and interacting with named binary flags.
+- `IPv4`: For storing and displaying 32-bit integers as IPv4 addresses.
+
+These classes enhance usability and improve readability when working with encoded or
+domain-specific data while preserving Arkouda’s performance model and distributed data structures.
+
+Functions
+---------
+- `BitVectorizer`: Creates a partially applied BitVector constructor.
+- `ip_address`: Converts various formats to an Arkouda IPv4 object.
+- `is_ipv4`: Returns a boolean array indicating IPv4 addresses.
+- `is_ipv6`: Returns a boolean array indicating IPv6 addresses.
+
+Examples
+--------
+>>> import arkouda as ak
+>>> from arkouda.client_dtypes import BitVector, Fields, IPv4, ip_address, is_ipv4
+
+Create and use BitVectors:
+>>> a = ak.array([3, 5, 7])
+>>> bv = BitVector(a, width=4)
+>>> print(bv)
+BitVector([..||,
+           .|.|,
+           .|||],
+          width=4, reverse=False)
+
+Create Fields with named binary flags:
+>>> f = Fields(ak.array([1, 2, 3]), names=['read', 'write', 'exec'], separator=':')
+>>> print(f[0])  # doctest: +SKIP
+--:--:read (1)
+
+Convert and work with IP addresses:
+>>> ips = ip_address(['192.168.0.1', '10.0.0.1'])
+>>> print(ips)
+IPv4([192.168.0.1,
+      10.0.0.1],
+     )
+
+>>> is_ipv4(ips)
+array([True True])
+
+"""
+
 from functools import partial
 from ipaddress import ip_address as _ip_address
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, TypeVar, Union
 
 import numpy as np
 from typeguard import typechecked
 
-from arkouda.groupbyclass import GroupBy, broadcast
-from arkouda.numpy import cast as akcast
-from arkouda.numpy import where
 from arkouda.numpy.dtypes import bitType, intTypes, isSupportedInt
 from arkouda.numpy.dtypes import uint64 as akuint64
-from arkouda.pdarrayclass import RegistrationError, pdarray
-from arkouda.pdarraycreation import arange, array, create_pdarray, zeros
-from arkouda.strings import Strings
+from arkouda.numpy.pdarrayclass import RegistrationError, pdarray
+from arkouda.numpy.pdarraycreation import arange, array, create_pdarray, zeros
+from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import GroupBy, broadcast
+
+if TYPE_CHECKING:
+    from arkouda.numpy import cast as akcast
+    from arkouda.numpy import where as akwhere
+else:
+    akcast = TypeVar("akcast")
+    akwhere = TypeVar("akwhere")
+
+__all__ = [
+    "BitVector",
+    "BitVectorizer",
+    "Fields",
+    "IPv4",
+    "ip_address",
+    "is_ipv4",
+    "is_ipv6",
+]
 
 
 def BitVectorizer(width=64, reverse=False):
     """
-    Make a callback (i.e. function) that can be called on an
-    array to create a BitVector.
+    Make a callback (i.e. function) that can be called on an array to create a BitVector.
 
     Parameters
     ----------
@@ -33,8 +98,8 @@ def BitVectorizer(width=64, reverse=False):
     -------
     bitvectorizer : callable
         A function that takes an array and returns a BitVector instance
-    """
 
+    """
     return partial(BitVector, width=width, reverse=reverse)
 
 
@@ -63,12 +128,15 @@ class BitVector(pdarray):
     This class is a thin wrapper around pdarray that mostly affects
     how values are displayed to the user. Operators and methods will
     typically treat this class like a uint64 pdarray.
+
     """
 
     conserves = frozenset(("+", "-", "|", "&", "^", ">>", "<<"))
     special_objType = "BitVector"
 
     def __init__(self, values, width=64, reverse=False):
+        from arkouda.numpy import cast as akcast
+
         self.registered_name = None
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
@@ -89,9 +157,7 @@ class BitVector(pdarray):
         )
 
     def format(self, x):
-        """
-        Format a single binary vector as a string.
-        """
+        """Format a single binary vector as a string."""
         # Start with a fixed-width, zero-padded binary value,
         # and replace 0/1 with ./| for better visibility
         fmt = "{{:0{}b}}".format(self.width).format(x).replace("0", ".").replace("1", "|")
@@ -101,6 +167,15 @@ class BitVector(pdarray):
             return fmt
 
     def __str__(self):
+        """
+        Return a string representation of the BitVector.
+
+        Returns
+        -------
+        str
+            Human-readable string showing formatted bit vectors.
+
+        """
         from arkouda.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
@@ -117,24 +192,43 @@ class BitVector(pdarray):
         )
 
     def __repr__(self):
+        """
+        Return the official string representation of the BitVector.
+
+        Returns
+        -------
+        str
+            Same as __str__.
+
+        """
         return self.__str__()
 
     def to_ndarray(self):
-        """
-        Export data to a numpy array of string-formatted bit vectors.
-        """
+        """Export data to a numpy array of string-formatted bit vectors."""
         return np.array([self.format(x) for x in self.values.to_ndarray()])
 
-    def to_list(self):
-        """
-        Export data to a list of string-formatted bit vectors.
-        """
+    def tolist(self):
+        """Export data to a list of string-formatted bit vectors."""
         return self.to_ndarray().tolist()
 
     def _cast(self, values):
         return self.__class__(values, width=self.width, reverse=self.reverse)
 
     def __getitem__(self, key):
+        """
+        Retrieve a formatted bit vector or a subarray.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to access.
+
+        Returns
+        -------
+        str or BitVector
+            A single formatted string or a BitVector slice.
+
+        """
         if isSupportedInt(key):
             # Return single value as a formatted string
             return self.format(self.values[key])
@@ -143,6 +237,17 @@ class BitVector(pdarray):
             return self._cast(self.values[key])
 
     def __setitem__(self, key, value):
+        """
+        Set value(s) in the BitVector.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to set.
+        value : int or BitVector
+            New value(s) to assign.
+
+        """
         if isinstance(value, self.__class__):
             # Set a slice or selection of values directly
             self.values[key] = value.values
@@ -188,6 +293,17 @@ class BitVector(pdarray):
             return NotImplemented
 
     def opeq(self, other, op):
+        """
+        In-place binary operation on the BitVector.
+
+        Parameters
+        ----------
+        other : int, BitVector, or pdarray
+            Right-hand operand.
+        op : str
+            Binary operator as a string (e.g., '+', '&').
+
+        """
         # Based on other type, select data to pass to pdarray opeq
         if isSupportedInt(other):
             otherdata = other
@@ -201,7 +317,7 @@ class BitVector(pdarray):
 
     def register(self, user_defined_name):
         """
-        Register this BitVector object and underlying components with the Arkouda server
+        Register this BitVector object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -224,7 +340,7 @@ class BitVector(pdarray):
         RegistrationError
             If the server was unable to register the BitVector with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, is_registered
 
@@ -232,6 +348,7 @@ class BitVector(pdarray):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.client import generic_msg
 
@@ -252,6 +369,20 @@ class BitVector(pdarray):
 
     @classmethod
     def from_return_msg(cls, rep_msg):
+        """
+        Reconstruct a BitVector from a server return message.
+
+        Parameters
+        ----------
+        rep_msg : str
+            JSON-encoded response from Arkouda server.
+
+        Returns
+        -------
+        BitVector
+            Reconstructed BitVector instance.
+
+        """
         import json
 
         data = json.loads(rep_msg)
@@ -302,6 +433,7 @@ class Fields(BitVector):
     This class is a thin wrapper around pdarray that mostly affects
     how values are displayed to the user. Operators and methods will
     typically treat this class like an int64 pdarray.
+
     """
 
     def __init__(self, values, names, MSB_left=True, pad="-", separator="", show_int=True):
@@ -350,9 +482,7 @@ class Fields(BitVector):
         super().__init__(values, width=width, reverse=not MSB_left)
 
     def _convert_strings(self, s):
-        """
-        Convert string field names to binary vectors.
-        """
+        """Convert string field names to binary vectors."""
         # Initialize to zero
         values = zeros(s.size, dtype=bitType)
         if self.separator == "":
@@ -360,7 +490,7 @@ class Fields(BitVector):
             for name, shift in zip(self.names, self.shifts):
                 # Check if name exists in each string
                 bit = s.contains(name)
-                values = values | akcast(where(bit, 1 << shift, 0), bitType)
+                values = values | akcast(akwhere(bit, 1 << shift, 0), bitType)
         else:
             # When separator is non-empty, split on it
             sf, segs = s.flatten(self.separator, return_segments=True)
@@ -370,13 +500,11 @@ class Fields(BitVector):
             for name, shift in zip(self.names, self.shifts):
                 # Check if name matches one of the split fields from originating string
                 bit = g.any(sf == name)[1]
-                values = values | akcast(where(bit, 1 << shift, 0), bitType)
+                values = values | akcast(akwhere(bit, 1 << shift, 0), bitType)
         return values
 
     def _parse_scalar(self, s):
-        """
-        Convert a string of named fields to a binary value.
-        """
+        """Convert a string of named fields to a binary value."""
         val = 0
         if self.separator == "":
             # Arg validation guarantees single-character field names if here
@@ -391,9 +519,7 @@ class Fields(BitVector):
         return val
 
     def format(self, x):
-        """
-        Format a single binary value as a string of named fields.
-        """
+        """Format a single binary value as a string of named fields."""
         # Start with a fixed-width, zero-padded binary value,
         # and replace 0/1 with ./| for better visibility
         s = ""
@@ -409,6 +535,17 @@ class Fields(BitVector):
         return s
 
     def __setitem__(self, key, value):
+        """
+        Set value(s) in the Fields object.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to set.
+        value : str or int
+            Value(s) to assign, which may be parsed field strings.
+
+        """
         if isinstance(value, str):
             v = self._parse_scalar(value)
             return super().__setitem__(key, v)
@@ -440,6 +577,17 @@ class Fields(BitVector):
             return super()._r_binop(other, op)
 
     def opeq(self, other, op):
+        """
+        Perform in-place binary operation on the Fields object.
+
+        Parameters
+        ----------
+        other : str or BitVector
+            Operand to apply the binary operation with.
+        op : str
+            Binary operation to apply (e.g., '|', '&').
+
+        """
         if isinstance(other, str):
             o = self._parse_scalar(other)
             return super().opeq(o, op)
@@ -467,8 +615,8 @@ def ip_address(values):
     accomodate IPv6 and to prevent errors if a user inadvertently
     casts a IPv4 instead of a int64 pdarray. It can also be used
     for importing Python lists of IP addresses into Arkouda.
-    """
 
+    """
     if isinstance(values, IPv4):
         return values
 
@@ -504,11 +652,14 @@ class IPv4(pdarray):
     This class is a thin wrapper around pdarray that mostly affects
     how values are displayed to the user. Operators and methods will
     typically treat this class like an int64 pdarray.
+
     """
 
     special_objType = "IPv4"
 
     def __init__(self, values):
+        from arkouda.numpy import cast as akcast
+
         if not isinstance(values, pdarray) or values.dtype not in intTypes:
             self.name = None  # This is needed to silence warnings of missing name during failed creation
             raise TypeError("Argument must be int64 pdarray")
@@ -525,20 +676,32 @@ class IPv4(pdarray):
         )
 
     def export_uint(self):
+        """
+        Export the internal values as unsigned 64-bit integers.
+
+        Returns
+        -------
+        pdarray
+            Array of uint64 values representing the data.
+
+        """
+        from arkouda.numpy import cast as akcast
+
         return akcast(self.values, akuint64)
 
     def format(self, x):
-        """
-        Format a single integer IP address as a string.
-        """
+        """Format a single integer IP address as a string."""
         if not isSupportedInt(x):
             raise TypeError("Argument must be an integer scalar")
         return str(_ip_address(int(x)))
 
     def normalize(self, x):
         """
+        Normalize IP adress.
+
         Take in an IP address as a string, integer, or IPAddress object,
         and convert it to an integer.
+
         """
         if not isSupportedInt(x):
             x = int(_ip_address(x))
@@ -553,6 +716,15 @@ class IPv4(pdarray):
             return False, None
 
     def __str__(self):
+        """
+        Return a string representation of the IPv4 object.
+
+        Returns
+        -------
+        str
+            Human-readable string showing IP addresses.
+
+        """
         from arkouda.client import pdarrayIterThresh
 
         if self.size <= pdarrayIterThresh:
@@ -568,21 +740,40 @@ class IPv4(pdarray):
         )
 
     def __repr__(self):
+        """
+        Return the official string representation of the IPv4 object.
+
+        Returns
+        -------
+        str
+            Same as __str__.
+
+        """
         return self.__str__()
 
     def to_ndarray(self):
-        """
-        Export array as a numpy array of integers.
-        """
+        """Export array as a numpy array of integers."""
         return np.array([self.format(x) for x in self.values.to_ndarray()])
 
-    def to_list(self):
-        """
-        Export array as a list of integers.
-        """
+    def tolist(self):
+        """Export array as a list of integers."""
         return self.to_ndarray().tolist()
 
     def __getitem__(self, key):
+        """
+        Retrieve an IP address or a slice.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index to retrieve.
+
+        Returns
+        -------
+        str or IPv4
+            Formatted IP address string or a sliced IPv4 instance.
+
+        """
         if isSupportedInt(key):
             # Display single item as string
             return self.format(self.values[key])
@@ -591,6 +782,17 @@ class IPv4(pdarray):
             return self.__class__(self.values[key])
 
     def __setitem__(self, key, value):
+        """
+        Set IP address value(s).
+
+        Parameters
+        ----------
+        key : int or slice
+            Index or range to set.
+        value : str or IPv4
+            IP address string or IPv4 instance.
+
+        """
         # If scalar, convert to integer and set
         isscalar, scalarval = self._is_supported_scalar(value)
         if isscalar:
@@ -624,6 +826,17 @@ class IPv4(pdarray):
             return NotImplemented
 
     def opeq(self, other, op):
+        """
+        Perform an in-place binary operation on the IPv4 object.
+
+        Parameters
+        ----------
+        other : int, str, pdarray, or IPv4
+            Operand for the operation.
+        op : str
+            Binary operator as a string.
+
+        """
         # Based on other type, select data to pass to pdarray opeq
         isscalar, scalarval = self._is_supported_scalar(other)
         if isscalar:
@@ -638,7 +851,7 @@ class IPv4(pdarray):
 
     def register(self, user_defined_name):
         """
-        Register this IPv4 object and underlying components with the Arkouda server
+        Register this IPv4 object and underlying components with the Arkouda server.
 
         Parameters
         ----------
@@ -661,7 +874,7 @@ class IPv4(pdarray):
         RegistrationError
             If the server was unable to register the IPv4 with the user_defined_name
 
-        See also
+        See Also
         --------
         unregister, attach, is_registered
 
@@ -669,6 +882,7 @@ class IPv4(pdarray):
         -----
         Objects registered with the server are immune to deletion until
         they are unregistered.
+
         """
         from arkouda.client import generic_msg
 
@@ -692,13 +906,11 @@ class IPv4(pdarray):
         mode: str = "truncate",
         file_type: str = "distribute",
     ):
-        """
-        Override of the pdarray to_hdf to store the special object type
-        """
+        """Override of the pdarray to_hdf to store the special object type."""
         from typing import cast as typecast
 
         from arkouda.client import generic_msg
-        from arkouda.io import _file_type_to_int, _mode_str_to_int
+        from arkouda.pandas.io import _file_type_to_int, _mode_str_to_int
 
         return typecast(
             str,
@@ -717,11 +929,9 @@ class IPv4(pdarray):
         )
 
     def update_hdf(self, prefix_path: str, dataset: str = "array", repack: bool = True):
-        """
-        Override the pdarray implementation so that the special object type will be used.
-        """
+        """Override the pdarray implementation so that the special object type will be used."""
         from arkouda.client import generic_msg
-        from arkouda.io import (
+        from arkouda.pandas.io import (
             _file_type_to_int,
             _get_hdf_filetype,
             _mode_str_to_int,
@@ -757,9 +967,9 @@ def is_ipv4(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
     Parameters
     ----------
     ip: pdarray (int64) or ak.IPv4
-    IPv4 value. High Bits of IPv6 if IPv6 is passed in.
+        IPv4 value. High Bits of IPv6 if IPv6 is passed in.
     ip2: pdarray (int64), Optional
-    Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
+        Low Bits of IPv6. This is added for support when dealing with data that contains IPv6 as well.
 
     Returns
     -------
@@ -768,6 +978,7 @@ def is_ipv4(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
     See Also
     --------
     ak.is_ipv6
+
     """
     # grab the ipv4 pdarray of values
     if isinstance(ip, IPv4):
@@ -795,9 +1006,9 @@ def is_ipv6(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
     Parameters
     ----------
     ip: pdarray (int64) or ak.IPv4
-    High Bits of IPv6.
+        High Bits of IPv6.
     ip2: pdarray (int64), Optional
-    Low Bits of IPv6
+        Low Bits of IPv6
 
     Returns
     -------
@@ -806,6 +1017,7 @@ def is_ipv6(ip: Union[pdarray, IPv4], ip2: Optional[pdarray] = None) -> pdarray:
     See Also
     --------
     ak.is_ipv4
+
     """
     # grab the ipv4 pdarray of values
     if isinstance(ip, IPv4):

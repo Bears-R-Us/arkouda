@@ -15,11 +15,19 @@ script. Example usage:
 import argparse
 import sys
 
-from server_util import *
+from server_util.test.server_test_util import (
+    get_arkouda_numlocales,
+    run_client_live,
+    start_arkouda_server,
+    stop_arkouda_server,
+)
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
-    "clients", type=argparse.FileType("r"), help="The arkouda client program(s) to run", nargs="+"
+    "clients",
+    type=argparse.FileType("r"),
+    help="The arkouda client program(s) to run",
+    nargs="+",
 )
 parser.add_argument(
     "-nl",
@@ -28,12 +36,18 @@ parser.add_argument(
     default=get_arkouda_numlocales(),
     help="Number of locales to use for the server",
 )
-parser.add_argument("-sp", "--server-port", default="5555", help="Port number to use for the server")
-parser.add_argument("--server-args", action="append", help="Additional server arguments")
+parser.add_argument(
+    "-sp", "--server-port", default="5555", help="Port number to use for the server"
+)
+parser.add_argument(
+    "--server-args", action="append", help="Additional server arguments"
+)
 
 args, client_args = parser.parse_known_args()
 
-start_arkouda_server(args.num_locales, port=args.server_port, server_args=args.server_args)
+start_arkouda_server(
+    args.num_locales, port=args.server_port, server_args=args.server_args
+)
 ret = 0
 for client in args.clients:
     cmd_string = "{} {}".format(client.name, " ".join(client_args)).strip()

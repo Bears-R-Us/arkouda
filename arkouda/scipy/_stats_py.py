@@ -5,6 +5,7 @@ from numpy import asarray
 from scipy.stats import chi2  # type: ignore
 
 import arkouda as ak
+from arkouda.numpy import float64
 from arkouda.numpy.dtypes import float64 as akfloat64
 from arkouda.scipy.special import xlogy
 
@@ -17,9 +18,12 @@ class Power_divergenceResult(namedtuple("Power_divergenceResult", ("statistic", 
 
     Attributes
     ----------
-    statistic :    numpy.float64
-    pvalue :    numpy.float64
+    statistic :    float64
+    pvalue :    float64
     """
+
+    statistic: float64
+    pvalue: float64
 
 
 # Map from names to lambda_ values used in power_divergence().
@@ -73,14 +77,15 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
     --------
 
     >>> import arkouda as ak
-    >>> ak.connect()
-    >>> from arkouda.stats import power_divergence
+    >>> from arkouda.scipy import power_divergence
     >>> x = ak.array([10, 20, 30, 10])
     >>> y = ak.array([10, 30, 20, 10])
     >>> power_divergence(x, y, lambda_="pearson")
-    Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
+    Power_divergenceResult(statistic=np.float64(8.333333333333334),
+        pvalue=np.float64(0.03960235520756414))
     >>> power_divergence(x, y, lambda_="log-likelihood")
-    Power_divergenceResult(statistic=8.109302162163285, pvalue=0.04380595350226197)
+    Power_divergenceResult(statistic=np.float64(8.109302162163285),
+        pvalue=np.float64(0.04380595350226197))
 
     See Also
     -------
@@ -106,7 +111,7 @@ def power_divergence(f_obs, f_exp=None, ddof=0, lambda_=None):
     if isinstance(lambda_, str):
         if lambda_ not in _power_div_lambda_names:
             names = repr(list(_power_div_lambda_names.keys()))[1:-1]
-            raise ValueError(f"invalid string for lambda_: {lambda_!r}. " f"Valid strings are {names}")
+            raise ValueError(f"invalid string for lambda_: {lambda_!r}. Valid strings are {names}")
         lambda_ = _power_div_lambda_names[lambda_]
     elif lambda_ is None:
         lambda_ = 1
@@ -190,10 +195,10 @@ def chisquare(f_obs, f_exp=None, ddof=0):
     --------
 
     >>> import arkouda as ak
-    >>> ak.connect()
-    >>> from arkouda.stats import chisquare
+    >>> from arkouda.scipy import chisquare
     >>> chisquare(ak.array([10, 20, 30, 10]), ak.array([10, 30, 20, 10]))
-    Power_divergenceResult(statistic=8.333333333333334, pvalue=0.03960235520756414)
+    Power_divergenceResult(statistic=np.float64(8.333333333333334),
+        pvalue=np.float64(0.03960235520756414))
 
 
     See Also

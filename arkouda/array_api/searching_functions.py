@@ -3,19 +3,25 @@ from __future__ import annotations
 from typing import Literal, Optional, Tuple, cast
 
 import arkouda as ak
-from arkouda.client import generic_msg
 from arkouda.numpy import cast as akcast
-from arkouda.pdarrayclass import create_pdarray, create_pdarrays, parse_single_value
-from arkouda.pdarraycreation import scalar_array
+from arkouda.numpy.pdarrayclass import create_pdarray, create_pdarrays
 
 from ._dtypes import _real_floating_dtypes, _real_numeric_dtypes
 from .array_object import Array
-from .manipulation_functions import broadcast_arrays, reshape, squeeze
+from .manipulation_functions import broadcast_arrays
+
+__all__ = [
+    "argmax",
+    "argmin",
+    "nonzero",
+    "searchsorted",
+    "where",
+]
 
 
 def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
     """
-    Returns an array with the indices of the maximum values along a given axis.
+    Return an array with the indices of the maximum values along a given axis.
 
     Parameters
     ----------
@@ -31,36 +37,12 @@ def argmax(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
 
-    if x.ndim > 1 and axis is None:
-        # must flatten ND arrays to 1D without an axis argument
-        x_op = reshape(x, shape=(-1,))
-    else:
-        x_op = x
-
-    resp = generic_msg(
-        cmd=f"reduce->idx{x_op.ndim}D",
-        args={
-            "x": x_op._array,
-            "op": "argmax",
-            "hasAxis": axis is not None,
-            "axis": axis if axis is not None else 0,
-        },
-    )
-
-    if axis is None:
-        return Array._new(scalar_array(parse_single_value(resp)))
-    else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+    return Array._new(ak.argmax(x._array, axis=axis, keepdims=keepdims))
 
 
 def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -> Array:
     """
-    Returns an array with the indices of the minimum values along a given axis.
+    Return an array with the indices of the minimum values along a given axis.
 
     Parameters
     ----------
@@ -74,38 +56,15 @@ def argmin(x: Array, /, *, axis: Optional[int] = None, keepdims: bool = False) -
     """
     if x.dtype not in _real_numeric_dtypes:
         raise TypeError("Only real numeric dtypes are allowed in argmax")
-
-    if x.ndim > 1 and axis is None:
-        # must flatten ND arrays to 1D without an axis argument
-        x_op = reshape(x, shape=(-1,))
-    else:
-        x_op = x
-
-    resp = generic_msg(
-        cmd=f"reduce->idx{x_op.ndim}D",
-        args={
-            "x": x_op._array,
-            "op": "argmin",
-            "hasAxis": axis is not None,
-            "axis": axis if axis is not None else 0,
-        },
-    )
-
-    if axis is None:
-        return Array._new(scalar_array(parse_single_value(resp)))
-    else:
-        arr = Array._new(create_pdarray(resp))
-
-        if keepdims:
-            return arr
-        else:
-            return squeeze(arr, axis)
+    return Array._new(ak.argmin(x._array, axis=axis, keepdims=keepdims))
 
 
 def nonzero(x: Array, /) -> Tuple[Array, ...]:
     """
-    Returns a tuple of arrays containing the indices of the non-zero elements of the input array.
+    Return a tuple of arrays containing the indices of the non-zero elements of the input array.
     """
+    from arkouda.client import generic_msg
+
     resp = cast(
         str,
         generic_msg(
@@ -130,17 +89,22 @@ def where(condition: Array, x1: Array, x2: Array, /) -> Array:
     x2 : Array
         Values selected at indices where `condition` is False.
     """
+    from arkouda.client import generic_msg
+
     broadcasted = broadcast_arrays(condition, x1, x2)
+
+    a = broadcasted[1]._array
+    b = broadcasted[2]._array
+    c = akcast(broadcasted[0]._array, ak.bool_)
 
     return Array._new(
         create_pdarray(
             generic_msg(
-                cmd=f"efunc3vv{broadcasted[0].ndim}D",
+                cmd=f"wherevv<{c.ndim},{a.dtype},{b.dtype}>",
                 args={
-                    "func": "where",
-                    "condition": akcast(broadcasted[0]._array, ak.dtypes.bool_),
-                    "a": broadcasted[1]._array,
-                    "b": broadcasted[2]._array,
+                    "condition": c,
+                    "a": a,
+                    "b": b,
                 },
             )
         )
@@ -153,6 +117,7 @@ def searchsorted(
     /,
     *,
     side: Literal["left", "right"] = "left",
+    x2_sorted: bool = False,
     sorter: Optional[Array] = None,
 ) -> Array:
     """
@@ -170,8 +135,12 @@ def searchsorted(
         last such index. Default is 'left'.
     sorter : Array, optional
         The indices that would sort `x1` in ascending order. If None, `x1` is assumed to be sorted.
-
+    x2_sorted : bool, default=False
+        If True, assumes that `x2` is already sorted in ascending order. This can improve performance
+        for large, sorted search arrays. If False, no assumption is made about the order of `x2`.
     """
+    from arkouda.client import generic_msg
+
     if x1.dtype not in _real_floating_dtypes or x2.dtype not in _real_floating_dtypes:
         raise TypeError("Only real dtypes are allowed in searchsorted")
 
@@ -184,11 +153,12 @@ def searchsorted(
         _x1 = x1
 
     resp = generic_msg(
-        cmd=f"searchSorted<1,{x2.ndim}>",
+        cmd=f"searchSorted<{x1.dtype},1,{x2.ndim}>",
         args={
             "x1": _x1._array,
             "x2": x2._array,
             "side": side,
+            "x2Sorted": x2_sorted,
         },
     )
 

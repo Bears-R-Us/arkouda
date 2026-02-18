@@ -592,7 +592,7 @@ class OperatorsTest(ArkoudaTest):
 
     def test_concatenate_type_preservation(self):
         # Test that concatenate preserves special pdarray types (IPv4, Datetime, BitVector, ...)
-        from arkouda.util import generic_concat as akuconcat
+        from arkouda.numpy.util import generic_concat as akuconcat
 
         pda_one = ak.arange(1, 4)
         pda_two = ak.arange(4, 7)

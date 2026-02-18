@@ -1,12 +1,21 @@
 import pytest
 
 import arkouda as ak
-from arkouda.client import generic_msg
 from server_util.test.server_test_util import TestRunningMode, start_arkouda_server
 
 
-@pytest.mark.skipif(pytest.host == "horizon", reason="nightly test failures due to machine busyness")
+@pytest.mark.skipif(
+    pytest.client_host == "horizon", reason="nightly test failures due to machine busyness"
+)
 class TestClient:
+    def test_client_docstrings(self):
+        import doctest
+
+        from arkouda import client
+
+        result = doctest.testmod(client, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_client_connected(self):
         """
         Tests the following methods:
@@ -45,16 +54,16 @@ class TestClient:
 
     @pytest.mark.skipif(
         pytest.test_running_mode == TestRunningMode.CLIENT,
-        reason="start_arkouda_server won't restart if running mode is client",
+        reason="should not stop/start the server in the CLIENT mode",
     )
     def test_shutdown(self):
         """
         Tests the ak.shutdown() method
         """
         ak.shutdown()
-        start_arkouda_server(numlocales=pytest.nl)
+        pytest.server, _, _ = start_arkouda_server(numlocales=pytest.nl, port=pytest.port)
         # reconnect to server so subsequent tests will pass
-        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.timeout)
+        ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
 
     def test_client_get_config(self):
         """
@@ -157,29 +166,10 @@ class TestClient:
         for cmd in ["connect", "info", "str"]:
             assert cmd in cmds
 
-    @pytest.mark.skip_if_max_rank_greater_than(9)
-    def test_client_array_dim_cmd_error(self):
-        """
-        Tests that a user will get a helpful error message if they attempt to
-        use a multi-dimensional command when the server is not configured to
-        support multi-dimensional arrays of the given rank.
-        """
-        with pytest.raises(RuntimeError) as cm:
-            resp = generic_msg("reduce10D")
-
-        err_msg = (
-            f"Error: Command 'reduce10D' is not supported with the current server configuration as the maximum array dimensionality is {ak.client.get_max_array_rank()}. "
-            f"Please recompile with support for at least 10D arrays"
-        )
-        cm.match(err_msg)  #   Asserts the error msg matches the expected value
-
-    def test_client_nd_unimplemented_error(self):
-        """
-        Tests that a user will get a helpful error message if they attempt to
-        use a multi-dimensional command when only a 1D implementation exists.
-        """
-        with pytest.raises(RuntimeError) as cm:
-            resp = generic_msg("connect2D")
-
-        err_msg = "Error: Command 'connect' is not supported for multidimensional arrays"
-        cm.match(err_msg)  #   Asserts the error msg matches the expected value
+    def test_get_array_ranks(self):
+        availableRanks = ak.client.get_array_ranks()
+        assert isinstance(availableRanks, list)
+        assert len(availableRanks) >= 1
+        assert 1 in availableRanks
+        assert ak.client.get_max_array_rank() in availableRanks
+        assert ak.client.get_max_array_rank() + 1 not in availableRanks

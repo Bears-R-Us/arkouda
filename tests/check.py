@@ -3,7 +3,6 @@
 import sys
 
 import numpy as np
-import pytest
 
 import arkouda as ak
 
@@ -24,7 +23,7 @@ def check_bool(N):
         a and b
     except ValueError:
         correct = True
-    except:
+    except RuntimeError:
         correct = False
     d = ak.array([1])
     correct = correct and (d and 5)

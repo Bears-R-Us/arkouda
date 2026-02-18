@@ -73,7 +73,7 @@ module GenSymIO {
         
         try {
             st.checkTable(rname, "arrayMsg");
-            var g = st.lookup(rname);
+            var g = st[rname];
             if g.isAssignableTo(SymbolEntryType.TypedArraySymEntry){
                 var values = toSymEntry( (g:GenSymEntry), uint(8) );
                 var offsets = segmentedCalcOffsets(values.a, values.a.domain);

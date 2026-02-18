@@ -11,9 +11,9 @@ Data Types
 Currently, ``DataFrames`` support 4 Arkouda data types for supplying columns.
 
 * ``Arkouda.pdarray``
-* ``Arkouda.Strings``
+* ``arkouda.numpy.Strings``
 * ``Arkouda.Categorical``
-* ``Arkouda.SegArray``
+* ``arkouda.numpy.SegArray``
 
 Data within the above objects can be of the types below. Please Note - Not all listed types are compatible with every type above.
 

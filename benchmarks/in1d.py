@@ -61,9 +61,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of in1d: c = ak.in1d(a, b)")
     parser.add_argument("hostname", help="Hostname of arkouda server")
     parser.add_argument("port", type=int, help="Port of arkouda server")
-    parser.add_argument(
-        "-n", "--size", type=int, default=10**8, help="Problem size: length of array a"
-    )
+    parser.add_argument("-n", "--size", type=int, default=10**8, help="Problem size: length of array a")
     parser.add_argument(
         "-d", "--dtype", default="int64", help="Dtype of array ({})".format(", ".join(TYPES))
     )

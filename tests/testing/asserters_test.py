@@ -27,7 +27,15 @@ from arkouda.testing import (
 )
 
 
-class TestDataFrame:
+class TestAsserters:
+    def test_asserters_docstrings(self):
+        import doctest
+
+        from arkouda.testing import _asserters
+
+        result = doctest.testmod(_asserters, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     @staticmethod
     def build_index(self) -> Index:
         idx = ak.Index(ak.arange(5), name="test1")
@@ -110,7 +118,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_almost_equal(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -170,12 +177,11 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_almost_equivalent(convert_left(df), convert_right(df3), atol=atol, rtol=rtol)
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_almost_equal_multi_dim(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -224,7 +230,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_index_equal(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -264,7 +269,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_index_equal_categorical(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -309,7 +313,6 @@ class TestDataFrame:
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
     def test_assert_index_equal_check_exact(self, size, left_as_arkouda, right_as_arkouda):
-
         both_ak = left_as_arkouda and right_as_arkouda
         convert_left = self.get_converter(left_as_arkouda)
         convert_right = self.get_converter(right_as_arkouda)
@@ -957,7 +960,7 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_equivalent(convert_left(df), convert_right(df2))
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
@@ -980,7 +983,6 @@ class TestDataFrame:
             assert_equivalent(convert_left(a), convert_right(a2))
 
     def test_assert_equal_scalars(self):
-
         st = "string1"
         st2 = "string2"
 
@@ -1076,7 +1078,7 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(s), convert_right(c))
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     @pytest.mark.parametrize("size", pytest.prob_size)
     @pytest.mark.parametrize("left_as_arkouda", [True, False])
     @pytest.mark.parametrize("right_as_arkouda", [True, False])
@@ -1097,8 +1099,19 @@ class TestDataFrame:
         with pytest.raises(AssertionError):
             assert_arkouda_array_equivalent(convert_left(a), convert_right(a2))
 
-    def test_assert_arkouda_segarray_equal(self):
+    @pytest.mark.skip_if_rank_not_compiled([2])
+    @pytest.mark.parametrize("left_as_arkouda", [True, False])
+    @pytest.mark.parametrize("right_as_arkouda", [True, False])
+    def test_assert_arkouda_array_equal_shape(self, left_as_arkouda, right_as_arkouda):
+        convert_left = self.get_converter(left_as_arkouda)
+        convert_right = self.get_converter(right_as_arkouda)
 
+        a = ak.arange(4).reshape((2, 2))
+        b = ak.arange(4).reshape((1, 4))
+        with pytest.raises(AssertionError):
+            assert_arkouda_array_equivalent(convert_left(a), convert_right(b))
+
+    def test_assert_arkouda_segarray_equal(self):
         seg = ak.SegArray(ak.array([0, 3, 9]), ak.arange(10))
         seg_cpy = ak.SegArray(ak.array([0, 3, 9]), ak.arange(10))
         seg_float = ak.SegArray(ak.array([0, 3, 9]), ak.arange(10, dtype="float64"))

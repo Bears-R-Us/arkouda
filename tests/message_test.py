@@ -3,11 +3,18 @@ import json
 import pytest
 
 import arkouda as ak
+from arkouda import message
 from arkouda.client import _json_args_to_str
 from arkouda.message import MessageFormat, MessageType, ReplyMessage, RequestMessage
 
 
 class TestMessage:
+    def test_message_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(message, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
     def test_message_format(self):
         assert MessageFormat.BINARY == MessageFormat("BINARY")
         assert MessageFormat.STRING == MessageFormat("STRING")
@@ -90,8 +97,8 @@ class TestMessage:
 class TestJSONArgs:
     # TODO numpy dtypes are not supported by json, we probably want to add an issue to handle this
     SCALAR_TYPES = [int, float, bool, str]
-#   The types below are support in arkouda, as noted in registration-config.json.  This may be
-#   the same issue noted in the above comment.
+    #   The types below are support in arkouda, as noted in registration-config.json.  This may be
+    #   the same issue noted in the above comment.
     SUPPORTED_TYPES = [ak.bool_, ak.uint64, ak.int64, ak.bigint, ak.uint8, ak.float64]
 
     @pytest.mark.parametrize("dtype", SCALAR_TYPES)
@@ -124,9 +131,7 @@ class TestJSONArgs:
         size, args = _json_args_to_str({"arg": val})
         expected = json.dumps(
             [
-                json.dumps(
-                    {"key": "arg", "dtype": ak.resolve_scalar_dtype(val), "val": val}
-                ),
+                json.dumps({"key": "arg", "dtype": ak.resolve_scalar_dtype(val), "val": val}),
             ]
         )
         assert args == expected
@@ -178,27 +183,21 @@ class TestJSONArgs:
         dt = ak.date_range(start="2021-01-01 12:00:00", periods=100, freq="s")
         size, args = _json_args_to_str({"datetime": dt})
 
-        expected = json.dumps(
-            [json.dumps({"key": "datetime", "dtype": "int64", "val": dt.name})]
-        )
+        expected = json.dumps([json.dumps({"key": "datetime", "dtype": "int64", "val": dt.name})])
         assert args == expected
 
     def test_ip_arg(self):
         a = ak.arange(10)
         ip = ak.ip_address(a)
         size, args = _json_args_to_str({"ip": ip})
-        expected = json.dumps(
-            [json.dumps({"key": "ip", "dtype": "uint64", "val": ip.name})]
-        )
+        expected = json.dumps([json.dumps({"key": "ip", "dtype": "uint64", "val": ip.name})])
         assert args == expected
 
     def test_fields_arg(self):
         a = ak.arange(10)
         f = ak.Fields(a, names="ABCD")
         size, args = _json_args_to_str({"fields": f})
-        expected = json.dumps(
-            [json.dumps({"key": "fields", "dtype": "uint64", "val": f.name})]
-        )
+        expected = json.dumps([json.dumps({"key": "fields", "dtype": "uint64", "val": f.name})])
         assert args == expected
 
     @pytest.mark.parametrize("dtype", SUPPORTED_TYPES)
@@ -208,12 +207,8 @@ class TestJSONArgs:
         size, args = _json_args_to_str({"pda1": pda1, "pda2": pda2})
         expected = json.dumps(
             [
-                json.dumps(
-                    {"key": "pda1", "dtype": str(pda1.dtype), "val": pda1.name}
-                ),
-                json.dumps(
-                    {"key": "pda2", "dtype": str(pda2.dtype), "val": pda2.name}
-                ),
+                json.dumps({"key": "pda1", "dtype": str(pda1.dtype), "val": pda1.name}),
+                json.dumps({"key": "pda2", "dtype": str(pda2.dtype), "val": pda2.name}),
             ]
         )
         assert args == expected
@@ -239,7 +234,7 @@ class TestJSONArgs:
         expected = json.dumps(
             [
                 json.dumps({"key": "str1", "dtype": "str", "val": str1.name}),
-                json.dumps({"key": "str2",  "dtype": "str", "val": str2.name}),
+                json.dumps({"key": "str2", "dtype": "str", "val": str2.name}),
             ]
         )
         assert args == expected

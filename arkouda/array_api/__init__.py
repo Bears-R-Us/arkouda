@@ -1,3 +1,4 @@
+# isort: skip_file
 import warnings
 
 from .array_object import Array
@@ -139,7 +140,7 @@ from .sorting_functions import argsort, sort
 
 from .statistical_functions import max, mean, min, prod, std, sum, var, cumulative_sum
 
-from .utility_functions import all, any, clip, diff, pad
+from .utility_functions import all, any, clip, diff, trapz, trapezoid, pad
 
 __array_api_version__ = "2022.12"
 
@@ -282,6 +283,6 @@ __all__ += ["argsort", "sort"]
 
 __all__ += ["max", "mean", "min", "prod", "std", "sum", "var", "cumulative_sum"]
 
-__all__ += ["all", "any", "clip", "diff", "pad"]
+__all__ += ["all", "any", "clip", "diff", "trapz", "trapezoid", "pad"]
 
 warnings.warn("The arkouda.array_api submodule is still experimental.")

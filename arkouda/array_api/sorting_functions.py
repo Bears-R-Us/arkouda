@@ -1,15 +1,18 @@
 from __future__ import annotations
 
-from .array_object import Array
-from ._dtypes import _real_numeric_dtypes
-from .manipulation_functions import flip
-
 import arkouda as ak
 
+from ._dtypes import _real_numeric_dtypes
+from .array_object import Array
+from .manipulation_functions import flip
 
-def argsort(
-    x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True
-) -> Array:
+__all__ = [
+    "argsort",
+    "sort",
+]
+
+
+def argsort(x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True) -> Array:
     """
     Return the indices that sort an array along a specified axis.
 
@@ -24,22 +27,18 @@ def argsort(
     stable : bool, optional
         Whether to use a stable sorting algorithm. Note: arkouda's sorting algorithm is always stable so
         this argument is ignored.
-    """
-    if axis == -1:
-        axis = x.ndim - 1
 
+    """
     a = Array._new(ak.argsort(x._array, axis=axis))
 
     # TODO: pass a 'flip' argument to the server to avoid this extra step
     if descending:
-        flip(a, axis=axis)
+        return flip(a, axis=axis)
 
     return a
 
 
-def sort(
-    x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True
-) -> Array:
+def sort(x: Array, /, *, axis: int = -1, descending: bool = False, stable: bool = True) -> Array:
     """
     Return a sorted copy of an array along a specified axis.
 

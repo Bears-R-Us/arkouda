@@ -33,14 +33,25 @@ chapel_scalar_types = {
     "bigint": "bigint",
 }
 
+
+class formalKind(Enum):
+    ARRAY = 1
+    LIST = 2
+    BORROWED_CLASS = 3
+    HOMOG_TUPLE = 4
+    SCALAR = 5
+
+
 # type and variable names from arkouda infrastructure that could conceivable be changed in the future:
 ARGS_FORMAL_INTENT = "<default-intent>"
 ARGS_FORMAL_NAME = "msgArgs"
 ARGS_FORMAL_TYPE = "MessageArgs"
+ARGS_FORMAL_KIND = formalKind.BORROWED_CLASS
 
 SYMTAB_FORMAL_INTENT = "<default-intent>"
 SYMTAB_FORMAL_NAME = "st"
 SYMTAB_FORMAL_TYPE = "SymTab"
+SYMTAB_FORMAL_KIND = formalKind.BORROWED_CLASS
 
 ARRAY_ENTRY_CLASS_NAME = "SymEntry"
 
@@ -49,8 +60,7 @@ RESPONSE_TYPE_NAME = "MsgTuple"
 
 def error_message(message, details, loc=None):
     if loc:
-        info = str(loc).split(":")
-        print(" [", info[0], ":", info[1], "] ", file=sys.stderr, end="")
+        print(" [", loc.path(), ":", loc.start()[0], "] ", file=sys.stderr, end="")
 
     print("Error ", message, ": ", details, file=sys.stderr)
 
@@ -129,14 +139,6 @@ class StaticTypeInfo:
 
     def __str__(self):
         return f"static: '{self.value}'"
-
-
-class formalKind(Enum):
-    ARRAY = 1
-    LIST = 2
-    BORROWED_CLASS = 3
-    HOMOG_TUPLE = 4
-    SCALAR = 5
 
 
 class FormalTypeSpec:
@@ -227,9 +229,7 @@ def get_formals(fn, require_type_annotations):
                 else:
                     # TODO:  `x: []` and `x: [?d]` are currently treated as invalid formal type expressions
                     raise ValueError("invalid formal type expression")
-            elif isinstance(
-                te, chapel.FnCall
-            ):  # Composite types (list and borrowed-class)
+            elif isinstance(te, chapel.FnCall):  # Composite types (list and borrowed-class)
                 if ce := te.called_expression():
                     if isinstance(ce, chapel.Identifier):
                         call_name = ce.name()
@@ -241,9 +241,7 @@ def get_formals(fn, require_type_annotations):
                                     f"unsupported formal type for registration {list_type}; list element type must be a scalar",
                                 )
                             else:
-                                return FormalTypeSpec(
-                                    formalKind.LIST, name, sk, info=list_type
-                                )
+                                return FormalTypeSpec(formalKind.LIST, name, sk, info=list_type)
                         elif call_name == "borrowed":
                             actuals = list(te.actuals())
                             if isinstance(actuals[0], chapel.FnCall):
@@ -252,9 +250,7 @@ def get_formals(fn, require_type_annotations):
                             else:
                                 # concrete class formal (e.g., 'borrowed MySymEntry')
                                 class_name = list(te.actuals())[0].name()
-                            return FormalTypeSpec(
-                                formalKind.BORROWED_CLASS, name, sk, class_name
-                            )
+                            return FormalTypeSpec(formalKind.BORROWED_CLASS, name, sk, class_name)
                         else:
                             error_message(
                                 f"registering '{fn.name()}'",
@@ -350,9 +346,7 @@ def clean_enum_name(name):
         return name
 
 
-def stamp_generic_command(
-    generic_proc_name, prefix, module_name, formals, line_num, iar_annotation
-):
+def stamp_generic_command(generic_proc_name, prefix, module_name, formals, line_num, iar_annotation):
     """
     Create code to stamp out and register a generic command using a generic
     procedure, and a set values for its generic formals.
@@ -368,11 +362,7 @@ def stamp_generic_command(
         + ",".join(
             [
                 # if the generic formal is a 'type' convert it to its numpy dtype name
-                (
-                    chapel_scalar_types[v]
-                    if v in chapel_scalar_types
-                    else clean_enum_name(str(v))
-                )
+                (chapel_scalar_types[v] if v in chapel_scalar_types else clean_enum_name(str(v)))
                 for _, v in formals.items()
             ]
         )
@@ -380,10 +370,7 @@ def stamp_generic_command(
     )
 
     stamp_name = f"ark_{clean_stamp_name(prefix)}_" + "_".join(
-        [
-            clean_enum_name(str(v)).replace("(", "").replace(")", "")
-            for _, v in formals.items()
-        ]
+        [clean_enum_name(str(v)).replace("(", "").replace(")", "") for _, v in formals.items()]
     )
 
     stamp_formal_args = ", ".join([f"{k}={v}" for k, v in formals.items()])
@@ -435,9 +422,7 @@ def parse_param_class_value(value):
     if isinstance(value, list):
         for v in value:
             if not isinstance(v, (int, float, str)):
-                raise ValueError(
-                    f"Invalid parameter value type ({type(v)}) in list '{value}'"
-                )
+                raise ValueError(f"Invalid parameter value type ({type(v)}) in list '{value}'")
         return value
     elif isinstance(value, int):
         return [
@@ -453,9 +438,7 @@ def parse_param_class_value(value):
         if isinstance(vals, list):
             return vals
         else:
-            raise ValueError(
-                f"Could not create a list of parameter values from '{value}'"
-            )
+            raise ValueError(f"Could not create a list of parameter values from '{value}'")
     elif isinstance(value, dict) and "__enum__" in value and "__variants__" in value:
         enum_name = value["__enum__"].split(".")[-1]
         return [f"{enum_name}.{var}" for var in value["__variants__"]]
@@ -567,17 +550,11 @@ def unpack_array_arg(arg_name, array_count, finfo, domain_queries, dtype_queries
         nd_generic_formal_info = None
     else:
         nd_arg_name = "array_nd_" + str(array_count)
-        nd_generic_formal_info = FormalTypeSpec(
-            formalKind.SCALAR, nd_arg_name, "param", "int"
-        )
+        nd_generic_formal_info = FormalTypeSpec(formalKind.SCALAR, nd_arg_name, "param", "int")
 
     # check if the array formal has a static type or a type-query
     # if not, generate a unique name and formal info for the dtype argument
-    if (
-        finfo is not None
-        and finfo[1] is not None
-        and isinstance(finfo[1], StaticTypeInfo)
-    ):
+    if finfo is not None and finfo[1] is not None and isinstance(finfo[1], StaticTypeInfo):
         dtype_arg_name = finfo[1].value
         dtype_generic_formal_info = None
     elif (
@@ -602,9 +579,7 @@ def unpack_array_arg(arg_name, array_count, finfo, domain_queries, dtype_queries
     )
 
 
-def unpack_generic_symbol_arg(
-    arg_name, symbol_class_name, symbol_count, symbol_param_class
-):
+def unpack_generic_symbol_arg(arg_name, symbol_class_name, symbol_count, symbol_param_class):
     """
     Generate the code to unpack a non-array symbol-table entry class (a class that
     inherits from 'AbstractSymEntry').
@@ -633,13 +608,8 @@ def unpack_generic_symbol_arg(
                 type_str = None
             else:
                 storage_kind = "param"
-                type_str = (
-                    "int"  # TODO: also support strings and other param-able types here
-                )
-        elif (
-            isinstance(symbol_param_class[k], dict)
-            and "__enum__" in symbol_param_class[k].keys()
-        ):
+                type_str = "int"  # TODO: also support strings and other param-able types here
+        elif isinstance(symbol_param_class[k], dict) and "__enum__" in symbol_param_class[k].keys():
             storage_kind = "param"
             type_str = symbol_param_class[k]["__enum__"].split(".")[-1]
         else:
@@ -739,13 +709,19 @@ def gen_signature(user_proc_name, generic_args=None):
 
     Return the signature and the name of the procedure
     """
+    args_formal_kind = "borrowed" if ARGS_FORMAL_KIND == formalKind.BORROWED_CLASS else ""
+    args_formal_type = f"{args_formal_kind} {ARGS_FORMAL_TYPE}"
+    symtab_formal_kind = "borrowed" if SYMTAB_FORMAL_KIND == formalKind.BORROWED_CLASS else ""
+    symtab_formal_type = f"{symtab_formal_kind} {SYMTAB_FORMAL_TYPE}"
+
+    cmd_plus_args_plus_symtab = f"cmd: string, {ARGS_FORMAL_NAME}: {args_formal_type}, {SYMTAB_FORMAL_NAME}: {symtab_formal_type}"
     if generic_args:
         name = "ark_reg_" + user_proc_name + "_generic"
         arg_strings = [formal_spec.stringify() for formal_spec in generic_args]
-        proc = f"proc {name}(cmd: string, {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}, {', '.join(arg_strings)}): {RESPONSE_TYPE_NAME} throws {'{'}"
+        proc = f"proc {name}({cmd_plus_args_plus_symtab}, {', '.join(arg_strings)}): {RESPONSE_TYPE_NAME} throws {'{'}"
     else:
         name = "ark_reg_" + user_proc_name
-        proc = f"proc {name}(cmd: string, {ARGS_FORMAL_NAME}: {ARGS_FORMAL_TYPE}, {SYMTAB_FORMAL_NAME}: {SYMTAB_FORMAL_TYPE}): {RESPONSE_TYPE_NAME} throws {'{'}"
+        proc = f"proc {name}({cmd_plus_args_plus_symtab}): {RESPONSE_TYPE_NAME} throws {'{'}"
     return (proc, name)
 
 
@@ -771,9 +747,7 @@ def gen_arg_unpacking(formals, config):
 
     for formal_spec in formals:
         if formal_spec.is_chapel_scalar_type():
-            unpack_lines.append(
-                unpack_scalar_arg(formal_spec.name, formal_spec.type_str)
-            )
+            unpack_lines.append(unpack_scalar_arg(formal_spec.name, formal_spec.type_str))
         elif formal_spec.kind == formalKind.ARRAY:
             # finfo[0] is the domain query info, finfo[1] is the dtype query info
             finfo = formal_spec.info
@@ -797,11 +771,7 @@ def gen_arg_unpacking(formals, config):
             # this allows homogeneous-tuple formal types to use the array's rank as a size argument
             # Do the same for dtype queries
             if finfo is not None:
-                if (
-                    finfo[0] is not None
-                    and isinstance(finfo[0], FormalQuery)
-                    and gen_nd_arg is not None
-                ):
+                if finfo[0] is not None and isinstance(finfo[0], FormalQuery) and gen_nd_arg is not None:
                     array_domain_queries[finfo[0].name] = gen_nd_arg.name
                 if (
                     finfo[1] is not None
@@ -855,9 +825,7 @@ def gen_arg_unpacking(formals, config):
             # a scalar formal with a generic type
             if formal_spec.type_str is not None:
                 if queried_type := array_dtype_queries[formal_spec.type_str]:
-                    unpack_lines.append(
-                        unpack_scalar_arg(formal_spec.name, queried_type)
-                    )
+                    unpack_lines.append(unpack_scalar_arg(formal_spec.name, queried_type))
                 else:
                     # TODO: fully handle generic user-defined types
                     code, scalar_args = unpack_scalar_arg_with_generic(
@@ -960,20 +928,21 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
     arg_unpack, command_formals, query_table = gen_arg_unpacking(formals, config)
     is_generic_command = len(command_formals) > 0
     signature, cmd_name = gen_signature(name, command_formals)
-    fn_call, result_name = gen_user_function_call(
-        name, [f.name for f in formals], mod_name, return_type
-    )
+    fn_call, result_name = gen_user_function_call(name, [f.name for f in formals], mod_name, return_type)
 
     # get the names of the array-elt-type queries in the formals
     array_etype_queries = [
         f.info[1].name
         for f in formals
-        if (
-            f.kind == formalKind.ARRAY
-            and len(f.info) > 0
-            and isinstance(f.info[1], FormalQuery)
-        )
+        if (f.kind == formalKind.ARRAY and len(f.info) > 0 and isinstance(f.info[1], FormalQuery))
     ]
+
+    def return_type_fn_name():
+        if isinstance(return_type, chapel.FnCall):
+            if ce := return_type.called_expression():
+                if isinstance(ce, chapel.Identifier):
+                    return ce.name()
+        return None
 
     # assume the returned type is a symbol if it's an identifier that is not a scalar or type-query reference
     # or if it is a type-constructor call for a class that inherits from 'AbstractSymEntry'
@@ -986,27 +955,26 @@ def gen_command_proc(name, return_type, formals, mod_name, config):
         )
         or (
             # TODO: do resolution to ensure that this is a class type that inherits from 'AbstractSymEntry'
-            isinstance(return_type, chapel.FnCall)
+            return_type_fn_name() is not None
+            and return_type_fn_name()
+            in [
+                "SymEntry",
+            ]
+            + list(config["parameter_classes"].keys())
         )
     )
     returns_array = (
-        return_type
-        and isinstance(return_type, chapel.BracketLoop)
-        and return_type.is_maybe_array_type()
+        return_type and isinstance(return_type, chapel.BracketLoop) and return_type.is_maybe_array_type()
     )
 
     if returns_array:
-        symbol_creation, result_name = gen_symbol_creation(
-            ARRAY_ENTRY_CLASS_NAME, result_name
-        )
+        symbol_creation, result_name = gen_symbol_creation(ARRAY_ENTRY_CLASS_NAME, result_name)
     else:
         symbol_creation = ""
 
     response = gen_response(result_name, returns_symbol or returns_array)
 
-    command_proc = "\n".join(
-        [signature, arg_unpack, fn_call, symbol_creation, response, "}"]
-    )
+    command_proc = "\n".join([signature, arg_unpack, fn_call, symbol_creation, response, "}"])
 
     return (command_proc, cmd_name, is_generic_command, command_formals, query_table)
 
@@ -1229,9 +1197,7 @@ def stamp_out_command(
         if wcn := wc_node:
             if not wcn.eval(fp, query_table):
                 continue
-        stamp = stamp_generic_command(
-            name, cmd_prefix, mod_name, fp, line_num, iar_annotation
-        )
+        stamp = stamp_generic_command(name, cmd_prefix, mod_name, fp, line_num, iar_annotation)
         yield stamp
 
 
@@ -1241,9 +1207,7 @@ def extract_enum_imports(config):
         if isinstance(config[k], dict):
             if "__enum__" in config[k].keys():
                 if "__variants__" not in config[k].keys():
-                    raise ValueError(
-                        f"enum '{k}' is missing '__variants__' field in configuration file"
-                    )
+                    raise ValueError(f"enum '{k}' is missing '__variants__' field in configuration file")
                 imports.append(f"import {config[k]['__enum__']};")
             else:
                 imports += extract_enum_imports(config[k])
@@ -1257,9 +1221,8 @@ def register_commands(config, source_files):
     """
     stamps = [
         "module Commands {",
-        "use CommandMap, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
+        "use CommandMap, IOUtils, Message, MultiTypeSymbolTable, MultiTypeSymEntry;",
         "use BigInteger;",
-        watermarkConfig(config),
     ]
 
     stamps += extract_enum_imports(config)
@@ -1306,8 +1269,8 @@ def register_commands(config, source_files):
                 )
                 continue
 
-            (cmd_proc, cmd_name, is_generic_cmd, cmd_gen_formals, query_table) = (
-                gen_command_proc(name, fn.return_type(), con_formals, mod_name, config)
+            (cmd_proc, cmd_name, is_generic_cmd, cmd_gen_formals, query_table) = gen_command_proc(
+                name, fn.return_type(), con_formals, mod_name, config
             )
 
             file_stamps.append(cmd_proc)
@@ -1382,9 +1345,29 @@ def register_commands(config, source_files):
         if found_annotation:
             stamps.extend(file_stamps)
 
-    stamps.append("}")
+    stamps.append("}  // module Commands")
 
     return ("\n\n".join(stamps) + "\n", count)
+
+
+def make_reg_config_module(config):
+    arr_dims = config["parameter_classes"]["array"]["nd"]
+    arr_elts = config["parameter_classes"]["array"]["dtype"]
+    dims_str = ",".join(str(dim) for dim in arr_dims)
+    dims_ty = " ".join(f"{dim}*nothing," for dim in arr_dims)
+    elts_ty = " ".join(f"{dim}," for dim in arr_elts)
+
+    stamps = [
+        "module RegistrationConfig {",
+        "use BigInteger;",
+        watermarkConfig(config),
+        f"param arrayDimensionsStr = '{dims_str}';\n"
+        f"type arrayDimensionsTy = ({dims_ty});\n"
+        f"type arrayElementsTy   = ({elts_ty});",
+        "}  // module RegistrationConfig",
+        "",  # for an empty line between this and the other module
+    ]
+    return "\n\n".join(stamps)
 
 
 def getModuleFiles(config, src_dir):
@@ -1398,15 +1381,17 @@ def getModuleFiles(config, src_dir):
 
 
 def watermarkConfig(config):
-    return 'param regConfig = """\n' + json.dumps(config, indent=2) + '\n""";'
+    return 'param registrationConfigSpec = """\n' + json.dumps(config, indent=2) + '\n""";'
 
 
 def main():
     config = json.load(open(sys.argv[1]))
     source_files = getModuleFiles(sys.argv[2], sys.argv[3])
     (chpl_src, n) = register_commands(config, source_files)
+    reg_config = make_reg_config_module(config)
 
     with open(sys.argv[3] + "/registry/Commands.chpl", "w") as f:
+        f.write(reg_config)
         f.write(chpl_src.replace("\t", "  "))
 
     print("registered ", n, " commands from ", len(source_files), " modules")

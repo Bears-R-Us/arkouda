@@ -23,6 +23,11 @@ SUPPORTED_NP_DTYPES = [
 
 
 class TestDTypes:
+    def test_dtypes_docstrings(self):
+        import doctest
+
+        result = doctest.testmod(dtypes)
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
 
     def test_resolve_scalar_dtype(self):
         for b in True, False:
@@ -68,12 +73,12 @@ class TestDTypes:
     @pytest.mark.parametrize(
         "dtype",
         [
-            ak.dtypes.uint8,
-            ak.dtypes.uint64,
-            ak.dtypes.int64,
-            ak.dtypes.float64,
-            ak.dtypes.bool_,
-            ak.dtypes.bigint,
+            ak.numpy.dtypes.uint8,
+            ak.numpy.dtypes.uint64,
+            ak.numpy.dtypes.int64,
+            ak.numpy.dtypes.float64,
+            ak.numpy.dtypes.bool_,
+            ak.numpy.dtypes.bigint,
         ],
     )
     def test_nbytes(self, size, dtype):
@@ -99,7 +104,15 @@ class TestDTypes:
         assert dtypes.dtype("bigint") == ak.arange(2**200, 2**200 + 10).dtype
 
     def test_isSupportedInt(self):
-        for supported in -10, 1, np.int64(1), np.int64(1.0), np.uint32(1), 2**63 + 1, 2**200:
+        for supported in (
+            -10,
+            1,
+            np.int64(1),
+            np.int64(1.0),
+            np.uint32(1),
+            2**63 + 1,
+            2**200,
+        ):
             assert dtypes.isSupportedInt(supported)
         for unsupported in 1.0, "1":
             assert not dtypes.isSupportedInt(unsupported)
@@ -156,12 +169,19 @@ class TestDTypes:
             == ak.DTypes
         )
 
+        from arkouda.numpy import bigint, bool_, float64, int64, uint8, uint64
+
         assert (
-            frozenset(
-                {"bool_", "float", "float64", "int", "int64", "uint", "uint64", "uint8", "bigint", "str"}
-            )
-            == ak.ARKOUDA_SUPPORTED_DTYPES
-        )
+            bool_,
+            float,
+            float64,
+            int,
+            int64,
+            uint64,
+            uint8,
+            bigint,
+            str,
+        ) == ak.ARKOUDA_SUPPORTED_DTYPES
 
     def test_NumericDTypes(self):
         num_types = frozenset(["bool", "bool_", "float", "float64", "int", "int64", "uint64", "bigint"])
@@ -181,7 +201,8 @@ class TestDTypes:
             assert dtypes.SeriesDTypes[dt] == np.bool_
 
     def test_scalars(self):
-        assert "typing.Union[bool, numpy.bool_]" == str(ak.bool_scalars)
+        assert "typing.Union[bool, numpy.bool]" == str(ak.bool_scalars)
+        assert "typing.Union[bool, numpy.bool]" == str(ak.bool_scalars)
         assert "typing.Union[float, numpy.float64, numpy.float32]" == str(ak.float_scalars)
         assert (
             "typing.Union[int, numpy.int8, numpy.int16, numpy.int32, numpy.int64, "
@@ -196,21 +217,47 @@ class TestDTypes:
         assert "typing.Union[str, numpy.str_]" == str(ak.str_scalars)
         assert (
             "typing.Union[numpy.float64, numpy.float32, numpy.int8, numpy.int16, numpy.int32, "
-            + "numpy.int64, numpy.bool_, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, "
+            + "numpy.int64, numpy.bool, numpy.str_, numpy.uint8, numpy.uint16, numpy.uint32, "
             + "numpy.uint64]"
         ) == str(ak.numpy_scalars)
 
         assert (
-            "typing.Union[bool, numpy.bool_, float, numpy.float64, numpy.float32, int, numpy.int8, "
+            "typing.Union[bool, numpy.bool, float, numpy.float64, numpy.float32, int, numpy.int8, "
             + "numpy.int16, numpy.int32, numpy.int64, numpy.uint8, numpy.uint16, numpy.uint32,"
             + " numpy.uint64, numpy.str_, str]"
         ) == str(ak.all_scalars)
 
     def test_number_format_strings(self):
         assert "{}" == dtypes.NUMBER_FORMAT_STRINGS["bool"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["int64"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["int64"]
         assert "{:.17f}" == dtypes.NUMBER_FORMAT_STRINGS["float64"]
-        assert "f" == dtypes.NUMBER_FORMAT_STRINGS["np.float64"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["uint8"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["uint64"]
-        assert "{:n}" == dtypes.NUMBER_FORMAT_STRINGS["bigint"]
+        assert "{f}" == dtypes.NUMBER_FORMAT_STRINGS["np.float64"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["uint8"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["uint64"]
+        assert "{:d}" == dtypes.NUMBER_FORMAT_STRINGS["bigint"]
+
+    @pytest.mark.parametrize("dtype1", [ak.bool_, ak.uint8, ak.uint64, ak.bigint, ak.int64, ak.float64])
+    @pytest.mark.parametrize("dtype2", [ak.bool_, ak.uint8, ak.uint64, ak.bigint, ak.int64, ak.float64])
+    def test_result_type(self, dtype1, dtype2):
+        if dtype1 == ak.bigint or dtype2 == ak.bigint:
+            if dtype1 == ak.float64 or dtype2 == ak.float64:
+                expected_result = ak.float64
+            else:
+                expected_result = ak.bigint
+        else:
+            expected_result = np.result_type(dtype1, dtype2)
+        # pdarray vs pdarray
+        a = ak.array([0, 1], dtype=dtype1)
+        b = ak.array([0, 1], dtype=dtype2)
+        assert ak.result_type(a, b) == expected_result
+
+        # dtype and dtype
+        assert ak.result_type(dtype1, dtype2) == expected_result
+
+        # mixed: pdarray vs dtype
+        assert ak.result_type(a, dtype2) == expected_result
+        assert ak.result_type(dtype1, b) == expected_result
+
+    def test_bool_alias(self):
+        assert ak.bool == ak.bool_
+        assert ak.bool == np.bool_

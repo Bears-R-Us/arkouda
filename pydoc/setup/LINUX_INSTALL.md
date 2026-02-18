@@ -148,6 +148,11 @@ pip install cmake>=3.13.4
 The remaining RHEL Chapel download and build instructions follow those detailed above for Ubuntu Linux.
 
 ## Next Steps
+We've installed Arkouda and its dependencies and built chapel with reasonable default environment variables.
+
+There are also several external tools we recommend to install for consistancy across developers. The instructions 
+are at [EXTERNAL_TOOLS.md](EXTERNAL_TOOLS.md).
+
 Now you are ready to build the server! Follow the build instructions at [BUILD.md](BUILD.md).
 
 We've set up chapel to run locally, to simulate running on a distributed machine follow

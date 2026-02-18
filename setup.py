@@ -1,7 +1,47 @@
-from setuptools import setup, find_packages
-from os import path
-import versioneer
+"""
+Setup script for the Arkouda Python package.
 
+This script uses setuptools to configure installation of the Arkouda Python client,
+which provides a NumPy-like interface for distributed data analytics backed by
+a Chapel-based server.
+
+Backend Build Requirement
+-------------------------
+Before installing the Python package, you must first build the Chapel backend:
+
+    make
+
+This compiles the Arkouda server binary, which is required to connect from the Python client.
+Failure to do so will result in runtime errors when attempting to use Arkouda.
+
+Usage
+-----
+To install the client package after building the backend:
+
+    pip install .
+
+Or for development mode (editable install):
+
+    pip install -e .
+
+Functionality
+-------------
+- Defines metadata (name, version, author, etc.)
+- Specifies package requirements
+- Registers console scripts
+- Packages Python modules and data files
+
+See Also
+--------
+- Makefile       : Used to build the Chapel backend
+
+"""
+
+from os import path
+
+from setuptools import find_packages, setup
+
+import versioneer
 
 here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
@@ -107,7 +147,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.9,<3.12.4",
+    python_requires=">=3.9",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -115,7 +155,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "numpy>=1.24.1,<2.0",
+        "numpy>=2.0",
         "pandas>=1.4.0,!=2.2.0",
         "pyzmq>=20.0.0",
         "typeguard==2.10.0",
@@ -126,9 +166,10 @@ setup(
         "h5py>=3.7.0",
         "pip",
         "types-tabulate",
-        "tables>=3.8.0",
+        "tables>=3.10.0",
         "pyarrow",
-        "scipy<=1.13.1",
+        "scipy",
+        "cloudpickle",
         # chapel-py
     ],
     # List additional groups of dependencies here (e.g. development
@@ -148,20 +189,28 @@ setup(
             "sphinx-argparse",
             "sphinx-autoapi",
             "mypy>=0.931",
-            "typed-ast",
-            "black",
-            "isort",
+            "black==25.1.0",
+            "ruff==0.11.2",
+            "isort==5.13.2",
             "flake8",
             "furo",
             "myst-parser",
             "linkify-it-py",
             "mathjax",
             "sphinx-autopackagesummary",
-            "sphinx-design", 
+            "sphinx-design",
             "sphinx-autodoc-typehints",
             "pandas-stubs",
             "types-python-dateutil",
             "ipython",
+            "pydocstyle>=6.3.0",
+            "pre-commit",
+            "darglint>=1.8.1",
+            "pydoclint[flake8]==0.6.6",
+            "pytest-subtests",
+            "numba",
+            "pytest-timeout",
+            "pytest-html",
         ],
     },
     # replace original install command with version that also builds

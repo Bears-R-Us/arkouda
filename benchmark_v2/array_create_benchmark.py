@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 import arkouda as ak
 
 OPS = ("zeros", "ones", "randint")
@@ -34,45 +35,35 @@ def _create_np_array(size, op, dtype, seed):
 
     return a
 
-@pytest.mark.skip_correctness_only(True)
-@pytest.mark.benchmark(group="AK Array Create")
+
+@pytest.mark.benchmark(group="Array_Create")
 @pytest.mark.parametrize("op", OPS)
 @pytest.mark.parametrize("dtype", TYPES)
-def bench_ak_array_create(benchmark, op, dtype):
+def bench_array_create(benchmark, op, dtype):
     """
-    Measures Arkouda array creation performance
+    Measures array creation performance (Arkouda or NumPy based on flags)
     """
     cfg = ak.get_config()
     size = pytest.prob_size * cfg["numLocales"]
 
     if dtype in pytest.dtype:
-        a = benchmark.pedantic(
-            _create_ak_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials
+        if pytest.numpy:
+
+            def create_array():
+                a = _create_np_array(size, op, dtype, pytest.seed)
+                return a.size * a.itemsize
+        else:
+
+            def create_array():
+                a = _create_ak_array(size, op, dtype, pytest.seed)
+                return a.size * a.itemsize
+
+        nbytes = benchmark.pedantic(create_array, rounds=pytest.trials)
+
+        benchmark.extra_info["description"] = (
+            f"Measures performance of {'NumPy' if pytest.numpy else 'Arkouda'} array creation"
         )
-
-        nbytes = (a.size * a.itemsize)
-        benchmark.extra_info["description"] = "Measures the performance of Arkouda array creation"
-        benchmark.extra_info["problem_size"] = pytest.prob_size
+        benchmark.extra_info["problem_size"] = size
         benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30)
-
-@pytest.mark.skip_correctness_only(True)
-@pytest.mark.benchmark(group="NP Array Create")
-@pytest.mark.parametrize("op", OPS)
-@pytest.mark.parametrize("dtype", TYPES)
-def bench_np_array_create(benchmark, op, dtype):
-    """
-    Measures Numpy array creation performance
-    """
-    size = pytest.prob_size
-
-    if pytest.numpy and dtype in pytest.dtype:
-        a = benchmark.pedantic(
-            _create_np_array, args=(size, op, dtype, pytest.seed), rounds=pytest.trials
+            (nbytes / benchmark.stats["mean"]) / 2**30
         )
-
-        nbytes = (a.size * a.itemsize)
-        benchmark.extra_info["description"] = "Measures the performance of numpy array creation"
-        benchmark.extra_info["problem_size"] = pytest.prob_size
-        benchmark.extra_info["transfer_rate"] = "{:.4f} GiB/sec".format(
-            (nbytes / benchmark.stats["mean"]) / 2 ** 30)

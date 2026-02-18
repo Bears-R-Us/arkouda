@@ -1,0 +1,14 @@
+# Set the maximum line length to 105.
+line-length = 105
+extend-exclude = [
+  ".git/**",                    # skip everything under .git
+  "tests/deprecated/**",        # skip that entire directory tree
+  "runs/**",                    # skip anything under runs/
+  "*.ipynb",                    # skip all Jupyter notebooks
+  "*.rst",                      # skip ReST docs
+]
+
+# Add the `line-too-long` rule to the enforced rule set.
+lint.extend-select = ["E501"]
+lint.extend-ignore = ["E712"]
+

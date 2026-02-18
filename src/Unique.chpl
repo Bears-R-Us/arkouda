@@ -45,7 +45,7 @@ module Unique
     */
     proc uniqueSort(a: [?aD] ?eltType, param needCounts = true) throws {
         if (aD.size == 0) {
-            try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
+            uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, eltType);
             if (needCounts) {
                 var c = makeDistArray(0, int);
@@ -61,7 +61,7 @@ module Unique
 
     proc uniqueSortWithInverse(a: [?aD] ?eltType, param needIndices=false) throws {
         if (aD.size == 0) {
-            try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
+            uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(aD.size, eltType);
             var c = makeDistArray(aD.size, int);
             var inv = makeDistArray(aD.size, int);
@@ -110,7 +110,7 @@ module Unique
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
         var allUnique: int = + reduce truth;
         if (allUnique == aD.size) {
-           try!  uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                     "early out already unique");
             var u = makeDistArray(aD.size, eltType);
             u = sorted; // array is already unique
@@ -128,7 +128,7 @@ module Unique
         var iv: [truth.domain] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];
-        try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %?".format(pop));
+        uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = ",pop:string);
 
         var segs = makeDistArray(pop, int);
         var ukeys = makeDistArray(pop, eltType);

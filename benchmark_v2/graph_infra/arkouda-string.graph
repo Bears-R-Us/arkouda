@@ -1,0 +1,59 @@
+perfkeys: Average rate =
+graphkeys: Argsort GiB/s
+files: str-argsort.dat
+graphtitle: String Argsort Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Coargsort GiB/s, 2 array Coargsort GiB/s, 8 array Coargsort GiB/s, 16 array Coargsort GiB/s
+files: str-coargsort.dat, str-coargsort.dat, str-coargsort.dat, str-coargsort.dat
+graphtitle: String Coargsort Performance
+ylabel: Performance (GiB/S)
+
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
+files: str-groupby.dat, str-groupby.dat, str-groupby.dat, str-groupby.dat
+graphtitle: String Groupby Performance
+ylabel: Performance (GiB/S)
+
+perfkeys: small str array Average rate =, medium str array Average rate =, big str array Average rate =
+graphkeys: small str array GiB/s, medium str array GiB/s, big str array GiB/s
+files: small-str-groupby.dat, small-str-groupby.dat, small-str-groupby.dat
+graphtitle: Small String Groupby Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Average rate =
+graphkeys: Gather GiB/s
+files: str-gather.dat
+graphtitle: String Gather Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Medium average rate =, Large average rate =
+graphkeys: Medium GiB/s, Large GiB/s
+files: str-in1d.dat, str-in1d.dat
+graphtitle: String in1d Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Hashing good locality Average rate =, Hashing poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String Hashing Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Regex searching good locality Average rate =, Regex searching poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String Regex Search Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Casting good locality Average rate =, Casting poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String cast-to-float Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: Comparing to scalar good locality Average rate =, Comparing to scalar poor locality Average rate =
+graphkeys: Good Locality, Poor Locality
+files: str-locality.dat, str-locality.dat
+graphtitle: String compare-vs-scalar Performance
+ylabel: Performance (GiB/s)

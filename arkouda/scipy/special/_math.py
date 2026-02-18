@@ -4,7 +4,11 @@ from warnings import warn
 import numpy as np
 
 from arkouda.numpy import log
-from arkouda.pdarrayclass import pdarray
+from arkouda.numpy.pdarrayclass import pdarray
+
+__all__ = [
+    "xlogy",
+]
 
 
 def xlogy(x: Union[pdarray, np.float64], y: pdarray):
@@ -19,13 +23,12 @@ def xlogy(x: Union[pdarray, np.float64], y: pdarray):
 
     Returns
     -------
-    arkouda.pdarrayclass.pdarray
+    arkouda.numpy.pdarrayclass.pdarray
 
     Examples
     --------
 
     >>> import arkouda as ak
-    >>> ak.connect()
     >>> from arkouda.scipy.special import xlogy
     >>> xlogy( ak.array([1, 2, 3, 4]),  ak.array([5,6,7,8]))
     array([1.6094379124341003 3.5835189384561099 5.8377304471659395 8.317766166719343])

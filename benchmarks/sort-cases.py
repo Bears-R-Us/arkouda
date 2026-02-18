@@ -6,7 +6,7 @@ import time
 import numpy as np
 
 import arkouda as ak
-from arkouda.sorting import SortingAlgorithm
+from arkouda.numpy.sorting import SortingAlgorithm
 
 
 def is_cosorted(data):

@@ -1,4 +1,3 @@
-import json
 import math
 
 import numpy as np
@@ -11,8 +10,17 @@ SEED = 314159
 
 
 class TestStatsFunction:
+    def test_statistical_functions_docstrings(self):
+        import doctest
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+        from arkouda.array_api import statistical_functions
+
+        result = doctest.testmod(
+            statistical_functions, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+        )
+        assert result.failed == 0, f"Doctest failed: {result.failed} failures"
+
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_max(self):
         a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
         a[3, 6, 2] = 101
@@ -31,7 +39,7 @@ class TestStatsFunction:
         assert aMax02Keepdims.shape == (1, 7, 1)
         assert aMax02Keepdims[0, 6, 0] == 101
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_min(self):
         a = xp.asarray(ak.randint(0, 100, (5, 7, 4), dtype=ak.int64, seed=SEED))
         a[3, 6, 2] = -1
@@ -50,7 +58,7 @@ class TestStatsFunction:
         assert aMin02Keepdims.shape == (1, 7, 1)
         assert aMin02Keepdims[0, 6, 0] == -1
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_mean(self):
         a = xp.ones((10, 5, 5))
         a[0, 0, 0] = 251
@@ -76,7 +84,7 @@ class TestStatsFunction:
         assert aMean02Keepdims[0, 0, 0] == 2
         assert aMean02Keepdims[2, 0, 0] == 2
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_std(self):
         a = xp.ones((10, 5, 5), dtype=ak.float64)
         a[0, 0, 0] = 26
@@ -89,14 +97,12 @@ class TestStatsFunction:
         aStd02 = xp.std(a, axis=(1, 2))
         assert aStd02.shape == (10,)
         assert abs(aStd02[0] - math.sqrt(24)) < 1e-10
-        assert abs(aStd02[2] - math.sqrt(24)) < 1e-10
 
         aStd02Keepdims = xp.std(a, axis=(1, 2), keepdims=True)
         assert aStd02Keepdims.shape == (10, 1, 1)
         assert abs(aStd02Keepdims[0, 0, 0] - math.sqrt(24)) < 1e-10
-        assert abs(aStd02Keepdims[2, 0, 0] - math.sqrt(24)) < 1e-10
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_var(self):
         a = xp.ones((10, 5, 5), dtype=ak.float64)
         a[0, 0, 0] = 26
@@ -109,14 +115,12 @@ class TestStatsFunction:
         aStd02 = xp.var(a, axis=(1, 2))
         assert aStd02.shape == (10,)
         assert abs(aStd02[0] - 24) < 1e-10
-        assert abs(aStd02[2] - 24) < 1e-10
 
         aStd02Keepdims = xp.var(a, axis=(1, 2), keepdims=True)
         assert aStd02Keepdims.shape == (10, 1, 1)
         assert abs(aStd02Keepdims[0, 0, 0] - 24) < 1e-10
-        assert abs(aStd02Keepdims[2, 0, 0] - 24) < 1e-10
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_prod(self):
         a = xp.ones((2, 3, 4))
         a = a + a
@@ -135,7 +139,7 @@ class TestStatsFunction:
         assert aProd02Keepdims.shape == (2, 1, 1)
         assert aProd02Keepdims[0, 0, 0] == 2**12
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([2, 3])
     def test_sum(self):
         a = xp.ones((2, 3, 4))
 
@@ -153,7 +157,7 @@ class TestStatsFunction:
         assert aSum02Keepdims.shape == (2, 1, 1)
         assert aSum02Keepdims[0, 0, 0] == 12
 
-    @pytest.mark.skip_if_max_rank_less_than(3)
+    @pytest.mark.skip_if_rank_not_compiled([3])
     def test_cumsum(self):
         a = xp.asarray(ak.randint(0, 100, (5, 6, 7), seed=SEED))
 

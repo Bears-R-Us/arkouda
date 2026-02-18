@@ -5,10 +5,16 @@ Run check.py, automatically starting/stopping the server.
 """
 
 import logging
-import sys
 import os
+import sys
 
-from server_test_util import *
+from server_test_util import (
+    get_arkouda_home,
+    get_arkouda_numlocales,
+    run_client_live,
+    start_arkouda_server,
+    stop_arkouda_server,
+)
 
 logging.basicConfig(level=logging.INFO)
 

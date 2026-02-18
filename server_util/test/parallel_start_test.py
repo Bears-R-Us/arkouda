@@ -3,6 +3,7 @@
 """
 Usage: time python3 server_util/test/parallel_start_test.py -d `pwd`/test
 """
+
 import optparse
 import os
 import os.path

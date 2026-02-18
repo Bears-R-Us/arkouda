@@ -9,6 +9,7 @@ module ManipulationMsg {
   use ServerErrorStrings;
   use CommAggregation;
   use AryUtil;
+  use BigInteger;
 
   use Reflection;
 
@@ -232,15 +233,228 @@ module ManipulationMsg {
     return st.insert(eOut);
   }
 
+  // This deletes by copying by index everything that isn't deleted.
+  @arkouda.registerCommand(name="deleteAggCopy")
+  proc deleteAxisAggCopyMsg (eIn: [?d] ?t, axis: int, del: [?d2] ?t2): [] t throws 
+    where ((t2 == int || t2 == bool) &&
+           (t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint) &&
+           (d2.rank == 1)) {
+    param pn = Reflection.getRoutineName();
+    
+    // Need to ensure we have a boolean array of what gets deleted.
+    var delBool = makeDistArray(eIn.shape[axis], bool);
+    
+    if t2 == int {
+
+      // Error handling
+      var invalidIndex: atomic bool = false;
+      var badIndex: atomic int = -1;
+      
+      forall i in del.domain with (
+        var agg = newDstAggregator(bool)
+      ) {
+
+        // Index out of bounds checking
+        if del[i] < eIn.shape[axis] && del[i] >= 0 {
+          agg.copy(delBool[del[i]], true);
+        } else if del[i] >= -eIn.shape[axis] && del[i] < 0 {
+          // numpy allows negative indices in this way
+          agg.copy(delBool[del[i] + eIn.shape[axis]], true);
+        } else {
+          invalidIndex.write(true);
+          badIndex.write(del[i]);
+        }
+        
+      }
+
+      if invalidIndex.read() {
+        var errorMsg = incompatibleArgumentsError(pn, 
+                          "index %i is out of bounds for axis %i with size %i".format(badIndex.read(), axis, eIn.shape[axis])); 
+        mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
+        throw new Error(errorMsg);
+      }
+
+    } else {
+      if (delBool.size != del.size) { 
+        var errorMsg = incompatibleArgumentsError(pn, 
+                          "Boolean array argument obj to delete must be one dimensional and match the axis length of %i".format(delBool.size)); 
+        mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
+        throw new Error(errorMsg);
+      }
+      delBool = del[..];
+    }
+
+    var eOut = makeDistArray((...deleteShape(eIn.shape, delBool, axis)), t);
+
+    // Now true means it won't be deleted.
+    var notDelBool: [delBool.domain] bool;
+    forall i in delBool.domain do notDelBool[i] = !delBool[i];
+
+    // Running sum of what isn't deleted, this increments whenever we hit something that stays
+    var sumArray: [delBool.domain] int = + scan notDelBool;
+
+    // This takes indices from eOut and converts them to indices in eIn
+    var mapArray: [0..<(eIn.shape[axis] - (+ reduce delBool))] int;
+    forall i in sumArray.domain {
+      if notDelBool[i] then mapArray[sumArray[i] - 1] = i;
+    }
+
+    // Performs the copy into eOut
+    forall idx in eOut.domain with (
+      var agg = newSrcAggregator(t),
+      ref mapArray
+    ) {
+      var inIdx = if eIn.shape.size == 1 then (idx,) else idx;
+      inIdx[axis] = mapArray[inIdx[axis]];
+      agg.copy(eOut[idx], eIn[if eIn.shape.size == 1 then inIdx[0] else inIdx]);
+    }
+
+    return eOut;
+  }
+
+  // This deletes by copying the slices that aren't deleted.
+  @arkouda.registerCommand(name="deleteBulkCopy")
+  proc deleteAxisBulkCopyMsg (eIn: [?d] ?t, axis: int, del: [?d2] ?t2): [] t throws 
+    where ((t2 == int || t2 == bool) &&
+           (t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint) &&
+           (d2.rank == 1)) {
+    param pn = Reflection.getRoutineName();
+
+    // The best way for this to work is to make sure that we have a bool array of what gets deleted
+    // and then convert that to ints.
+    // If we get an int array that isn't sorted or has repeats, this will fix that.
+    // It's also just convenient to work with an int array here.
+    var delBool = makeDistArray(eIn.shape[axis], bool);
+
+    if t2 == int {
+
+      // Error handling
+      var invalidIndex: atomic bool = false;
+      var badIndex: atomic int = -1;
+      
+      forall i in del.domain with (
+        var agg = newDstAggregator(bool)
+      ) {
+
+        // Index out of bounds checking
+        if del[i] < eIn.shape[axis] && del[i] >= 0 {
+          agg.copy(delBool[del[i]], true);
+        } else if del[i] >= -eIn.shape[axis] && del[i] < 0 {
+          // numpy allows negative indices in this way
+          agg.copy(delBool[del[i] + eIn.shape[axis]], true);
+        } else {
+          invalidIndex.write(true);
+          badIndex.write(del[i]);
+        }
+        
+      }
+
+      if invalidIndex.read() {
+        var errorMsg = incompatibleArgumentsError(pn, 
+                          "index %i is out of bounds for axis %i with size %i".format(badIndex.read(), axis, eIn.shape[axis])); 
+        mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
+        throw new Error(errorMsg);
+      }
+
+    } else {
+      if (eIn.shape[axis] != del.size) { 
+        var errorMsg = incompatibleArgumentsError(pn, 
+                          "Boolean array argument obj to delete must be one dimensional and match the axis length of %i".format(eIn.shape[axis])); 
+        mLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
+        throw new Error(errorMsg);
+      }
+      delBool = del[..];
+    }
+    
+    // This will be where we put the unique and sorted indices we plan on deleting
+    var deleteInds = makeDistArray(+ reduce delBool, int);
+
+    // This gives the output indices
+    var scannedBool: [delBool.domain] int = + scan delBool;
+
+    // This performs the transformation
+    forall i in scannedBool.domain with (
+      var agg = newDstAggregator(int),
+      ref deleteInds
+    ) {
+      if delBool[i] {
+        agg.copy(deleteInds[scannedBool[i] - 1], i);
+      }
+    }
+
+    var eOut = makeDistArray((...deleteShape(eIn.shape, delBool, axis)), t);
+    
+    // This will be the starting indices of the slices that we copy
+    var startInds = makeDistArray(deleteInds.size + 1, int);
+    startInds[1..] = deleteInds[0..<deleteInds.size] + 1;
+
+    // This will be the lengths of the slices
+    var diffs: [startInds.domain] int;
+    diffs[..<diffs.size - 1] = deleteInds[..];
+    diffs[diffs.size - 1] = eIn.shape[axis];
+
+    // Finishes the calculation of the lengths
+    forall i in startInds.domain do diffs[i] -= startInds[i];
+
+    // This will be the index of the start of each slice in eOut
+    var offsets: [diffs.domain] int;
+
+    // It's just the running sum of the lengths
+    offsets[1..] = + scan diffs[..diffs.size-2];
+
+    // These are for domain transformations
+    var shape = eIn.shape;
+    var translation: (d.rank)*int;
+
+    forall i in startInds.domain with (
+        var myShape = shape,
+        var myTranslation = translation
+    ) {
+
+      // If there's a slice to be copied
+      if diffs[i] > 0 {
+
+        // Start with the whole domain
+        var dom = eIn.domain;
+
+        // myShape is the shape of the slice to be copied, but negative in the axis we're deleting on
+        myShape[axis] = -diffs[i];
+
+        // This creates a domain that's the same size as the slice to be copied, starting from 0 on all axes
+        dom = dom.interior(myShape);
+
+        // We're going to translate dom by myTranslation to get the output domain
+        myTranslation[axis] = offsets[i];
+        var outDom = dom.translate(myTranslation);
+
+        // Translate again to get the input domain
+        myTranslation[axis] = startInds[i];
+        var inDom = dom.translate(myTranslation);
+
+        // Copy
+        eOut[outDom] = eIn[inDom];
+      }
+    }
+
+    return eOut;
+  }
+
+  proc deleteShape(shape: ?N*int, array: [] bool, axis: int): N*int {
+    var shapeOut: N*int;
+    for i in 0..<N do shapeOut[i] = shape[i];
+    shapeOut[axis] -= + reduce array;
+    return shapeOut;
+  }
+
   // https://data-apis.org/array-api/latest/API_specification/generated/array_api.expand_dims.html#array_api.expand_dims
   // insert a new singleton dimension at the given axis
   @arkouda.instantiateAndRegister(prefix='expandDims')
   proc expandDimsMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
 
-    if array_nd == MaxArrayDims {
+    if ! arrayDimIsSupported(array_nd+1) {
       const errMsg = "Cannot expand arrays with rank %i, as this would result an an array with rank %i".format(array_nd, array_nd+1) +
-                     ", exceeding the server's configured maximum of %i. ".format(MaxArrayDims) +
+                     " that is not included in the server's configured ranks: " + arrayDimensionsStr + "." +
                      "Please update the configuration and recompile to support higher-dimensional arrays.";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return new MsgTuple(errMsg,MsgType.ERROR);
@@ -661,8 +875,11 @@ module ManipulationMsg {
     if NOut > NIn then return (false, shapeOut, mapping);
     if d.size >= NIn then return (false, shapeOut, mapping);
 
+    const (valid, axes_) = validateNegativeAxes(axes, NIn);
+    if !valid then return (false, shapeOut, mapping);
+
     var degenAxes: NIn*bool;
-    for axis in axes {
+    for axis in axes_ {
       if shape[axis] != 1 then return (false, shapeOut, mapping);
       degenAxes[axis] = true;
     }
@@ -686,9 +903,9 @@ module ManipulationMsg {
   proc stackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
 
-    if array_nd == MaxArrayDims {
+    if ! arrayDimIsSupported(array_nd+1) {
       const errMsg = "Cannot stack arrays with rank %i, as this would result an an array with rank %i".format(array_nd, array_nd+1) +
-                     ", exceeding the server's configured maximum of %i. ".format(MaxArrayDims) +
+                     " that is not included in the server's configured ranks: " + arrayDimensionsStr + "." +
                      "Please update the configuration and recompile to support higher-dimensional arrays.";
       mLogger.error(getModuleName(),pn,getLineNumber(),errMsg);
       return new MsgTuple(errMsg,MsgType.ERROR);
@@ -812,8 +1029,92 @@ module ManipulationMsg {
     return shapeOut;
   }
 
-  // // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
-  // // unstack an array into multiple arrays along a specified axis
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.repeat.html#array_api.repeat
+  @arkouda.registerCommand (name="repeat")
+  proc repeat (eIn: [?d] ?t, axis: int, ref reps: [?d2] ?t2): [] t throws 
+    where ((t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint) &&
+           (t2 == int || t2 == uint) &&
+           (d2.rank == 1)) {
+    param pn = Reflection.getRoutineName();
+
+    const (valid, axis_) = validateNegativeAxes (axis,d.rank) ;
+    if !valid then throw new Error ("Invalid axis %i in repeat".format(axis));
+
+    var eOut = makeDistArray((...repeatShape(eIn.shape, reps, axis_)), t);
+
+    // In this case, every element of eIn gets repeated the same number of times along the axis.
+    if reps.size == 1 {
+      forall idx in eOut.domain with (
+        var agg = newSrcAggregator(t)
+      ) {
+        var idx2 = if eIn.shape.size == 1 then (idx,) else idx;
+
+        // The integer division means that the index gets incremented in the axis every reps[0] times
+        idx2[axis_] = idx2[axis_] / (reps[0]: int);
+
+        agg.copy(eOut[idx], eIn[if eIn.shape.size == 1 then idx2[0] else idx2]);
+      }
+    } else if d.rank == 1 {
+      // We can shortcut things a little bit if eIn is a one dimensional array
+      const outSize = eOut.size;
+
+      // Distribute the domain the same way as eIn
+      var outStarts: [eIn.domain] int;
+
+      // The running sum of repeats gives us the starting points of where we need to start repeating each element
+      outStarts[1..] = (+ scan reps[..reps.size - 2]): int;
+      forall (inIdx, outStart, numRepeats) in zip(eIn.domain, outStarts, reps) with (
+        var agg = newDstAggregator(t)
+      ) {
+        for destIdx in outStart..#numRepeats {
+          agg.copy(eOut[destIdx], eIn[inIdx]);
+        }
+      }
+    } else {
+      // Fundamentally this works the same way as above but we can't do zipped iteration
+      // This is because eIn may be much larger.
+      const outSize = eOut.shape[axis_];
+
+      // Can't distribute the domain because we don't know how eIn is distributed
+      var outStarts: [0..<eIn.shape[axis_]] int;
+
+      outStarts[1..] = (+ scan reps[..reps.size - 2]): int;
+      forall inIdx in eIn.domain with (
+        var agg = newDstAggregator(t)
+      ) {
+        const outStart = outStarts[inIdx[axis_]];
+        const numRepeats = reps[inIdx[axis_]];
+        var destIdx = inIdx;
+        for destIdxComponent in outStart..#numRepeats {
+          destIdx[axis_] = destIdxComponent;
+          agg.copy(eOut[destIdx], eIn[inIdx]);
+        }
+      }
+
+    }
+
+    return eOut;
+  }
+
+  proc repeatShape(shape: ?N*int, ref reps: [] ?t, axis: int): N*int 
+    where (t == int || t == uint) {
+    var shapeOut: N*int;
+    for i in 0..<N do shapeOut[i] = shape[i];
+    if reps.size == 1 {
+      shapeOut[axis] = shapeOut[axis] * (reps[0]: int);
+    } else {
+      shapeOut[axis] = + reduce (reps: int);
+    }
+    return shapeOut;
+  }
+
+  //At some point when issue #4162 clears up we can use this instead in the where clause.
+  proc repeatInputElemTypeCheck(type t) param: bool {
+    return (t == int || t == real || t == bool || t == uint || t == uint(8) || t == bigint);
+  }
+
+  // https://data-apis.org/array-api/latest/API_specification/generated/array_api.unstack.html
+  // unstack an array into multiple arrays along a specified axis
   @arkouda.instantiateAndRegister(prefix='unstack')
   proc unstackMsg(cmd: string, msgArgs: borrowed MessageArgs, st: borrowed SymTab, type array_dtype, param array_nd: int): MsgTuple throws {
     param pn = Reflection.getRoutineName();
