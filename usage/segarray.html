@@ -400,6 +400,11 @@
 <h2>Iteration<a class="headerlink" href="#iteration" title="Link to this heading">¶</a></h2>
 <p>Because <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> is currently processing entirely on the Arkouda client side, iteration is natively supported. Thus, <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">row</span> <span class="pre">in</span> <span class="pre">segarr</span></code> with iterate over each sub-array. Each of these sub-arrays is currently returned as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p>
 <p>Similar to <code class="docutils literal notranslate"><span class="pre">Strings</span></code>, <code class="docutils literal notranslate"><span class="pre">SegArrays</span></code> will be moved to process server side. This will remove the ability to natively iterate to discourage transferring all of the objects data to the client. In order to support this moving forward, <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> includes a <code class="docutils literal notranslate"><span class="pre">to_ndarray()</span></code> function. It is recommended that this function be used for iteration over <code class="docutils literal notranslate"><span class="pre">SegArray</span></code> objects, to prevent issues associated with moving processing server side. For more information on the usage of <code class="docutils literal notranslate"><span class="pre">to_ndarray</span></code> with SegArray</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.to_ndarray">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.to_ndarray" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="operation">
 <h2>Operation<a class="headerlink" href="#operation" title="Link to this heading">¶</a></h2>
@@ -415,36 +420,106 @@
 <h2>SegArray Specific Methods<a class="headerlink" href="#segarray-specific-methods" title="Link to this heading">¶</a></h2>
 <section id="prefix-suffix">
 <h3>Prefix &amp; Suffix<a class="headerlink" href="#prefix-suffix" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.get_prefixes">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">get_prefixes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.get_prefixes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.get_suffixes">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">get_suffixes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.get_suffixes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="ngrams">
 <h3>NGrams<a class="headerlink" href="#ngrams" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.get_ngrams">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">get_ngrams</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.get_ngrams" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="sub-array-of-size">
 <h3>Sub-array of Size<a class="headerlink" href="#sub-array-of-size" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.get_length_n">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">get_length_n</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.get_length_n" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="access-set-specific-elements-in-sub-array">
 <h3>Access/Set Specific Elements in Sub-Array<a class="headerlink" href="#access-set-specific-elements-in-sub-array" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.get_jth">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">get_jth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.get_jth" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.set_jth">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">set_jth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.set_jth" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="append-prepend">
 <h3>Append &amp; Prepend<a class="headerlink" href="#append-prepend" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.append">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.append" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.append_single">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">append_single</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.append_single" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.prepend_single">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">prepend_single</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.prepend_single" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="deduplication">
 <h3>Deduplication<a class="headerlink" href="#deduplication" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.remove_repeats">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">remove_repeats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.remove_repeats" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 </section>
 <section id="segarray-setops">
 <h2>SegArray SetOps<a class="headerlink" href="#segarray-setops" title="Link to this heading">¶</a></h2>
 <section id="union">
 <h3>Union<a class="headerlink" href="#union" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.union">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.union" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="intersect">
 <h3>Intersect<a class="headerlink" href="#intersect" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.intersect">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.intersect" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="set-difference">
 <h3>Set Difference<a class="headerlink" href="#set-difference" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.setdiff">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">setdiff</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.setdiff" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="symmetric-difference">
 <h3>Symmetric Difference<a class="headerlink" href="#symmetric-difference" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.numpy.SegArray.setxor">
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.SegArray.</span></span><span class="sig-name descname"><span class="pre">setxor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.SegArray.setxor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 </section>
 </section>
@@ -506,22 +581,59 @@
             <ul>
 <li><a class="reference internal" href="#">SegArrays in Arkouda</a><ul>
 <li><a class="reference internal" href="#performance">Performance</a></li>
-<li><a class="reference internal" href="#iteration">Iteration</a></li>
+<li><a class="reference internal" href="#iteration">Iteration</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">to_ndarray()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#operation">Operation</a></li>
 <li><a class="reference internal" href="#segarray-specific-methods">SegArray Specific Methods</a><ul>
-<li><a class="reference internal" href="#prefix-suffix">Prefix &amp; Suffix</a></li>
-<li><a class="reference internal" href="#ngrams">NGrams</a></li>
-<li><a class="reference internal" href="#sub-array-of-size">Sub-array of Size</a></li>
-<li><a class="reference internal" href="#access-set-specific-elements-in-sub-array">Access/Set Specific Elements in Sub-Array</a></li>
-<li><a class="reference internal" href="#append-prepend">Append &amp; Prepend</a></li>
-<li><a class="reference internal" href="#deduplication">Deduplication</a></li>
+<li><a class="reference internal" href="#prefix-suffix">Prefix &amp; Suffix</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.get_prefixes"><code class="docutils literal notranslate"><span class="pre">get_prefixes()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.get_suffixes"><code class="docutils literal notranslate"><span class="pre">get_suffixes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ngrams">NGrams</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.get_ngrams"><code class="docutils literal notranslate"><span class="pre">get_ngrams()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sub-array-of-size">Sub-array of Size</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.get_length_n"><code class="docutils literal notranslate"><span class="pre">get_length_n()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#access-set-specific-elements-in-sub-array">Access/Set Specific Elements in Sub-Array</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.get_jth"><code class="docutils literal notranslate"><span class="pre">get_jth()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.set_jth"><code class="docutils literal notranslate"><span class="pre">set_jth()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#append-prepend">Append &amp; Prepend</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.append"><code class="docutils literal notranslate"><span class="pre">append()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.append_single"><code class="docutils literal notranslate"><span class="pre">append_single()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.prepend_single"><code class="docutils literal notranslate"><span class="pre">prepend_single()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deduplication">Deduplication</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.remove_repeats"><code class="docutils literal notranslate"><span class="pre">remove_repeats()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#segarray-setops">SegArray SetOps</a><ul>
-<li><a class="reference internal" href="#union">Union</a></li>
-<li><a class="reference internal" href="#intersect">Intersect</a></li>
-<li><a class="reference internal" href="#set-difference">Set Difference</a></li>
-<li><a class="reference internal" href="#symmetric-difference">Symmetric Difference</a></li>
+<li><a class="reference internal" href="#union">Union</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.union"><code class="docutils literal notranslate"><span class="pre">union()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#intersect">Intersect</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.intersect"><code class="docutils literal notranslate"><span class="pre">intersect()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#set-difference">Set Difference</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.setdiff"><code class="docutils literal notranslate"><span class="pre">setdiff()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#symmetric-difference">Symmetric Difference</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.SegArray.setxor"><code class="docutils literal notranslate"><span class="pre">setxor()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

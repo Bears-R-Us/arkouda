@@ -1234,6 +1234,37 @@ Package Contents
 
    .. py:method:: item(*args, **kwargs)
 
+      Return the array element at the specified position as a Python scalar.
+
+      :param index: Position of the element. If not provided, the array must contain
+                    exactly one element.
+      :type index: int, optional
+
+      :returns: The element at the specified position.
+      :rtype: scalar
+
+      :raises ValueError: If no index is provided and the array does not have exactly
+          one element.
+      :raises IndexError: If the specified position is out of bounds.
+
+      .. seealso::
+
+         :py:obj:`numpy.ndarray.item`
+             Return the item of an array as a scalar.
+
+      .. rubric:: Examples
+
+      >>> arr = pd.array([1], dtype="Int64")
+      >>> arr.item()
+      np.int64(1)
+
+      >>> arr = pd.array([1, 2, 3], dtype="Int64")
+      >>> arr.item(0)
+      np.int64(1)
+      >>> arr.item(2)
+      np.int64(3)
+
+
 
    .. py:method:: max(*args, **kwargs)
 

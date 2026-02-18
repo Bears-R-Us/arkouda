@@ -423,17 +423,105 @@
 <h2>String-Specific Methods<a class="headerlink" href="#string-specific-methods" title="Link to this heading">¶</a></h2>
 <section id="substring-search">
 <h3>Substring search<a class="headerlink" href="#substring-search" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.contains">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.contains" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.startswith">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">startswith</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.startswith" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.endswith">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">endswith</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.endswith" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div></blockquote>
 </section>
 <section id="splitting-and-joining">
 <h3>Splitting and joining<a class="headerlink" href="#splitting-and-joining" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.peel">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">peel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.peel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.rpeel">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">rpeel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.rpeel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.stick">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">stick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.stick" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.lstick">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">lstick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.lstick" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div></blockquote>
 </section>
 <section id="flattening">
 <h3>Flattening<a class="headerlink" href="#flattening" title="Link to this heading">¶</a></h3>
 <p>Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe</p>
+<blockquote>
+<div><dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.flatten">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.flatten" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div></blockquote>
 </section>
 <section id="regular-expressions">
 <h3>Regular Expressions<a class="headerlink" href="#regular-expressions" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Strings</span></code> implements behavior similar to the re python library applied to every element. This functionality is based on Chapel’s regex module which is built on google’s re2. re2 sacrifices some functionality (notably lookahead/lookbehind) in exchange for guarantees that searches complete in linear time and in a fixed amount of stack space</p>
+<blockquote>
+<div><dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.search">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.search" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.match">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.match" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.fullmatch">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">fullmatch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.fullmatch" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.split">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.split" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.findall">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">findall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.findall" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.sub">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.sub" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.subn">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">subn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.subn" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.numpy.Strings.find_locations">
+<span class="sig-prename descclassname"><span class="pre">Strings.</span></span><span class="sig-name descname"><span class="pre">find_locations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.numpy.Strings.find_locations" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div></blockquote>
 <section id="match-object">
 <h4>Match Object<a class="headerlink" href="#match-object" title="Link to this heading">¶</a></h4>
 <p>search, match, and fullmatch return a <code class="docutils literal notranslate"><span class="pre">Match</span></code> object which supports the following methods</p>
@@ -653,10 +741,32 @@ capture group is from</p></li>
 <li><a class="reference internal" href="#iteration">Iteration</a></li>
 <li><a class="reference internal" href="#operations">Operations</a></li>
 <li><a class="reference internal" href="#string-specific-methods">String-Specific Methods</a><ul>
-<li><a class="reference internal" href="#substring-search">Substring search</a></li>
-<li><a class="reference internal" href="#splitting-and-joining">Splitting and joining</a></li>
-<li><a class="reference internal" href="#flattening">Flattening</a></li>
+<li><a class="reference internal" href="#substring-search">Substring search</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.contains"><code class="docutils literal notranslate"><span class="pre">Strings.contains()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.startswith"><code class="docutils literal notranslate"><span class="pre">Strings.startswith()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.endswith"><code class="docutils literal notranslate"><span class="pre">Strings.endswith()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#splitting-and-joining">Splitting and joining</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.peel"><code class="docutils literal notranslate"><span class="pre">Strings.peel()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.rpeel"><code class="docutils literal notranslate"><span class="pre">Strings.rpeel()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.stick"><code class="docutils literal notranslate"><span class="pre">Strings.stick()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.lstick"><code class="docutils literal notranslate"><span class="pre">Strings.lstick()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flattening">Flattening</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.flatten"><code class="docutils literal notranslate"><span class="pre">Strings.flatten()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#regular-expressions">Regular Expressions</a><ul>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.search"><code class="docutils literal notranslate"><span class="pre">Strings.search()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.match"><code class="docutils literal notranslate"><span class="pre">Strings.match()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.fullmatch"><code class="docutils literal notranslate"><span class="pre">Strings.fullmatch()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.split"><code class="docutils literal notranslate"><span class="pre">Strings.split()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.findall"><code class="docutils literal notranslate"><span class="pre">Strings.findall()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.sub"><code class="docutils literal notranslate"><span class="pre">Strings.sub()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.subn"><code class="docutils literal notranslate"><span class="pre">Strings.subn()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.numpy.Strings.find_locations"><code class="docutils literal notranslate"><span class="pre">Strings.find_locations()</span></code></a></li>
 <li><a class="reference internal" href="#match-object">Match Object</a><ul>
 <li><a class="reference internal" href="#arkouda.match.Match.matched"><code class="docutils literal notranslate"><span class="pre">Match.matched()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.match.Match.start"><code class="docutils literal notranslate"><span class="pre">Match.start()</span></code></a></li>

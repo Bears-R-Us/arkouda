@@ -590,10 +590,32 @@
 <li class="toctree-l2"><a class="reference internal" href="usage/strings.html#iteration">Iteration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/strings.html#operations">Operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/strings.html#string-specific-methods">String-Specific Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/strings.html#substring-search">Substring search</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/strings.html#splitting-and-joining">Splitting and joining</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/strings.html#flattening">Flattening</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/strings.html#substring-search">Substring search</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.contains"><code class="docutils literal notranslate"><span class="pre">Strings.contains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.startswith"><code class="docutils literal notranslate"><span class="pre">Strings.startswith()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.endswith"><code class="docutils literal notranslate"><span class="pre">Strings.endswith()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/strings.html#splitting-and-joining">Splitting and joining</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.peel"><code class="docutils literal notranslate"><span class="pre">Strings.peel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.rpeel"><code class="docutils literal notranslate"><span class="pre">Strings.rpeel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.stick"><code class="docutils literal notranslate"><span class="pre">Strings.stick()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.lstick"><code class="docutils literal notranslate"><span class="pre">Strings.lstick()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/strings.html#flattening">Flattening</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.flatten"><code class="docutils literal notranslate"><span class="pre">Strings.flatten()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="usage/strings.html#regular-expressions">Regular Expressions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.search"><code class="docutils literal notranslate"><span class="pre">Strings.search()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.match"><code class="docutils literal notranslate"><span class="pre">Strings.match()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.fullmatch"><code class="docutils literal notranslate"><span class="pre">Strings.fullmatch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.split"><code class="docutils literal notranslate"><span class="pre">Strings.split()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.findall"><code class="docutils literal notranslate"><span class="pre">Strings.findall()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.sub"><code class="docutils literal notranslate"><span class="pre">Strings.sub()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.subn"><code class="docutils literal notranslate"><span class="pre">Strings.subn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/strings.html#arkouda.numpy.Strings.find_locations"><code class="docutils literal notranslate"><span class="pre">Strings.find_locations()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="usage/strings.html#match-object">Match Object</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="usage/strings.html#arkouda.match.Match.matched"><code class="docutils literal notranslate"><span class="pre">Match.matched()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="usage/strings.html#arkouda.match.Match.start"><code class="docutils literal notranslate"><span class="pre">Match.start()</span></code></a></li>
@@ -699,22 +721,59 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage/segarray.html">SegArrays in Arkouda</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#performance">Performance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#iteration">Iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#iteration">Iteration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.to_ndarray"><code class="docutils literal notranslate"><span class="pre">to_ndarray()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#operation">Operation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#segarray-specific-methods">SegArray Specific Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#prefix-suffix">Prefix &amp; Suffix</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#ngrams">NGrams</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#sub-array-of-size">Sub-array of Size</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#access-set-specific-elements-in-sub-array">Access/Set Specific Elements in Sub-Array</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#append-prepend">Append &amp; Prepend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#deduplication">Deduplication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#prefix-suffix">Prefix &amp; Suffix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.get_prefixes"><code class="docutils literal notranslate"><span class="pre">get_prefixes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.get_suffixes"><code class="docutils literal notranslate"><span class="pre">get_suffixes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#ngrams">NGrams</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.get_ngrams"><code class="docutils literal notranslate"><span class="pre">get_ngrams()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#sub-array-of-size">Sub-array of Size</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.get_length_n"><code class="docutils literal notranslate"><span class="pre">get_length_n()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#access-set-specific-elements-in-sub-array">Access/Set Specific Elements in Sub-Array</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.get_jth"><code class="docutils literal notranslate"><span class="pre">get_jth()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.set_jth"><code class="docutils literal notranslate"><span class="pre">set_jth()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#append-prepend">Append &amp; Prepend</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.append"><code class="docutils literal notranslate"><span class="pre">append()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.append_single"><code class="docutils literal notranslate"><span class="pre">append_single()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.prepend_single"><code class="docutils literal notranslate"><span class="pre">prepend_single()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#deduplication">Deduplication</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.remove_repeats"><code class="docutils literal notranslate"><span class="pre">remove_repeats()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/segarray.html#segarray-setops">SegArray SetOps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#union">Union</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#intersect">Intersect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#set-difference">Set Difference</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#symmetric-difference">Symmetric Difference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#union">Union</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.union"><code class="docutils literal notranslate"><span class="pre">union()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#intersect">Intersect</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.intersect"><code class="docutils literal notranslate"><span class="pre">intersect()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#set-difference">Set Difference</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.setdiff"><code class="docutils literal notranslate"><span class="pre">setdiff()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/segarray.html#symmetric-difference">Symmetric Difference</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/segarray.html#arkouda.numpy.SegArray.setxor"><code class="docutils literal notranslate"><span class="pre">setxor()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
