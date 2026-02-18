@@ -310,7 +310,7 @@ def manage_connection():
     try:
         ak.connect(server=pytest.host, port=pytest.port, timeout=pytest.client_timeout)
         pytest.cfg = ak.get_config()
-        pytest.N = pytest.prob_size * pytest.cfg["numLocales"]
+        pytest.N = pytest.prob_size * pytest.cfg["numNodes"]
     except Exception as e:
         raise ConnectionError(e)
 

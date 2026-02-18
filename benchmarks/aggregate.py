@@ -23,8 +23,8 @@ def generate_arrays(N, seed):
 def time_ak_aggregate(N_per_locale, trials, seed):
     print(">>> arkouda aggregate")
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
     keys, intvals, boolvals = generate_arrays(N, seed)
     g = ak.GroupBy(keys, assume_sorted=True)
     for op in ak.GroupBy.Reductions:

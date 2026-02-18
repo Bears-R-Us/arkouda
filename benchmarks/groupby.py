@@ -39,8 +39,8 @@ def generate_arrays(N, numArrays, dtype, seed, max_bits=-1):
 def time_ak_groupby(N_per_locale, trials, dtype, seed, max_bits=-1):
     print(">>> arkouda {} groupby".format(dtype))
     cfg = ak.get_config()
-    N = N_per_locale * cfg["numLocales"]
-    print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
+    N = N_per_locale * cfg["numNodes"]
+    print("numLocales = {}, numNodes {}, N = {:,}".format(cfg["numLocales"], cfg["numNodes"], N))
     for numArrays in (1, 2, 8, 16):
         if dtype == "mixed" and numArrays == 1:
             continue
