@@ -255,7 +255,7 @@ def trapz(y: Array, x: Optional[Array] = None, dx: Optional[float] = 1.0, axis: 
     >>> xp.trapz(xp.cos(theta), x=xp.sin(theta))
     Arkouda Array ((), float64)3.14157194137584...
 
-    ``np.trapz`` can be applied along a specified axis to do multiple
+    ``np.trapezoid`` can be applied along a specified axis to do multiple
     computations in one call:
 
     >>> a = xp.asarray(ak.arange(6).reshape(2, 3))

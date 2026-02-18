@@ -96,15 +96,26 @@ class TestSetOps:
 
         func = getattr(ak, op)
         ak_result = func(ak.array(a, dtype=dtype), ak.array(b, dtype=dtype))
-        np_func = getattr(np, op)
-        np_result = np_func(a, b)
+
+        # NumPy 2.x compatibility: in1d -> isin
+        if op == "in1d":
+            np_result = np.isin(a, b)
+        else:
+            np_func = getattr(np, op)
+            np_result = np_func(a, b)
+
         assert np.array_equal(ak_result.to_ndarray(), np_result)
 
         a, b = self.make_np_arrays_small(dtype)
         func = getattr(ak, op)
         ak_result = func(ak.array(a, dtype=dtype), ak.array(b, dtype=dtype))
-        np_func = getattr(np, op)
-        np_result = np_func(a, b)
+
+        if op == "in1d":
+            np_result = np.isin(a, b)
+        else:
+            np_func = getattr(np, op)
+            np_result = np_func(a, b)
+
         assert np.array_equal(ak_result.to_ndarray(), np_result)
 
     @pytest.mark.parametrize("size", pytest.prob_size)
