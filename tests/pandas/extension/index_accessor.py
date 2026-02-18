@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -6,7 +7,11 @@ import arkouda as ak
 from arkouda.index import Index as ak_Index
 from arkouda.index import MultiIndex as ak_MultiIndex
 from arkouda.pandas.extension import ArkoudaExtensionArray
-from arkouda.pandas.extension._index_accessor import _ak_index_to_pandas_no_copy, _pandas_index_to_ak
+from arkouda.pandas.extension._index_accessor import (
+    ArkoudaIndexAccessor,
+    _ak_index_to_pandas_no_copy,
+    _pandas_index_to_ak,
+)
 
 
 def _assert_index_equal_values(p_idx: pd.Index, values):
@@ -210,3 +215,37 @@ class TestArkoudaIndexAccessor:
         assert isinstance(idx_back.array, ArkoudaExtensionArray)
         assert idx_back.name == "nums"
         _assert_index_equal_values(idx_back, [7, 8, 9])
+
+    def test_akcol_to_series_default_index_is_arkouda(self):
+        # Arkouda column (server-side)
+        akcol = ak.array([1, 3, 4, 1])
+
+        # This calls your updated helper
+        from arkouda.pandas.extension._dataframe_accessor import _akcol_to_series
+
+        s = _akcol_to_series("x", akcol)
+
+        # Index should NOT be pandas RangeIndex (NumPy-backed)
+        assert not isinstance(s.index, pd.RangeIndex)
+
+        # Index should be Arkouda-backed
+        assert ArkoudaIndexAccessor(s.index).is_arkouda is True
+
+        # And values should match 0..n-1
+        assert np.array_equal(s.index.to_numpy(), np.arange(len(s)))
+
+    def test_akcol_to_series_converts_provided_index_to_arkouda(self):
+        akcol = ak.array([10, 20, 30, 40])
+
+        from arkouda.pandas.extension._dataframe_accessor import _akcol_to_series
+
+        # Provide a normal NumPy-backed pandas Index
+        idx = pd.Index([100, 101, 102, 103], name="id")
+        assert ArkoudaIndexAccessor(idx).is_arkouda is False
+
+        s = _akcol_to_series("x", akcol, index=idx)
+
+        # Should now be Arkouda-backed, but preserve values & name
+        assert ArkoudaIndexAccessor(s.index).is_arkouda is True
+        assert s.index.name == "id"
+        assert np.array_equal(s.index.to_numpy(), np.array([100, 101, 102, 103]))

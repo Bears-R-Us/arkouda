@@ -137,28 +137,31 @@ def _series_to_akcol_no_copy(s: pd.Series) -> object:
     return _extract_ak_from_ea(s.array)
 
 
-def _akcol_to_series(name: str, akcol: object) -> pd.Series:
+def _akcol_to_series(
+    name: str,
+    akcol: object,
+    index: pd.Index | None = None,
+) -> pd.Series:
     """
-    Wrap an Arkouda column into a pandas Series using ArkoudaArray.
-
-    The data are not converted to NumPy/Python; instead, the Arkouda column
-    is wrapped in an :class:`ArkoudaArray` ExtensionArray.
-
-    Parameters
-    ----------
-    name : str
-        Name for the resulting Series.
-    akcol : object
-        Underlying Arkouda column to wrap (for example, ``pdarray``,
-        ``Strings``, or ``Categorical``).
-
-    Returns
-    -------
-    pd.Series
-        Series backed by an :class:`ArkoudaArray` containing ``akcol``.
+    Wrap an Arkouda column into a pandas Series using ArkoudaExtensionArray,
+    ensuring the index is Arkouda-backed (including the default index).
     """
+    from arkouda.numpy.pdarraycreation import arange as ak_arange
+    from arkouda.pandas.extension import ArkoudaIndexAccessor  # avoids `index.ak` for mypy
+
     ea = ArkoudaExtensionArray._from_sequence(akcol)
-    return pd.Series(ea, name=name)
+
+    if index is None:
+        n = len(ea)
+        index_ea = ArkoudaExtensionArray._from_sequence(ak_arange(n))
+        index = pd.Index(index_ea)
+
+    # mypy-safe: call accessor class directly (pandas stubs don't know `.ak`)
+    acc = ArkoudaIndexAccessor(index)
+    if not acc.is_arkouda:
+        index = acc.to_ak()
+
+    return pd.Series(ea, index=index, name=name)
 
 
 def _df_to_akdf_no_copy(df: pd.DataFrame) -> ak_DataFrame:

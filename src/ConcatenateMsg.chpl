@@ -480,19 +480,12 @@ module ConcatenateMsg
         cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                     "concatenate unique strings from %i arrays: %?".format(n, names));
 
-        // Each locale gets its own set
-        var localeSets = makeDistArray(numLocales, set(string));
-
-        // Initialize sets
-        coforall loc in Locales do on loc {
-            localeSets[here.id] = new set(string);
-        }
-
-        var strOffsetInLocale: [PrivateSpace] list(int);
-        var strBytesInLocale: [PrivateSpace] list(uint(8));
+        var bytesInLocale: [PrivateSpace] innerArray(uint(8));
+        var offsetsInLocale: [PrivateSpace] innerArray(int);
+        var segStrings: [0..<n] owned SegString?;
 
         // Collect all unique strings from each input SegmentedString
-        for i in 0..#names.size {
+        for i in 0..<n {
             var rawName = names[i];
             var (strName, _) = rawName.splitMsgToTuple('+', 2);
             try {
@@ -500,50 +493,7 @@ module ConcatenateMsg
                 cmLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                             "Processing SegString: %s".format(strName));
 
-                // Grab the strings by locale and throw them in the sets.
-                coforall loc in Locales do on loc {
-                    ref globalOffsets = segString.offsets.a;
-                    const offsetsDom = segString.offsets.a.domain.localSubdomain();
-                    const offsets = segString.offsets.a.localSlice[offsetsDom];
-                    const topEnd = if offsetsDom.high >= segString.offsets.a.domain.high then segString.values.a.size else globalOffsets[offsetsDom.high + 1];
-                    var locSet = new set(string);
-                    forall idx in offsetsDom with (+ reduce locSet) {
-                        const start = offsets[idx];
-                        const end = if idx == offsetsDom.high then topEnd else offsets[idx + 1];
-                        var str = interpretAsString(segString.values.a, start..<end);
-                        locSet.add(str);
-                    }
-                    localeSets[here.id] |= locSet;
-
-                    if i == names.size - 1 {
-
-                        const strArray = localeSets[here.id].toArray();
-                        var strOffsets: [0..#strArray.size] int;
-                        var strSize: [0..#strArray.size] int;
-
-                        forall strIdx in strArray.domain {
-                            const str = strArray[strIdx];
-                            const strBytes = str.bytes();
-                            strSize[strIdx] = strBytes.size + 1;
-                        }
-
-                        var numStrBytes = + reduce strSize;
-                        strOffsets = (+ scan strSize) - strSize;
-
-                        var strBytes: [0..#numStrBytes] uint(8);
-
-                        forall strIdx in strArray.domain {
-                            const str = strArray[strIdx];
-                            const currStrBytes = str.bytes();
-                            strBytes[strOffsets[strIdx]..#(strSize[strIdx] - 1)] = currStrBytes;
-                        }
-
-                        strOffsetInLocale[here.id] = new list(strOffsets);
-                        strBytesInLocale[here.id] = new list(strBytes);
-
-                    }
-                }
-
+                segStrings[i] = segString;
             } catch e: Error {
                 throw getErrorWithContext(
                     msg="lookup for %s failed".format(rawName),
@@ -554,95 +504,79 @@ module ConcatenateMsg
             }
         }
 
-        var (strOffsetInLocaleOut, strBytesInLocaleOut) = repartitionByHashString(strOffsetInLocale, strBytesInLocale);
+        coforall loc in Locales do on loc {
+          var numBytesThisLoc = 0;
+          var numStrsThisLoc = 0;
 
-        // I need variables to store how many strings each locale has
-        // how many bytes each locale has
-        // It'd be nice to store the set as an array on each Locale so I only have to convert once.
-        // Then I can convert the string array to uint(8) on each locale
-        // Use some global ref to how many bytes per and do some kinda + scan numBytes thing
-        // And I think I'm done. I don't care about rebalancing, the bytes array is already distributed.
-        // So ship data via domains and I don't think that can really be beat with the aggregators.
-        // Certainly not beat by one byte at a time.
-        // This also beats the calculation of which locale to send data to. Who cares? Just send it.
-        // offsets by locale does not line up with bytes by locale. So it doesn't matter.
+          for i in 0..<n {
+            const s = segStrings[i]!;
+            const offsA = s.offsets.a;
+            const valsA = s.values.a;
 
-        // Intentionally not distributed because I'm going to need these available to every locale.
+            const d = offsA.domain.localSubdomain();
+            if d.size == 0 then continue;
 
-        var numStringsPerLocale: [0..#numLocales] int;
-        var numBytesPerLocale: [0..#numLocales] int;
+            // count of strings whose *starts* are on this locale
+            numStrsThisLoc += d.size;
 
-        coforall loc in Locales with (ref numStringsPerLocale, ref numBytesPerLocale) do on loc {
+            const firstStart = offsA[d.low];
 
-            var strSet = new set(string);
-            ref myOffsets = strOffsetInLocaleOut[here.id];
-            var myBytes = strBytesInLocaleOut[here.id].toArray();
+            const lastIdx = d.high;
+            const topEnd =
+              if lastIdx == offsA.domain.high then valsA.size
+              else offsA[lastIdx + 1]; // may be remote, but only 1 read per seg per locale
 
-            forall i in 0..#myOffsets.size with (+ reduce strSet) {
-              const start = myOffsets[i];
-              const end = if i == myOffsets.size - 1 then myBytes.size else myOffsets[i + 1];
-              var str = interpretAsString(myBytes, start..<end);
-              strSet.add(str);
-            }
+            numBytesThisLoc += (topEnd - firstStart);
+          }
 
-            const strArray = strSet.toArray();
-            numStringsPerLocale[here.id] = strArray.size;
-            var size = 0;
+          bytesInLocale[here.id] = new innerArray({0..<numBytesThisLoc}, uint(8));
+          offsetsInLocale[here.id] = new innerArray({0..<numStrsThisLoc}, int);
 
-            forall str in strArray with (+ reduce size) {
-                size += str.size + 1;
-            }
+          ref myBytes = bytesInLocale[here.id].Arr;
+          ref myOffsets = offsetsInLocale[here.id].Arr;
+          var currOffset = 0;
+          var currByte = 0;
 
-            numBytesPerLocale[here.id] = size;
+          for i in 0..<n {
+            const s = segStrings[i]!;
+            const offsA = s.offsets.a;
+            const valsA = s.values.a;
 
-            localeSets[here.id] = strSet;
+            const d = offsA.domain.localSubdomain();
+            if d.size == 0 then continue;
+
+            const firstStart = offsA[d.low];
+            const lastIdx = d.high;
+            const topEnd =
+              if lastIdx == offsA.domain.high then valsA.size
+              else offsA[lastIdx + 1]; // may be remote, but only 1 read per seg per locale
+            const numBytes = topEnd - firstStart;
+            const localOffs = offsA.localSlice[d]; // local slice of offsets
+
+            myOffsets[currOffset..#d.size] = localOffs + (currByte - firstStart);
+            myBytes[currByte..#numBytes] = valsA[firstStart..#numBytes];
+
+            currOffset += d.size;
+            currByte += numBytes;
+          }
         }
 
-        // I need to set up the segString here.
-        // I need to create the running sum of strings per locale
-        var stringOffsetByLocale = + scan numStringsPerLocale;
-        var bytesOffsetByLocale = + scan numBytesPerLocale;
-        // I need to create the running sum of bytes per locale.
-
-        var esegs = createTypedSymEntry(stringOffsetByLocale.last, int);
-        var evals = createTypedSymEntry(bytesOffsetByLocale.last, uint(8));
-        ref esa = esegs.a;
-        ref eva = evals.a;
-
-        stringOffsetByLocale -= numStringsPerLocale;
-        bytesOffsetByLocale -= numBytesPerLocale;
-
-        // Let's allocate a new SegString for the return object
-        var retString = assembleSegStringFromParts(esegs, evals, st);
+        // Repartition the strings by their hash (but as bytes+offsets)
+        var (distOffsets, distBytes) =
+          repartitionByLocalHashStringArray(offsetsInLocale, bytesInLocale);
 
         coforall loc in Locales do on loc {
+          ref off = distOffsets[here.id].Arr;
+          ref byt = distBytes[here.id].Arr;
 
-            const strArray = localeSets[here.id].toArray();
-            var myBytes: [0..#numBytesPerLocale[here.id]] uint(8);
-            var strOffsets: [0..#strArray.size] int;
-            var strSizes: [0..#strArray.size] int;
+          const (newOff, newByt) = dedupeLocalByHashSort(off, byt);
 
-            forall (i, str) in zip(0..#strArray.size, strArray) {
-
-                strSizes[i] = str.size + 1;
-
-            }
-
-            strOffsets = (+ scan strSizes) - strSizes;
-
-            forall (i, str) in zip(0..#strArray.size, strArray) {
-
-                const strBytes = str.bytes();
-                const size = strSizes[i];
-
-                myBytes[strOffsets[i]..#size] = strBytes[0..#size];
-
-            }
-
-            esa[stringOffsetByLocale[here.id]..#strArray.size] = strOffsets[0..#strArray.size] + bytesOffsetByLocale[here.id];
-            eva[bytesOffsetByLocale[here.id]..#numBytesPerLocale[here.id]] = myBytes[0..#numBytesPerLocale[here.id]];
-
+          distOffsets[here.id] = newOff;
+          distBytes[here.id]   = newByt;
         }
+
+        // Now assemble SegString from distOffsets/distBytes
+        var retString = segStringFromOffsetsBytes(distOffsets, distBytes, st);
 
         // Store the result in the symbol table and return
         repMsg = "created " + st.attrib(retString.name) + "+created bytes.size %?".format(retString.nBytes);

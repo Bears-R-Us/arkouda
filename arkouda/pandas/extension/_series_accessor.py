@@ -40,6 +40,7 @@ from pandas import Index as pd_Index
 from pandas.api.extensions import register_series_accessor
 
 from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.series import Series as ak_Series
 
 
@@ -75,10 +76,29 @@ def _pandas_series_to_ak_array(s: pd.Series) -> Any:
     return ak_array(s)
 
 
-def _ak_array_to_pandas_series(akarr: Any, name: str | None = None) -> pd.Series:
-    """Wrap an Arkouda array into a pandas Series backed by ArkoudaExtensionArray."""
+def _ak_array_to_pandas_series(
+    akarr: Any,
+    name: str | None = None,
+    index: pd.Index | None = None,
+) -> pd.Series:
+    """
+    Wrap a legacy Arkouda array into a pandas Series backed by ArkoudaExtensionArray.
+
+    If `index` is not provided, construct an Arkouda-backed default index.
+    If `index` is provided and not Arkouda-backed, convert it.
+    """
+    from arkouda.numpy.pdarraycreation import arange as ak_arange
+    from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
+
     ea = _ak_arr_to_pandas_ea(akarr)
-    return pd.Series(ea, name=name)
+
+    if index is None:
+        index = pd.Index(ArkoudaExtensionArray._from_sequence(ak_arange(len(ea))))
+
+    if not ArkoudaIndexAccessor(index).is_arkouda:
+        index = ArkoudaIndexAccessor(index).to_ak()
+
+    return pd.Series(ea, index=index, name=name)
 
 
 # ---------------------------------------------------------------------------
@@ -356,3 +376,34 @@ class ArkoudaSeriesAccessor:
         arr = getattr(self._obj, "array", None)
         idx_arr = self._obj.index.values
         return isinstance(arr, ArkoudaExtensionArray) and isinstance(idx_arr, ArkoudaExtensionArray)
+
+    def groupby(self) -> GroupBy:
+        """
+        Return an Arkouda GroupBy object for this Series, without materializing.
+
+        Returns
+        -------
+        GroupBy
+
+        Raises
+        ------
+        TypeError
+            Returns TypeError if Series is not arkouda backed.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> import pandas as pd
+        >>> s = pd.Series([80, 443, 80]).ak.to_ak()
+        >>> g = s.ak.groupby()
+        >>> keys, counts = g.size()
+        """
+        if not self.is_arkouda:
+            raise TypeError("Series must be Arkouda-backed. Call .ak.to_ak() first.")
+
+        arr = self._obj.array
+        akcol = getattr(arr, "_data", None)
+        if akcol is None:
+            raise TypeError("Arkouda-backed Series array does not expose '_data'")
+
+        return GroupBy(akcol)
