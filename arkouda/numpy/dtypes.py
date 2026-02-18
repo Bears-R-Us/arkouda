@@ -7,6 +7,7 @@ import warnings
 from enum import Enum
 from typing import (  # noqa: F401
     Literal,
+    Optional,
     TypeAlias,
     TypeGuard,
     Union,
@@ -70,6 +71,8 @@ from numpy.dtypes import (
 
 from ._bigint import bigint, bigint_
 
+
+CastingKind: TypeAlias = Literal["no", "equiv", "safe", "same_kind", "unsafe"]
 
 __all__ = [
     "_datatype_check",
@@ -519,15 +522,16 @@ def can_cast(from_dt, to_dt, casting: Literal["safe",] | None = "safe") -> built
 
     np_to = _to_np_dtype(to_dt)
 
+    casting_kind: CastingKind = "safe" if casting is None else casting
     # ① Python int scalar special-case: emulate old scalar rules for "safe"
-    if casting == "safe" and isinstance(from_dt, int):
+    if casting_kind == "safe" and isinstance(from_dt, int):
         scalar_result = _scalar_int_can_cast_safe(from_dt, np_to)
         if scalar_result is not None:
             return builtins.bool(scalar_result)
 
     # ② Fallback: pure dtype-based NEP 50-style semantics
     np_from = _to_np_dtype(from_dt)
-    return builtins.bool(np.can_cast(np_from, np_to, casting=casting))
+    return builtins.bool(np.can_cast(np_from, np_to, casting=casting_kind))
 
 
 def result_type(*args):
