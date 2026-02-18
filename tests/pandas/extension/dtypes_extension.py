@@ -6,7 +6,7 @@ import pytest
 
 import arkouda as ak
 
-from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategoricalArray, ArkoudaStringArray
+from arkouda.pandas.extension import ArkoudaArray, ArkoudaCategorical, ArkoudaStringArray
 
 # Module under test
 from arkouda.pandas.extension._dtypes import (
@@ -175,8 +175,8 @@ class TestArkoudaDtypesExtension:
             ("ak.bigint", ArkoudaBigintDtype, ArkoudaArray, [1, 3, 4]),
             # string -> ArkoudaStringArray
             ("ak.string", ArkoudaStringDtype, ArkoudaStringArray, ["a", "b", "c"]),
-            # category -> ArkoudaCategoricalArray
-            ("ak.category", ArkoudaCategoricalDtype, ArkoudaCategoricalArray, ["a", "b", "a"]),
+            # category -> ArkoudaCategorical
+            ("ak.category", ArkoudaCategoricalDtype, ArkoudaCategorical, ["a", "b", "a"]),
         ],
     )
     def test_pd_array_with_arkouda_aliases_is_arkouda(
@@ -325,11 +325,11 @@ class TestArkoudaDtypesExtension:
 
     def test_series_with_categorical_dtype(self):
         from arkouda.pandas.extension._arkouda_categorical_array import (
-            ArkoudaCategoricalArray,
+            ArkoudaCategorical,
         )
 
         a = ak.Categorical(ak.array(["x", "y", "x"]))
-        cea = ArkoudaCategoricalArray(a)
+        cea = ArkoudaCategorical(a)
         s = pd.Series(cea)
         assert isinstance(s.dtype, ArkoudaCategoricalDtype)
         # categories round-trip to Python scalars on materialization
@@ -361,7 +361,7 @@ class TestArkoudaGenericDtypesExtension:
         cat = PandasCategorical(ak.array(["a", "b", "a", "c"]))
         arr = pd.array(cat, dtype="ak")
 
-        assert isinstance(arr, ArkoudaCategoricalArray)
+        assert isinstance(arr, ArkoudaCategorical)
         assert isinstance(arr.dtype, ArkoudaCategoricalDtype)
 
     def test_series_dtype_ak_dispatches_numeric(self):
@@ -383,5 +383,5 @@ class TestArkoudaGenericDtypesExtension:
         arr = pd.array(cat, dtype="ak")
         s = pd.Series(arr)
 
-        assert isinstance(s.array, ArkoudaCategoricalArray)
+        assert isinstance(s.array, ArkoudaCategorical)
         assert isinstance(s.dtype, ArkoudaCategoricalDtype)

@@ -14,7 +14,7 @@ from arkouda.pandas.categorical import Categorical as ak_Categorical
 from arkouda.pandas.dataframe import DataFrame as ak_DataFrame
 from arkouda.pandas.extension import (
     ArkoudaArray,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
     ArkoudaExtensionArray,
     ArkoudaIndexAccessor,
     ArkoudaStringArray,
@@ -89,7 +89,7 @@ class TestDataFrameConversion:
             {
                 "i": ArkoudaArray(ak_arange(5)),
                 "s": ArkoudaStringArray(ak_array(["a", "b", "c", "d", "e"])),
-                "c": ArkoudaCategoricalArray(
+                "c": ArkoudaCategorical(
                     ak_Categorical(ak_array(["low", "low", "high", "medium", "low"]))
                 ),
             }

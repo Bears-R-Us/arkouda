@@ -18,7 +18,7 @@ high-performance backend.
    production environments.
 """
 from ._arkouda_array import ArkoudaArray
-from ._arkouda_categorical_array import ArkoudaCategoricalArray
+from ._arkouda_categorical_array import ArkoudaCategorical
 from ._arkouda_extension_array import ArkoudaExtensionArray
 from ._arkouda_string_array import ArkoudaStringArray
 from ._dataframe_accessor import ArkoudaDataFrameAccessor
@@ -47,7 +47,7 @@ __all__ = [
     "ArkoudaCategoricalDtype",
     "ArkoudaArray",
     "ArkoudaStringArray",
-    "ArkoudaCategoricalArray",
+    "ArkoudaCategorical",
     "ArkoudaExtensionArray",
     "ArkoudaIndexAccessor",
     "ArkoudaDataFrameAccessor",
