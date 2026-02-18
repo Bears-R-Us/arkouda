@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import builtins
 import json
-import warnings
 
 from functools import reduce
 from math import ceil
@@ -15,6 +14,7 @@ from typeguard import typechecked
 
 from arkouda.core.logger import get_arkouda_logger
 from arkouda.infoclass import information, pretty_print_information
+from arkouda.numpy import err as akerr
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     DTypes,
@@ -224,11 +224,31 @@ SUPPORTED_INDEX_REDUCTION_OPS = ["argmin", "argmax"]
 SUPPORTED_STATS_REDUCTION_OPS = ["var", "std"]
 
 
-def _dbz_check(op, flag):
-    if op not in ["/", "//"] or not flag:
+def _dbz_check(op: str, has_zero) -> None:
+    """
+    Handle divide-by-zero policy for binary ops.
+
+    Parameters
+    ----------
+    op : str
+        Operator string, e.g. "/", "//".
+    has_zero : bool | Callable[[], bool]
+        Either a precomputed flag, or a callable that computes whether the
+        denominator contains any zeros. Use a callable to avoid scanning
+        when divide mode is 'ignore'.
+    """
+    if op not in ("/", "//"):
         return
 
-    mode = ak_geterr()["divide"]
+    # Fast path: avoid any extra work for the common/default mode.
+    mode = ak_geterr().get("divide", "ignore")
+    if mode == "ignore":
+        return
+
+    # Lazily compute only when needed
+    flag = bool(has_zero() if callable(has_zero) else has_zero)
+    if not flag:
+        return
 
     msg = (
         "divide by zero encountered in divide"
@@ -236,14 +256,8 @@ def _dbz_check(op, flag):
         else "divide by zero encountered in floor_divide"
     )
 
-    if mode == "ignore":
-        return
-
-    elif mode == "warn":
-        warnings.warn(msg, RuntimeWarning)
-
-    elif mode == "raise":
-        raise FloatingPointError(msg)
+    # Centralized dispatch: warn/raise/call/print/log
+    akerr.handle("divide", msg)
 
 
 def _axis_parser(axis):
@@ -887,7 +901,7 @@ class pdarray:
             )
 
             #  Create a runtime warning if this caused divide-by-zero.
-            _dbz_check(op, any(x2 == 0))
+            _dbz_check(op, lambda: any(x2 == 0))
 
             if tmp_x1:
                 del x1
