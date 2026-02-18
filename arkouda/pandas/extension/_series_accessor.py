@@ -377,6 +377,101 @@ class ArkoudaSeriesAccessor:
         idx_arr = self._obj.index.values
         return isinstance(arr, ArkoudaExtensionArray) and isinstance(idx_arr, ArkoudaExtensionArray)
 
+    # ------------------------------------------------------------------
+    # Legacy delegation: thin wrappers over ak.Series
+    # ------------------------------------------------------------------
+
+    def locate(self, key: object) -> pd.Series:
+        """
+        Lookup values by index label on the Arkouda server.
+
+        This is a thin wrapper around the legacy :meth:`arkouda.pandas.series.Series.locate`
+        method. It converts the pandas Series to a legacy Arkouda ``ak.Series``,
+        performs the locate operation on the server, and wraps the result back into
+        an Arkouda-backed pandas Series (ExtensionArray-backed) without NumPy
+        materialization.
+
+        Parameters
+        ----------
+        key : object
+            Lookup key or keys. Interpreted in the same way as the legacy Arkouda
+            ``Series.locate`` method. This may be:
+            - a scalar
+            - a list/tuple of scalars
+            - an Arkouda ``pdarray``
+            - an Arkouda ``Index`` / ``MultiIndex``
+            - an Arkouda ``Series`` (special case: preserves key index)
+
+        Returns
+        -------
+        pd.Series
+            A pandas Series backed by Arkouda ExtensionArrays containing the located
+            values. The returned Series remains distributed (no NumPy materialization)
+            and is sorted by index.
+
+        Notes
+        -----
+        * This method is Arkouda-specific; pandas does not define ``Series.locate``.
+        * If ``key`` is a pandas Index/MultiIndex, consider converting it via
+          ``key.ak.to_ak_legacy()`` before calling ``locate`` for the most direct path.
+
+        Examples
+        --------
+        >>> import arkouda as ak
+        >>> import pandas as pd
+        >>> s = pd.Series([10, 20, 30], index=pd.Index([1, 2, 3])).ak.to_ak()
+        >>> out = s.ak.locate([3, 1])
+        >>> out.tolist()
+        [np.int64(10), np.int64(30)]
+        """
+        # Lift the pandas Series into a legacy Arkouda Series
+        aks = self.to_ak_legacy()
+
+        # Normalize common pandas key types to legacy Arkouda where possible
+        # (mirrors the “thin wrapper” approach used in the Index accessor).
+        if isinstance(key, (pd.Index, pd.MultiIndex)):
+            key = ArkoudaIndexAccessor(key).to_ak_legacy()
+        elif isinstance(key, pd.Series):
+            # For pandas Series keys, convert to legacy ak.Series to preserve key.index semantics.
+            key = ArkoudaSeriesAccessor(key).to_ak_legacy()
+
+        out_ak = aks.locate(key)
+
+        # Wrap result into an Arkouda-backed pandas Series
+        # (keep the returned index/name from the legacy result).
+        idx = ArkoudaIndexAccessor(out_ak.index.to_pandas()).to_ak()  # preserve names/levels
+        return _ak_array_to_pandas_series(out_ak.values, name=out_ak.name).set_axis(idx)
+
+    @staticmethod
+    def _from_return_msg(rep_msg: str) -> pd.Series:
+        """
+        Construct a pandas Series from a legacy Arkouda return message.
+
+        This mirrors :meth:`ArkoudaIndexAccessor.from_return_msg`. It calls the legacy
+        ``ak.Series.from_return_msg`` constructor, then immediately wraps the resulting
+        Arkouda arrays back into a pandas Series backed by Arkouda ExtensionArrays.
+
+        Parameters
+        ----------
+        rep_msg : str
+            The ``+ delimited`` string message returned by Arkouda server operations
+            that construct a Series.
+
+        Returns
+        -------
+        pd.Series
+            A pandas Series backed by Arkouda ExtensionArrays (no NumPy materialization).
+        """
+        ak_s = ak_Series.from_return_msg(rep_msg)
+
+        # Wrap values and index without materializing
+        out = _ak_array_to_pandas_series(ak_s.values, name=ak_s.name)
+
+        # Prefer wrapping the legacy index via the Index accessor helper path.
+        # We need a pandas Index/MultiIndex backed by EAs.
+        pd_idx = ArkoudaIndexAccessor.from_ak_legacy(ak_s.index)
+        return pd.Series(out.array, index=pd_idx, name=ak_s.name)
+
     def groupby(self) -> GroupBy:
         """
         Return an Arkouda GroupBy object for this Series, without materializing.
