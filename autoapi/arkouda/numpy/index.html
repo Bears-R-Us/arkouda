@@ -3139,7 +3139,7 @@ Parameter kept to maintain functionality of other calls. Only Truncate
 supported.
 By default, truncate (overwrite) output files, if they exist.
 If ‘append’, attempt to create new dataset in existing files.</p></li>
-<li><p><strong>compression</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> (</em><em>Optional</em><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
+<li><p><strong>compression</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> (</em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
 Sets the compression type used with Parquet files</p></li>
 </ul>
 </dd>
@@ -6219,7 +6219,7 @@ False otherwise.</p>
 <li><p><strong>values</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – These values are appended to a copy of arr.
 It must be of the correct shape (the same shape as arr, excluding axis).
 If axis is not specified, values can be any shape and will be flattened before use.</p></li>
-<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – The axis along which values are appended.
+<li><p><strong>axis</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – The axis along which values are appended.
 If axis is not given, both arr and values are flattened before use.</p></li>
 </ul>
 </dd>
@@ -8876,7 +8876,7 @@ of the original pdarray</p>
 <li><p><strong>arr</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array to remove elements from</p></li>
 <li><p><strong>obj</strong> (<em>slice</em><em>, </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The indices to remove from ‘arr’. If obj is a pdarray, it must
 have an integer or bool dtype.</p></li>
-<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The axis along which to remove elements. If None, the array will
+<li><p><strong>axis</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The axis along which to remove elements. If None, the array will
 be flattened before removing elements. Defaults to None.</p></li>
 </ul>
 </dd>
@@ -14307,7 +14307,7 @@ corresponding file.</p>
 <li><p><strong>dataset</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Name of the dataset to create in files (must not already exist)</p></li>
 <li><p><strong>mode</strong> (<em>{'truncate'</em><em>, </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
 If ‘append’, attempt to create new dataset in existing files.</p></li>
-<li><p><strong>compression</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> (</em><em>Optional</em><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
+<li><p><strong>compression</strong> (<a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> (</em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>)</em>) – (None | “snappy” | “gzip” | “brotli” | “zstd” | “lz4”)
 Sets the compression type used with Parquet files</p></li>
 </ul>
 </dd>
@@ -15304,7 +15304,7 @@ discarding values from left that do not appear in right.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>decimals</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em><em>]</em><em>, </em><em>default = None</em>) – for float pdarrays, the number of decimal places of accuracy for the round.
+<li><p><strong>decimals</strong> (<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em><em>]</em><em>, </em><em>default = None</em>) – for float pdarrays, the number of decimal places of accuracy for the round.
 May be None, positive, negative, or zero.  If None, zero is used.</p></li>
 </ul>
 </dd>
@@ -16790,7 +16790,7 @@ exactly three must be specified. If <code class="docutils literal notranslate"><
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>axes</strong> (<em>Tuple</em><em>[</em><em>int</em><em>,</em><em>...</em><em>] </em><em>Optional</em><em>, </em><em>defaults to None</em>) – If specified, must be a tuple which contains a permutation of the axes of pda.</p></li>
+<li><p><strong>axes</strong> (<em>Tuple</em><em>[</em><em>int</em><em>,</em><em>...</em><em>] </em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>, </em><em>defaults to None</em>) – If specified, must be a tuple which contains a permutation of the axes of pda.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

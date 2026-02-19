@@ -454,9 +454,9 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – If <cite>stop</cite> is None, this is the stop value and start is 0. Otherwise,
 this is the start value (inclusive).</p></li>
-<li><p><strong>stop</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The end value of the sequence (exclusive).</p></li>
+<li><p><strong>stop</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The end value of the sequence (exclusive).</p></li>
 <li><p><strong>step</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – Spacing between values (default is 1).</p></li>
-<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><em>Dtype</em><em>]</em>) – The data type of the output array. If None, use float64.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>Dtype</em><em>]</em>) – The data type of the output array. If None, use float64.</p></li>
 </ul>
 </dd>
 </dl>
@@ -477,9 +477,9 @@ this is the start value (inclusive).</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> (<a class="reference internal" href="../array_object/index.html#arkouda.array_api.array_object.Array" title="arkouda.array_api.array_object.Array"><em>Array</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>int</em><em>, </em><em>float</em><em>, </em><em>complex</em><em>,</em>) – sequence of scalars, buffer, pdarray, or numpy.ndarray
 The object to convert to an Array</p></li>
-<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><em>Dtype</em><em>]</em>) – The dtype of the resulting Array. If None, the dtype is inferred from the input object</p></li>
-<li><p><strong>device</strong> (<em>Optional</em><em>[</em><em>Device</em><em>]</em>) – The device on which to create the Array (not yet implemented)</p></li>
-<li><p><strong>copy</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>]</em>) – Whether to copy the input object (not yet implemented)</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>Dtype</em><em>]</em>) – The dtype of the resulting Array. If None, the dtype is inferred from the input object</p></li>
+<li><p><strong>device</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>Device</em><em>]</em>) – The device on which to create the Array (not yet implemented)</p></li>
+<li><p><strong>copy</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>]</em>) – Whether to copy the input object (not yet implemented)</p></li>
 </ul>
 </dd>
 </dl>
@@ -505,11 +505,11 @@ The object to convert to an Array</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> (<em>int</em>) – Number of rows in the output.</p></li>
-<li><p><strong>M</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Number of columns in the output. If None, defaults to N.</p></li>
+<li><p><strong>M</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>int</em><em>]</em>) – Number of columns in the output. If None, defaults to N.</p></li>
 <li><p><strong>k</strong> (<em>int</em>) – Index of the diagonal: 0 (the default) refers to the main diagonal, a
 positive value refers to an upper diagonal, and a negative value to a
 lower diagonal.</p></li>
-<li><p><strong>dtype</strong> (<em>Optional</em><em>[</em><em>Dtype</em><em>]</em>) – Data type of the returned array. If None, use float64.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>Dtype</em><em>]</em>) – Data type of the returned array. If None, use float64.</p></li>
 </ul>
 </dd>
 </dl>

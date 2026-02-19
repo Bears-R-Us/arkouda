@@ -474,7 +474,7 @@ a string, but either way it should take a single argument and return a
 single value. If a string, it should be a lambda function that takes a
 single argument, e.g. “lambda x,: x+1”. Note the dangling comma after
 the argument, this is required for string functions.</p></li>
-<li><p><strong>result_dtype</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – The dtype of the resulting pdarray. If None, the dtype of the resulting
+<li><p><strong>result_dtype</strong> (<a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – The dtype of the resulting pdarray. If None, the dtype of the resulting
 pdarray will be the same as the input pdarray. If a string, it should be
 a valid numpy dtype string, e.g. “float64”. If a numpy dtype, it should
 be a valid numpy dtype object, e.g. np.float64. This is not supported

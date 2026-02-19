@@ -387,6 +387,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
     <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
     <span class="n">TypeAlias</span><span class="p">,</span>
     <span class="n">TypeGuard</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
@@ -450,6 +451,8 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._bigint</span><span class="w"> </span><span class="kn">import</span> <span class="n">bigint</span><span class="p">,</span> <span class="n">bigint_</span>
 
+
+<span class="n">CastingKind</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;equiv&quot;</span><span class="p">,</span> <span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="s2">&quot;unsafe&quot;</span><span class="p">]</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;_datatype_check&quot;</span><span class="p">,</span>
@@ -907,15 +910,16 @@
 
     <span class="n">np_to</span> <span class="o">=</span> <span class="n">_to_np_dtype</span><span class="p">(</span><span class="n">to_dt</span><span class="p">)</span>
 
+    <span class="n">casting_kind</span><span class="p">:</span> <span class="n">CastingKind</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span> <span class="k">if</span> <span class="n">casting</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">casting</span>
     <span class="c1"># ① Python int scalar special-case: emulate old scalar rules for &quot;safe&quot;</span>
-    <span class="k">if</span> <span class="n">casting</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_dt</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">casting_kind</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_dt</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">scalar_result</span> <span class="o">=</span> <span class="n">_scalar_int_can_cast_safe</span><span class="p">(</span><span class="n">from_dt</span><span class="p">,</span> <span class="n">np_to</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">scalar_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="n">scalar_result</span><span class="p">)</span>
 
     <span class="c1"># ② Fallback: pure dtype-based NEP 50-style semantics</span>
     <span class="n">np_from</span> <span class="o">=</span> <span class="n">_to_np_dtype</span><span class="p">(</span><span class="n">from_dt</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">np_from</span><span class="p">,</span> <span class="n">np_to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">np_from</span><span class="p">,</span> <span class="n">np_to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting_kind</span><span class="p">))</span></div>
 
 
 

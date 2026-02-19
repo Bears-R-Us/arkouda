@@ -18,6 +18,7 @@ Classes
    arkouda.numpy.dtypes.ByteDType
    arkouda.numpy.dtypes.BytesDType
    arkouda.numpy.dtypes.CLongDoubleDType
+   arkouda.numpy.dtypes.CastingKind
    arkouda.numpy.dtypes.Complex128DType
    arkouda.numpy.dtypes.Complex64DType
    arkouda.numpy.dtypes.DType
@@ -40,6 +41,7 @@ Classes
    arkouda.numpy.dtypes.NUMBER_FORMAT_STRINGS
    arkouda.numpy.dtypes.NumericDTypes
    arkouda.numpy.dtypes.ObjectDType
+   arkouda.numpy.dtypes.Optional
    arkouda.numpy.dtypes.ScalarDTypes
    arkouda.numpy.dtypes.SeriesDTypes
    arkouda.numpy.dtypes.ShortDType
@@ -291,6 +293,20 @@ Module Contents
 
    See `numpy.dtype` for the typical way to create dtype instances
    and :ref:`arrays.dtypes` for additional information.
+
+
+.. py:class:: CastingKind(origin, args, *, inst=True, name=None)
+
+   Bases: :py:obj:`_GenericAlias`
+
+
+   The central part of the internal API.
+
+   This represents a generic version of type 'origin' with type arguments 'params'.
+   There are two kind of these aliases: user defined and special. The special ones
+   are wrappers around builtin collections and ABCs in collections.abc. These must
+   have 'name' always set. If 'inst' is False, then the alias can't be instantiated;
+   this is used by e.g. typing.List and typing.Dict.
 
 
 .. py:class:: Complex128DType
@@ -890,6 +906,14 @@ Module Contents
 
    See `numpy.dtype` for the typical way to create dtype instances
    and :ref:`arrays.dtypes` for additional information.
+
+
+.. py:class:: Optional
+
+   Bases: :py:obj:`_Final`
+
+
+   Optional[X] is equivalent to Union[X, None].
 
 
 .. py:class:: ScalarDTypes

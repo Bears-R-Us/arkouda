@@ -420,7 +420,7 @@
 <li><p><strong>values</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – These values are appended to a copy of arr.
 It must be of the correct shape (the same shape as arr, excluding axis).
 If axis is not specified, values can be any shape and will be flattened before use.</p></li>
-<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – The axis along which values are appended.
+<li><p><strong>axis</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>int</em><em>]</em><em>, </em><em>default=None</em>) – The axis along which values are appended.
 If axis is not given, both arr and values are flattened before use.</p></li>
 </ul>
 </dd>
@@ -459,7 +459,7 @@ If axis is None, out is a flattened array.</p>
 <li><p><strong>arr</strong> (<a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array to remove elements from</p></li>
 <li><p><strong>obj</strong> (<em>slice</em><em>, </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><em>int</em><em>, </em><em>Sequence</em><em> of </em><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, or </em><a class="reference internal" href="../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The indices to remove from ‘arr’. If obj is a pdarray, it must
 have an integer or bool dtype.</p></li>
-<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The axis along which to remove elements. If None, the array will
+<li><p><strong>axis</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The axis along which to remove elements. If None, the array will
 be flattened before removing elements. Defaults to None.</p></li>
 </ul>
 </dd>
