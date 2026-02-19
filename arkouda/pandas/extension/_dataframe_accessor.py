@@ -371,11 +371,17 @@ class ArkoudaDataFrameAccessor:
         2  3  c
         """
         from arkouda.numpy.pdarraycreation import array as ak_array
+        from arkouda.pandas.extension import ArkoudaIndexAccessor
+
+        idx = ArkoudaIndexAccessor(self._obj.index).to_ak()
 
         cols = {}
         for name, col in self._obj.items():
-            cols[name] = ArkoudaExtensionArray._from_sequence(ak_array(col.values))
-        return pd_DataFrame(cols)
+            if isinstance(col.array, ArkoudaExtensionArray):
+                cols[name] = col.array
+            else:
+                cols[name] = ArkoudaExtensionArray._from_sequence(ak_array(col.values))
+        return pd_DataFrame(cols, index=idx)
 
     def collect(self) -> pd_DataFrame:
         """
