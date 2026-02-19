@@ -618,7 +618,7 @@
 <span class="sd">        Instead of materializing columns into NumPy arrays, this function</span>
 <span class="sd">        wraps each underlying Arkouda server-side array in the appropriate</span>
 <span class="sd">        ``ArkoudaExtensionArray`` subclass (``ArkoudaArray``,</span>
-<span class="sd">        ``ArkoudaStringArray``, or ``ArkoudaCategoricalArray``).</span>
+<span class="sd">        ``ArkoudaStringArray``, or ``ArkoudaCategorical``).</span>
 <span class="sd">        The resulting pandas ``DataFrame`` therefore keeps all data on the</span>
 <span class="sd">        Arkouda server, enabling scalable operations without transferring</span>
 <span class="sd">        data to the Python client.</span>
@@ -638,7 +638,7 @@
 
 <span class="sd">            * :class:`ArkoudaArray`</span>
 <span class="sd">            * :class:`ArkoudaStringArray`</span>
-<span class="sd">            * :class:`ArkoudaCategoricalArray`</span>
+<span class="sd">            * :class:`ArkoudaCategorical`</span>
 
 <span class="sd">            No materialization to NumPy occurs.</span>
 <span class="sd">            All column data remain server-resident.</span>
@@ -698,7 +698,7 @@
 <span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_string_array.ArkoudaStringArray&#39;&gt;</span>
 
 <span class="sd">        &gt;&gt;&gt; type(pdf2[&quot;c&quot;].array)</span>
-<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategoricalArray&#39;&gt;</span>
+<span class="sd">        &lt;class &#39;arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategorical&#39;&gt;</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_akdf_to_pandas_no_copy</span><span class="p">(</span><span class="n">akdf</span><span class="p">)</span></div>

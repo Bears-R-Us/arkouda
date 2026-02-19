@@ -621,7 +621,7 @@
 <span class="sd">    Generic Arkouda-backed dtype for pandas construction.</span>
 
 <span class="sd">    Using dtype=&quot;ak&quot; triggers ArkoudaExtensionArray._from_sequence, which</span>
-<span class="sd">    dispatches to ArkoudaArray / ArkoudaStringArray / ArkoudaCategoricalArray.</span>
+<span class="sd">    dispatches to ArkoudaArray / ArkoudaStringArray / ArkoudaCategorical.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;ak&quot;</span>
@@ -1012,7 +1012,7 @@
 <span class="sd">    Arkouda-backed categorical dtype.</span>
 
 <span class="sd">    This dtype integrates Arkouda&#39;s distributed ``Categorical`` type with</span>
-<span class="sd">    the pandas ExtensionArray interface via :class:`ArkoudaCategoricalArray`.</span>
+<span class="sd">    the pandas ExtensionArray interface via :class:`ArkoudaCategorical`.</span>
 <span class="sd">    It enables pandas objects (Series, DataFrame) to hold categorical data</span>
 <span class="sd">    stored and processed on the Arkouda server, while exposing familiar</span>
 <span class="sd">    pandas APIs.</span>
@@ -1020,7 +1020,7 @@
 <span class="sd">    Methods</span>
 <span class="sd">    -------</span>
 <span class="sd">    construct_array_type()</span>
-<span class="sd">        Returns the :class:`ArkoudaCategoricalArray` used as the storage class.</span>
+<span class="sd">        Returns the :class:`ArkoudaCategorical` used as the storage class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;category&quot;</span>
@@ -1039,11 +1039,11 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        type</span>
-<span class="sd">            The :class:`ArkoudaCategoricalArray` class associated with this dtype.</span>
+<span class="sd">            The :class:`ArkoudaCategorical` class associated with this dtype.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_categorical_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_categorical_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategorical</span>
 
-        <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span></div>
+        <span class="k">return</span> <span class="n">ArkoudaCategorical</span></div>
 </div>
 
 </pre></div>

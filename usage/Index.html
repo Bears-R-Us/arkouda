@@ -395,7 +395,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<em>List</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
+<li><p><strong>values</strong> (<em>List</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="#arkouda.Index" title="arkouda.Index"><em>Index</em></a>)</p></li>
 <li><p><strong>name</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
 <li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
 If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
@@ -464,14 +464,14 @@ If True, list values will remain as a list, provided the data length is less tha
 <dd><p>Return the permutation that sorts the Index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True (default), sort in ascending order.
+<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True (default), sort in ascending order.
 If False, sort in descending order.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indices that would sort the Index.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list or <a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p>list or <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -489,13 +489,13 @@ If False, sort in descending order.</p>
 <dd><p>Return the indices that would sort the MultiIndex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If False, the result is in descending order.</p>
+<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>default True</em>) – If False, the result is in descending order.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An array of indices that would sort the MultiIndex.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -509,7 +509,7 @@ If False, sort in descending order.</p>
 <dd><p>Check for presence of key(s) in the Index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><em>scalar</em>) – The value(s) to look up in the Index. If a scalar is provided, it will
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> or </em><em>scalar</em>) – The value(s) to look up in the Index. If a scalar is provided, it will
 be converted to a one-element array.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -517,7 +517,7 @@ be converted to a one-element array.</p>
 the Index are present in <cite>key</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If <cite>key</cite> cannot be converted to an arkouda array.</p>

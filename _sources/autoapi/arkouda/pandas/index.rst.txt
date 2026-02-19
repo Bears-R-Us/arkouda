@@ -43,7 +43,7 @@ Classes
    arkouda.pandas.ArkoudaArray
    arkouda.pandas.ArkoudaBigintDtype
    arkouda.pandas.ArkoudaBoolDtype
-   arkouda.pandas.ArkoudaCategoricalArray
+   arkouda.pandas.ArkoudaCategorical
    arkouda.pandas.ArkoudaCategoricalDtype
    arkouda.pandas.ArkoudaFloat64Dtype
    arkouda.pandas.ArkoudaInt64Dtype
@@ -511,7 +511,7 @@ Package Contents
       instances of `type`.
 
 
-.. py:class:: ArkoudaCategoricalArray(data: arkouda.categorical.Categorical | ArkoudaCategoricalArray | numpy.ndarray | Sequence[Any])
+.. py:class:: ArkoudaCategorical(data: arkouda.categorical.Categorical | ArkoudaCategorical | numpy.ndarray | Sequence[Any])
 
    Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
@@ -523,9 +523,9 @@ Package Contents
 
    :param data: Input to wrap or convert.
                 - If ``Categorical``, used directly.
-                - If another ``ArkoudaCategoricalArray``, its backing object is reused.
+                - If another ``ArkoudaCategorical``, its backing object is reused.
                 - If list/tuple/ndarray, converted via ``ak.Categorical(ak.array(data))``.
-   :type data: Categorical | ArkoudaCategoricalArray | ndarray | Sequence[Any]
+   :type data: Categorical | ArkoudaCategorical | ndarray | Sequence[Any]
 
    :raises TypeError: If ``data`` cannot be converted to Arkouda ``Categorical``.
 
@@ -553,7 +553,7 @@ Package Contents
 
       * If ``dtype`` is categorical (pandas ``category`` / ``CategoricalDtype`` /
         ``ArkoudaCategoricalDtype``), returns an Arkouda-backed
-        ``ArkoudaCategoricalArray`` (optionally copied).
+        ``ArkoudaCategorical`` (optionally copied).
       * If ``dtype`` requests ``object``, returns a NumPy ``ndarray`` of dtype object
         containing the category labels (materialized to the client).
       * If ``dtype`` requests a string dtype, returns an Arkouda-backed
@@ -577,8 +577,8 @@ Package Contents
       Casting to ``category`` returns an Arkouda-backed categorical array:
 
       >>> import arkouda as ak
-      >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
-      >>> c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+      >>> from arkouda.pandas.extension import ArkoudaCategorical
+      >>> c = ArkoudaCategorical(ak.Categorical(ak.array(["x", "y", "x"])))
       >>> out = c.astype("category")
       >>> out is c
       False
@@ -604,7 +604,7 @@ Package Contents
 
       Casting to another dtype casts the labels-as-strings and returns an Arkouda-backed array:
 
-      >>> c_num = ArkoudaCategoricalArray(ak.Categorical(ak.array(["1", "2", "3"])))
+      >>> c_num = ArkoudaCategorical(ak.Categorical(ak.array(["1", "2", "3"])))
       >>> a = c_num.astype("int64")
       >>> a.to_ndarray()
       array([1, 2, 3])
@@ -766,9 +766,9 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
+      >>> from arkouda.pandas.extension import ArkoudaCategorical
       >>>
-      >>> a = ArkoudaCategoricalArray(["a", "b", "a", "c", "b", "a"])
+      >>> a = ArkoudaCategorical(["a", "b", "a", "c", "b", "a"])
       >>> a.value_counts()
       a    3
       b    2
@@ -785,14 +785,14 @@ Package Contents
    Arkouda-backed categorical dtype.
 
    This dtype integrates Arkouda's distributed ``Categorical`` type with
-   the pandas ExtensionArray interface via :class:`ArkoudaCategoricalArray`.
+   the pandas ExtensionArray interface via :class:`ArkoudaCategorical`.
    It enables pandas objects (Series, DataFrame) to hold categorical data
    stored and processed on the Arkouda server, while exposing familiar
    pandas APIs.
 
    .. method:: construct_array_type()
 
-      Returns the :class:`ArkoudaCategoricalArray` used as the storage class.
+      Returns the :class:`ArkoudaCategorical` used as the storage class.
 
 
 
@@ -802,7 +802,7 @@ Package Contents
 
       Return the ExtensionArray subclass that handles storage for this dtype.
 
-      :returns: The :class:`ArkoudaCategoricalArray` class associated with this dtype.
+      :returns: The :class:`ArkoudaCategorical` class associated with this dtype.
       :rtype: type
 
 

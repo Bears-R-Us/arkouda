@@ -664,7 +664,7 @@
 
 <span class="sd">        * :class:`ArkoudaArray` for numeric :class:`pdarray`</span>
 <span class="sd">        * :class:`ArkoudaStringArray` for :class:`Strings`</span>
-<span class="sd">        * :class:`ArkoudaCategoricalArray` for pandas-style</span>
+<span class="sd">        * :class:`ArkoudaCategorical` for pandas-style</span>
 <span class="sd">          :class:`~arkouda.pandas.categorical.Categorical`</span>
 
 <span class="sd">        This method is the primary construction hook used by pandas when creating</span>
@@ -689,7 +689,7 @@
 <span class="sd">        ArkoudaExtensionArray</span>
 <span class="sd">            An instance of :class:`ArkoudaArray`,</span>
 <span class="sd">            :class:`ArkoudaStringArray`, or</span>
-<span class="sd">            :class:`ArkoudaCategoricalArray`, depending on the type of the</span>
+<span class="sd">            :class:`ArkoudaCategorical`, depending on the type of the</span>
 <span class="sd">            resulting Arkouda server-side object.</span>
 
 <span class="sd">        Raises</span>
@@ -733,7 +733,7 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span> <span class="k">as</span> <span class="n">ak_Categorical</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_categorical_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_categorical_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategorical</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._arkouda_string_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaStringArray</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaCategoricalDtype</span><span class="p">,</span> <span class="n">ArkoudaDtype</span>
 
@@ -771,7 +771,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">,</span> <span class="n">Strings</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">ArkoudaStringArray</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">,</span> <span class="n">ak_Categorical</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">ArkoudaCategoricalArray</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ArkoudaCategorical</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span>
 
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported Arkouda construction result: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ak_obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 

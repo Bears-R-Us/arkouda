@@ -451,19 +451,19 @@ This mimics the behavior we see in numpy</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>int</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – If a is an integer, randomly sample from ak.arange(a).
+<li><p><strong>a</strong> (<em>int</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – If a is an integer, randomly sample from ak.arange(a).
 If a is a pdarray, randomly sample from a.</p></li>
 <li><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of elements to be sampled</p></li>
-<li><p><strong>replace</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, sample with replacement. Otherwise sample without replacement.
+<li><p><strong>replace</strong> (<a class="reference internal" href="../../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, sample with replacement. Otherwise sample without replacement.
 Defaults to True</p></li>
-<li><p><strong>p</strong> (<a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – p is the probabilities or weights associated with each element of a</p></li>
+<li><p><strong>p</strong> (<a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – p is the probabilities or weights associated with each element of a</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A pdarray containing the sampled values or a single random value if size not provided.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, numeric_scalar</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, numeric_scalar</p>
 </dd>
 </dl>
 </dd></dl>
@@ -489,9 +489,9 @@ of the exponential distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The scale parameter, <span class="math notranslate nohighlight">\(\beta = 1/\lambda\)</span>. Must be
+<li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The scale parameter, <span class="math notranslate nohighlight">\(\beta = 1/\lambda\)</span>. Must be
 non-negative. An array must have the same size as the size argument.</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<a class="reference internal" href="../../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -500,7 +500,7 @@ non-negative. An array must have the same size as the size argument.</p></li>
 <dd class="field-even"><p>Drawn samples from the parameterized exponential distribution.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -515,13 +515,13 @@ If high is None (the default), then results are from 0 to low.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – Lowest (signed) integers to be drawn from the distribution (unless high=None,
+<li><p><strong>low</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Lowest (signed) integers to be drawn from the distribution (unless high=None,
 in which case this parameter is 0 and this value is used for high).</p></li>
-<li><p><strong>high</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – If provided, one above the largest (signed) integer to be drawn from the distribution
+<li><p><strong>high</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – If provided, one above the largest (signed) integer to be drawn from the distribution
 (see above for behavior if high=None)</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>dtype</strong> (<a class="reference internal" href="../../../array_api/array_object/index.html#arkouda.array_api.array_object.Array.dtype" title="arkouda.array_api.array_object.Array.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) – Desired dtype of the result. The default value is ak.int64.</p></li>
-<li><p><strong>endpoint</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If true, sample from the interval [low, high] instead of the default [low, high).
+<li><p><strong>endpoint</strong> (<a class="reference internal" href="../../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If true, sample from the interval [low, high] instead of the default [low, high).
 Defaults to False</p></li>
 </ul>
 </dd>
@@ -530,7 +530,7 @@ Defaults to False</p></li>
 or a single such random int if size not provided.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, numeric_scalar</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, numeric_scalar</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -553,9 +553,9 @@ loc (location or mean, also median), and scale (&gt;0).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Default of 0.</p></li>
-<li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Must be non-negative. Default is 1.</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Default of 0.</p></li>
+<li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Parameter of the distribution. Must be non-negative. Default is 1.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 </ul>
 </dd>
 </dl>
@@ -575,7 +575,7 @@ is a logistically distributed random variable.</p>
 <dd class="field-odd"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -600,9 +600,9 @@ but of the underlying normal distribution it is derived from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
-<li><p><strong>sigma</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>mean</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
+<li><p><strong>sigma</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<a class="reference internal" href="../../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -626,7 +626,7 @@ the sum of a large number of independent, identically-distributed variables.</p>
 <dd class="field-odd"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -648,9 +648,9 @@ the sum of a large number of independent, identically-distributed variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
-<li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>loc</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Mean of the distribution. Default of 0.</p></li>
+<li><p><strong>scale</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Standard deviation of the distribution. Must be non-negative. Default of 1.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<a class="reference internal" href="../../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -669,7 +669,7 @@ The square of the standard deviation, <span class="math notranslate nohighlight"
 <dd class="field-odd"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -691,7 +691,7 @@ The square of the standard deviation, <span class="math notranslate nohighlight"
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>int</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – If x is an integer, randomly permute ak.arange(x). If x is an array,
+<li><p><strong>x</strong> (<em>int</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – If x is an integer, randomly permute ak.arange(x). If x is an array,
 make a copy and shuffle the elements randomly.</p></li>
 <li><p><strong>method</strong> (<em>str = 'Argsort'</em>) – <p>The method for generating the permutation.
 Allowed values: ‘FisherYates’, ‘Argsort’</p>
@@ -704,7 +704,7 @@ an argsort performed on randomly generated floats.</p>
 <dd class="field-even"><p>pdarray of permuted elements</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -723,9 +723,9 @@ an argsort performed on randomly generated floats.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lam</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Expected number of events occurring in a fixed-time interval, must be &gt;= 0.
+<li><p><strong>lam</strong> (<em>float</em><em> or </em><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Expected number of events occurring in a fixed-time interval, must be &gt;= 0.
 An array must have the same size as the size argument.</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 </ul>
 </dd>
 </dl>
@@ -743,7 +743,7 @@ within the observed interval <span class="math notranslate nohighlight">\(\lambd
 <dd class="field-odd"><p>Pdarray of ints (unless size=None, in which case a single int is returned).</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -762,13 +762,13 @@ within the observed interval <span class="math notranslate nohighlight">\(\lambd
 <p>Results are from the uniform distribution over the stated interval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p>
+<dd class="field-odd"><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Pdarray of random floats (unless size=None, in which case a single float is returned).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -800,7 +800,7 @@ using the specified strategy. Three methods are available:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array to be shuffled in place. Must be a one-dimensional Arkouda array.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The array to be shuffled in place. Must be a one-dimensional Arkouda array.</p></li>
 <li><p><strong>method</strong> (<em>{&quot;FisherYates&quot;</em><em>,</em><em>&quot;MergeShuffle&quot;</em><em>,</em><em>&quot;Feistel&quot;}</em><em>, </em><em>optional</em>) – <ul>
 <li><p>“FisherYates”: A <strong>serial, global</strong> Fisher–Yates shuffle implemented in Chapel.
 Simple and fast for small/medium arrays, but <strong>not distributed</strong> — the entire
@@ -869,7 +869,7 @@ with a scale parameter of 1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<a class="reference internal" href="../../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘inv’ or ‘zig’. ‘inv’ uses the default inverse CDF method.
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -878,7 +878,7 @@ with a scale parameter of 1.</p>
 <dd class="field-even"><p>Drawn samples from the standard exponential distribution.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -893,15 +893,15 @@ where both parameters are &gt; 0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a>) – specified parameter (sometimes designated “k”)</p></li>
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>shape</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a>) – specified parameter (sometimes designated “k”)</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -928,7 +928,7 @@ where both parameters are &gt; 0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<a class="reference internal" href="../../dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../../index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars"><em>numeric_scalars</em></a><em>, </em><em>optional</em>) – Output shape. Default is None, in which case a single value is returned.</p></li>
 <li><p><strong>method</strong> (<a class="reference internal" href="../../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Either ‘box’ or ‘zig’. ‘box’ uses the Box–Muller transform
 ‘zig’ uses the Ziggurat method.</p></li>
 </ul>
@@ -937,7 +937,7 @@ where both parameters are &gt; 0.</p>
 <dd class="field-even"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -981,7 +981,7 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
 <dd class="field-even"><p>Pdarray of floats (unless size=None, in which case a single float is returned).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
