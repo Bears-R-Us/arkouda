@@ -1039,3 +1039,61 @@ class TestGroupBy:
         ak_keys, ak_vals = g.aggregate(vals, "min", skipna=True)
 
         assert_equal(ak_vals, ak.array([np.nan, 3.5, 2]))
+
+    def test_groupby_mean_accepts_pandas_series_backed_by_ak_extensionarray(self):
+        n = 10
+        keys = ak.arange(n) % 2
+        gb = ak.GroupBy(keys)
+
+        # Arkouda pdarray values
+        vals = ak.arange(n)
+
+        # pandas Series backed by ArkoudaExtensionArray
+        s = pd.Series(pd.array(vals, dtype="ak_int64"))
+
+        # baseline: pdarray
+        _, expected = gb.mean(vals)
+
+        # new behavior: Series
+        _, got = gb.mean(s)
+
+        assert ak.allclose(got, expected)
+
+    def test_groupby_mean_accepts_arkouda_extensionarray_directly(self):
+        n = 12
+        keys = ak.arange(n) % 2
+        gb = ak.GroupBy(keys)
+
+        vals = ak.arange(n)
+        ea = pd.array(vals, dtype="ak_int64")  # this is an ArkoudaExtensionArray
+
+        # baseline
+        _, expected = gb.mean(vals)
+
+        # new behavior: ExtensionArray directly
+        _, got = gb.mean(ea)
+
+        assert ak.allclose(got, expected)
+
+    def test_groupby_aggregate_rejects_non_arkouda_series(self):
+        n = 6
+        keys = ak.arange(n) % 2
+        gb = ak.GroupBy(keys)
+
+        s = pd.Series([1, 2, 3, 4, 5, 6])
+
+        with pytest.raises(TypeError, match="Unsupported values type for Arkouda GroupBy reductions"):
+            gb.mean(s)
+
+    def test_groupby_aggregate_passthrough_pdarray(self):
+        n = 8
+        keys = ak.arange(n) % 2
+        gb = ak.GroupBy(keys)
+
+        vals = ak.arange(n)
+
+        # Should still work and match itself
+        _, got = gb.mean(vals)
+        _, expected = gb.aggregate(vals, "mean")
+
+        assert ak.allclose(got, expected)
