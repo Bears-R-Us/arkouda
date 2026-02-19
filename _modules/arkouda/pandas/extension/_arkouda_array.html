@@ -402,7 +402,6 @@
     <span class="n">ArkoudaInt64Dtype</span><span class="p">,</span>
     <span class="n">ArkoudaUint8Dtype</span><span class="p">,</span>
     <span class="n">ArkoudaUint64Dtype</span><span class="p">,</span>
-    <span class="n">_ArkoudaBaseDtype</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -496,6 +495,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_sequence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">scalars</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
 
+        <span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaBigintDtype</span>
+
         <span class="c1"># normalize dtype input</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -504,12 +505,9 @@
                 <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;bigint&quot;</span><span class="p">,</span> <span class="s2">&quot;ak.bigint&quot;</span><span class="p">}</span>
             <span class="p">)</span>
             <span class="ow">or</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="n">ArkoudaBigintDtype</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ArkoudaBigintDtype</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;bigint&quot;</span>
-
-        <span class="c1"># If pandas passes our own EA dtype, ignore it and infer from data</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_ArkoudaBaseDtype</span><span class="p">):</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span>
 
         <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;numpy_dtype&quot;</span><span class="p">):</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">numpy_dtype</span>
