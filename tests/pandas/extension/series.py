@@ -26,20 +26,20 @@ class TestSeriesExtension:
 
     def test_series_from_categorical(self):
         from arkouda.pandas.extension._arkouda_categorical_array import (
-            ArkoudaCategoricalArray,
+            ArkoudaCategorical,
         )
 
-        s_arr = ArkoudaCategoricalArray(ak.Categorical(ak.array(["high", "low", "medium", "low"])))
+        s_arr = ArkoudaCategorical(ak.Categorical(ak.array(["high", "low", "medium", "low"])))
         s = pd.Series(s_arr)
         assert s.iloc[1] == "low"
         assert s.iloc[3] == "low"
 
     def test_categorical_series_take_with_fill(self):
         from arkouda.pandas.extension._arkouda_categorical_array import (
-            ArkoudaCategoricalArray,
+            ArkoudaCategorical,
         )
 
-        s_arr = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "z"])))
+        s_arr = ArkoudaCategorical(ak.Categorical(ak.array(["x", "y", "z"])))
         s = pd.Series(s_arr)
         taken = pd.Series(s.values.take([1, -1, 0], allow_fill=True, fill_value="x"))
         assert taken.iloc[0] == "y"

@@ -274,7 +274,7 @@ class ArkoudaExtensionArray(ExtensionArray):
 
         * :class:`ArkoudaArray` for numeric :class:`pdarray`
         * :class:`ArkoudaStringArray` for :class:`Strings`
-        * :class:`ArkoudaCategoricalArray` for pandas-style
+        * :class:`ArkoudaCategorical` for pandas-style
           :class:`~arkouda.pandas.categorical.Categorical`
 
         This method is the primary construction hook used by pandas when creating
@@ -299,7 +299,7 @@ class ArkoudaExtensionArray(ExtensionArray):
         ArkoudaExtensionArray
             An instance of :class:`ArkoudaArray`,
             :class:`ArkoudaStringArray`, or
-            :class:`ArkoudaCategoricalArray`, depending on the type of the
+            :class:`ArkoudaCategorical`, depending on the type of the
             resulting Arkouda server-side object.
 
         Raises
@@ -343,7 +343,7 @@ class ArkoudaExtensionArray(ExtensionArray):
         from arkouda.numpy.strings import Strings
         from arkouda.pandas.categorical import Categorical as ak_Categorical
         from arkouda.pandas.extension._arkouda_array import ArkoudaArray
-        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategoricalArray
+        from arkouda.pandas.extension._arkouda_categorical_array import ArkoudaCategorical
         from arkouda.pandas.extension._arkouda_string_array import ArkoudaStringArray
         from arkouda.pandas.extension._dtypes import ArkoudaCategoricalDtype, ArkoudaDtype
 
@@ -381,7 +381,7 @@ class ArkoudaExtensionArray(ExtensionArray):
         if isinstance(ak_obj, Strings):
             return ArkoudaStringArray(ak_obj)
         if isinstance(ak_obj, ak_Categorical):
-            return ArkoudaCategoricalArray(ak_obj)
+            return ArkoudaCategorical(ak_obj)
 
         raise TypeError(f"Unsupported Arkouda construction result: {type(ak_obj).__name__}")
 

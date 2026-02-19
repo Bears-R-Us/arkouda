@@ -402,7 +402,7 @@ from arkouda.pandas import (
     series,
     ArkoudaArray,
     ArkoudaStringArray,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
     ArkoudaBoolDtype,
     ArkoudaCategoricalDtype,
     ArkoudaInt64Dtype,

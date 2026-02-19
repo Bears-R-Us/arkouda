@@ -12,7 +12,7 @@ from arkouda.numpy.strings import Strings
 from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.extension import (
     ArkoudaArray,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
     ArkoudaExtensionArray,
     ArkoudaStringArray,
 )
@@ -38,7 +38,7 @@ class TestArkoudaExtensionArray:
 
         - "numeric"      -> ArkoudaArray
         - "strings"      -> ArkoudaStringsArray
-        - "categorical"  -> ArkoudaCategoricalArray
+        - "categorical"  -> ArkoudaCategorical
         """
         kind = request.param
 
@@ -53,7 +53,7 @@ class TestArkoudaExtensionArray:
         elif kind == "categorical":
             base = ak.array(["a", "b", "c", "a", "b"])
             cat = ak.Categorical(base)
-            arr = ArkoudaCategoricalArray(cat)
+            arr = ArkoudaCategorical(cat)
 
         else:  # pragma: no cover - defensive
             raise ValueError(f"Unexpected kind: {kind}")
@@ -297,7 +297,7 @@ class TestArkoudaExtensionArray:
         for arr in [
             ArkoudaArray(ak.array([1, 2, 3])),
             ArkoudaStringArray(ak.array(["a", "b"])),
-            ArkoudaCategoricalArray(ak.Categorical(ak.array(["a", "b"]))),
+            ArkoudaCategorical(ak.Categorical(ak.array(["a", "b"]))),
         ]:
             out = type(arr)._concat_same_type([arr])
             # Should be the same object (no new allocation)
@@ -329,11 +329,11 @@ class TestArkoudaExtensionArray:
     def test_concat_categorical_happy_path_contents_and_length(self):
         s1 = ak.array(["r", "g", "b"])
         s2 = ak.array(["g", "r"])
-        a = ArkoudaCategoricalArray(ak.Categorical(s1))
-        b = ArkoudaCategoricalArray(ak.Categorical(s2))
+        a = ArkoudaCategorical(ak.Categorical(s1))
+        b = ArkoudaCategorical(ak.Categorical(s2))
 
-        out = ArkoudaCategoricalArray._concat_same_type([a, b])
-        assert isinstance(out, ArkoudaCategoricalArray)
+        out = ArkoudaCategorical._concat_same_type([a, b])
+        assert isinstance(out, ArkoudaCategorical)
         assert len(out) == len(a) + len(b)
         # Compare as numpy arrays of labels
         assert_equal(out._data, ak.Categorical(ak.array(["r", "g", "b", "g", "r"])))
@@ -518,7 +518,7 @@ class TestArkoudaExtensionArray:
         """
         s = ak.array(["red", "blue", "red", "green"])
         cat = ak.Categorical(s)  # construct from Strings
-        a = ArkoudaCategoricalArray(cat)
+        a = ArkoudaCategorical(cat)
         codes, uniques = a.factorize()
 
         # order of first-appearance: ["red", "blue", "green"]
@@ -543,7 +543,7 @@ class TestArkoudaExtensionArray:
         Verify that ArkoudaExtensionArray._from_sequence chooses the right subclass.
         * pdarray          -> ArkoudaArray
         * Strings          -> ArkoudaStringArray
-        * Categorical      -> ArkoudaCategoricalArray
+        * Categorical      -> ArkoudaCategorical
         * Python sequence  -> ArkoudaArray (via ak.array -> pdarray)
         """
         # pdarray -> ArkoudaArray
@@ -560,11 +560,11 @@ class TestArkoudaExtensionArray:
         assert isinstance(ea_str, ArkoudaStringArray)
         assert isinstance(ea_str._data, Strings)
 
-        # Categorical -> ArkoudaCategoricalArray
+        # Categorical -> ArkoudaCategorical
         ak_labels = ak.array(["low", "low", "high"])
         cat = Categorical(ak_labels)
         ea_cat = ArkoudaExtensionArray._from_sequence(cat)
-        assert isinstance(ea_cat, ArkoudaCategoricalArray)
+        assert isinstance(ea_cat, ArkoudaCategorical)
         assert isinstance(ea_cat._data, Categorical)
 
         # Plain Python sequence -> ArkoudaArray via ak.array -> pdarray

@@ -12,7 +12,7 @@ from arkouda.numpy.pdarraycreation import array as ak_array
 from arkouda.pandas.extension import (
     ArkoudaArray,
     ArkoudaBoolDtype,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
     ArkoudaExtensionArray,
     ArkoudaFloat64Dtype,
     ArkoudaInt64Dtype,
@@ -329,7 +329,7 @@ class TestArkoudaArrayExtension:
 
         - "numeric"      -> ArkoudaArray
         - "strings"      -> ArkoudaStringsArray
-        - "categorical"  -> ArkoudaCategoricalArray
+        - "categorical"  -> ArkoudaCategorical
         """
         kind = request.param
 
@@ -344,7 +344,7 @@ class TestArkoudaArrayExtension:
         elif kind == "categorical":
             base = ak.array(["a", "b", "c", "a", "b"])
             cat = ak.Categorical(base)
-            arr = ArkoudaCategoricalArray(cat)
+            arr = ArkoudaCategorical(cat)
 
         else:  # pragma: no cover - defensive
             raise ValueError(f"Unexpected kind: {kind}")

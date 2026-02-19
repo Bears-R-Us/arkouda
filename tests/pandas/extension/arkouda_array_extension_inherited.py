@@ -9,7 +9,7 @@ import arkouda as ak
 from arkouda import Categorical
 from arkouda.pandas.extension import (
     ArkoudaArray,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
     ArkoudaStringArray,
 )
 
@@ -38,7 +38,7 @@ class TestArkoudaArrayExplodeInherited:
             # String-backed example
             (ArkoudaStringArray, ["a", "b", "c"]),
             # Categorical-backed example
-            (ArkoudaCategoricalArray, ["red", "blue", "red"]),
+            (ArkoudaCategorical, ["red", "blue", "red"]),
         ],
     )
     def test_explode_scalar_data_roundtrip(self, ea_cls, values):
@@ -50,10 +50,10 @@ class TestArkoudaArrayExplodeInherited:
         - return lengths as an ndarray of ones with shape (len(arr),).
 
         This should hold for ArkoudaArray, ArkoudaStringsArray, and
-        ArkoudaCategoricalArray when they wrap scalar (non-list-like) data.
+        ArkoudaCategorical when they wrap scalar (non-list-like) data.
         """
         # Construct the underlying Arkouda data depending on EA type
-        if ea_cls is ArkoudaCategoricalArray:
+        if ea_cls is ArkoudaCategorical:
             # Categorical typically wraps an Arkouda Categorical built from values
             ak_data = Categorical(ak.array(values))
         else:
@@ -83,7 +83,7 @@ class TestArkoudaArrayExplodeInherited:
         [
             (ArkoudaArray, [1, 2, 3]),
             (ArkoudaStringArray, ["x", "y", "z"]),
-            (ArkoudaCategoricalArray, ["low", "med", "high"]),
+            (ArkoudaCategorical, ["low", "med", "high"]),
         ],
     )
     def test_explode_does_not_change_series_values(self, ea_cls, values):
@@ -93,7 +93,7 @@ class TestArkoudaArrayExplodeInherited:
         and index. Arkouda-backed Series of all three EA types should
         follow that behavior.
         """
-        if ea_cls is ArkoudaCategoricalArray:
+        if ea_cls is ArkoudaCategorical:
             ak_data = Categorical(ak.array(values))
         else:
             ak_data = ak.array(values)
@@ -177,7 +177,7 @@ class TestArkoudaArrayFormatterInherited:
     # NEW: Run the same formatter semantics tests for:
     #   - ArkoudaArray
     #   - ArkoudaStringArray
-    #   - ArkoudaCategoricalArray
+    #   - ArkoudaCategorical
     # ------------------------------------------------------------------
 
     @pytest.mark.parametrize(
@@ -186,7 +186,7 @@ class TestArkoudaArrayFormatterInherited:
             (ArkoudaArray, lambda: ak.arange(3)),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z"])),
             ),
         ],
@@ -211,7 +211,7 @@ class TestArkoudaArrayFormatterInherited:
             (ArkoudaArray, lambda: ak.arange(3)),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z"])),
             ),
         ],
@@ -236,7 +236,7 @@ class TestArkoudaArrayFormatterInherited:
             (ArkoudaArray, lambda: ak.arange(3)),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z"])),
             ),
         ],
@@ -271,7 +271,7 @@ class TestArkoudaArrayFromScalarsInherited:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d", "e"])),
             # categorical
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
             ),
         ],
@@ -301,7 +301,7 @@ class TestArkoudaArrayFromScalarsInherited:
             (ArkoudaArray, lambda: ak.arange(3)),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z"])),
             ),
         ],
@@ -346,7 +346,7 @@ class TestArkoudaArrayGetReprFooterInherited:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d", "e"])),
             # categorical
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
             ),
         ],
@@ -372,7 +372,7 @@ class TestArkoudaArrayGetReprFooterInherited:
             (ArkoudaStringArray, lambda: ak.array([], dtype=ak.str_)),
             # empty categorical (must supply empty categorical)
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array([], dtype=ak.str_)),
             ),
         ],
@@ -403,9 +403,7 @@ class TestArkoudaArrayHashInherited:
         owner = next(base for base in ArkoudaArray.mro() if "_hash_pandas_object" in base.__dict__)
         assert owner is PandasExtensionArray
 
-    @pytest.mark.xfail(
-        reason=("Fails because Depends on ArkoudaCategoricalArray.to_factorize_view #5101")
-    )
+    @pytest.mark.xfail(reason=("Fails because Depends on ArkoudaCategorical.to_factorize_view #5101"))
     @pytest.mark.parametrize(
         "EA, make_data",
         [
@@ -415,7 +413,7 @@ class TestArkoudaArrayHashInherited:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "a", "c"])),
             # categorical EA
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "x", "z"])),
             ),
         ],
@@ -449,16 +447,14 @@ class TestArkoudaArrayHashInherited:
             # Each logical value should map to a single hash
             assert len(hset) == 1, f"value {v!r} had multiple hashes: {hset}"
 
-    @pytest.mark.xfail(
-        reason=("Fails because Depends on ArkoudaCategoricalArray.to_factorize_view #5101")
-    )
+    @pytest.mark.xfail(reason=("Fails because Depends on ArkoudaCategorical.to_factorize_view #5101"))
     @pytest.mark.parametrize(
         "EA, make_data",
         [
             (ArkoudaArray, lambda: ak.array([1, 2, 3, 4])),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["p", "q", "r", "q"])),
             ),
         ],
@@ -571,7 +567,7 @@ class TestArkoudaArrayPutmask:
 
     def test_putmask_categorical(self):
         """
-        _putmask should update categorical values if ArkoudaCategoricalArray
+        _putmask should update categorical values if ArkoudaCategorical
         implements __setitem__. Otherwise, skip until implemented.
         """
         data = np.array(["x", "y", "x", "z"], dtype=object)
@@ -579,13 +575,13 @@ class TestArkoudaArrayPutmask:
         value = "Q"
 
         ak_cat = ak.Categorical(ak.array(data))
-        arr = ArkoudaCategoricalArray(ak_cat)
+        arr = ArkoudaCategorical(ak_cat)
         result = arr.copy()
 
         try:
             result._putmask(mask, value)
         except NotImplementedError:
-            pytest.skip("ArkoudaCategoricalArray does not yet implement __setitem__.")
+            pytest.skip("ArkoudaCategorical does not yet implement __setitem__.")
 
         expected = data.copy()
         expected[mask] = value
@@ -656,7 +652,7 @@ class TestArkoudaArrayRank:
             (ArkoudaStringArray, lambda: ak.array(["b", "a", "b", "c"])),
             # categorical EA
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "x", "z"])),
             ),
         ],
@@ -721,7 +717,7 @@ class TestArkoudaArrayRepr2D:
         [
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d", "e"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
             ),
         ],
@@ -759,7 +755,7 @@ class TestArkoudaArrayRepr2D:
             ),
             # categorical
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
                 ["x", "y", "z"],
             ),
@@ -880,14 +876,14 @@ class TestArkoudaArrayValuesForArgsort:
             (ArkoudaStringArray, lambda: ak.array(["c", "a", "d", "a", "b"])),
             # categorical EA
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["z", "x", "y", "x", "z"])),
             ),
         ],
     )
     def test_values_for_argsort_induces_correct_sort_order_across_eas(self, EA, make_data):
         """
-        For ArkoudaArray, ArkoudaStringArray, and ArkoudaCategoricalArray,
+        For ArkoudaArray, ArkoudaStringArray, and ArkoudaCategorical,
         _values_for_argsort() should return a NumPy array whose argsort order,
         when applied back to the logical Python-level values (tolist()), gives
         the same sorted values as normal Python sorting.
@@ -1016,7 +1012,7 @@ class TestArkoudaArrayDelete:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d"]), 1),
             # categorical
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y"])),
                 3,
             ),
@@ -1047,7 +1043,7 @@ class TestArkoudaArrayDelete:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d", "e"]), [0, 4]),
             # categorical
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
                 [1, 2],
             ),
@@ -1079,7 +1075,7 @@ class TestArkoudaArrayDelete:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d", "e"]), slice(1, 3)),
             # categorical
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
                 slice(2, 5),
             ),
@@ -1176,7 +1172,7 @@ class TestArkoudaArrayDropna:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d"]), "string[python]"),
             # categorical EA: no missings, dropna should be a no-op
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y"])),
                 "category",
             ),
@@ -1266,7 +1262,7 @@ class TestArkoudaArrayInsert:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"]), 0, "z", ["z", "a", "b", "c"]),
             # categorical EA (insert a value already in the categories)
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z"])),
                 0,
                 "y",
@@ -1300,7 +1296,7 @@ class TestArkoudaArrayInsert:
             ),
             # categorical EA
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y"])),
                 2,
                 "y",
@@ -1328,7 +1324,7 @@ class TestArkoudaArrayInsert:
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"]), "z", ["a", "b", "c", "z"]),
             # categorical EA
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z"])),
                 "x",
                 ["x", "y", "z", "x"],
@@ -1412,9 +1408,9 @@ class TestArkoudaArrayIsin:
                 lambda: ak.array(["a", "b", "c", "b"]),
                 ["b", "c"],
             ),
-            # ArkoudaCategoricalArray
+            # ArkoudaCategorical
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "x", "z"])),
                 ["x", "z"],
             ),
@@ -1422,7 +1418,7 @@ class TestArkoudaArrayIsin:
     )
     def test_isin_basic_for_strings_and_categoricals(self, EA, make_data, test_vals):
         """
-        For ArkoudaStringArray and ArkoudaCategoricalArray, isin() should
+        For ArkoudaStringArray and ArkoudaCategorical, isin() should
         return a NumPy boolean array whose values match numpy.isin applied to
         the Python-level logical values (tolist()).
         """
@@ -1448,7 +1444,7 @@ class TestArkoudaArrayIsin:
                 ["q", "z"],
             ),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z"])),
                 ["q"],
             ),
@@ -1474,7 +1470,7 @@ class TestArkoudaArrayIsin:
                 ["x"],
             ),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["a", "a", "a"])),
                 ["a"],
             ),
@@ -1631,22 +1627,22 @@ class TestArkoudaArrayMap:
 
     @pytest.mark.xfail(
         reason=(
-            "ArkoudaCategoricalArray.map currently fails because "
-            "Index.astype(object, copy=...) calls ArkoudaCategoricalArray.astype "
+            "ArkoudaCategorical.map currently fails because "
+            "Index.astype(object, copy=...) calls ArkoudaCategorical.astype "
             "with an unsupported 'copy' keyword."
         )
     )
     def test_map_dict_categorical_not_supported_yet(self):
         """
-        Document current failure mode for ArkoudaCategoricalArray.map with dict
-        mapping. Once ArkoudaCategoricalArray.astype supports 'copy=', this
+        Document current failure mode for ArkoudaCategorical.map with dict
+        mapping. Once ArkoudaCategorical.astype supports 'copy=', this
         test should be updated to assert equality with pandas.
         """
         values = ["x", "y", "x", "z"]
         mapping = {"x": 1, "y": 2, "z": 3}
 
         ak_data = ak.Categorical(ak.array(values))
-        arr = ArkoudaCategoricalArray(ak_data)
+        arr = ArkoudaCategorical(ak_data)
 
         # Currently raises TypeError deep in Index.astype(..., copy=False)
         arr.map(mapping)
@@ -1678,13 +1674,13 @@ class TestArkoudaArrayMap:
 
     @pytest.mark.xfail(
         reason=(
-            "ArkoudaCategoricalArray.map with callable is blocked by the same "
+            "ArkoudaCategorical.map with callable is blocked by the same "
             "astype(copy=...) issue as the dict-mapping case."
         )
     )
     def test_map_callable_categorical_not_supported_yet(self):
         """
-        Current behavior: callable mapping on ArkoudaCategoricalArray also
+        Current behavior: callable mapping on ArkoudaCategorical also
         fails due to astype(copy=...) on the categorical index.
         """
         values = ["x", "y", "z"]
@@ -1693,7 +1689,7 @@ class TestArkoudaArrayMap:
             return f"val_{x}"
 
         ak_data = ak.Categorical(ak.array(values))
-        arr = ArkoudaCategoricalArray(ak_data)
+        arr = ArkoudaCategorical(ak_data)
 
         arr.map(f)
 
@@ -1786,7 +1782,7 @@ class TestArkoudaArrayRavel:
         [
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y"])),
             ),
         ],
@@ -1804,7 +1800,7 @@ class TestArkoudaArrayRavel:
         [
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["u", "v", "u"])),
             ),
         ],
@@ -1889,7 +1885,7 @@ class TestArkoudaArrayRepeat:
         [
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"]), 2),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "x"])),
                 3,
             ),
@@ -1920,7 +1916,7 @@ class TestArkoudaArrayRepeat:
                 [1, 0, 2, 1],
             ),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y"])),
                 [2, 1, 0, 1],
             ),
@@ -1947,7 +1943,7 @@ class TestArkoudaArrayRepeat:
         [
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "x"])),
             ),
         ],
@@ -2253,15 +2249,15 @@ class TestArkoudaArrayShift:
 
     def test_shift_categorical_currently_raises_valueerror(self):
         """
-        For ArkoudaCategoricalArray, shift() currently fails when pandas'
+        For ArkoudaCategorical, shift() currently fails when pandas'
         machinery tries to construct a categorical from the fill row
         (e.g. [-1]). We lock in the ValueError as the current behavior.
 
-        If/when shift is properly implemented for ArkoudaCategoricalArray,
+        If/when shift is properly implemented for ArkoudaCategorical,
         this test should be updated to assert the correct semantics instead.
         """
         cat = ak.Categorical(ak.array(["x", "y", "z", "y", "x"]))
-        arr = ArkoudaCategoricalArray(cat)
+        arr = ArkoudaCategorical(cat)
 
         with pytest.raises(ValueError):
             arr.shift(periods=1)
@@ -2383,12 +2379,12 @@ class TestArkoudaArrayToList:
 
     def test_tolist_categorical_roundtrip(self):
         """
-        ArkoudaCategoricalArray.tolist() should return the logical category
+        ArkoudaCategorical.tolist() should return the logical category
         labels, consistent with pandas.Categorical.tolist().
         """
         labels = ["x", "y", "x", "z"]
         ak_cat = ak.Categorical(ak.array(labels))
-        arr = ArkoudaCategoricalArray(ak_cat)
+        arr = ArkoudaCategorical(ak_cat)
 
         result = arr.tolist()
 
@@ -2416,7 +2412,7 @@ class TestArkoudaArrayTranspose:
             (ArkoudaArray, lambda: ak.arange(5)),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d", "e"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
             ),
         ],
@@ -2439,7 +2435,7 @@ class TestArkoudaArrayTranspose:
             (ArkoudaArray, lambda: ak.arange(5)),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d", "e"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y", "x"])),
             ),
         ],
@@ -2464,7 +2460,7 @@ class TestArkoudaArrayTranspose:
             (ArkoudaArray, lambda: ak.array([10, 20, 30, 40])),
             (ArkoudaStringArray, lambda: ak.array(["u", "v", "w", "x"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["a", "b", "a", "c"])),
             ),
         ],
@@ -2484,7 +2480,7 @@ class TestArkoudaArrayTranspose:
             (ArkoudaArray, lambda: ak.arange(4)),
             (ArkoudaStringArray, lambda: ak.array(["a", "b", "c", "d"])),
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "z", "y"])),
             ),
         ],
@@ -2586,7 +2582,7 @@ class TestArkoudaArrayUnique:
     # String and Categorical examples
     # ------------------------------------------------------------------
 
-    @pytest.mark.xfail(reason=("Fails because ArkoudaCategoricalArray.astype() is not yet implemented."))
+    @pytest.mark.xfail(reason=("Fails because ArkoudaCategorical.astype() is not yet implemented."))
     @pytest.mark.parametrize(
         "EA, make_data, pandas_constructor",
         [
@@ -2598,7 +2594,7 @@ class TestArkoudaArrayUnique:
             ),
             # Categoricals: order-preserving de-duplication on labels
             (
-                ArkoudaCategoricalArray,
+                ArkoudaCategorical,
                 lambda: ak.Categorical(ak.array(["x", "y", "x", "z", "y"])),
                 lambda vals: pd.Categorical(vals),
             ),
@@ -2606,7 +2602,7 @@ class TestArkoudaArrayUnique:
     )
     def test_unique_strings_and_categoricals_match_pandas(self, EA, make_data, pandas_constructor):
         """
-        For ArkoudaStringArray and ArkoudaCategoricalArray, unique() should
+        For ArkoudaStringArray and ArkoudaCategorical, unique() should
         remove duplicates while preserving the order of first occurrence,
         matching pandas' unique() on the logical values.
         """
@@ -2625,12 +2621,12 @@ class TestArkoudaArrayUnique:
 
         assert result_list == expected_list
 
-    @pytest.mark.xfail(reason=("Fails because ArkoudaCategoricalArray.astype() is not yet implemented."))
+    @pytest.mark.xfail(reason=("Fails because ArkoudaCategorical.astype() is not yet implemented."))
     @pytest.mark.parametrize(
         "EA, values",
         [
             (ArkoudaStringArray, ["foo", "foo", "foo"]),
-            (ArkoudaCategoricalArray, ["cat", "cat", "cat"]),
+            (ArkoudaCategorical, ["cat", "cat", "cat"]),
         ],
     )
     def test_unique_strings_and_categoricals_all_duplicates(self, EA, values):
@@ -2638,7 +2634,7 @@ class TestArkoudaArrayUnique:
         For string and categorical Arkouda EAs, if all elements are the same,
         unique() should return a length-1 array with that value.
         """
-        if EA is ArkoudaCategoricalArray:
+        if EA is ArkoudaCategorical:
             ak_data = ak.Categorical(ak.array(values))
         else:
             ak_data = ak.array(values)
@@ -2649,12 +2645,12 @@ class TestArkoudaArrayUnique:
 
         assert result_list == [values[0]]
 
-    @pytest.mark.xfail(reason=("Fails because ArkoudaCategoricalArray.astype() is not yet implemented."))
+    @pytest.mark.xfail(reason=("Fails because ArkoudaCategorical.astype() is not yet implemented."))
     @pytest.mark.parametrize(
         "EA, values",
         [
             (ArkoudaStringArray, ["a", "b", "c", "d"]),
-            (ArkoudaCategoricalArray, ["x", "y", "z"]),
+            (ArkoudaCategorical, ["x", "y", "z"]),
         ],
     )
     def test_unique_strings_and_categoricals_already_unique(self, EA, values):
@@ -2663,7 +2659,7 @@ class TestArkoudaArrayUnique:
         unique, unique() should return the same logical values in the
         same order.
         """
-        if EA is ArkoudaCategoricalArray:
+        if EA is ArkoudaCategorical:
             ak_data = ak.Categorical(ak.array(values))
         else:
             ak_data = ak.array(values)

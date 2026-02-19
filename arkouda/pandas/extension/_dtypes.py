@@ -241,7 +241,7 @@ class ArkoudaDtype(ExtensionDtype):
     Generic Arkouda-backed dtype for pandas construction.
 
     Using dtype="ak" triggers ArkoudaExtensionArray._from_sequence, which
-    dispatches to ArkoudaArray / ArkoudaStringArray / ArkoudaCategoricalArray.
+    dispatches to ArkoudaArray / ArkoudaStringArray / ArkoudaCategorical.
     """
 
     name = "ak"
@@ -588,7 +588,7 @@ class ArkoudaCategoricalDtype(_ArkoudaBaseDtype):
     Arkouda-backed categorical dtype.
 
     This dtype integrates Arkouda's distributed ``Categorical`` type with
-    the pandas ExtensionArray interface via :class:`ArkoudaCategoricalArray`.
+    the pandas ExtensionArray interface via :class:`ArkoudaCategorical`.
     It enables pandas objects (Series, DataFrame) to hold categorical data
     stored and processed on the Arkouda server, while exposing familiar
     pandas APIs.
@@ -596,7 +596,7 @@ class ArkoudaCategoricalDtype(_ArkoudaBaseDtype):
     Methods
     -------
     construct_array_type()
-        Returns the :class:`ArkoudaCategoricalArray` used as the storage class.
+        Returns the :class:`ArkoudaCategorical` used as the storage class.
     """
 
     name = "category"
@@ -613,8 +613,8 @@ class ArkoudaCategoricalDtype(_ArkoudaBaseDtype):
         Returns
         -------
         type
-            The :class:`ArkoudaCategoricalArray` class associated with this dtype.
+            The :class:`ArkoudaCategorical` class associated with this dtype.
         """
-        from ._arkouda_categorical_array import ArkoudaCategoricalArray
+        from ._arkouda_categorical_array import ArkoudaCategorical
 
-        return ArkoudaCategoricalArray
+        return ArkoudaCategorical

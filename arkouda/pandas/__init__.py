@@ -4,7 +4,7 @@ from arkouda.pandas.extension import (
     ArkoudaArray,
     ArkoudaBigintDtype,
     ArkoudaBoolDtype,
-    ArkoudaCategoricalArray,
+    ArkoudaCategorical,
     ArkoudaCategoricalDtype,
     ArkoudaFloat64Dtype,
     ArkoudaInt64Dtype,

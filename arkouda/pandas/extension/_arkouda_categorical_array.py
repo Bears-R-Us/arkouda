@@ -28,10 +28,10 @@ else:
     Categorical = TypeVar("Categorical")
 
 
-__all__ = ["ArkoudaCategoricalArray"]
+__all__ = ["ArkoudaCategorical"]
 
 
-class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
+class ArkoudaCategorical(ArkoudaExtensionArray, ExtensionArray):
     """
     Arkouda-backed categorical pandas ExtensionArray.
 
@@ -40,10 +40,10 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
     Parameters
     ----------
-    data : Categorical | ArkoudaCategoricalArray | ndarray | Sequence[Any]
+    data : Categorical | ArkoudaCategorical | ndarray | Sequence[Any]
         Input to wrap or convert.
         - If ``Categorical``, used directly.
-        - If another ``ArkoudaCategoricalArray``, its backing object is reused.
+        - If another ``ArkoudaCategorical``, its backing object is reused.
         - If list/tuple/ndarray, converted via ``ak.Categorical(ak.array(data))``.
 
     Raises
@@ -59,11 +59,11 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
     default_fill_value: str = ""
 
-    def __init__(self, data: Categorical | "ArkoudaCategoricalArray" | ndarray | Sequence[Any]):
+    def __init__(self, data: Categorical | "ArkoudaCategorical" | ndarray | Sequence[Any]):
         from arkouda import Categorical as AkCategorical
         from arkouda import array
 
-        if isinstance(data, ArkoudaCategoricalArray):
+        if isinstance(data, ArkoudaCategorical):
             self._data = data._data
             return
 
@@ -98,7 +98,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         -------
         Any
             A Python scalar for scalar access, or a new
-            :class:`ArkoudaCategoricalArray` for non-scalar indexers.
+            :class:`ArkoudaCategorical` for non-scalar indexers.
 
         Raises
         ------
@@ -109,9 +109,9 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         --------
         >>> import numpy as np
         >>> import arkouda as ak
-        >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
+        >>> from arkouda.pandas.extension import ArkoudaCategorical
         >>> data = ak.Categorical(ak.array(["a", "b", "c", "d"]))
-        >>> arr = ArkoudaCategoricalArray(data)
+        >>> arr = ArkoudaCategorical(data)
 
         Scalar access returns a Python string-like scalar:
 
@@ -123,27 +123,27 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         >>> arr[-1]
         np.str_('d')
 
-        Slice indexing returns a new ArkoudaCategoricalArray:
+        Slice indexing returns a new ArkoudaCategorical:
 
         >>> result = arr[1:3]
         >>> type(result)
-        <class 'arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategoricalArray'>
+        <class 'arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategorical'>
 
         NumPy integer array indexing:
 
         >>> idx = np.array([0, 2], dtype=np.int64)
         >>> sliced = arr[idx]
-        >>> isinstance(sliced, ArkoudaCategoricalArray)
+        >>> isinstance(sliced, ArkoudaCategorical)
         True
 
         NumPy boolean mask:
 
         >>> mask = np.array([True, False, True, False])
         >>> masked = arr[mask]
-        >>> isinstance(masked, ArkoudaCategoricalArray)
+        >>> isinstance(masked, ArkoudaCategorical)
         True
 
-        Empty integer indexer returns an empty ArkoudaCategoricalArray:
+        Empty integer indexer returns an empty ArkoudaCategorical:
 
         >>> empty_idx = np.array([], dtype=np.int64)
         >>> empty = arr[empty_idx]
@@ -158,7 +158,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         # Handle empty indexer (list / tuple / ndarray of length 0)
         if isinstance(key, (list, tuple, np.ndarray)) and len(key) == 0:
             empty_strings = ak_array([], dtype="str_")
-            return ArkoudaCategoricalArray(Categorical(empty_strings))
+            return ArkoudaCategorical(Categorical(empty_strings))
 
         # Scalar integers and slices: delegate directly to the underlying Categorical
         if isinstance(key, (int, np.integer, slice)):
@@ -167,7 +167,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
             if isinstance(key, (int, np.integer)):
                 return result
             # For slices, underlying arkouda.Categorical returns a Categorical
-            return ArkoudaCategoricalArray(result)
+            return ArkoudaCategorical(result)
 
         # NumPy array indexers: normalize to Arkouda pdarrays
         if isinstance(key, np.ndarray):
@@ -198,13 +198,13 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
             # Return a Python scalar string
             return labels[0]
 
-        # Non-scalar: wrap Categorical in ArkoudaCategoricalArray
+        # Non-scalar: wrap Categorical in ArkoudaCategorical
         if isinstance(result, Categorical):
-            return ArkoudaCategoricalArray(result)
+            return ArkoudaCategorical(result)
 
         # Fallback: if Categorical returned something array-like but not Categorical,
         # rebuild a Categorical from it.
-        return ArkoudaCategoricalArray(Categorical(result))
+        return ArkoudaCategorical(Categorical(result))
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
@@ -234,7 +234,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
         * If ``dtype`` is categorical (pandas ``category`` / ``CategoricalDtype`` /
           ``ArkoudaCategoricalDtype``), returns an Arkouda-backed
-          ``ArkoudaCategoricalArray`` (optionally copied).
+          ``ArkoudaCategorical`` (optionally copied).
         * If ``dtype`` requests ``object``, returns a NumPy ``ndarray`` of dtype object
           containing the category labels (materialized to the client).
         * If ``dtype`` requests a string dtype, returns an Arkouda-backed
@@ -262,8 +262,8 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         Casting to ``category`` returns an Arkouda-backed categorical array:
 
         >>> import arkouda as ak
-        >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
-        >>> c = ArkoudaCategoricalArray(ak.Categorical(ak.array(["x", "y", "x"])))
+        >>> from arkouda.pandas.extension import ArkoudaCategorical
+        >>> c = ArkoudaCategorical(ak.Categorical(ak.array(["x", "y", "x"])))
         >>> out = c.astype("category")
         >>> out is c
         False
@@ -289,7 +289,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
         Casting to another dtype casts the labels-as-strings and returns an Arkouda-backed array:
 
-        >>> c_num = ArkoudaCategoricalArray(ak.Categorical(ak.array(["1", "2", "3"])))
+        >>> c_num = ArkoudaCategorical(ak.Categorical(ak.array(["1", "2", "3"])))
         >>> a = c_num.astype("int64")
         >>> a.to_ndarray()
         array([1, 2, 3])
@@ -345,13 +345,13 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         return ArkoudaCategoricalDtype()
 
     def __eq__(self, other):
-        """Elementwise equality for ArkoudaCategoricalArray."""
+        """Elementwise equality for ArkoudaCategorical."""
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
         from arkouda.pandas.categorical import Categorical
 
         # Case 1: Categorical vs Categorical
-        if isinstance(other, ArkoudaCategoricalArray):
+        if isinstance(other, ArkoudaCategorical):
             if len(self) != len(other):
                 raise ValueError("Lengths must match for elementwise comparison")
             return ArkoudaArray(self._data == other._data)
@@ -379,7 +379,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         return NotImplemented
 
     def __repr__(self):
-        return f"ArkoudaCategoricalArray({self._data})"
+        return f"ArkoudaCategorical({self._data})"
 
     def value_counts(self, dropna: bool = True) -> pd.Series:
         """
@@ -417,9 +417,9 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda.pandas.extension import ArkoudaCategoricalArray
+        >>> from arkouda.pandas.extension import ArkoudaCategorical
         >>>
-        >>> a = ArkoudaCategoricalArray(["a", "b", "a", "c", "b", "a"])
+        >>> a = ArkoudaCategorical(["a", "b", "a", "c", "b", "a"])
         >>> a.value_counts()
         a    3
         b    2
@@ -459,7 +459,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
     # ------------------------------------------------------------------
 
     def _categorical_not_implemented(self, name: str):
-        raise NotImplementedError(f"{name} is not yet implemented for ArkoudaCategoricalArray.")
+        raise NotImplementedError(f"{name} is not yet implemented for ArkoudaCategorical.")
 
     def _categories_match_up_to_permutation(self, *args, **kwargs):
         self._categorical_not_implemented("_categories_match_up_to_permutation")
@@ -532,7 +532,7 @@ class ArkoudaCategoricalArray(ArkoudaExtensionArray, ExtensionArray):
 
     @classmethod
     def from_codes(cls, *args, **kwargs):
-        raise NotImplementedError("from_codes is not yet implemented for ArkoudaCategoricalArray.")
+        raise NotImplementedError("from_codes is not yet implemented for ArkoudaCategorical.")
 
     def isnull(self, *args, **kwargs):
         self._categorical_not_implemented("isnull")
