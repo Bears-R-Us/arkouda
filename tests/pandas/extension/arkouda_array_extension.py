@@ -389,6 +389,16 @@ class TestArkoudaArrayExtension:
         # Values preserved
         np.testing.assert_array_equal(default_copy.to_numpy(), ea.to_numpy())
 
+    def test_pd_array_construct_from_ak_bigint_pdarray_explicit_dtype_does_not_cast_to_object(self):
+        # Regression: used to try cast<bigint,object,1> and fail on server
+        a = ak.array(np.array([0, -1, 2]), dtype="bigint")
+
+        b = pd.array(a, dtype="ak.bigint")
+
+        # Should be Arkouda-backed and preserve values
+        assert str(b.dtype) in ("ak_bigint", "ak.bigint", "bigint")  # tolerate aliasing
+        np.testing.assert_array_equal(np.asarray(b), np.array([0, -1, 2], dtype=object))
+
 
 class TestArkoudaArrayAsType:
     def test_arkouda_array_astype_object_returns_numpy_object_array(self):

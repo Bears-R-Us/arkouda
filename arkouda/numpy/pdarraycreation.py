@@ -331,7 +331,7 @@ def array(
         try:
             from arkouda.numpy.dtypes import dtype as ak_dtype
 
-            if dtype is not None and ak_dtype(dtype) != "bigint":
+            if dtype is not None and ak_dtype(dtype) not in (bigint, "bigint"):
                 # if the user specified dtype, use that dtype
                 a = np.array(a, dtype=dtype)
             elif (
