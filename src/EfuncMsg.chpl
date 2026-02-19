@@ -119,7 +119,7 @@ module EfuncMsg
        
     @arkouda.registerCommand(name="abs")
     proc ak_abs (const ref pda : [?d] ?t) : [d] t throws
-        where (t==int || t==real || t==bigint) // TODO maybe: allow uint also
+        where (t==int || t==real || t==bigint) // 
     {
         if t == bigint {
             const zero: bigint = 0:bigint;
