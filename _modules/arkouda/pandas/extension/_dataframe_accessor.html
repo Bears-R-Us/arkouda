@@ -758,11 +758,17 @@
 <span class="sd">        2  3  c</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">ak_array</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaIndexAccessor</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>
 
         <span class="n">cols</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">pd_DataFrame</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span></div>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">):</span>
+                <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">array</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ArkoudaExtensionArray</span><span class="o">.</span><span class="n">_from_sequence</span><span class="p">(</span><span class="n">ak_array</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pd_DataFrame</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaDataFrameAccessor.collect">
