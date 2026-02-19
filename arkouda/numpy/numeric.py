@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import json
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Iterable,
     List,
     Literal,
+    Mapping,
     Optional,
     Sequence,
     Tuple,
@@ -31,6 +34,7 @@ from arkouda.numpy.dtypes import (
     _datatype_check,
     bigint,
     bool_scalars,
+    can_cast,
     int_scalars,
     is_supported_bool,
     is_supported_number,
@@ -56,7 +60,7 @@ from arkouda.numpy.pdarrayclass import (
 )
 from arkouda.numpy.pdarrayclass import all as ak_all
 from arkouda.numpy.pdarrayclass import any as ak_any
-from arkouda.numpy.pdarraycreation import array, linspace
+from arkouda.numpy.pdarraycreation import array, full, linspace
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
 
@@ -165,6 +169,32 @@ def _merge_where(new_pda, where, ret):
     new_pda = cast(new_pda, ret.dtype)
     new_pda[where] = ret
     return new_pda
+
+
+def handle_bools_as_float(x):
+    if np.isscalar(x):
+        if type(x) in (bool, np.bool_, ak_bool):
+            return float(x)
+        else:
+            return x
+    if isinstance(x, pdarray):
+        if x.dtype == "bool":
+            return x.astype(ak_float64)
+        else:
+            return x
+
+
+def handle_bools_as_int(x):
+    if np.isscalar(x):
+        if type(x) in (bool, np.bool_, ak_bool):
+            return int(x)
+        else:
+            return x
+    if isinstance(x, pdarray):
+        if x.dtype == "bool":
+            return x.astype(ak_int64)
+        else:
+            return x
 
 
 # docstr-coverage:excused `overload-only, docs live on impl`
@@ -354,467 +384,6 @@ def cast(
 
 
 @typechecked
-def abs(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise absolute value of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing absolute values of the input array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.abs(ak.arange(-5,-1))
-    array([5 4 3 2])
-
-    >>> ak.abs(ak.linspace(-5,-1,5))
-    array([5.00000000... 4.00000000... 3.00000000...
-    2.00000000... 1.00000000...])
-    """
-    from arkouda.core.client import generic_msg
-
-    if pda.dtype == "uint64" or pda.dtype == "bool":
-        return pda.copy()
-
-    rep_msg = generic_msg(
-        cmd=f"abs<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def fabs(pda: pdarray) -> pdarray:
-    """
-    Compute the absolute values element-wise, casting to a float beforehand.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing absolute values of the input array elements, casted to float type
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.fabs(ak.arange(-5,-1))
-    array([5.00000000000000000 4.00000000000000000 3.00000000000000000 2.00000000000000000])
-
-    >>> ak.fabs(ak.linspace(-5,-1,5))
-    array([5.00000000... 4.00000000... 3.00000000...
-    2.00000000... 1.00000000...])
-    """
-    pda_ = cast(pda, ak_float64)
-
-    return abs(pda_)
-
-
-@typechecked
-def round(pda: pdarray, decimals: Optional[Union[int, None]] = None) -> pdarray:
-    """
-    Return the element-wise rounding of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    decimals: Optional[Union[int, None]], default = None
-        for float pdarrays, the number of decimal places of accuracy for the round.
-        May be None, positive, negative, or zero.  If None, zero is used.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing input array elements rounded to the nearest integer
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray or if the dtype of the pdarray
-        is other than ak.float64, ak.int64, ak.uint64 or ak.bool.
-
-    Notes
-    -----
-    This function follows numpy's rule of "round to even" when the fractional part
-    of the number equals .5.  For example, 2.5 rounds to 2, but 3.5 rounds to 4.
-    Arkouda's use of decimal is not perfect, as shown in the examples below.
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
-    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
-    >>> ak.round(ak.array([1.5, 2.5, 3.5]))
-    array([2.00000000000000000 2.00000000000000000 4.00000000000000000])
-    >>> ak.round(ak.array([-143.1, 279.8]),decimals=-1)
-    array([-140.00000000000000000 280.00000000000000000])
-    >>> ak.round(ak.array([-143.1, 279.8]),decimals=0)
-    array([-143.00000000000000000 280.00000000000000000])
-    >>> ak.round(ak.array([1.541, 2.732]),decimals=2)
-    array([1.54 2.73])
-    >>> ak.round(ak.array([1.541, 2.732]),decimals=3)
-    array([1.5409999999999999 2.7320000000000002])
-
-
-    """
-    from arkouda.core.client import generic_msg
-
-    if decimals is None:
-        decimals = 0
-
-    _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "round")
-
-    if pda.dtype in [ak_int64, ak_uint64]:
-        return pda.copy()  # int arguments return copies of the input
-    if pda.dtype == ak_bool:
-        return pda.astype(ak_float64)  # not an exact match to numpy, which uses np.float16
-
-    rep_msg = generic_msg(
-        cmd=f"round<{pda.dtype},{pda.ndim}>",
-        args={
-            "x": pda,
-            "n": decimals,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-#   Noted during Sept 2024 rewrite of EfuncMsg.chpl -- although it's "sign" here, inside the
-#   chapel code, it's "sgn"
-
-
-@typechecked
-def sign(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise sign of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing sign values of the input array elements
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
-    array([-1 -1 0 1 1])
-    """
-    from arkouda.core.client import generic_msg
-
-    _datatype_check(pda.dtype, [int, float], "sign")
-    rep_msg = generic_msg(
-        cmd=f"sgn<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def isfinite(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise isfinite check applied to the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing boolean values indicating whether the
-        input array elements are finite
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-    RuntimeError
-        if the underlying pdarray is not float-based
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.isfinite(ak.array([1.0, 2.0, ak.inf]))
-    array([True True False])
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"isfinite<{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def isinf(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise isinf check applied to the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing boolean values indicating whether the
-        input array elements are infinite (positive or negative)
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-    RuntimeError
-        if the underlying pdarray is not float-based
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.isinf(ak.array([1.0, 2.0, ak.inf]))
-    array([False False True])
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"isinf<{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def isnan(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise isnan check applied to the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing boolean values indicating whether the
-        input array elements are NaN
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-    RuntimeError
-        if the underlying pdarray is not one of float, int, uint or bool
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
-    array([False False True])
-    """
-    from arkouda.core.client import generic_msg
-    from arkouda.numpy.util import is_float
-
-    _datatype_check(pda.dtype, NUMERIC_TYPES, "isnan")
-
-    if not is_float(pda):
-        from arkouda.numpy.pdarraycreation import full
-
-        return full(pda.shape, False, dtype=bool)
-
-    rep_msg = generic_msg(
-        cmd=f"isnan<{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def log(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise natural log of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing natural log values of the input
-        array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Notes
-    -----
-    Logarithms with other bases can be computed as follows:
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> A = ak.array([1, 10, 100])
-
-    Natural log
-    >>> ak.log(A)
-    array([0.00000000... 2.30258509... 4.60517018...])
-
-    Log base 10
-    >>> ak.log(A) / np.log(10)
-    array([0.00000000... 1.00000000... 2.00000000...])
-
-    Log base 2
-    >>> ak.log(A) / np.log(2)
-    array([0.00000000... 3.32192809... 6.64385618...])
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"log<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def log10(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise base 10 log of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-          array to compute on
-
-    Returns
-    -------
-    pdarray
-         pdarray containing base 10 log values of the input array elements
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(1,5)
-    >>> ak.log10(a)
-    array([0.00000000... 0.30102999... 0.47712125... 0.60205999...])
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"log10<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def log2(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise base 2 log of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-          array to compute on
-
-    Returns
-    -------
-    pdarray
-         pdarray containing base 2 log values of the input array elements
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.arange(1,5)
-    >>> ak.log2(a)
-    array([0.00000000... 1.00000000... 1.58496250... 2.00000000...])
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"log2<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def log1p(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise natural log of one plus the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-          array to compute on
-
-    Returns
-    -------
-    pdarray
-         pdarray containing natural log values of the input array elements,
-         adding one before taking the log
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.log1p(ak.arange(1,5))
-    array([0.69314718... 1.09861228... 1.38629436... 1.60943791...])
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"log1p<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
 def nextafter(
     x1: Union[pdarray, numeric_scalars, bigint], x2: Union[pdarray, numeric_scalars, bigint]
 ) -> Union[pdarray, float]:
@@ -883,122 +452,6 @@ def nextafter(
     if return_scalar:
         return return_array[0]
     return return_array
-
-
-@typechecked
-def exp(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise exponential of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing exponential values of the input
-        array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.exp(ak.arange(1,5))
-    array([2.71828182... 7.38905609... 20.0855369... 54.5981500...])
-
-    >>> ak.exp(ak.uniform(4, 1.0, 5.0, seed=1))
-    array([63.3448620... 3.80794671... 54.7254287... 36.2344168...])
-
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"exp<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def expm1(pda: pdarray) -> pdarray:
-    """
-    Return the element-wise exponential of the array minus one.
-
-    Parameters
-    ----------
-    pda : pdarray
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing e raised to each of the inputs,
-        then subtracting one.
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.expm1(ak.arange(1,5))
-    array([1.71828182... 6.38905609... 19.0855369... 53.5981500...])
-
-    >>> ak.expm1(ak.uniform(5,1.0,5.0, seed=1))
-    array([62.3448620... 2.80794671... 53.7254287...
-        35.2344168... 41.1929399...])
-    """
-    from arkouda.core.client import generic_msg
-
-    rep_msg = generic_msg(
-        cmd=f"expm1<{pda.dtype},{pda.ndim}>",
-        args={
-            "pda": pda,
-        },
-    )
-    return create_pdarray(rep_msg)
-
-
-@typechecked
-def square(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise square of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing square values of the input
-        array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.square(ak.arange(1,5))
-    array([1 4 9 16])
-    """
-    _datatype_check(pda.dtype, NUMERIC_TYPES, "floor")
-    return _general_helper(pda, "square", where)
 
 
 @typechecked
@@ -1138,464 +591,6 @@ def cumprod(pda: pdarray, axis: Optional[Union[int, None]] = None) -> pdarray:
         },
     )
     return create_pdarray(rep_msg)
-
-
-@typechecked
-def sin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise sine of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing sin for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-1.5,0.75,4)
-    >>> ak.sin(a)
-    array([-0.99749498... -0.68163876... 0.00000000... 0.68163876...])
-    """
-    return _general_helper(pda, "sin", where)
-
-
-@typechecked
-def cos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise cosine of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the cosine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing cosine for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-1.5,0.75,4)
-    >>> ak.cos(a)
-    array([0.07073720... 0.73168886... 1.00000000... 0.73168886...])
-    """
-    return _general_helper(pda, "cos", where)
-
-
-@typechecked
-def tan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise tangent of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the tangent will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing tangent for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-1.5,0.75,4)
-    >>> ak.tan(a)
-    array([-14.1014199... -0.93159645... 0.00000000... 0.93159645...])
-    """
-    return _general_helper(pda, "tan", where)
-
-
-@typechecked
-def arcsin(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise inverse sine of the array. The result is between -pi/2 and pi/2.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing inverse sine for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-0.7,0.5,4)
-    >>> ak.arcsin(a)
-    array([-0.77539749... -0.30469265... 0.10016742... 0.52359877...])
-    """
-    return _general_helper(pda, "arcsin", where)
-
-
-@typechecked
-def arccos(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise inverse cosine of the array. The result is between 0 and pi.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing inverse cosine for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-0.7,0.5,4)
-    >>> ak.arccos(a)
-    array([2.34619382... 1.87548898... 1.47062890... 1.04719755...])
-    """
-    return _general_helper(pda, "arccos", where)
-
-
-@typechecked
-def arctan(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise inverse tangent of the array. The result is between -pi/2 and pi/2.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing inverse tangent for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-10.7,10.5,4)
-    >>> ak.arctan(a)
-    array([-1.47760906... -1.30221689... 1.28737507... 1.47584462...])
-    """
-    return _general_helper(pda, "arctan", where)
-
-
-@typechecked
-def sinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise hyperbolic sine of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing hyperbolic sine for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-0.9,0.7,4)
-    >>> ak.sinh(a)
-    array([-1.02651672... -0.37493812... 0.16743934... 0.75858370...])
-    """
-    return _general_helper(pda, "sinh", where)
-
-
-@typechecked
-def cosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise hyperbolic cosine of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing hyperbolic cosine for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-0.9,0.7,4)
-    >>> ak.cosh(a)
-    array([1.43308638... 1.06797874... 1.01392106... 1.25516900...])
-    """
-    return _general_helper(pda, "cosh", where)
-
-
-@typechecked
-def tanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise hyperbolic tangent of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing hyperbolic tangent for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-0.9,0.7,4)
-    >>> ak.tanh(a)
-    array([-0.71629787... -0.35107264... 0.16514041... 0.60436777...])
-    """
-    return _general_helper(pda, "tanh", where)
-
-
-@typechecked
-def arcsinh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise inverse hyperbolic sine of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing inverse hyperbolic sine for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-500,500,4)
-    >>> ak.arcsinh(a)
-    array([-6.90775627... -5.80915199... 5.80915199... 6.90775627...])
-    """
-    return _general_helper(pda, "arcsinh", where)
-
-
-@typechecked
-def arccosh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise inverse hyperbolic cosine of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
-        retain its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing inverse hyperbolic cosine for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(1,500,4)
-    >>> ak.arccosh(a)
-    array([0.00000000... 5.81312608... 6.50328742... 6.90775427...])
-    """
-    return _general_helper(pda, "arccosh", where)
-
-
-@typechecked
-def arctanh(pda: pdarray, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Return the element-wise inverse hyperbolic tangent of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
-        it will retain its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing inverse hyperbolic tangent for each element
-        of the original pdarray
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameters are not a pdarray or numeric scalar.
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> a = ak.linspace(-.999,.999,4)
-    >>> ak.arctanh(a)
-    array([-3.80020116... -0.34619863... 0.34619863... 3.80020116...])
-    """
-    return _general_helper(pda, "arctanh", where)
-
-
-def _general_helper(pda: pdarray, func: str, where: Union[bool, pdarray] = True) -> pdarray:
-    """
-    Returns the result of the input function acting element-wise on the array.
-    This is used for functions that allow a "where" parameter in their arguments.
-
-    Parameters
-    ----------
-    pda : pdarray
-    func : str
-        The designated function that is passed in
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the respective function. Elsewhere,
-        it will retain its original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray with the given function applied at each element of pda
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is not a pdarray or if is not real or int or uint, or if where is not Boolean
-    """
-    from arkouda.core.client import generic_msg
-
-    _datatype_check(pda.dtype, [ak_float64, ak_int64, ak_uint64], func)
-    if where is True:
-        rep_msg = generic_msg(
-            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-            args={
-                "x": pda,
-            },
-        )
-        return create_pdarray(rep_msg)
-    elif where is False:
-        return pda
-    else:
-        if where.dtype != bool:
-            raise TypeError(f"where must have dtype bool, got {where.dtype} instead")
-        rep_msg = generic_msg(
-            cmd=f"{func}<{pda.dtype},{pda.ndim}>",
-            args={
-                "x": pda[where],
-            },
-        )
-        return _merge_where(pda[:], where, create_pdarray(rep_msg))
 
 
 @typechecked
@@ -2759,7 +1754,7 @@ def count_nonzero(pda: pdarray) -> int_scalars:
     np.int64(2)
 
     """
-    from arkouda.numpy.dtypes import can_cast
+    #    from arkouda.numpy.dtypes import can_cast
     from arkouda.numpy.util import is_numeric
 
     #  Handle different data types.
@@ -3896,22 +2891,10 @@ def arctan2(
     def _is_supported(arg):
         return is_supported_number(arg) or is_supported_bool(arg)
 
-    def handle_bools(x):
-        if np.isscalar(x):
-            if type(x) in (bool, np.bool_, ak_bool):
-                return float(x)
-            else:
-                return x
-        if isinstance(x, pdarray):
-            if x.dtype == "bool":
-                return x.astype(ak_float64)
-            else:
-                return x
-
     #  arctan2 allows bools, but treats them as floats.
 
-    x1 = handle_bools(x1)
-    x2 = handle_bools(x2)
+    x1 = handle_bools_as_float(x1)
+    x2 = handle_bools_as_float(x2)
 
     #   for arctan2, out must be float.  Any other specification is an error.
 
@@ -3985,250 +2968,6 @@ def _arctan2_impl(
             raise TypeError(f"{ts} is not an allowed x1 type for arctan2")
 
     rep_msg = generic_msg(cmd=cmdstring, args=argdict)
-    res = create_pdarray(rep_msg)
-
-    if out is None:
-        return res
-    out[:] = res
-    return out
-
-
-#   New implementation of floor using ufunc tools.
-
-
-@typechecked
-def floor(
-    pda: Union[pdarray, numeric_and_bool_scalars],
-    /,
-    out: Optional[pdarray] = None,
-    *,
-    where: Optional[Union[bool_scalars, pdarray]] = None,
-) -> Union[pdarray, numeric_scalars]:
-    """
-    Return the element-wise floor of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    out: None or pdarray, optional
-        A location into which the result is stored. If provided, it must have a shape that
-        the inputs broadcast to.
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing floor values of the input array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.floor(ak.linspace(1.1,5.5,5))
-    array([1.00000000... 2.00000000... 3.00000000...
-    4.00000000... 5.00000000...])
-
-    Notes
-    -----
-    Unlike numpy, arkouda requires out if where is used.
-    """
-    dtype = (
-        pda.dtype
-        if isinstance(pda, pdarray)
-        else resolve_scalar_dtype(pda)
-        if np.isscalar(pda)
-        else ak_float64
-    )
-    _datatype_check(dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "floor")
-    return _apply_where_out(
-        _floor_impl,  # the actual function
-        pda,
-        where=where,
-        out=out,
-        dtype=ak_float64,
-        scalar_op=np.floor,
-    )
-
-
-def _floor_impl(pda: pdarray, out=None, dtype=None):
-    from arkouda.core.client import generic_msg
-
-    # floor is a no-op for integer/uint/bool
-    if pda.dtype.kind in "iub":
-        if out is None:
-            return pda.copy()
-        out[:] = pda
-        return out
-
-    rep_msg = generic_msg(
-        cmd=f"floor<{pda.dtype},{pda.ndim}>",
-        args={"x": pda},
-    )
-    res = create_pdarray(rep_msg)
-
-    if out is None:
-        return res
-    out[:] = res
-    return out
-
-
-#   New implementation of ceil using ufunc tools.
-
-
-@typechecked
-def ceil(
-    pda: Union[pdarray, numeric_and_bool_scalars],
-    /,
-    out: Optional[pdarray] = None,
-    *,
-    where: Optional[Union[bool_scalars, pdarray]] = None,
-) -> Union[pdarray, numeric_scalars]:
-    """
-    Return the element-wise ceiling of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    out: None or pdarray, optional
-        A location into which the result is stored. If provided, it must have a shape that
-        the inputs broadcast to.
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing ceiling values of the input array elements
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.ceil(ak.linspace(1.1,5.5,5))
-    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])
-
-    Notes
-    -----
-    Unlike numpy, arkouda requires out if where is used.
-    """
-    dtype = pda.dtype if isinstance(pda, pdarray) else type(pda) if np.isscalar(pda) else ak_float64
-    _datatype_check(dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "ceil")
-    return _apply_where_out(
-        _ceil_impl,  # the actual function
-        pda,
-        where=where,
-        out=out,
-        dtype=ak_float64,
-        scalar_op=np.ceil,
-    )
-
-
-def _ceil_impl(pda: pdarray, out=None, dtype=None):
-    from arkouda.core.client import generic_msg
-
-    # ceil is a no-op for integer/uint/bool
-    if pda.dtype.kind in "iub":
-        if out is None:
-            return pda.copy()
-        out[:] = pda
-        return out
-
-    rep_msg = generic_msg(
-        cmd=f"ceil<{pda.dtype},{pda.ndim}>",
-        args={"x": pda},
-    )
-    res = create_pdarray(rep_msg)
-
-    if out is None:
-        return res
-    out[:] = res
-    return out
-
-
-#   New implementation of trunc using ufunc tools.
-
-
-@typechecked
-def trunc(
-    pda: Union[pdarray, numeric_and_bool_scalars],
-    /,
-    out: Optional[pdarray] = None,
-    *,
-    where: Optional[Union[bool_scalars, pdarray]] = None,
-) -> Union[pdarray, numeric_scalars]:
-    """
-    Return the element-wise truncation of the array.
-
-    Parameters
-    ----------
-    pda : pdarray
-    out: None or pdarray, optional
-        A location into which the result is stored. If provided, it must have a shape that
-        the inputs broadcast to.
-    where : bool or pdarray, default=True
-        This condition is applied over the input. At locations where the condition is True, the
-        corresponding value will be acted on by the function. Elsewhere, it will retain its
-        original value. Default set to True.
-
-    Returns
-    -------
-    pdarray
-        A pdarray containing input array elements truncated to the nearest integer
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-
-    Examples
-    --------
-    >>> import arkouda as ak
-    >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
-    array([1.00000000... 2.00000000... 3.00000000...])
-
-    Notes
-    -----
-    Unlike numpy, arkouda requires out if where is used.
-    """
-    dtype = pda.dtype if isinstance(pda, pdarray) else type(pda) if np.isscalar(pda) else ak_float64
-    _datatype_check(dtype, [ak_float64, ak_int64, ak_uint64, ak_bool], "trunc")
-    return _apply_where_out(
-        _trunc_impl,  # the actual function
-        pda,
-        where=where,
-        out=out,
-        dtype=ak_float64,
-        scalar_op=np.trunc,
-    )
-
-
-def _trunc_impl(pda: pdarray, out=None, dtype=None):
-    from arkouda.core.client import generic_msg
-
-    # trunc is a no-op for integer/uint/bool: return copy or fill out
-    if pda.dtype.kind in "iub":
-        if out is None:
-            return pda.copy()
-        out[:] = pda
-        return out
-
-    rep_msg = generic_msg(
-        cmd=f"trunc<{pda.dtype},{pda.ndim}>",
-        args={"x": pda},
-    )
     res = create_pdarray(rep_msg)
 
     if out is None:
@@ -4411,3 +3150,1692 @@ def _apply_where_out(
     # Write into out in place and return it
     out_pd[:] = merged
     return out_pd
+
+
+"""
+Generic unary ufunc-style wrappers for Arkouda, with consistent handling of:
+  - where/out semantics (requires out when where is not True)
+  - broadcasting (x and where)
+  - scalar fast-path (including scalar + out broadcast-fill)
+  - res_dtype determined from a table (no dtype= parameter)
+  - out casting governed by can_cast(res_dtype, out.dtype) else TypeError
+  - Chapel command dispatch via (chapel_name, argname, ndim, dtype?) conventions
+  - per-function bypass/precompute hooks and input-cast hooks
+  - per-function extra argument mapping (round: decimals -> n)
+
+This module assumes the following utilities/types exist in your codebase:
+  - pdarray
+  - ak_where, bcast_to, bcast_shapes
+  - _normalize_where, _normalize_scalar, _validated_bool_scalar
+  - resolve_scalar_dtype
+  - arkouda dtypes: ak_bool, ak_int64, ak_uint64, ak_float64
+  - can_cast from arkouda.numpy.dtypes
+  - create_pdarray, generic_msg
+  - ak.full
+"""
+
+# -----------------------------------------------------------------------------
+# Core dtype resolution (res_dtype comes from table + a few explicit overrides)
+# -----------------------------------------------------------------------------
+
+_PRESERVE = {
+    "abs",
+    "ceil",
+    "floor",
+    "trunc",
+    # "round" is preserve except bool->float64 (handled explicitly below)
+    "square",  # preserve except bool->int64 (handled via precompute)
+}
+
+_ALWAYS_FLOAT = {
+    "fabs",
+    "log",
+    "log2",
+    "log10",
+    "log1p",
+    "exp",
+    "expm1",
+    "sin",
+    "cos",
+    "tan",
+    "arcsin",
+    "arccos",
+    "arctan",
+    "sinh",
+    "cosh",
+    "tanh",
+    "arcsinh",
+    "arccosh",
+    "arctanh",
+}
+
+_ALWAYS_BOOL = {
+    "isfinite",
+    "isinf",
+    "isnan",
+}
+
+
+def _validated_bool_scalar(x: object) -> bool:
+    # Accept Python bool
+    if isinstance(x, bool):
+        return x
+    # Accept NumPy bool_ (common when users pass np.bool_(True))
+    if isinstance(x, np.bool_):
+        return bool(x)
+    raise TypeError("where must be a bool scalar or a pdarray")
+
+
+def resolve_output_dtype(func_name: str, input_dtype: Any) -> Any:
+    """
+    Determine res_dtype (dtype of the computed result before casting to out.dtype).
+
+    input_dtype is:
+      - a pdarray dtype when input is pdarray
+      - resolve_scalar_dtype(x) (string or dtype) when input is scalar
+
+    Rules for determining dtype
+      - ceil/floor/trunc preserve input dtype
+      - round preserves except bool -> float64
+      - square preserves, but bool is handled via precompute to int64
+      - sign rejects bool
+      - fabs always float64
+      - isfinite/isinf/isnan always bool
+      - log/exp/trig/hyperbolic always float64
+    """
+    if func_name in _PRESERVE:
+        return input_dtype
+
+    if func_name == "round":
+        # Closest match to numpy behavior
+        # bool -> float64, otherwise preserve
+        if input_dtype == ak_bool or input_dtype == "bool":
+            return ak_float64
+        return input_dtype
+
+    if func_name in _ALWAYS_FLOAT:
+        return ak_float64
+
+    if func_name in _ALWAYS_BOOL:
+        return ak_bool
+
+    if func_name == "sign":
+        if input_dtype == ak_bool or input_dtype == "bool":
+            raise TypeError("sign does not support bool input")
+        return input_dtype
+
+    raise ValueError(f"Unknown function: {func_name}")
+
+
+# -----------------------------------------------------------------------------
+# Scalar casting helper (used for scalar-only path and scalar fill for out)
+# -----------------------------------------------------------------------------
+
+
+def cast_scalar_to_dtype(val: Any, dtype: Any) -> Any:
+    # Accept dtype objects or strings like "float64"
+    if dtype == ak_float64 or dtype == "float64":
+        return float(val)
+    if dtype == ak_int64 or dtype == "int64":
+        return int(val)
+    if dtype == ak_uint64 or dtype == "uint64":
+        return int(val)  # assumes already validated non-negative
+    if dtype == ak_bool or dtype == "bool":
+        return bool(val)
+    raise TypeError(f"Unsupported dtype {dtype}")
+
+
+# -----------------------------------------------------------------------------
+# Spec + hooks
+# -----------------------------------------------------------------------------
+
+ExtraArgsBuilder = Callable[[Mapping[str, Any]], dict[str, Any]]
+PrecomputeHook = Callable[[Sequence[pdarray], Any], Optional[pdarray]]
+ValidateHook = Callable[[str, Sequence[Any]], None]
+InputCastHook = Callable[[pdarray, Any], pdarray]  # (bx, res_dtype) -> bx_casted
+
+
+@dataclass(frozen=True)
+class UfuncSpec:
+    name: str  # Python-facing name
+    chapel_name: str  # used in cmd=...
+    argname: str  # "x" or "pda" in args dict
+    output_dtype_resolver: Callable[[str, Any], Any]
+    scalar_op: Optional[Callable[..., Any]] = None
+    validate: Optional[ValidateHook] = None
+    precompute: Optional[PrecomputeHook] = None
+    extra_args_builder: Optional[ExtraArgsBuilder] = None
+    input_cast: Optional[InputCastHook] = None
+    chapel_accepts_dtype: bool = True  # isfinite/isinf/isnan float-only path uses False
+
+
+# -----------------------------------------------------------------------------
+# Generic Chapel dispatch
+# -----------------------------------------------------------------------------
+
+
+def _dispatch_unary_chapel(
+    spec: UfuncSpec, bx: pdarray, res_dtype: Any, extra_args: dict[str, Any]
+) -> pdarray:
+    from arkouda.core.client import generic_msg
+
+    args = {spec.argname: bx}
+    args.update(extra_args)
+
+    if spec.chapel_accepts_dtype:
+        cmd = f"{spec.chapel_name}<{bx.dtype},{bx.ndim}>"
+    else:
+        cmd = f"{spec.chapel_name}<{bx.ndim}>"
+
+    rep_msg = generic_msg(cmd=cmd, args=args)
+    return create_pdarray(rep_msg).astype(res_dtype)
+
+
+# -----------------------------------------------------------------------------
+# Generic unary ufunc handler
+# -----------------------------------------------------------------------------
+
+
+def ufunc_unary(
+    spec: UfuncSpec,
+    x: Any,
+    /,
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+    **kwargs: Any,
+):
+    from arkouda.numpy.numeric import where as ak_where
+    from arkouda.numpy.util import broadcast_shapes as bcast_shapes
+    from arkouda.numpy.util import broadcast_to as bcast_to
+
+    where_n = _normalize_where(where)
+
+    if out is not None and not isinstance(out, pdarray):
+        raise TypeError("out must be a pdarray or None")
+
+    # Where policy
+    if out is None and where_n is not True:
+        raise ValueError("out must be provided when where is not None/True")
+
+    # Optional validation on raw inputs
+    if spec.validate is not None:
+        spec.validate(spec.name, (x,))
+
+    # -------------------------
+    # Scalar-only fast path
+    # -------------------------
+    if not isinstance(x, pdarray):
+        if spec.scalar_op is None:
+            raise RuntimeError(f"scalar_op required for scalar-only inputs: {spec.name}")
+
+        in_dt_scalar = resolve_scalar_dtype(x)
+        res_dtype = spec.output_dtype_resolver(spec.name, in_dt_scalar)
+
+        if out is not None and not can_cast(res_dtype, out.dtype):
+            raise TypeError(f"Cannot cast {res_dtype} to out dtype {out.dtype}")
+
+        # scalar_op may accept kwargs (round uses decimals)
+        scalar_val = spec.scalar_op(x, **kwargs)
+
+        if out is None:
+            return cast_scalar_to_dtype(scalar_val, res_dtype)
+
+        # scalar + out: broadcast-fill out.shape, then where/out merge
+        shape = out.shape
+        fill_val = cast_scalar_to_dtype(scalar_val, out.dtype)
+        tmp = bcast_to(fill_val, shape)
+
+        if where_n is True:
+            out[:] = tmp
+            return out
+
+        cond = bcast_to(
+            where_n if isinstance(where_n, pdarray) else _validated_bool_scalar(where_n),
+            shape,
+        )
+
+        assert out is not None  # we know it isn't, but mypy doesn't know that
+        out[:] = ak_where(cond, tmp, out)
+        return out
+
+    # -------------------------
+    # pdarray path
+    # -------------------------
+    in_dt_array = x.dtype
+    res_dtype = spec.output_dtype_resolver(spec.name, in_dt_array)
+
+    if out is not None and not can_cast(res_dtype, out.dtype):
+        raise TypeError(f"Cannot cast {res_dtype} to out dtype {out.dtype}")
+
+    # Broadcast shape (x and where)
+    shape = (
+        out.shape
+        if out is not None
+        else bcast_shapes(x.shape, *([where_n.shape] if isinstance(where_n, pdarray) else []))
+    )
+    bx = bcast_to(x, shape)
+
+    # Per-function input cast (e.g., fabs always float64, bool->float64 for many float funcs,
+    # round bool->float64)
+    if spec.input_cast is not None:
+        bx = spec.input_cast(bx, res_dtype)
+
+    # Precompute/bypass hook (after broadcasting)
+    tmp = spec.precompute((bx,), res_dtype) if spec.precompute is not None else None
+
+    if tmp is None:
+        extra_args = spec.extra_args_builder(kwargs) if spec.extra_args_builder is not None else {}
+        if kwargs and spec.extra_args_builder is None:
+            raise TypeError(f"{spec.name} got unexpected keyword arguments: {', '.join(kwargs.keys())}")
+
+        tmp = _dispatch_unary_chapel(spec, bx, res_dtype, extra_args)
+
+    # If out is provided, cast computed result to out.dtype before assignment/merge
+    if out is not None and tmp.dtype != out.dtype:
+        tmp = tmp.astype(out.dtype)
+
+    if where_n is True:
+        if out is None:
+            return tmp
+        out[:] = tmp
+        return out
+
+    cond = bcast_to(
+        where_n if isinstance(where_n, pdarray) else _validated_bool_scalar(where_n),
+        shape,
+    )
+
+    assert out is not None  # we know it isn't, but mypy doesn't
+    out[:] = ak_where(cond, tmp, out)
+    return out
+
+
+# -----------------------------------------------------------------------------
+# Helper hooks used by specs
+# -----------------------------------------------------------------------------
+
+
+def validate_sign(name: str, ops: Sequence[Any]) -> None:
+    (x,) = ops
+    if isinstance(x, pdarray):
+        if x.dtype == ak_bool:
+            raise TypeError("sign does not support bool input")
+    else:
+        if resolve_scalar_dtype(x) == "bool":
+            raise TypeError("sign does not support bool input")
+
+
+def cast_all_to_float64(bx: pdarray, res_dtype: Any) -> pdarray:
+    # fabs: always convert input to float64 before processing
+    if bx.dtype != ak_float64:
+        return bx.astype(ak_float64)
+    return bx
+
+
+def cast_bool_to_float64_only(bx: pdarray, res_dtype: Any) -> pdarray:
+    # For float-producing functions that specifically want bool->float64
+    if bx.dtype == ak_bool:
+        return bx.astype(ak_float64)
+    return bx
+
+
+def cast_bool_to_float64_for_round(bx: pdarray, res_dtype: Any) -> pdarray:
+    # round: bool -> float64; otherwise preserve
+    if bx.dtype == ak_bool:
+        return bx.astype(ak_float64)
+    return bx
+
+
+def abs_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype in (ak_bool, ak_uint64):
+        return bx.copy()
+    return None
+
+
+def ceil_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype in (ak_int64, ak_uint64, ak_bool):
+        return bx.copy()
+    return None
+
+
+def floor_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype in (ak_int64, ak_uint64, ak_bool):
+        return bx.copy()
+    return None
+
+
+def trunc_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype in (ak_int64, ak_uint64, ak_bool):
+        return bx.copy()
+    return None
+
+def round_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    # Integers: numpy effectively leaves them unchanged; bypass server.
+    if bx.dtype in (ak_int64, ak_uint64):
+        return bx.copy()
+    # Bool: numpy returns float16; we return float64 (your chosen policy).
+    if bx.dtype == ak_bool:
+        return bx.astype(ak_float64)
+    return None
+
+
+def square_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype == ak_bool:
+        # Return int64; bypass Chapel
+        return bx.astype(ak_int64)
+    return None
+
+
+def sign_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype == ak_uint64:
+        # result = (input != 0)
+        return bx != 0
+    return None
+
+
+def isfinite_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype != ak_float64:
+        return full(bx.shape, True, ak_bool)
+    return None
+
+
+def isinf_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype != ak_float64:
+        return full(bx.shape, False, ak_bool)
+    return None
+
+
+def isnan_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
+    (bx,) = ops
+    if bx.dtype != ak_float64:
+        return full(bx.shape, False, ak_bool)
+    return None
+
+
+def round_args_builder(py_kwargs: Mapping[str, Any]) -> dict[str, Any]:
+    decimals = py_kwargs.get("decimals", 0)
+    return {"n": decimals}
+
+
+# -----------------------------------------------------------------------------
+# Specs (registry)
+# -----------------------------------------------------------------------------
+
+ABS_SPEC = UfuncSpec(
+    name="abs",
+    chapel_name="abs",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.abs,
+    precompute=abs_precompute,
+)
+
+FABS_SPEC = UfuncSpec(
+    name="fabs",
+    chapel_name="abs",  # chapel-side abs
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.fabs,
+    input_cast=cast_all_to_float64,
+    precompute=abs_precompute,
+)
+
+CEIL_SPEC = UfuncSpec(
+    name="ceil",
+    chapel_name="ceil",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.ceil,
+    precompute=ceil_precompute,
+)
+
+FLOOR_SPEC = UfuncSpec(
+    name="floor",
+    chapel_name="floor",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.floor,
+    precompute=floor_precompute,
+)
+
+ROUND_SPEC = UfuncSpec(
+    name="round",
+    chapel_name="round",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.round,
+    extra_args_builder=round_args_builder,
+    input_cast=cast_bool_to_float64_for_round,
+    precompute=round_precompute,
+)
+
+TRUNC_SPEC = UfuncSpec(
+    name="trunc",
+    chapel_name="trunc",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.trunc,
+    precompute=trunc_precompute,
+)
+
+SIGN_SPEC = UfuncSpec(
+    name="sign",
+    chapel_name="sgn",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.sign,
+    validate=validate_sign,
+    precompute=sign_precompute,
+)
+
+ISFINITE_SPEC = UfuncSpec(
+    name="isfinite",
+    chapel_name="isfinite",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.isfinite,
+    precompute=isfinite_precompute,
+    chapel_accepts_dtype=False,
+)
+
+ISINF_SPEC = UfuncSpec(
+    name="isinf",
+    chapel_name="isinf",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.isinf,
+    precompute=isinf_precompute,
+    chapel_accepts_dtype=False,
+)
+
+ISNAN_SPEC = UfuncSpec(
+    name="isnan",
+    chapel_name="isnan",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.isnan,
+    precompute=isnan_precompute,
+    chapel_accepts_dtype=False,
+)
+
+# log family (bool->float64 before processing)
+LOG_SPEC = UfuncSpec(
+    name="log",
+    chapel_name="log",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.log,
+    input_cast=cast_bool_to_float64_only,
+)
+
+LOG2_SPEC = UfuncSpec(
+    name="log2",
+    chapel_name="log2",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.log2,
+    input_cast=cast_bool_to_float64_only,
+)
+
+LOG10_SPEC = UfuncSpec(
+    name="log10",
+    chapel_name="log10",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.log10,
+    input_cast=cast_bool_to_float64_only,
+)
+
+LOG1P_SPEC = UfuncSpec(
+    name="log1p",
+    chapel_name="log1p",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.log1p,
+    input_cast=cast_bool_to_float64_only,
+)
+
+# exp family (bool->float64 before processing)
+EXP_SPEC = UfuncSpec(
+    name="exp",
+    chapel_name="exp",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.exp,
+    input_cast=cast_bool_to_float64_only,
+)
+
+EXPM1_SPEC = UfuncSpec(
+    name="expm1",
+    chapel_name="expm1",
+    argname="pda",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.expm1,
+    input_cast=cast_bool_to_float64_only,
+)
+
+SQUARE_SPEC = UfuncSpec(
+    name="square",
+    chapel_name="square",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.square,
+    precompute=square_precompute,
+)
+
+# trig and hyperbolic (bool->float64 before processing)
+SIN_SPEC = UfuncSpec(
+    name="sin",
+    chapel_name="sin",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.sin,
+    input_cast=cast_bool_to_float64_only,
+)
+COS_SPEC = UfuncSpec(
+    name="cos",
+    chapel_name="cos",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.cos,
+    input_cast=cast_bool_to_float64_only,
+)
+TAN_SPEC = UfuncSpec(
+    name="tan",
+    chapel_name="tan",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.tan,
+    input_cast=cast_bool_to_float64_only,
+)
+
+ARCSIN_SPEC = UfuncSpec(
+    name="arcsin",
+    chapel_name="arcsin",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.arcsin,
+    input_cast=cast_bool_to_float64_only,
+)
+ARCCOS_SPEC = UfuncSpec(
+    name="arccos",
+    chapel_name="arccos",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.arccos,
+    input_cast=cast_bool_to_float64_only,
+)
+ARCTAN_SPEC = UfuncSpec(
+    name="arctan",
+    chapel_name="arctan",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.arctan,
+    input_cast=cast_bool_to_float64_only,
+)
+
+SINH_SPEC = UfuncSpec(
+    name="sinh",
+    chapel_name="sinh",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.sinh,
+    input_cast=cast_bool_to_float64_only,
+)
+COSH_SPEC = UfuncSpec(
+    name="cosh",
+    chapel_name="cosh",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.cosh,
+    input_cast=cast_bool_to_float64_only,
+)
+TANH_SPEC = UfuncSpec(
+    name="tanh",
+    chapel_name="tanh",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.tanh,
+    input_cast=cast_bool_to_float64_only,
+)
+
+ARCSINH_SPEC = UfuncSpec(
+    name="arcsinh",
+    chapel_name="arcsinh",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.arcsinh,
+    input_cast=cast_bool_to_float64_only,
+)
+ARCCOSH_SPEC = UfuncSpec(
+    name="arccosh",
+    chapel_name="arccosh",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.arccosh,
+    input_cast=cast_bool_to_float64_only,
+)
+ARCTANH_SPEC = UfuncSpec(
+    name="arctanh",
+    chapel_name="arctanh",
+    argname="x",
+    output_dtype_resolver=resolve_output_dtype,
+    scalar_op=np.arctanh,
+    input_cast=cast_bool_to_float64_only,
+)
+
+
+# -----------------------------------------------------------------------------
+# Public API wrappers
+# -----------------------------------------------------------------------------
+
+
+@typechecked
+def abs(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """ 
+    Return the element-wise absolute value of the array.
+ 
+    Parameters
+    ----------
+    pda : pdarray
+            
+    Returns
+    ------- 
+    pdarray
+        A pdarray containing absolute values of the input array elements
+    
+    Raises 
+    ------  
+    TypeError
+        Raised if the parameter is not a pdarray
+    
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.abs(ak.arange(-5,-1))
+    array([5 4 3 2])
+
+    >>> ak.abs(ak.linspace(-5,-1,5))
+    array([5.00000000... 4.00000000... 3.00000000...
+    2.00000000... 1.00000000...])
+    """
+    return ufunc_unary(ABS_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def fabs(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Compute the absolute values element-wise, casting to a float beforehand.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing absolute values of the input array elements, casted to float type
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.fabs(ak.arange(-5,-1))
+    array([5.00000000000000000 4.00000000000000000 3.00000000000000000 2.00000000000000000])
+
+    >>> ak.fabs(ak.linspace(-5,-1,5))
+    array([5.00000000... 4.00000000... 3.00000000...
+    2.00000000... 1.00000000...])
+    """
+    return ufunc_unary(FABS_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def ceil(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise ceiling of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing ceiling values of the input array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.ceil(ak.linspace(1.1,5.5,5))
+    array([2.00000000... 3.00000000... 4.00000000... 5.00000000... 6.00000000...])
+
+    Notes
+    -----
+    Unlike numpy, arkouda requires out if where is used.
+    """
+    return ufunc_unary(CEIL_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def floor(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """ 
+    Return the element-wise floor of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing floor values of the input array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.floor(ak.linspace(1.1,5.5,5))
+    array([1.00000000... 2.00000000... 3.00000000...
+    4.00000000... 5.00000000...])
+
+    Notes
+    -----
+    Unlike numpy, arkouda requires out if where is used.
+    """
+    return ufunc_unary(FLOOR_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def round(
+    x,
+    decimals: int = 0,
+    out: Optional[pdarray] = None,
+):
+    """
+    Return the element-wise rounding of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    decimals: Optional[Union[int, None]], default = None
+        for float pdarrays, the number of decimal places of accuracy for the round.
+        May be None, positive, negative, or zero.  If None, zero is used.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing input array elements rounded to the nearest integer
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray or if the dtype of the pdarray
+        is other than ak.float64, ak.int64, ak.uint64 or ak.bool.
+
+    Notes
+    -----
+    This function follows numpy's rule of "round to even" when the fractional part
+    of the number equals .5.  For example, 2.5 rounds to 2, but 3.5 rounds to 4.
+    Arkouda's use of decimal is not perfect, as shown in the examples below.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.round(ak.array([1.1, 2.5, 3.14159]))
+    array([1.00000000000000000 2.00000000000000000 3.00000000000000000])
+    >>> ak.round(ak.array([1.5, 2.5, 3.5]))
+    array([2.00000000000000000 2.00000000000000000 4.00000000000000000])
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=-1)
+    array([-140.00000000000000000 280.00000000000000000])
+    >>> ak.round(ak.array([-143.1, 279.8]),decimals=0)
+    array([-143.00000000000000000 280.00000000000000000])
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=2)
+    array([1.54 2.73])
+    >>> ak.round(ak.array([1.541, 2.732]),decimals=3)
+    array([1.5409999999999999 2.7320000000000002])
+    """
+    return ufunc_unary(ROUND_SPEC, x, out=out, where=True, decimals=decimals)
+
+
+@typechecked
+def trunc(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise truncation of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing input array elements truncated to the nearest integer
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.trunc(ak.array([1.1, 2.5, 3.14159]))
+    array([1.00000000... 2.00000000... 3.00000000...])
+
+    Notes
+    -----
+    Unlike numpy, arkouda requires out if where is used.
+    """
+    return ufunc_unary(TRUNC_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def sign(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise sign of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing sign values of the input array elements
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.sign(ak.array([-10, -5, 0, 5, 10]))
+    array([-1 -1 0 1 1])
+    """
+    return ufunc_unary(SIGN_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def isfinite(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise isfinite check applied to the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing boolean values indicating whether the
+        input array elements are finite
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not float-based
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.isfinite(ak.array([1.0, 2.0, ak.inf]))
+    array([True True False])
+    """
+    return ufunc_unary(ISFINITE_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def isinf(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise isinf check applied to the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing boolean values indicating whether the
+        input array elements are infinite (positive or negative)
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not float-based
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.isinf(ak.array([1.0, 2.0, ak.inf]))
+    array([False False True])
+    """
+    return ufunc_unary(ISINF_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def isnan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise isnan check applied to the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing boolean values indicating whether the
+        input array elements are NaN
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not one of float, int, uint or bool
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.isnan(ak.array([1.0, 2.0, np.log(-1)]))
+    array([False False True])
+    """
+    return ufunc_unary(ISNAN_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def log(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise natural log of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing natural log values of the input
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Notes
+    -----
+    Logarithms with other bases can be computed as follows:
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> A = ak.array([1, 10, 100])
+
+    Natural log
+    >>> ak.log(A)
+    array([0.00000000... 2.30258509... 4.60517018...])
+    """
+    return ufunc_unary(LOG_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def log2(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise natural log of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing natural log values of the input
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Notes
+    -----
+    Logarithms with other bases can be computed as follows:
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> A = ak.array([1, 10, 100])
+
+    Log base 2
+    >>> ak.log(A) / np.log(2)
+    array([0.00000000... 3.32192809... 6.64385618...])
+    """
+    return ufunc_unary(LOG2_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def log10(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise natural log of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing natural log values of the input
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Notes
+    -----
+    Logarithms with other bases can be computed as follows:
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> A = ak.array([1, 10, 100])
+
+    Log base 10
+    >>> ak.log(A) / np.log(10)
+    array([0.00000000... 1.00000000... 2.00000000...])
+    """
+    return ufunc_unary(LOG10_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def log1p(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise natural log of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing natural log values of the input
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Notes
+    -----
+    Logarithms with other bases can be computed as follows:
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> A = ak.array([1, 10, 100])
+
+    """
+    return ufunc_unary(LOG1P_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def exp(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise exponential of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing exponential values of the input
+        array elements
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.exp(ak.arange(1,5))
+    array([2.71828182... 7.38905609... 20.0855369... 54.5981500...])
+
+    >>> ak.exp(ak.uniform(4, 1.0, 5.0, seed=1))
+    array([63.3448620... 3.80794671... 54.7254287... 36.2344168...])
+
+    """
+    return ufunc_unary(EXP_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def expm1(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise exponential of the array minus one.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing e raised to each of the inputs,
+        then subtracting one.
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.expm1(ak.arange(1,5))
+    array([1.71828182... 6.38905609... 19.0855369... 53.5981500...])
+
+    >>> ak.expm1(ak.uniform(5,1.0,5.0, seed=1))
+    array([62.3448620... 2.80794671... 53.7254287...
+        35.2344168... 41.1929399...])
+    """
+    return ufunc_unary(EXPM1_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def square(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise square of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing square values of the input
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> ak.square(ak.arange(1,5))
+    array([1 4 9 16])
+    """
+    return ufunc_unary(SQUARE_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def sin(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise sine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing sin for each element
+        of the original pdarray
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-1.5,0.75,4)
+    >>> ak.sin(a)
+    array([-0.99749498... -0.68163876... 0.00000000... 0.68163876...])
+    """
+    return ufunc_unary(SIN_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def cos(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise cosine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the cosine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing cos for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-1.5,0.75,4)
+    >>> ak.cos(a)
+    array([0.07073720... 0.73168886... 1.00000000... 0.73168886...])
+    """
+    return ufunc_unary(COS_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def tan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise tangent of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the tangent will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing tan for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-1.5,0.75,4)
+    >>> ak.tan(a)
+    array([-14.1014199... -0.93159645... 0.00000000... 0.93159645...])
+    """
+    return ufunc_unary(TAN_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def arcsin(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise inverse sine of the array. The result is between -pi/2 and pi/2.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse sine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.7,0.5,4)
+    >>> ak.arcsin(a)
+    array([-0.77539749... -0.30469265... 0.10016742... 0.52359877...])
+    """
+    return ufunc_unary(ARCSIN_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def arccos(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise inverse cosine of the array. The result is between 0 and pi.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse cosine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.7,0.5,4)
+    >>> ak.arccos(a)
+    array([2.34619382... 1.87548898... 1.47062890... 1.04719755...])
+    """
+    return ufunc_unary(ARCCOS_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def arctan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise inverse tangent of the array. The result is between -pi/2 and pi/2.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse tangent for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-10.7,10.5,4)
+    >>> ak.arctan(a)
+    array([-1.47760906... -1.30221689... 1.28737507... 1.47584462...])
+    """
+    return ufunc_unary(ARCTAN_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def sinh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise hyperbolic sine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing hyperbolic sine for each element
+        of the original pdarray
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.9,0.7,4)
+    >>> ak.sinh(a)
+    array([-1.02651672... -0.37493812... 0.16743934... 0.75858370...])
+    """
+    return ufunc_unary(SINH_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def cosh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise hyperbolic cosine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing hyperbolic cosine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.9,0.7,4)
+    >>> ak.cosh(a)
+    array([1.43308638... 1.06797874... 1.01392106... 1.25516900...])
+    """
+    return ufunc_unary(COSH_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def tanh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise hyperbolic tangent of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing hyperbolic tangent for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-0.9,0.7,4)
+    >>> ak.tanh(a)
+    array([-0.71629787... -0.35107264... 0.16514041... 0.60436777...])
+    """
+    return ufunc_unary(TANH_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def arcsinh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise inverse hyperbolic sine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
+        its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse hyperbolic sine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-500,500,4)
+    >>> ak.arcsinh(a)
+    array([-6.90775627... -5.80915199... 5.80915199... 6.90775627...])
+    """
+    return ufunc_unary(ARCSINH_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def arccosh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise inverse hyperbolic cosine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
+        retain its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse hyperbolic cosine for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(1,500,4)
+    >>> ak.arccosh(a)
+    array([0.00000000... 5.81312608... 6.50328742... 6.90775427...])
+    """
+    return ufunc_unary(ARCCOSH_SPEC, x, out=out, where=where)
+
+
+@typechecked
+def arctanh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+    """
+    Return the element-wise inverse hyperbolic tangent of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
+        it will retain its original value. Default set to True.
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing inverse hyperbolic tangent for each element
+        of the original pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameters are not a pdarray or numeric scalar.
+
+    Examples
+    --------
+    >>> import arkouda as ak
+    >>> a = ak.linspace(-.999,.999,4)
+    >>> ak.arctanh(a)
+    array([-3.80020116... -0.34619863... 0.34619863... 3.80020116...])
+    """
+    return ufunc_unary(ARCTANH_SPEC, x, out=out, where=where)
