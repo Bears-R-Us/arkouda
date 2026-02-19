@@ -3514,6 +3514,7 @@ def trunc_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray
         return bx.copy()
     return None
 
+
 def round_precompute(ops: Sequence[pdarray], res_dtype: Any) -> Optional[pdarray]:
     (bx,) = ops
     # Integers: numpy effectively leaves them unchanged; bypass server.
@@ -3841,24 +3842,37 @@ ARCTANH_SPEC = UfuncSpec(
 
 
 @typechecked
-def abs(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
-    """ 
+def abs(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
+    """
     Return the element-wise absolute value of the array.
- 
+
     Parameters
     ----------
-    pda : pdarray
-            
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        abs will be applied to the corresponding values. Elsewhere, out will retain
+        its original value. Default set to True.
+
+
     Returns
-    ------- 
+    -------
     pdarray
         A pdarray containing absolute values of the input array elements
-    
-    Raises 
-    ------  
+
+    Raises
+    ------
     TypeError
         Raised if the parameter is not a pdarray
-    
+
     Examples
     --------
     >>> import arkouda as ak
@@ -3873,13 +3887,25 @@ def abs(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def fabs(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def fabs(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Compute the absolute values element-wise, casting to a float beforehand.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is broadcast over the input. At locations where the condition is True,
+        fabs will be applied to the corresponding values. Elsewhere, out will retain
+        its original value. Default set to True.
 
     Returns
     -------
@@ -3905,13 +3931,18 @@ def fabs(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def ceil(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def ceil(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise ceiling of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
     out: None or pdarray, optional
         A location into which the result is stored. If provided, it must have a shape that
         the inputs broadcast to.
@@ -3944,13 +3975,18 @@ def ceil(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def floor(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
-    """ 
+def floor(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
+    """
     Return the element-wise floor of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
     out: None or pdarray, optional
         A location into which the result is stored. If provided, it must have a shape that
         the inputs broadcast to.
@@ -3985,7 +4021,7 @@ def floor(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 @typechecked
 def round(
-    x,
+    x: Union[pdarray, numeric_and_bool_scalars],
     decimals: int = 0,
     out: Optional[pdarray] = None,
 ):
@@ -3994,16 +4030,19 @@ def round(
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray or numeric_and_bool_scalars
     decimals: Optional[Union[int, None]], default = None
         for float pdarrays, the number of decimal places of accuracy for the round.
         May be None, positive, negative, or zero.  If None, zero is used.
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
 
     Returns
     -------
     pdarray
         A pdarray containing input array elements rounded to the nearest integer
-    
+
     Raises
     ------
     TypeError
@@ -4036,13 +4075,18 @@ def round(
 
 
 @typechecked
-def trunc(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def trunc(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise truncation of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
     out: None or pdarray, optional
         A location into which the result is stored. If provided, it must have a shape that
         the inputs broadcast to.
@@ -4075,13 +4119,25 @@ def trunc(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def sign(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def sign(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise sign of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4101,13 +4157,25 @@ def sign(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def isfinite(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def isfinite(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise isfinite check applied to the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4132,13 +4200,25 @@ def isfinite(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None
 
 
 @typechecked
-def isinf(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def isinf(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise isinf check applied to the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4163,13 +4243,25 @@ def isinf(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def isnan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def isnan(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise isnan check applied to the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4194,19 +4286,30 @@ def isnan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def log(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def log(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise natural log of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
-        A pdarray containing natural log values of the input
-        array elements
+        A pdarray containing natural log values of the input array elements
 
     Raises
     ------
@@ -4230,19 +4333,30 @@ def log(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def log2(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def log2(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise natural log of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
-        A pdarray containing natural log values of the input
-        array elements
+        A pdarray containing log base 2 values of the input array elements
 
     Raises
     ------
@@ -4266,19 +4380,30 @@ def log2(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def log10(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def log10(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise natural log of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
-        A pdarray containing natural log values of the input
-        array elements
+        A pdarray containing log base 10 values of the input array elements
 
     Raises
     ------
@@ -4302,19 +4427,30 @@ def log10(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def log1p(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def log1p(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise natural log of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
-        A pdarray containing natural log values of the input
-        array elements
+        A pdarray containing natural log values of 1 plus the input array elements
 
     Raises
     ------
@@ -4329,26 +4465,39 @@ def log1p(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
     --------
     >>> import arkouda as ak
     >>> A = ak.array([1, 10, 100])
+    >>> ak.log1p(A)
+    array([0.69314718055994529 2.3978952727983707 4.6151205168412597])
 
     """
     return ufunc_unary(LOG1P_SPEC, x, out=out, where=where)
 
 
 @typechecked
-def exp(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def exp(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise exponential of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
-        A pdarray containing exponential values of the input
-        array elements
-    
+        A pdarray containing exponential values of the input array elements
+
     Raises
     ------
     TypeError
@@ -4368,19 +4517,30 @@ def exp(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def expm1(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def expm1(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise exponential of the array minus one.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
+    where : bool or pdarray, default=True
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
-        A pdarray containing e raised to each of the inputs,
-        then subtracting one.
+        A pdarray containing e raised to each of the inputs, then subtracting one.
 
     Raises
     ------
@@ -4401,13 +4561,21 @@ def expm1(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def square(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def square(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise square of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
         This condition is applied over the input. At locations where the condition is True, the
         corresponding value will be acted on by the function. Elsewhere, it will retain its
@@ -4416,8 +4584,7 @@ def square(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
     Returns
     -------
     pdarray
-        A pdarray containing square values of the input
-        array elements
+        A pdarray containing square values of the input array elements
 
     Raises
     ------
@@ -4434,24 +4601,32 @@ def square(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def sin(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def sin(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise sine of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
         A pdarray containing sin for each element
         of the original pdarray
-    
+
     Raises
     ------
     TypeError
@@ -4468,17 +4643,25 @@ def sin(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def cos(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def cos(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise cosine of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the cosine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4502,17 +4685,25 @@ def cos(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def tan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def tan(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise tangent of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the tangent will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4536,17 +4727,25 @@ def tan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def arcsin(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def arcsin(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise inverse sine of the array. The result is between -pi/2 and pi/2.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4570,17 +4769,25 @@ def arcsin(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def arccos(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def arccos(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise inverse cosine of the array. The result is between 0 and pi.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse cosine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4604,17 +4811,25 @@ def arccos(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def arctan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def arctan(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise inverse tangent of the array. The result is between -pi/2 and pi/2.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse tangent will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4638,24 +4853,32 @@ def arctan(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def sinh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def sinh(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise hyperbolic sine of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
     pdarray
         A pdarray containing hyperbolic sine for each element
         of the original pdarray
-    
+
     Raises
     ------
     TypeError
@@ -4672,17 +4895,25 @@ def sinh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def cosh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def cosh(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise hyperbolic cosine of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4706,17 +4937,25 @@ def cosh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def tanh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def tanh(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise hyperbolic tangent of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the hyperbolic tangent will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4740,17 +4979,25 @@ def tanh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
 
 
 @typechecked
-def arcsinh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def arcsinh(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise inverse hyperbolic sine of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse hyperbolic sine will be applied to the corresponding value. Elsewhere, it will retain
-        its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4774,17 +5021,25 @@ def arcsinh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None)
 
 
 @typechecked
-def arccosh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def arccosh(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise inverse hyperbolic cosine of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse hyperbolic cosine will be applied to the corresponding value. Elsewhere, it will
-        retain its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------
@@ -4808,17 +5063,25 @@ def arccosh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None)
 
 
 @typechecked
-def arctanh(x, /, out: Optional[pdarray] = None, *, where: Optional[Any] = None):
+def arctanh(
+    x: Union[pdarray, numeric_and_bool_scalars],
+    out: Optional[pdarray] = None,
+    *,
+    where: Optional[Any] = None,
+):
     """
     Return the element-wise inverse hyperbolic tangent of the array.
 
     Parameters
     ----------
-    pda : pdarray
+    x : pdarray
+    out: None or pdarray, optional
+        A location into which the result is stored. If provided, it must have a shape that
+        the inputs broadcast to.
     where : bool or pdarray, default=True
-        This condition is broadcast over the input. At locations where the condition is True,
-        the inverse hyperbolic tangent will be applied to the corresponding value. Elsewhere,
-        it will retain its original value. Default set to True.
+        This condition is applied over the input. At locations where the condition is True, the
+        corresponding value will be acted on by the function. Elsewhere, it will retain its
+        original value. Default set to True.
 
     Returns
     -------

@@ -87,6 +87,7 @@ def random_scalar(dtype):
 
 def recast_if_bool_case(x):
     from arkouda.numpy import cast as akcast
+
     if np.isscalar(x):
         return np.float64(x)
     elif isinstance(x, np.ndarray):
