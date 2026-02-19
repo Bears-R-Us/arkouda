@@ -50,6 +50,7 @@ Example
 >>> ak.seterrcall(myhandler)
 >>> out = ak.array([1.0]) / 0
 [ak] divide: divide by zero encountered
+[ak] divide: divide by zero encountered in divide
 """
 
 from __future__ import annotations
