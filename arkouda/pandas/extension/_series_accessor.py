@@ -32,8 +32,9 @@ All operations avoid materializing to NumPy unless explicitly requested.
 
 from __future__ import annotations
 
-from typing import Any, Union
+from typing import Any, Callable, Optional, Union
 
+import numpy as np
 import pandas as pd
 
 from pandas import Index as pd_Index
@@ -575,6 +576,65 @@ class ArkoudaSeriesAccessor:
 
         return _ak_array_to_pandas_series(
             perm,
+            name=str(self._obj.name),
+            index=self._obj.index,
+        )
+
+    def apply(
+        self,
+        func: Union[Callable[[Any], Any], str],
+        result_dtype: Optional[Union[np.dtype, str]] = None,
+    ) -> pd.Series:
+        """
+        Apply a Python function element-wise to this Arkouda-backed Series.
+
+        This delegates to :func:`arkouda.apply.apply`, executing the function
+        on the Arkouda server without materializing to NumPy.
+
+        Parameters
+        ----------
+        func : Union[Callable[[Any], Any], str]
+            A Python callable or a specially formatted lambda string
+            (e.g. ``"lambda x,: x+1"``).
+        result_dtype : Optional[Union[np.dtype, str]]
+            The dtype of the resulting array. Required if the function changes dtype.
+            Must be compatible with :func:`arkouda.apply.apply`.
+            Default is None.
+
+        Returns
+        -------
+        pd.Series
+            A new Arkouda-backed Series containing the transformed values.
+
+        Raises
+        ------
+        TypeError
+            If the Series is not Arkouda-backed or if its values are not
+            a numeric pdarray.
+        """
+        if not self.is_arkouda:
+            raise TypeError("Series must be Arkouda-backed. Call .ak.to_ak() first.")
+
+        from arkouda.apply import apply as ak_apply
+        from arkouda.numpy.pdarrayclass import pdarray
+
+        arr = self._obj.array
+        akcol = getattr(arr, "_data", None)
+
+        if akcol is None:
+            raise TypeError("Arkouda-backed Series array does not expose '_data'")
+
+        # 🔒 Explicitly require pdarray (apply currently only supports pdarray)
+        if not isinstance(akcol, pdarray):
+            raise TypeError(
+                "Series.ak.apply currently only supports numeric pdarray-backed Series. "
+                f"Got {type(akcol).__name__}."
+            )
+
+        out = ak_apply(akcol, func, result_dtype=result_dtype)
+
+        return _ak_array_to_pandas_series(
+            out,
             name=str(self._obj.name),
             index=self._obj.index,
         )

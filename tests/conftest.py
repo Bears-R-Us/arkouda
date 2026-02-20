@@ -185,6 +185,9 @@ def manage_connection(_class_server, request):
         ak.connect(server=pytest.server, port=pytest.port, timeout=pytest.client_timeout)
         pytest.max_rank = ak.get_max_array_rank()
         pytest.compiled_ranks = ak.core.client.get_array_ranks()
+        for attr in ("is_apply_supported", "is_version_supported", "is_initialized"):
+            if hasattr(ak.apply, attr):
+                delattr(ak.apply, attr)
 
     except Exception as e:
         raise ConnectionError(e)
