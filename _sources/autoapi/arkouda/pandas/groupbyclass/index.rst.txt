@@ -236,7 +236,7 @@ Module Contents
 
 
 
-   .. py:method:: aggregate(values: groupable, operator: str, skipna: bool = True, ddof: arkouda.numpy.dtypes.int_scalars = 1) -> Tuple[groupable, groupable]
+   .. py:method:: aggregate(values: Union[groupable, arkouda.numpy.pdarrayclass.pdarray | pandas.Series | arkouda.pandas.extension.ArkoudaExtensionArray], operator: str, skipna: bool = True, ddof: arkouda.numpy.dtypes.int_scalars = 1) -> Tuple[groupable, groupable]
 
       Group another array of values and apply a reduction to each group's values.
 
