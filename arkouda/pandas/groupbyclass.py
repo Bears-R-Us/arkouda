@@ -76,8 +76,11 @@ from arkouda.numpy.sorting import argsort, sort
 
 
 if TYPE_CHECKING:
+    from pandas import Series as pd_Series
+
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.categorical import Categorical
+    from arkouda.pandas.extension import ArkoudaExtensionArray
 else:
     Categorical = TypeVar("Categorical")
     Strings = TypeVar("Strings")
@@ -89,6 +92,42 @@ groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
 
 # Note: we won't be typechecking GroupBy until we can figure out a way to handle
 # the circular import with Categorical
+
+
+def _unwrap_to_pdarray(values):
+    """
+    Unwrap a pandas Series or ArkoudaExtensionArray to its backing pdarray.
+
+    Parameters
+    ----------
+    values : pdarray | pandas.Series | ArkoudaExtensionArray
+        The object containing Arkouda-backed data.
+
+    Returns
+    -------
+    pdarray
+        The underlying Arkouda pdarray.
+    """
+    from arkouda.numpy.pdarrayclass import pdarray
+
+    if isinstance(values, pdarray):
+        return values
+
+    # pandas Series?
+    # (avoid importing pandas at module import time)
+    if hasattr(values, "_values") and hasattr(values, "array"):
+        # pandas Series has .array and ._values; prefer .array in modern pandas
+        arr = values.array
+    else:
+        arr = values  # maybe it's already the EA
+
+    if hasattr(arr, "_data"):
+        return arr._data
+
+    raise TypeError(
+        f"Unsupported values type for Arkouda GroupBy reductions: {type(values)}. "
+        "Expected pdarray or pandas Series backed by ArkoudaExtensionArray."
+    )
 
 
 def _get_grouping_keys(pda: groupable):
@@ -714,7 +753,7 @@ class GroupBy:
 
     def aggregate(
         self,
-        values: groupable,
+        values: Union[groupable, pdarray | pd_Series | "ArkoudaExtensionArray"],
         operator: str,
         skipna: bool = True,
         ddof: int_scalars = 1,
@@ -770,28 +809,30 @@ class GroupBy:
         """
         from arkouda.core.client import generic_msg
 
+        values_pdarray = _unwrap_to_pdarray(values)
+
         operator = operator.lower()
         if operator not in self.Reductions:
             raise ValueError(f"Unsupported reduction: {operator}\nMust be one of {self.Reductions}")
 
         # TO DO: remove once logic is ported over to Chapel
         if operator == "nunique":
-            return self.nunique(values)
+            return self.nunique(values_pdarray)
         if operator == "first":
-            return self.first(cast(groupable_element_type, values))
+            return self.first(cast(groupable_element_type, values_pdarray))
         if operator == "mode":
-            return self.mode(values)
+            return self.mode(values_pdarray)
         if operator == "unique":
-            return self.unique(values)
+            return self.unique(values_pdarray)
 
         # All other aggregations operate on pdarray
         if cast(pdarray, values).size != self.length:
             raise ValueError("Attempt to group array using key array of different length")
 
         if self.assume_sorted:
-            permuted_values = cast(pdarray, values)
+            permuted_values = cast(pdarray, values_pdarray)
         else:
-            permuted_values = cast(pdarray, values)[cast(pdarray, self.permutation)]
+            permuted_values = cast(pdarray, values_pdarray)[cast(pdarray, self.permutation)]
 
         rep_msg = generic_msg(
             cmd="segmentedReduction",
