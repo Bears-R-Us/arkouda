@@ -2315,6 +2315,36 @@ Package Contents
    <class 'arkouda.pandas.series.Series'>
 
 
+   .. py:method:: argsort(*, ascending: bool = True, **kwargs: object) -> pandas.Series
+
+      Return the integer indices that would sort the Series values.
+
+      This mirrors ``pandas.Series.argsort`` but returns an Arkouda-backed
+      pandas Series (distributed), not a NumPy-backed result.
+
+      :param ascending: Sort values in ascending order if True, descending order if False.
+                        Default is True.
+      :type ascending: bool
+      :param \*\*kwargs: Additional keyword arguments.
+
+                         Supported keyword arguments
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                         na_position : {"first", "last"}, default "last"
+                             Where to place NaN values in the sorted result. Currently only
+                             applied for floating-point ``pdarray`` data; for ``Strings`` and
+                             ``Categorical`` it has no effect.
+      :type \*\*kwargs: object
+
+      :returns: An Arkouda-backed Series of integer permutation indices. The returned
+                Series has the same index as the original.
+      :rtype: pd.Series
+
+      :raises TypeError: If the Series is not Arkouda-backed, or the underlying dtype does not
+          support sorting.
+      :raises ValueError: If ``na_position`` is not "first" or "last".
+
+
+
    .. py:method:: collect() -> pandas.Series
 
       Materialize this Series back to a NumPy-backed pandas Series.

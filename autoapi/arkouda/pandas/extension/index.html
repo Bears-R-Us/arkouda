@@ -2987,6 +2987,44 @@ conversion and materialization.</p>
 </pre></div>
 </div>
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.argsort">
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.argsort" title="Link to this definition">¶</a></dt>
+<dd><p>Return the integer indices that would sort the Series values.</p>
+<p>This mirrors <code class="docutils literal notranslate"><span class="pre">pandas.Series.argsort</span></code> but returns an Arkouda-backed
+pandas Series (distributed), not a NumPy-backed result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ascending</strong> (<a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a>) – Sort values in ascending order if True, descending order if False.
+Default is True.</p></li>
+<li><p><strong>**kwargs</strong> (<em>object</em>) – <p>Additional keyword arguments.</p>
+<dl class="simple">
+<dt>na_position<span class="classifier">{“first”, “last”}, default “last”</span></dt><dd><p>Where to place NaN values in the sorted result. Currently only
+applied for floating-point <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data; for <code class="docutils literal notranslate"><span class="pre">Strings</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Categorical</span></code> it has no effect.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An Arkouda-backed Series of integer permutation indices. The returned
+Series has the same index as the original.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the Series is not Arkouda-backed, or the underlying dtype does not
+support sorting.</p></li>
+<li><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">na_position</span></code> is not “first” or “last”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.collect">
 <span class="sig-name descname"><span class="pre">collect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_series_accessor.html#ArkoudaSeriesAccessor.collect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.collect" title="Link to this definition">¶</a></dt>
 <dd><p>Materialize this Series back to a NumPy-backed pandas Series.</p>
@@ -4194,6 +4232,7 @@ instances of <cite>type</cite>.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.argsort"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.argsort()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.collect"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.collect()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.from_ak_legacy"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.from_ak_legacy()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.groupby"><code class="docutils literal notranslate"><span class="pre">ArkoudaSeriesAccessor.groupby()</span></code></a></li>

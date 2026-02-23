@@ -901,6 +901,85 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Arkouda-backed Series array does not expose &#39;_data&#39;&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">GroupBy</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaSeriesAccessor.argsort">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaSeriesAccessor.argsort">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">ascending</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the integer indices that would sort the Series values.</span>
+
+<span class="sd">        This mirrors ``pandas.Series.argsort`` but returns an Arkouda-backed</span>
+<span class="sd">        pandas Series (distributed), not a NumPy-backed result.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ascending : bool</span>
+<span class="sd">            Sort values in ascending order if True, descending order if False.</span>
+<span class="sd">            Default is True.</span>
+<span class="sd">        **kwargs : object</span>
+<span class="sd">            Additional keyword arguments.</span>
+
+<span class="sd">            Supported keyword arguments</span>
+<span class="sd">            ~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">            na_position : {&quot;first&quot;, &quot;last&quot;}, default &quot;last&quot;</span>
+<span class="sd">                Where to place NaN values in the sorted result. Currently only</span>
+<span class="sd">                applied for floating-point ``pdarray`` data; for ``Strings`` and</span>
+<span class="sd">                ``Categorical`` it has no effect.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.Series</span>
+<span class="sd">            An Arkouda-backed Series of integer permutation indices. The returned</span>
+<span class="sd">            Series has the same index as the original.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the Series is not Arkouda-backed, or the underlying dtype does not</span>
+<span class="sd">            support sorting.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``na_position`` is not &quot;first&quot; or &quot;last&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span> <span class="k">as</span> <span class="n">ak_argsort</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">isnan</span> <span class="k">as</span> <span class="n">ak_isnan</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraysetops</span><span class="w"> </span><span class="kn">import</span> <span class="n">concatenate</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_float</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_arkouda</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;argsort() requires an Arkouda-backed Series.&quot;</span><span class="p">)</span>
+
+        <span class="n">na_position</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;na_position&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">na_position</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="s2">&quot;last&quot;</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;na_position must be &#39;first&#39; or &#39;last&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="n">akcol</span> <span class="o">=</span> <span class="n">_pandas_series_to_ak_array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">akcol</span><span class="p">,</span> <span class="p">(</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Strings</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported argsort dtype: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">akcol</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">ak_argsort</span><span class="p">(</span><span class="n">akcol</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">ascending</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_float</span><span class="p">(</span><span class="n">akcol</span><span class="p">):</span>
+            <span class="n">is_nan</span> <span class="o">=</span> <span class="n">ak_isnan</span><span class="p">(</span><span class="n">akcol</span><span class="p">)[</span><span class="n">perm</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">na_position</span> <span class="o">==</span> <span class="s2">&quot;last&quot;</span><span class="p">:</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">perm</span><span class="p">[</span><span class="n">is_nan</span><span class="p">],</span> <span class="n">perm</span><span class="p">[</span><span class="o">~</span><span class="n">is_nan</span><span class="p">]])</span>
+
+        <span class="k">return</span> <span class="n">_ak_array_to_pandas_series</span><span class="p">(</span>
+            <span class="n">perm</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>
