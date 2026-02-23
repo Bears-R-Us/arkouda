@@ -350,3 +350,52 @@ class TestArkoudaSeriesGroupby:
 
             with pytest.raises(TypeError):
                 s.ak.locate([0, 2])
+
+
+class TestArkoudaSeriesAccessorArgsort:
+    def test_argsort_returns_arkoudaarray_and_matches_numpy_int(self):
+        s = pd.Series([3, 1, 2]).ak.to_ak()
+        perm = s.ak.argsort()
+
+        assert perm.ak.is_arkouda
+        assert np.array_equal(perm.to_numpy(), np.array([1, 2, 0]))
+
+    def test_argsort_descending(self):
+        s = pd.Series([3, 1, 2]).ak.to_ak()
+        perm = s.ak.argsort(ascending=False)
+
+        assert perm.ak.is_arkouda
+        assert np.array_equal(perm.to_numpy(), np.array([0, 2, 1]))
+
+    def test_argsort_float_nan_default_last(self):
+        s = pd.Series([3.0, np.nan, 1.0]).ak.to_ak()
+        perm = s.ak.argsort()
+
+        assert perm.ak.is_arkouda
+        # values: [3.0, nan, 1.0] -> sorted non-nan indices [2,0] then nan [1]
+        assert np.array_equal(perm.to_numpy(), np.array([2, 0, 1]))
+
+    def test_argsort_float_nan_first(self):
+        s = pd.Series([3.0, np.nan, 1.0]).ak.to_ak()
+        perm = s.ak.argsort(na_position="first")
+
+        assert perm.ak.is_arkouda
+        # nan first, then sorted non-nan
+        assert np.array_equal(perm.to_numpy(), np.array([1, 2, 0]))
+
+    def test_argsort_invalid_na_position_raises(self):
+        s = pd.Series([3.0, np.nan, 1.0]).ak.to_ak()
+        with pytest.raises(ValueError, match="na_position must be 'first' or 'last'"):
+            s.ak.argsort(na_position="middle")
+
+    def test_argsort_non_arkouda_series_raises(self):
+        s = pd.Series([3, 1, 2])
+        with pytest.raises(TypeError, match="Arkouda-backed"):
+            s.ak.argsort()
+
+    def test_argsort_strings(self):
+        s = pd.Series(["b", "a", "c"]).ak.to_ak()
+        perm = s.ak.argsort()
+
+        assert perm.ak.is_arkouda
+        assert np.array_equal(perm.to_numpy(), np.array([1, 0, 2]))

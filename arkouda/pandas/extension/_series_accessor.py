@@ -502,3 +502,79 @@ class ArkoudaSeriesAccessor:
             raise TypeError("Arkouda-backed Series array does not expose '_data'")
 
         return GroupBy(akcol)
+
+    def argsort(
+        self,
+        *,
+        ascending: bool = True,
+        **kwargs: object,
+    ) -> pd.Series:
+        """
+        Return the integer indices that would sort the Series values.
+
+        This mirrors ``pandas.Series.argsort`` but returns an Arkouda-backed
+        pandas Series (distributed), not a NumPy-backed result.
+
+        Parameters
+        ----------
+        ascending : bool
+            Sort values in ascending order if True, descending order if False.
+            Default is True.
+        **kwargs : object
+            Additional keyword arguments.
+
+            Supported keyword arguments
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            na_position : {"first", "last"}, default "last"
+                Where to place NaN values in the sorted result. Currently only
+                applied for floating-point ``pdarray`` data; for ``Strings`` and
+                ``Categorical`` it has no effect.
+
+        Returns
+        -------
+        pd.Series
+            An Arkouda-backed Series of integer permutation indices. The returned
+            Series has the same index as the original.
+
+        Raises
+        ------
+        TypeError
+            If the Series is not Arkouda-backed, or the underlying dtype does not
+            support sorting.
+        ValueError
+            If ``na_position`` is not "first" or "last".
+        """
+        from arkouda.numpy import argsort as ak_argsort
+        from arkouda.numpy.numeric import isnan as ak_isnan
+        from arkouda.numpy.pdarrayclass import pdarray
+        from arkouda.numpy.pdarraysetops import concatenate
+        from arkouda.numpy.strings import Strings
+        from arkouda.numpy.util import is_float
+        from arkouda.pandas.categorical import Categorical
+
+        if not self.is_arkouda:
+            raise TypeError("argsort() requires an Arkouda-backed Series.")
+
+        na_position = kwargs.pop("na_position", "last")
+        if na_position not in {"first", "last"}:
+            raise ValueError("na_position must be 'first' or 'last'.")
+
+        akcol = _pandas_series_to_ak_array(self._obj)
+
+        if not isinstance(akcol, (pdarray, Strings, Categorical)):
+            raise TypeError(f"Unsupported argsort dtype: {type(akcol)}")
+
+        perm = ak_argsort(akcol, ascending=ascending)
+
+        if is_float(akcol):
+            is_nan = ak_isnan(akcol)[perm]
+            if na_position == "last":
+                perm = concatenate([perm[~is_nan], perm[is_nan]])
+            else:
+                perm = concatenate([perm[is_nan], perm[~is_nan]])
+
+        return _ak_array_to_pandas_series(
+            perm,
+            name=str(self._obj.name),
+            index=self._obj.index,
+        )
