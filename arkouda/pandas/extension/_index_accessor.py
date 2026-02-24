@@ -647,7 +647,7 @@ class ArkoudaIndexAccessor:
 
         akidx = self.to_ak_legacy()
         if not hasattr(akidx, "to_dict"):
-            raise TypeError("to_dict is only defined for MultiIndex-backed indices")
+            raise TypeError("to_dict is only defined for Index or MultiIndex-backed indices")
         if isinstance(akidx, MultiIndex):
             return akidx.to_dict(labels=labels)
         else:
