@@ -86,12 +86,32 @@ def _pandas_index_to_ak(index: Union[pd.Index, pd.MultiIndex]) -> Union[ak_Index
     Returns
     -------
     Union[ak_Index, ak_MultiIndex]
+
+    Raises
+    ------
+    ValueError
+        If a pandas RangeIndex has an invalid step (e.g., step == 0).
     """
+    from arkouda.numpy.pdarraycreation import arange as ak_arange
+
     # MultiIndex: delegate directly to ak.MultiIndex, which handles
     # pandas.MultiIndex in its constructor.
     if isinstance(index, pd.MultiIndex):
         # Preserve names when constructing the ak.MultiIndex
         return ak_MultiIndex(index, names=index.names)
+
+    # IMPORTANT: RangeIndex is virtual (start/stop/step). Converting it via any path
+    # that materializes values can blow up the client for huge sizes.
+    # Create it directly on the Arkouda server instead.
+    if isinstance(index, pd.RangeIndex):
+        start, stop, step = index.start, index.stop, index.step
+        if step == 0:
+            raise ValueError("RangeIndex step cannot be 0")
+        if start == 0 and step == 1:
+            arr = ak_arange(stop)
+        else:
+            arr = ak_arange(start, stop, step)
+        return ak_Index(arr, name=index.name)
 
     # Single-level Index: ak.Index already knows how to consume pandas.Index,
     # including CategoricalIndex.

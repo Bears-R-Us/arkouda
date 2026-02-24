@@ -121,6 +121,26 @@ class TestArkoudaSeriesAccessor:
         s_local = s_ak.ak.collect()
         assert not s_local.ak.is_arkouda
 
+    def test_is_arkouda_true_for_to_ak_series_with_default_rangeindex(self):
+        s = pd.Series([1, 2, 3])  # default RangeIndex
+        ak_s = s.ak.to_ak()
+
+        assert isinstance(getattr(ak_s, "array", None), ArkoudaExtensionArray)
+        assert ak_s.ak.is_arkouda is True
+
+    def test_is_arkouda_true_for_to_ak_series_with_nontrivial_index(self):
+        s = pd.Series([10, 20, 30], index=pd.Index([100, 200, 300], name="i"))
+        ak_s = s.ak.to_ak()
+
+        assert ak_s.ak.is_arkouda is True
+
+    def test_is_arkouda_true_for_to_ak_series_with_multiindex(self):
+        mi = pd.MultiIndex.from_product([["a", "b"], [1, 2]], names=["l0", "l1"])
+        s = pd.Series([0, 1, 2, 3], index=mi)
+
+        ak_s = s.ak.to_ak()
+        assert ak_s.ak.is_arkouda is True
+
     def test_to_ak_preserves_index_and_name(self):
         idx = pd.Index([100, 200, 300], name="id")
         s = pd.Series([10, 20, 30], index=idx, name="values")
