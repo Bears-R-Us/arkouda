@@ -815,6 +815,21 @@ class pdarray:
         """
         Cast a scalar to this array's dtype and return its formatted string
         representation (internal use for server command construction).
+
+        Parameters
+        ----------
+        other : object
+            The scalar to be cast to the pdarray.dtype
+
+        Returns
+        -------
+        string representation of np.dtype corresponding to the other parameter
+
+        Raises
+        ------
+        TypeError
+            Raised if the other parameter cannot be converted to
+            Numpy dtype
         """
         # Help users (and us) when a dtype string leaks into a value position.
         if isinstance(other, (str, np.str_)):
