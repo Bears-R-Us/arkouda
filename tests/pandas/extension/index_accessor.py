@@ -202,6 +202,54 @@ class TestArkoudaIndexAccessor:
         assert not idx_local.ak.is_arkouda
         assert not midx_local.ak.is_arkouda
 
+    def test_pandas_index_to_ak_rangeindex_default_roundtrips(self):
+        """
+        RangeIndex(start=0, step=1) should convert to an ak.Index without materializing
+        on the client, and the values should round-trip back to the same RangeIndex.
+        """
+        idx = pd.RangeIndex(0, 10, 1, name="r")
+        ak_idx = _pandas_index_to_ak(idx)
+
+        assert isinstance(ak_idx, ak_Index)
+        assert ak_idx.name == "r"
+
+        pd_back = ak_idx.to_pandas()
+        assert isinstance(pd_back, pd.Index)
+        assert pd_back.equals(pd.RangeIndex(0, 10, 1, name="r"))
+
+    def test_pandas_index_to_ak_rangeindex_nontrivial_roundtrips(self):
+        """
+        RangeIndex(start!=0 or step!=1) should convert to an ak.Index and round-trip
+        back to an equivalent RangeIndex.
+        """
+        idx = pd.RangeIndex(5, 20, 3, name="r2")
+        ak_idx = _pandas_index_to_ak(idx)
+
+        assert isinstance(ak_idx, ak_Index)
+        assert ak_idx.name == "r2"
+
+        pd_back = ak_idx.to_pandas()
+        assert pd_back.equals(pd.RangeIndex(5, 20, 3, name="r2"))
+
+    def test_pandas_index_to_ak_rangeindex_negative_step_roundtrips_or_errors(self):
+        """
+        Descending RangeIndex is valid in pandas. If Arkouda supports negative-step arange,
+        it should round-trip; otherwise the conversion should raise a clear error.
+
+        This test allows either outcome to avoid being over-prescriptive about backend support.
+        """
+        idx = pd.RangeIndex(10, 0, -2, name="desc")
+
+        try:
+            ak_idx = _pandas_index_to_ak(idx)
+        except Exception as e:
+            # If unsupported, at least ensure we fail loudly (not silently wrong).
+            assert isinstance(e, (ValueError, NotImplementedError, RuntimeError))
+            return
+
+        pd_back = ak_idx.to_pandas()
+        assert pd_back.equals(pd.RangeIndex(10, 0, -2, name="desc"))
+
     def test_from_ak_legacy_roundtrip_index(self):
         """Round-trip using to_ak_legacy() + from_ak_legacy()."""
         idx = pd.Index([7, 8, 9], name="nums")

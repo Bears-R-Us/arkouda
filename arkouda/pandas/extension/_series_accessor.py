@@ -355,14 +355,18 @@ class ArkoudaSeriesAccessor:
     @property
     def is_arkouda(self) -> bool:
         """
-        Return whether the underlying Series is Arkouda-backed.
+        Return True if this Series is fully Arkouda-backed.
 
-        A Series is Arkouda-backed if its underlying storage uses
-        :class:`ArkoudaExtensionArray`.
+        A Series is considered Arkouda-backed when both:
+
+        1. Its values are stored in an ``ArkoudaExtensionArray``.
+        2. Its index (including each level of a MultiIndex) is
+           backed by ``ArkoudaExtensionArray``.
 
         Returns
         -------
         bool
+            True if both data and index are Arkouda-backed, otherwise False.
 
         Examples
         --------
@@ -374,9 +378,21 @@ class ArkoudaSeriesAccessor:
         >>> ak_s.ak.is_arkouda
         True
         """
-        arr = getattr(self._obj, "array", None)
-        idx_arr = self._obj.index.values
-        return isinstance(arr, ArkoudaExtensionArray) and isinstance(idx_arr, ArkoudaExtensionArray)
+        # Check values
+        values = getattr(self._obj, "array", None)
+        if not isinstance(values, ArkoudaExtensionArray):
+            return False
+
+        idx = self._obj.index
+
+        # MultiIndex: require every level to be Arkouda-backed
+        if isinstance(idx, pd.MultiIndex):
+            return all(
+                isinstance(getattr(level, "array", None), ArkoudaExtensionArray) for level in idx.levels
+            )
+
+        # Single-level Index
+        return isinstance(getattr(idx, "array", None), ArkoudaExtensionArray)
 
     # ------------------------------------------------------------------
     # Legacy delegation: thin wrappers over ak.Series
