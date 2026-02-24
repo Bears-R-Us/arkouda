@@ -467,12 +467,32 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    Union[ak_Index, ak_MultiIndex]</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a pandas RangeIndex has an invalid step (e.g., step == 0).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span> <span class="k">as</span> <span class="n">ak_arange</span>
+
     <span class="c1"># MultiIndex: delegate directly to ak.MultiIndex, which handles</span>
     <span class="c1"># pandas.MultiIndex in its constructor.</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
         <span class="c1"># Preserve names when constructing the ak.MultiIndex</span>
         <span class="k">return</span> <span class="n">ak_MultiIndex</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="c1"># IMPORTANT: RangeIndex is virtual (start/stop/step). Converting it via any path</span>
+    <span class="c1"># that materializes values can blow up the client for huge sizes.</span>
+    <span class="c1"># Create it directly on the Arkouda server instead.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">):</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="n">step</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;RangeIndex step cannot be 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">ak_arange</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">ak_arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ak_Index</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="c1"># Single-level Index: ak.Index already knows how to consume pandas.Index,</span>
     <span class="c1"># including CategoricalIndex.</span>

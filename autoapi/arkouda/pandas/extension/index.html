@@ -3256,12 +3256,19 @@ Arkouda server-side arrays.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaSeriesAccessor.is_arkouda">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_arkouda</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaSeriesAccessor.is_arkouda" title="Link to this definition">¶</a></dt>
-<dd><p>Return whether the underlying Series is Arkouda-backed.</p>
-<p>A Series is Arkouda-backed if its underlying storage uses
-<a class="reference internal" href="#arkouda.pandas.extension.ArkoudaExtensionArray" title="arkouda.pandas.extension.ArkoudaExtensionArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code></a>.</p>
+<dd><p>Return True if this Series is fully Arkouda-backed.</p>
+<p>A Series is considered Arkouda-backed when both:</p>
+<ol class="arabic simple">
+<li><p>Its values are stored in an <code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code>.</p></li>
+<li><p>Its index (including each level of a MultiIndex) is
+backed by <code class="docutils literal notranslate"><span class="pre">ArkoudaExtensionArray</span></code>.</p></li>
+</ol>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if both data and index are Arkouda-backed, otherwise False.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../../index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

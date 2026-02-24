@@ -2553,11 +2553,15 @@ Package Contents
       :type: bool
 
 
-      Return whether the underlying Series is Arkouda-backed.
+      Return True if this Series is fully Arkouda-backed.
 
-      A Series is Arkouda-backed if its underlying storage uses
-      :class:`ArkoudaExtensionArray`.
+      A Series is considered Arkouda-backed when both:
 
+      1. Its values are stored in an ``ArkoudaExtensionArray``.
+      2. Its index (including each level of a MultiIndex) is
+         backed by ``ArkoudaExtensionArray``.
+
+      :returns: True if both data and index are Arkouda-backed, otherwise False.
       :rtype: bool
 
       .. rubric:: Examples

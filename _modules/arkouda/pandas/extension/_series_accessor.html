@@ -749,14 +749,18 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_arkouda</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return whether the underlying Series is Arkouda-backed.</span>
+<span class="sd">        Return True if this Series is fully Arkouda-backed.</span>
 
-<span class="sd">        A Series is Arkouda-backed if its underlying storage uses</span>
-<span class="sd">        :class:`ArkoudaExtensionArray`.</span>
+<span class="sd">        A Series is considered Arkouda-backed when both:</span>
+
+<span class="sd">        1. Its values are stored in an ``ArkoudaExtensionArray``.</span>
+<span class="sd">        2. Its index (including each level of a MultiIndex) is</span>
+<span class="sd">           backed by ``ArkoudaExtensionArray``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
+<span class="sd">            True if both data and index are Arkouda-backed, otherwise False.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -768,9 +772,21 @@
 <span class="sd">        &gt;&gt;&gt; ak_s.ak.is_arkouda</span>
 <span class="sd">        True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">arr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">idx_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx_arr</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span>
+        <span class="c1"># Check values</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="c1"># MultiIndex: require every level to be Arkouda-backed</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span> <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">idx</span><span class="o">.</span><span class="n">levels</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Single-level Index</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span>
 
     <span class="c1"># ------------------------------------------------------------------</span>
     <span class="c1"># Legacy delegation: thin wrappers over ak.Series</span>
