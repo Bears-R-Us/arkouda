@@ -45,7 +45,9 @@ Classes
    arkouda.pandas.ArkoudaBoolDtype
    arkouda.pandas.ArkoudaCategorical
    arkouda.pandas.ArkoudaCategoricalDtype
+   arkouda.pandas.ArkoudaDataFrameAccessor
    arkouda.pandas.ArkoudaFloat64Dtype
+   arkouda.pandas.ArkoudaIndexAccessor
    arkouda.pandas.ArkoudaInt64Dtype
    arkouda.pandas.ArkoudaStringArray
    arkouda.pandas.ArkoudaStringDtype
@@ -851,6 +853,301 @@ Package Contents
       instances of `type`.
 
 
+.. py:class:: ArkoudaDataFrameAccessor(pandas_obj)
+
+   Arkouda DataFrame accessor.
+
+   Allows ``df.ak`` access to Arkouda-backed operations.
+
+
+   .. py:method:: collect() -> pandas.DataFrame
+
+      Materialize an Arkouda-backed pandas DataFrame into a NumPy-backed one.
+
+      This operation retrieves each Arkouda-backed column from the server
+      using ``to_ndarray()`` and constructs a standard pandas DataFrame whose
+      columns are plain NumPy ``ndarray`` objects. The returned DataFrame
+      has no dependency on Arkouda.
+
+      :returns: A pandas DataFrame with NumPy-backed columns.
+      :rtype: pd_DataFrame
+
+      .. rubric:: Examples
+
+      Converting an Arkouda-backed DataFrame into a NumPy-backed one:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> from arkouda.pandas.extension import ArkoudaDataFrameAccessor
+
+      Create a pandas DataFrame and convert it to Arkouda-backed form:
+
+      >>> df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+      >>> akdf = df.ak.to_ak()
+
+      ``akdf`` is still a pandas DataFrame, but its columns live on Arkouda:
+
+      >>> type(akdf["x"].array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+      Now fully materialize it to local NumPy arrays:
+
+      >>> collected = akdf.ak.collect()
+      >>> collected
+         x  y
+      0  1  a
+      1  2  b
+      2  3  c
+
+      The columns are now NumPy arrays:
+
+      >>> type(collected["x"].values)
+      <class 'numpy.ndarray'>
+
+
+
+   .. py:method:: from_ak_legacy(akdf: arkouda.pandas.dataframe.DataFrame) -> pandas.DataFrame
+      :staticmethod:
+
+
+      Convert a legacy Arkouda ``DataFrame`` into a pandas ``DataFrame``
+      backed by Arkouda ExtensionArrays.
+
+      This is the zero-copy-ish counterpart to :meth:`to_ak_legacy`.
+      Instead of materializing columns into NumPy arrays, this function
+      wraps each underlying Arkouda server-side array in the appropriate
+      ``ArkoudaExtensionArray`` subclass (``ArkoudaArray``,
+      ``ArkoudaStringArray``, or ``ArkoudaCategorical``).
+      The resulting pandas ``DataFrame`` therefore keeps all data on the
+      Arkouda server, enabling scalable operations without transferring
+      data to the Python client.
+
+      :param akdf: A legacy Arkouda ``DataFrame`` (``arkouda.pandas.dataframe.DataFrame``)
+                   whose columns are Arkouda objects (``pdarray``, ``Strings``,
+                   or ``Categorical``).
+      :type akdf: ak_DataFrame
+
+      :returns: A pandas ``DataFrame`` in which each column is an Arkouda-backed
+                ExtensionArray—typically one of:
+
+                * :class:`ArkoudaArray`
+                * :class:`ArkoudaStringArray`
+                * :class:`ArkoudaCategorical`
+
+                No materialization to NumPy occurs.
+                All column data remain server-resident.
+      :rtype: pd_DataFrame
+
+      .. rubric:: Notes
+
+      * This function performs a **zero-copy** conversion for the underlying
+        Arkouda arrays (server-side). Only lightweight Python wrappers are
+        created.
+      * The resulting pandas ``DataFrame`` can interoperate with most pandas
+        APIs that support extension arrays.
+      * Round-tripping through ``to_ak_legacy()`` and
+        ``from_ak_legacy()`` preserves Arkouda semantics.
+
+      .. rubric:: Examples
+
+      Basic conversion
+      ~~~~~~~~~~~~~~~~
+      >>> import arkouda as ak
+      >>> akdf = ak.DataFrame({"a": ak.arange(5), "b": ak.array([10,11,12,13,14])})
+
+      >>> pdf = pd.DataFrame.ak.from_ak_legacy(akdf)
+      >>> pdf
+         a   b
+      0  0  10
+      1  1  11
+      2  2  12
+      3  3  13
+      4  4  14
+
+      Columns stay Arkouda-backed
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      >>> type(pdf["a"].array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+      >>> pdf["a"].array._data
+      array([0 1 2 3 4])
+
+      No NumPy materialization occurs
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      >>> pdf["a"].values    # pandas always materializes .values
+      ArkoudaArray([0 1 2 3 4])
+
+      But the underlying column is still Arkouda:
+      >>> pdf["a"].array._data
+      array([0 1 2 3 4])
+
+      Categorical and Strings columns work as well
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      >>> akdf2 = ak.DataFrame({
+      ...     "s": ak.array(["a","b","a"]),
+      ...     "c": ak.Categorical(ak.array(["e","f","g"]))
+      ... })
+      >>> pdf2 = pd.DataFrame.ak.from_ak_legacy(akdf2)
+
+      >>> type(pdf2["s"].array)
+      <class 'arkouda.pandas.extension._arkouda_string_array.ArkoudaStringArray'>
+
+      >>> type(pdf2["c"].array)
+      <class 'arkouda.pandas.extension._arkouda_categorical_array.ArkoudaCategorical'>
+
+
+
+   .. py:method:: merge(right: pandas.DataFrame, on: Optional[Union[str, List[str]]] = None, left_on: Optional[Union[str, List[str]]] = None, right_on: Optional[Union[str, List[str]]] = None, how: str = 'inner', left_suffix: str = '_x', right_suffix: str = '_y', convert_ints: bool = True, sort: bool = True) -> pandas.DataFrame
+
+      Merge two Arkouda-backed pandas DataFrames using Arkouda's join.
+
+      :param right: Right-hand DataFrame to merge with ``self._obj``. All columns must
+                    be Arkouda-backed ExtensionArrays.
+      :type right: pd.DataFrame
+      :param on: Column name(s) to join on. Must be present in both left and right
+                 DataFrames. If not provided and neither ``left_on`` nor ``right_on``
+                 is set, the intersection of column names in left and right is used.
+                 Default is None.
+      :type on: Optional[Union[str, List[str]]]
+      :param left_on: Column name(s) from the left DataFrame to use as join keys. Must be
+                      used together with ``right_on``. If provided, ``on`` is ignored for
+                      the left side.  Default is None
+      :type left_on: Optional[Union[str, List[str]]]
+      :param right_on: Column name(s) from the right DataFrame to use as join keys. Must be
+                       used together with ``left_on``. If provided, ``on`` is ignored for
+                       the right side. Default is None
+      :type right_on: Optional[Union[str, List[str]]]
+      :param how: Type of merge to be performed. One of ``'left'``, ``'right'``,
+                  ``'inner'``, or ``'outer'``. Default is 'inner'.
+      :type how: str
+      :param left_suffix: Suffix to apply to overlapping column names from the left frame that
+                          are not part of the join keys. Default is '_x'.
+      :type left_suffix: str
+      :param right_suffix: Suffix to apply to overlapping column names from the right frame that
+                           are not part of the join keys.Default is '_y'.
+      :type right_suffix: str
+      :param convert_ints: Whether to allow Arkouda to upcast integer columns as needed
+                           (for example, to accommodate missing values) during the merge.
+                           Default is True.
+      :type convert_ints: bool
+      :param sort: Whether to sort the join keys in the output. Default is True.
+      :type sort: bool
+
+      :returns: A pandas DataFrame whose columns are :class:`ArkoudaArray`
+                ExtensionArrays. All column data remain on the Arkouda server.
+      :rtype: pd.DataFrame
+
+      :raises TypeError: If ``right`` is not a :class:`pandas.DataFrame` or if any column in
+          the left or right DataFrame is not Arkouda-backed.
+
+
+
+   .. py:method:: to_ak() -> pandas.DataFrame
+
+      Convert this pandas DataFrame to an Arkouda-backed pandas DataFrame.
+
+      Each column of the original pandas DataFrame is materialized to the
+      Arkouda server via :func:`ak.array` and wrapped in an
+      :class:`ArkoudaArray` ExtensionArray. The result is still a
+      *pandas* DataFrame, but all column data reside on the Arkouda server
+      and behave according to the Arkouda ExtensionArray API.
+
+      This method does **not** return a legacy :class:`ak_DataFrame`.
+      For that (server-side DataFrame structure), use :meth:`to_ak_legacy`.
+
+      :returns: A pandas DataFrame whose columns are Arkouda-backed
+                :class:`ArkoudaArray` objects.
+      :rtype: pd_DataFrame
+
+      .. rubric:: Examples
+
+      Convert a plain pandas DataFrame to an Arkouda-backed one:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> df = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+      >>> akdf = df.ak.to_ak()
+      >>> type(akdf)
+       <class 'pandas...DataFrame'>
+
+      The columns are now Arkouda ExtensionArrays:
+
+      >>> isinstance(akdf["x"].array, ArkoudaArray)
+      True
+      >>> akdf["x"].tolist()
+      [np.int64(1), np.int64(2), np.int64(3)]
+
+      Arkouda operations work directly on the columns:
+
+      >>> akdf["x"].array._data + 10
+      array([11 12 13])
+
+      Converting back to a NumPy-backed DataFrame:
+
+      >>> akdf_numpy = akdf.ak.collect()
+      >>> akdf_numpy
+         x  y
+      0  1  a
+      1  2  b
+      2  3  c
+
+
+
+   .. py:method:: to_ak_legacy() -> arkouda.pandas.dataframe.DataFrame
+
+      Convert this pandas DataFrame into the legacy :class:`arkouda.DataFrame`.
+
+      This method performs a *materializing* conversion of a pandas DataFrame
+      into the legacy Arkouda DataFrame structure. Every column is converted
+      to Arkouda server-side data:
+
+      * Python / NumPy numeric and boolean arrays become :class:`pdarray`.
+      * String columns become Arkouda string arrays (``Strings``).
+      * Pandas categoricals become Arkouda ``Categorical`` objects.
+      * The result is a legacy :class:`ak_DataFrame` whose columns all reside
+        on the Arkouda server.
+
+      This differs from :meth:`to_ak`, which creates Arkouda-backed
+      ExtensionArrays but retains a pandas.DataFrame structure.
+
+      :returns: The legacy Arkouda DataFrame with all columns materialized
+                onto the Arkouda server.
+      :rtype: ak_DataFrame
+
+      .. rubric:: Examples
+
+      Convert a plain pandas DataFrame to a legacy Arkouda DataFrame:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> df = pd.DataFrame({
+      ...     "i": [1, 2, 3],
+      ...     "s": ["a", "b", "c"],
+      ...     "c": pd.Series(["low", "low", "high"], dtype="category"),
+      ... })
+      >>> akdf = df.ak.to_ak_legacy()
+      >>> type(akdf)
+      <class 'arkouda.pandas.dataframe.DataFrame'>
+
+      Columns have the appropriate Arkouda types:
+
+      >>> from arkouda.numpy.pdarrayclass import pdarray
+      >>> from arkouda.numpy.strings import Strings
+      >>> from arkouda.pandas.categorical import Categorical
+      >>> isinstance(akdf["i"], pdarray)
+      True
+      >>> isinstance(akdf["s"], Strings)
+      True
+      >>> isinstance(akdf["c"], Categorical)
+      True
+
+      Values round-trip through the conversion:
+
+      >>> akdf["i"].tolist()
+      [1, 2, 3]
+
+
+
 .. py:class:: ArkoudaFloat64Dtype
 
    Bases: :py:obj:`_ArkoudaBaseDtype`
@@ -920,6 +1217,365 @@ Package Contents
       of ``ExtensionDtype.type`` for scalar ``item``, assuming
       that value is valid (not NA). NA values do not need to be
       instances of `type`.
+
+
+.. py:class:: ArkoudaIndexAccessor(pandas_obj: Union[pandas.Index, pandas.MultiIndex])
+
+   Arkouda-backed index accessor for pandas ``Index`` and ``MultiIndex``.
+
+   This accessor provides methods for converting between:
+
+   * NumPy-backed pandas indexes
+   * pandas indexes backed by :class:`ArkoudaExtensionArray` (zero-copy EA mode)
+   * legacy Arkouda ``ak.Index`` and ``ak.MultiIndex`` objects
+
+   The ``.ak`` namespace mirrors the DataFrame accessor, providing a consistent
+   interface for distributed index operations. All conversions avoid unnecessary
+   NumPy materialization unless explicitly requested via :meth:`collect`.
+
+   :param pandas_obj: The pandas ``Index`` or ``MultiIndex`` instance that this accessor wraps.
+   :type pandas_obj: Union[pd.Index, pd.MultiIndex]
+
+   .. rubric:: Notes
+
+   * ``to_ak`` → pandas object, Arkouda-backed (ExtensionArrays).
+   * ``to_ak_legacy`` → legacy Arkouda index objects.
+   * ``collect`` → NumPy-backed pandas object.
+   * ``is_arkouda`` → reports whether the index is Arkouda-backed.
+
+   .. rubric:: Examples
+
+   Basic single-level Index conversion:
+
+   >>> import pandas as pd
+   >>> import arkouda as ak
+   >>> idx = pd.Index([10, 20, 30], name="vals")
+
+   Convert to Arkouda-backed:
+
+   >>> ak_idx = idx.ak.to_ak()
+   >>> ak_idx.ak.is_arkouda
+   True
+
+   Materialize back:
+
+   >>> restored = ak_idx.ak.collect()
+   >>> restored.equals(idx)
+   True
+
+   Convert to legacy Arkouda:
+
+   >>> ak_legacy = idx.ak.to_ak_legacy()
+   >>> type(ak_legacy)
+   <class 'arkouda.pandas.index.Index'>
+
+   MultiIndex conversion:
+
+   >>> arrays = [[1, 1, 2], ["red", "blue", "red"]]
+   >>> midx = pd.MultiIndex.from_arrays(arrays, names=["num", "color"])
+   >>> ak_midx = midx.ak.to_ak()
+   >>> ak_midx.ak.is_arkouda
+   True
+
+
+   .. py:method:: collect() -> Union[pandas.Index, pandas.MultiIndex]
+
+      Materialize this Index or MultiIndex back to a plain NumPy-backed
+      pandas index.
+
+      :returns: An Index whose underlying data are plain NumPy arrays.
+      :rtype: Union[pd.Index, pd.MultiIndex]
+
+      :raises TypeError: If the index is Arkouda-backed but does not expose the expected
+          ``_data`` attribute, or if the index type is unsupported.
+
+      .. rubric:: Examples
+
+      Single-level Index round-trip:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> idx = pd.Index([1, 2, 3], name="x")
+      >>> ak_idx = idx.ak.to_ak()
+      >>> np_idx = ak_idx.ak.collect()
+      >>> np_idx
+      Index([1, 2, 3], dtype='int64', name='x')
+      >>> np_idx.equals(idx)
+      True
+
+      Behavior when already NumPy-backed (no-op except shallow copy):
+
+      >>> plain = pd.Index([10, 20, 30])
+      >>> plain2 = plain.ak.collect()
+      >>> plain2.equals(plain)
+      True
+
+      Verifying that Arkouda-backed values materialize to NumPy:
+
+      >>> ak_idx = pd.Index([5, 6, 7]).ak.to_ak()
+      >>> type(ak_idx.array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+      >>> out = ak_idx.ak.collect()
+      >>> type(out.array)
+      <class 'pandas...NumpyExtensionArray'>
+
+
+
+   .. py:method:: concat(other: Union[pandas.Index, pandas.MultiIndex]) -> Union[pandas.Index, pandas.MultiIndex]
+
+      Concatenate this index with another Arkouda-backed index.
+
+      Both ``self._obj`` and ``other`` must be convertible to legacy
+      Arkouda :class:`ak_Index` / :class:`ak_MultiIndex`. The concatenation
+      is performed in Arkouda and the result is wrapped back into an
+      Arkouda-backed pandas Index or MultiIndex.
+
+      :param other: The other index to concatenate with ``self._obj``. It must be a
+                    :class:`pandas.Index` or :class:`pandas.MultiIndex`.
+      :type other: Union[pd.Index, pd.MultiIndex]
+
+      :returns: A pandas Index or MultiIndex backed by Arkouda, containing the
+                concatenated values from ``self._obj`` and ``other``.
+      :rtype: Union[pd.Index, pd.MultiIndex]
+
+      :raises TypeError: If ``other`` is not a :class:`pandas.Index` or
+          :class:`pandas.MultiIndex`.
+
+
+
+   .. py:method:: from_ak_legacy(akidx: Union[arkouda.index.Index, arkouda.index.MultiIndex]) -> Union[pandas.Index, pandas.MultiIndex]
+      :staticmethod:
+
+
+      Convert a legacy Arkouda ``ak.Index`` or ``ak.MultiIndex`` into a
+      pandas Index/MultiIndex backed by Arkouda ExtensionArrays.
+
+      This is the index analogue of ``df.ak.from_ak_legacy_ea()``: it performs a
+      zero-copy-style wrapping of Arkouda server-side arrays into
+      :class:`ArkoudaExtensionArray` objects, producing a pandas Index or
+      MultiIndex whose levels remain distributed on the Arkouda server.
+
+      No materialization to NumPy occurs.
+
+      :param akidx: The legacy Arkouda Index or MultiIndex to wrap.
+      :type akidx: Union[ak_Index, ak_MultiIndex]
+
+      :returns: A pandas index object whose underlying data are
+                :class:`ArkoudaExtensionArray` instances referencing the Arkouda
+                server-side arrays.
+      :rtype: Union[pd.Index, pd.MultiIndex]
+
+      .. rubric:: Notes
+
+      * ``ak.Index`` → ``pd.Index`` with Arkouda-backed values.
+      * ``ak.MultiIndex`` → ``pd.MultiIndex`` where each level is backed by
+        an :class:`ArkoudaExtensionArray`.
+      * This function does not validate whether the input is already wrapped;
+        callers should ensure the argument is a legacy Arkouda index object.
+
+      .. rubric:: Examples
+
+      >>> import arkouda as ak
+      >>> import pandas as pd
+
+      Wrap a legacy ``ak.Index`` into a pandas ``Index`` without copying:
+
+      >>> ak_idx = ak.Index(ak.arange(5))
+      >>> pd_idx = pd.Index.ak.from_ak_legacy(ak_idx)
+      >>> pd_idx
+      Index([0, 1, 2, 3, 4], dtype='int64')
+
+      The resulting index stores its values on the Arkouda server:
+
+      >>> type(pd_idx.array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+      MultiIndex example:
+
+      >>> ak_lvl1 = ak.array(['a', 'a', 'b', 'b'])
+      >>> ak_lvl2 = ak.array([1, 2, 1, 2])
+      >>> ak_mi = ak.MultiIndex([ak_lvl1, ak_lvl2], names=['letter', 'number'])
+
+      >>> pd_mi = pd.Index.ak.from_ak_legacy(ak_mi)
+      >>> pd_mi
+      MultiIndex([('a', 1),
+                  ('a', 2),
+                  ('b', 1),
+                  ('b', 2)],
+                 names=['letter', 'number'])
+
+      Each level is backed by an Arkouda ExtensionArray and remains distributed:
+
+      >>> [type(level._data) for level in pd_mi.levels]
+      [<class 'arkouda.pandas.extension._arkouda_string_array.ArkoudaStringArray'>,
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>]
+
+      No NumPy materialization occurs; the underlying data stay on the Arkouda server.
+
+
+
+   .. py:property:: is_arkouda
+      :type: bool
+
+
+      Return whether the underlying Index is Arkouda-backed.
+
+      An Index or MultiIndex is considered Arkouda-backed if its underlying
+      storage uses :class:`ArkoudaExtensionArray`. This applies to both
+      single-level and multi-level indices.
+
+      :returns: True if the Index/MultiIndex is backed by Arkouda server-side
+                arrays, False otherwise.
+      :rtype: bool
+
+      .. rubric:: Examples
+
+      NumPy-backed Index:
+
+      >>> import pandas as pd
+      >>> idx = pd.Index([1, 2, 3])
+      >>> idx.ak.is_arkouda
+      False
+
+      Arkouda-backed single-level Index:
+
+      >>> import arkouda as ak
+      >>> ak_idx = pd.Index([10, 20, 30]).ak.to_ak()
+      >>> ak_idx.ak.is_arkouda
+      True
+
+      Arkouda-backed MultiIndex:
+
+      >>> arrays = [[1, 1, 2], ["a", "b", "a"]]
+      >>> midx = pd.MultiIndex.from_arrays(arrays)
+      >>> ak_midx = midx.ak.to_ak()
+      >>> ak_midx.ak.is_arkouda
+      True
+
+
+   .. py:method:: lookup(key: object) -> arkouda.numpy.pdarrayclass.pdarray
+
+      Perform a server-side lookup on the underlying Arkouda index.
+
+      This is a thin convenience wrapper around the legacy
+      :meth:`arkouda.index.Index.lookup` /
+      :meth:`arkouda.index.MultiIndex.lookup` methods. It converts the
+      pandas index to a legacy Arkouda index, performs the lookup on the
+      server, and returns the resulting boolean mask.
+
+      :param key: Lookup key or keys, interpreted in the same way as the legacy
+                  Arkouda ``Index`` / ``MultiIndex`` ``lookup`` method. For a
+                  single-level index this may be a scalar or an Arkouda ``pdarray``;
+                  for MultiIndex it may be a tuple or sequence of values/arrays.
+      :type key: object
+
+      :returns: A boolean Arkouda array indicating which positions in the index
+                match the given ``key``.
+      :rtype: pdarray
+
+
+
+   .. py:method:: to_ak() -> Union[pandas.Index, pandas.MultiIndex]
+
+      Convert this pandas Index or MultiIndex to an Arkouda-backed index.
+
+      Unlike :meth:`to_ak_legacy`, which returns a legacy Arkouda Index object,
+      this method returns a *pandas* Index or MultiIndex whose data reside
+      on the Arkouda server and are wrapped in
+      :class:`ArkoudaExtensionArray` ExtensionArrays.
+
+      The conversion is zero-copy with respect to NumPy: no materialization
+      to local NumPy arrays occurs.
+
+      :returns: An Index whose underlying data live on the Arkouda server.
+      :rtype: Union[pd.Index, pd.MultiIndex]
+
+      .. rubric:: Examples
+
+      Convert a simple Index to Arkouda-backed form:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> idx = pd.Index([10, 20, 30], name="values")
+      >>> ak_idx = idx.ak.to_ak()
+      >>> type(ak_idx.array)
+      <class 'arkouda.pandas.extension._arkouda_array.ArkoudaArray'>
+
+      Round-trip back to NumPy-backed pandas objects:
+
+      >>> restored = ak_idx.ak.collect()
+      >>> restored.equals(idx)
+      True
+
+
+
+   .. py:method:: to_ak_legacy() -> Union[arkouda.index.Index, arkouda.index.MultiIndex]
+
+      Convert this pandas Index or MultiIndex into a legacy Arkouda
+      ``ak.Index`` or ``ak.MultiIndex`` object.
+
+      This is the index analogue of ``df.ak.to_ak_legacy()``, returning the
+      *actual* Arkouda index objects on the server, rather than a pandas
+      wrapper backed by :class:`ArkoudaExtensionArray`.
+
+      The conversion is zero-copy with respect to NumPy: values are transferred
+      directly into Arkouda arrays without materializing to local NumPy.
+
+      :returns: A legacy Arkouda Index/MultiIndex whose data live on the Arkouda server.
+      :rtype: Union[ak_Index, ak_MultiIndex]
+
+      .. rubric:: Examples
+
+      Convert a simple pandas Index into a legacy Arkouda Index:
+
+      >>> import pandas as pd
+      >>> import arkouda as ak
+      >>> idx = pd.Index([10, 20, 30], name="numbers")
+      >>> ak_idx = idx.ak.to_ak_legacy()
+      >>> type(ak_idx)
+      <class 'arkouda.pandas.index.Index'>
+      >>> ak_idx.name
+      'numbers'
+
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'index') -> str
+
+      Save this index to CSV via the legacy ``to_csv`` implementation
+      and return the server response message.
+
+
+
+   .. py:method:: to_dict(labels=None)
+
+      Convert this index to a dictionary representation if supported.
+
+      For MultiIndex, this delegates to ``MultiIndex.to_dict`` and returns
+      a mapping of label -> Index. For single-level Indexes, this will
+      raise a TypeError, since the legacy API only defines ``to_dict`` on
+      MultiIndex.
+
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute') -> str
+
+      Save this index to HDF5 via the legacy ``to_hdf`` implementation
+      and return the server response message.
+
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: Literal['truncate', 'append'] = 'truncate') -> str
+
+      Save this index to Parquet via the legacy ``to_parquet`` implementation
+      and return the server response message.
+
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
+
+      Overwrite or append this index into an existing HDF5 dataset via
+      the legacy ``update_hdf`` implementation.
+
 
 
 .. py:class:: ArkoudaInt64Dtype

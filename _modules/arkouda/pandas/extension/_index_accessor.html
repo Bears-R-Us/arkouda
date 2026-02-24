@@ -435,7 +435,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
@@ -443,6 +443,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span> <span class="k">as</span> <span class="n">ak_Index</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiIndex</span> <span class="k">as</span> <span class="n">ak_MultiIndex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
 
 
@@ -522,7 +523,7 @@
 
 
 <div class="viewcode-block" id="ArkoudaIndexAccessor">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor">[docs]</a>
 <span class="nd">@register_index_accessor</span><span class="p">(</span><span class="s2">&quot;ak&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ArkoudaIndexAccessor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -593,7 +594,7 @@
     <span class="c1"># ------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="ArkoudaIndexAccessor.from_ak_legacy">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.from_ak_legacy">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.from_ak_legacy">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_ak_legacy</span><span class="p">(</span><span class="n">akidx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ak_Index</span><span class="p">,</span> <span class="n">ak_MultiIndex</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -670,7 +671,7 @@
 
 
 <div class="viewcode-block" id="ArkoudaIndexAccessor.to_ak">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ak</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert this pandas Index or MultiIndex to an Arkouda-backed index.</span>
@@ -711,7 +712,7 @@
 
 
 <div class="viewcode-block" id="ArkoudaIndexAccessor.collect">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.collect">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.collect">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Materialize this Index or MultiIndex back to a plain NumPy-backed</span>
@@ -793,7 +794,7 @@
     <span class="c1"># Legacy Arkouda conversions</span>
     <span class="c1"># ------------------------------------------------------------------</span>
 <div class="viewcode-block" id="ArkoudaIndexAccessor.to_ak_legacy">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/extension/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak_legacy">[docs]</a>
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_ak_legacy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_ak_legacy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ak_Index</span><span class="p">,</span> <span class="n">ak_MultiIndex</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert this pandas Index or MultiIndex into a legacy Arkouda</span>
@@ -880,7 +881,192 @@
             <span class="n">arr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ArkoudaExtensionArray</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Legacy delegation: thin wrappers over ak.Index / ak.MultiIndex</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a pandas Index or MultiIndex from a legacy Arkouda</span>
+<span class="sd">        return message produced by index operations.</span>
+
+<span class="sd">        This is a thin wrapper around ``ak.Index.from_return_msg`` that</span>
+<span class="sd">        immediately wraps the resulting Arkouda index back into a</span>
+<span class="sd">        pandas object backed by Arkouda ExtensionArrays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">akidx</span> <span class="o">=</span> <span class="n">ak_Index</span><span class="o">.</span><span class="n">from_return_msg</span><span class="p">(</span><span class="n">rep_msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ArkoudaIndexAccessor</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">akidx</span><span class="p">)</span>
+
+    <span class="c1"># --- Structural ops -------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ArkoudaIndexAccessor.concat">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.concat">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concatenate this index with another Arkouda-backed index.</span>
+
+<span class="sd">        Both ``self._obj`` and ``other`` must be convertible to legacy</span>
+<span class="sd">        Arkouda :class:`ak_Index` / :class:`ak_MultiIndex`. The concatenation</span>
+<span class="sd">        is performed in Arkouda and the result is wrapped back into an</span>
+<span class="sd">        Arkouda-backed pandas Index or MultiIndex.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : Union[pd.Index, pd.MultiIndex]</span>
+<span class="sd">            The other index to concatenate with ``self._obj``. It must be a</span>
+<span class="sd">            :class:`pandas.Index` or :class:`pandas.MultiIndex`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Union[pd.Index, pd.MultiIndex]</span>
+<span class="sd">            A pandas Index or MultiIndex backed by Arkouda, containing the</span>
+<span class="sd">            concatenated values from ``self._obj`` and ``other``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If ``other`` is not a :class:`pandas.Index` or</span>
+<span class="sd">            :class:`pandas.MultiIndex`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`other` must be a pandas.Index or pandas.MultiIndex&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Lift both sides to legacy Arkouda Index / MultiIndex</span>
+        <span class="n">left_ak</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="n">right_ak</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+
+        <span class="c1"># Delegate to legacy Arkouda concat</span>
+        <span class="n">out_ak</span> <span class="o">=</span> <span class="n">left_ak</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">right_ak</span><span class="p">)</span>
+
+        <span class="c1"># Wrap back into Arkouda-backed pandas Index/MultiIndex</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_ak_legacy</span><span class="p">(</span><span class="n">out_ak</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaIndexAccessor.lookup">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.lookup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pdarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a server-side lookup on the underlying Arkouda index.</span>
+
+<span class="sd">        This is a thin convenience wrapper around the legacy</span>
+<span class="sd">        :meth:`arkouda.index.Index.lookup` /</span>
+<span class="sd">        :meth:`arkouda.index.MultiIndex.lookup` methods. It converts the</span>
+<span class="sd">        pandas index to a legacy Arkouda index, performs the lookup on the</span>
+<span class="sd">        server, and returns the resulting boolean mask.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : object</span>
+<span class="sd">            Lookup key or keys, interpreted in the same way as the legacy</span>
+<span class="sd">            Arkouda ``Index`` / ``MultiIndex`` ``lookup`` method. For a</span>
+<span class="sd">            single-level index this may be a scalar or an Arkouda ``pdarray``;</span>
+<span class="sd">            for MultiIndex it may be a tuple or sequence of values/arrays.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdarray</span>
+<span class="sd">            A boolean Arkouda array indicating which positions in the index</span>
+<span class="sd">            match the given ``key``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">akidx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">akidx</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+
+    <span class="c1"># --- Serialization --------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ArkoudaIndexAccessor.to_hdf">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_hdf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_hdf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+        <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;single&quot;</span><span class="p">,</span> <span class="s2">&quot;distribute&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;distribute&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save this index to HDF5 via the legacy ``to_hdf`` implementation</span>
+<span class="sd">        and return the server response message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">akidx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">akidx</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="n">file_type</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaIndexAccessor.update_hdf">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.update_hdf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_hdf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span>
+        <span class="n">repack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Overwrite or append this index into an existing HDF5 dataset via</span>
+<span class="sd">        the legacy ``update_hdf`` implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">akidx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">akidx</span><span class="o">.</span><span class="n">update_hdf</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">repack</span><span class="o">=</span><span class="n">repack</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaIndexAccessor.to_parquet">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_parquet">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_parquet</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;truncate&quot;</span><span class="p">,</span> <span class="s2">&quot;append&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;truncate&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save this index to Parquet via the legacy ``to_parquet`` implementation</span>
+<span class="sd">        and return the server response message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">akidx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">akidx</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaIndexAccessor.to_csv">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_csv">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prefix_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save this index to CSV via the legacy ``to_csv`` implementation</span>
+<span class="sd">        and return the server response message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">akidx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">akidx</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">prefix_path</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span></div>
+
+
+    <span class="c1"># --- Python/native representations ----------------------------------------</span>
+
+<div class="viewcode-block" id="ArkoudaIndexAccessor.to_dict">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.pandas.extension.ArkoudaIndexAccessor.to_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert this index to a dictionary representation if supported.</span>
+
+<span class="sd">        For MultiIndex, this delegates to ``MultiIndex.to_dict`` and returns</span>
+<span class="sd">        a mapping of label -&gt; Index. For single-level Indexes, this will</span>
+<span class="sd">        raise a TypeError, since the legacy API only defines ``to_dict`` on</span>
+<span class="sd">        MultiIndex.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiIndex</span>
+
+        <span class="n">akidx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_ak_legacy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">akidx</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;to_dict is only defined for Index or MultiIndex-backed indices&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">akidx</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">akidx</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">akidx</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
         </article>

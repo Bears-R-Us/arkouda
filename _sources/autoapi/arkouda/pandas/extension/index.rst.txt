@@ -2011,6 +2011,28 @@ Package Contents
 
 
 
+   .. py:method:: concat(other: Union[pandas.Index, pandas.MultiIndex]) -> Union[pandas.Index, pandas.MultiIndex]
+
+      Concatenate this index with another Arkouda-backed index.
+
+      Both ``self._obj`` and ``other`` must be convertible to legacy
+      Arkouda :class:`ak_Index` / :class:`ak_MultiIndex`. The concatenation
+      is performed in Arkouda and the result is wrapped back into an
+      Arkouda-backed pandas Index or MultiIndex.
+
+      :param other: The other index to concatenate with ``self._obj``. It must be a
+                    :class:`pandas.Index` or :class:`pandas.MultiIndex`.
+      :type other: Union[pd.Index, pd.MultiIndex]
+
+      :returns: A pandas Index or MultiIndex backed by Arkouda, containing the
+                concatenated values from ``self._obj`` and ``other``.
+      :rtype: Union[pd.Index, pd.MultiIndex]
+
+      :raises TypeError: If ``other`` is not a :class:`pandas.Index` or
+          :class:`pandas.MultiIndex`.
+
+
+
    .. py:method:: from_ak_legacy(akidx: Union[arkouda.index.Index, arkouda.index.MultiIndex]) -> Union[pandas.Index, pandas.MultiIndex]
       :staticmethod:
 
@@ -2121,6 +2143,28 @@ Package Contents
       True
 
 
+   .. py:method:: lookup(key: object) -> arkouda.numpy.pdarrayclass.pdarray
+
+      Perform a server-side lookup on the underlying Arkouda index.
+
+      This is a thin convenience wrapper around the legacy
+      :meth:`arkouda.index.Index.lookup` /
+      :meth:`arkouda.index.MultiIndex.lookup` methods. It converts the
+      pandas index to a legacy Arkouda index, performs the lookup on the
+      server, and returns the resulting boolean mask.
+
+      :param key: Lookup key or keys, interpreted in the same way as the legacy
+                  Arkouda ``Index`` / ``MultiIndex`` ``lookup`` method. For a
+                  single-level index this may be a scalar or an Arkouda ``pdarray``;
+                  for MultiIndex it may be a tuple or sequence of values/arrays.
+      :type key: object
+
+      :returns: A boolean Arkouda array indicating which positions in the index
+                match the given ``key``.
+      :rtype: pdarray
+
+
+
    .. py:method:: to_ak() -> Union[pandas.Index, pandas.MultiIndex]
 
       Convert this pandas Index or MultiIndex to an Arkouda-backed index.
@@ -2182,6 +2226,45 @@ Package Contents
       <class 'arkouda.pandas.index.Index'>
       >>> ak_idx.name
       'numbers'
+
+
+
+   .. py:method:: to_csv(prefix_path: str, dataset: str = 'index') -> str
+
+      Save this index to CSV via the legacy ``to_csv`` implementation
+      and return the server response message.
+
+
+
+   .. py:method:: to_dict(labels=None)
+
+      Convert this index to a dictionary representation if supported.
+
+      For MultiIndex, this delegates to ``MultiIndex.to_dict`` and returns
+      a mapping of label -> Index. For single-level Indexes, this will
+      raise a TypeError, since the legacy API only defines ``to_dict`` on
+      MultiIndex.
+
+
+
+   .. py:method:: to_hdf(prefix_path: str, dataset: str = 'index', mode: Literal['truncate', 'append'] = 'truncate', file_type: Literal['single', 'distribute'] = 'distribute') -> str
+
+      Save this index to HDF5 via the legacy ``to_hdf`` implementation
+      and return the server response message.
+
+
+
+   .. py:method:: to_parquet(prefix_path: str, dataset: str = 'index', mode: Literal['truncate', 'append'] = 'truncate') -> str
+
+      Save this index to Parquet via the legacy ``to_parquet`` implementation
+      and return the server response message.
+
+
+
+   .. py:method:: update_hdf(prefix_path: str, dataset: str = 'index', repack: bool = True)
+
+      Overwrite or append this index into an existing HDF5 dataset via
+      the legacy ``update_hdf`` implementation.
 
 
 
@@ -2313,6 +2396,29 @@ Package Contents
    >>> ak_arr = s.ak.to_ak_legacy()
    >>> type(ak_arr)
    <class 'arkouda.pandas.series.Series'>
+
+
+   .. py:method:: apply(func: Union[Callable[[Any], Any], str], result_dtype: Optional[Union[numpy.dtype, str]] = None) -> pandas.Series
+
+      Apply a Python function element-wise to this Arkouda-backed Series.
+
+      This delegates to :func:`arkouda.apply.apply`, executing the function
+      on the Arkouda server without materializing to NumPy.
+
+      :param func: A Python callable or a specially formatted lambda string
+                   (e.g. ``"lambda x,: x+1"``).
+      :type func: Union[Callable[[Any], Any], str]
+      :param result_dtype: The dtype of the resulting array. Required if the function changes dtype.
+                           Must be compatible with :func:`arkouda.apply.apply`.
+                           Default is None.
+      :type result_dtype: Optional[Union[np.dtype, str]]
+
+      :returns: A new Arkouda-backed Series containing the transformed values.
+      :rtype: pd.Series
+
+      :raises TypeError: If the Series is not Arkouda-backed or if its values are not
+          a numeric pdarray.
+
 
 
    .. py:method:: argsort(*, ascending: bool = True, **kwargs: object) -> pandas.Series
