@@ -144,6 +144,47 @@ class TestArkoudaCategoricalExtension:
         idx1 = ak.arange(prob_size, dtype=ak.int64) // 2
         assert_equivalent(arr.take(idx1)._data.to_strings(), s.take(idx1.to_ndarray()).to_numpy())
 
+    def test_categorical_isna_and_isnull(self):
+        from arkouda.pandas.extension import ArkoudaCategorical
+
+        cases = [
+            # Case 1: no missing values
+            (
+                ak.Categorical(ak.array(["a", "b", "c"])),
+                np.array([False, False, False]),
+            ),
+            # Case 2: some missing values (must inject after construction)
+            (
+                # construct with valid codes, then rewrite codes to include -1
+                (
+                    lambda: (lambda cat: (setattr(cat, "codes", ak.array([0, -1, 1, -1])) or cat))(
+                        ak.Categorical.from_codes(
+                            codes=ak.array([0, 0, 1, 1]), categories=ak.array(["x", "y"])
+                        )
+                    )
+                )(),
+                np.array([False, True, False, True]),
+            ),
+            # Case 3: empty categorical
+            (
+                ak.Categorical(ak.array([])),
+                np.array([], dtype=bool),
+            ),
+        ]
+
+        for cat, expected in cases:
+            arr = ArkoudaCategorical(cat)
+
+            out_isna = arr.isna()
+            out_isnull = arr.isnull()
+
+            assert isinstance(out_isna, np.ndarray)
+            assert isinstance(out_isnull, np.ndarray)
+            assert out_isna.dtype == bool
+            assert out_isnull.dtype == bool
+            assert np.array_equal(out_isna, expected)
+            assert np.array_equal(out_isnull, expected)
+
 
 class TestArkoudaCategoricalAsType:
     def test_categorical_array_astype_category_stays_extension(
