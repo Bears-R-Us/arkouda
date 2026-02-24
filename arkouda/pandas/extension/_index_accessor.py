@@ -55,7 +55,7 @@ True
 
 from __future__ import annotations
 
-from typing import Union
+from typing import Literal, Union
 
 import pandas as pd
 
@@ -63,6 +63,7 @@ from pandas.api.extensions import register_index_accessor
 
 from arkouda.index import Index as ak_Index
 from arkouda.index import MultiIndex as ak_MultiIndex
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas.extension import ArkoudaExtensionArray
 
 
@@ -487,3 +488,167 @@ class ArkoudaIndexAccessor:
             return isinstance(arr, ArkoudaExtensionArray)
         else:
             return False
+
+    # ------------------------------------------------------------------
+    # Legacy delegation: thin wrappers over ak.Index / ak.MultiIndex
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _from_return_msg(rep_msg: str) -> Union[pd.Index, pd.MultiIndex]:
+        """
+        Construct a pandas Index or MultiIndex from a legacy Arkouda
+        return message produced by index operations.
+
+        This is a thin wrapper around ``ak.Index.from_return_msg`` that
+        immediately wraps the resulting Arkouda index back into a
+        pandas object backed by Arkouda ExtensionArrays.
+        """
+        akidx = ak_Index.from_return_msg(rep_msg)
+        return ArkoudaIndexAccessor.from_ak_legacy(akidx)
+
+    # --- Structural ops -------------------------------------------------------
+
+    def concat(
+        self,
+        other: Union[pd.Index, pd.MultiIndex],
+    ) -> Union[pd.Index, pd.MultiIndex]:
+        """
+        Concatenate this index with another Arkouda-backed index.
+
+        Both ``self._obj`` and ``other`` must be convertible to legacy
+        Arkouda :class:`ak_Index` / :class:`ak_MultiIndex`. The concatenation
+        is performed in Arkouda and the result is wrapped back into an
+        Arkouda-backed pandas Index or MultiIndex.
+
+        Parameters
+        ----------
+        other : Union[pd.Index, pd.MultiIndex]
+            The other index to concatenate with ``self._obj``. It must be a
+            :class:`pandas.Index` or :class:`pandas.MultiIndex`.
+
+        Returns
+        -------
+        Union[pd.Index, pd.MultiIndex]
+            A pandas Index or MultiIndex backed by Arkouda, containing the
+            concatenated values from ``self._obj`` and ``other``.
+
+        Raises
+        ------
+        TypeError
+            If ``other`` is not a :class:`pandas.Index` or
+            :class:`pandas.MultiIndex`.
+        """
+        if not isinstance(other, (pd.Index, pd.MultiIndex)):
+            raise TypeError("`other` must be a pandas.Index or pandas.MultiIndex")
+
+        # Lift both sides to legacy Arkouda Index / MultiIndex
+        left_ak = self.to_ak_legacy()
+        right_ak = ArkoudaIndexAccessor(other).to_ak_legacy()
+
+        # Delegate to legacy Arkouda concat
+        out_ak = left_ak.concat(right_ak)
+
+        # Wrap back into Arkouda-backed pandas Index/MultiIndex
+        return self.from_ak_legacy(out_ak)
+
+    def lookup(self, key: object) -> pdarray:
+        """
+        Perform a server-side lookup on the underlying Arkouda index.
+
+        This is a thin convenience wrapper around the legacy
+        :meth:`arkouda.index.Index.lookup` /
+        :meth:`arkouda.index.MultiIndex.lookup` methods. It converts the
+        pandas index to a legacy Arkouda index, performs the lookup on the
+        server, and returns the resulting boolean mask.
+
+        Parameters
+        ----------
+        key : object
+            Lookup key or keys, interpreted in the same way as the legacy
+            Arkouda ``Index`` / ``MultiIndex`` ``lookup`` method. For a
+            single-level index this may be a scalar or an Arkouda ``pdarray``;
+            for MultiIndex it may be a tuple or sequence of values/arrays.
+
+        Returns
+        -------
+        pdarray
+            A boolean Arkouda array indicating which positions in the index
+            match the given ``key``.
+        """
+        akidx = self.to_ak_legacy()
+        return akidx.lookup(key)
+
+    # --- Serialization --------------------------------------------------------
+
+    def to_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "index",
+        mode: Literal["truncate", "append"] = "truncate",
+        file_type: Literal["single", "distribute"] = "distribute",
+    ) -> str:
+        """
+        Save this index to HDF5 via the legacy ``to_hdf`` implementation
+        and return the server response message.
+        """
+        akidx = self.to_ak_legacy()
+        return akidx.to_hdf(prefix_path, dataset=dataset, mode=mode, file_type=file_type)
+
+    def update_hdf(
+        self,
+        prefix_path: str,
+        dataset: str = "index",
+        repack: bool = True,
+    ):
+        """
+        Overwrite or append this index into an existing HDF5 dataset via
+        the legacy ``update_hdf`` implementation.
+        """
+        akidx = self.to_ak_legacy()
+        return akidx.update_hdf(prefix_path, dataset=dataset, repack=repack)
+
+    def to_parquet(
+        self,
+        prefix_path: str,
+        dataset: str = "index",
+        mode: Literal["truncate", "append"] = "truncate",
+    ) -> str:
+        """
+        Save this index to Parquet via the legacy ``to_parquet`` implementation
+        and return the server response message.
+        """
+        akidx = self.to_ak_legacy()
+        return akidx.to_parquet(prefix_path, dataset=dataset, mode=mode)
+
+    def to_csv(
+        self,
+        prefix_path: str,
+        dataset: str = "index",
+    ) -> str:
+        """
+        Save this index to CSV via the legacy ``to_csv`` implementation
+        and return the server response message.
+        """
+        akidx = self.to_ak_legacy()
+        return akidx.to_csv(prefix_path, dataset=dataset)
+
+    # --- Python/native representations ----------------------------------------
+
+    def to_dict(self, labels=None):
+        """
+        Convert this index to a dictionary representation if supported.
+
+        For MultiIndex, this delegates to ``MultiIndex.to_dict`` and returns
+        a mapping of label -> Index. For single-level Indexes, this will
+        raise a TypeError, since the legacy API only defines ``to_dict`` on
+        MultiIndex.
+        """
+        from arkouda.pandas.index import MultiIndex
+
+        akidx = self.to_ak_legacy()
+        if not hasattr(akidx, "to_dict"):
+            raise TypeError("to_dict is only defined for Index or MultiIndex-backed indices")
+        if isinstance(akidx, MultiIndex):
+            return akidx.to_dict(labels=labels)
+        else:
+            return akidx.to_dict(label=labels)
