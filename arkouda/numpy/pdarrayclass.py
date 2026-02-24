@@ -813,37 +813,34 @@ class pdarray:
 
     def format_other(self, other) -> str:
         """
-        Attempt to cast scalar other to the element dtype of this pdarray,
-        and print the resulting value to a string (e.g. for sending to a
-        server command). The user should not call this function directly.
-
-        Parameters
-        ----------
-        other : object
-            The scalar to be cast to the pdarray.dtype
-
-        Returns
-        -------
-        string representation of np.dtype corresponding to the other parameter
-
-        Raises
-        ------
-        TypeError
-            Raised if the other parameter cannot be converted to
-            Numpy dtype
-
+        Cast a scalar to this array's dtype and return its formatted string
+        representation (internal use for server command construction).
         """
+        # Help users (and us) when a dtype string leaks into a value position.
+        if isinstance(other, (str, np.str_)):
+            # common dtype spellings; expand if you want
+            if other == self.dtype.name or other in {"float64", "int64", "bool", "bool_"}:
+                raise TypeError(
+                    f"Expected a scalar value for assignment, but got a dtype string {other!r} "
+                    f"(type={type(other).__name__}). Did you mean to use astype({other!r})?"
+                )
+
         try:
             if self.dtype != bigint:
-                other = np.array([other]).astype(self.dtype)[0]
+                arr = np.asarray([other])
+                value = arr[0] if arr.dtype == self.dtype else arr.astype(self.dtype)[0]
             else:
-                other = int(other)
-        except Exception:
-            raise TypeError(f"Unable to convert {other} to {self.dtype.name}")
+                value = int(other)
+        except Exception as err:
+            raise TypeError(
+                f"Unable to convert {other!r} (type={type(other).__name__}) to {self.dtype.name}"
+            ) from err
+
         if self.dtype == "bool_":
-            return str(other)
+            return str(value)
+
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
-        return fmt.format(other)
+        return fmt.format(value)
 
     # binary operators
     def _binop(self, other: Union[pdarray, numeric_scalars], op: str) -> pdarray:

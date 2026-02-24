@@ -91,7 +91,6 @@ from arkouda.pandas.row import Row
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-    from arkouda.numpy import cast as akcast
     from arkouda.numpy.pdarraycreation import array, zeros
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
@@ -687,7 +686,10 @@ class DiffAggregate:
 
         values = zeros(len(series), "float64")
         series_permuted = series[gb.permutation]
-        values[1:] = akcast(series_permuted[1:] - series_permuted[:-1], "float64")
+
+        diffs = series_permuted[1:] - series_permuted[:-1]
+        values[1:] = diffs.astype("float64")
+
         values[gb.segments] = np.nan
         self.values = values
 
@@ -1426,7 +1428,7 @@ class DataFrame(UserDict):
         >>> import pandas as pd
         >>> pd_df = pd.DataFrame({"A":[1,2],"B":[3,4]})
         >>> type(pd_df)
-        <class 'pandas.core.frame.DataFrame'>
+        <class 'pandas....DataFrame'>
         >>> pd_df
            A  B
         0  1  3
@@ -1434,7 +1436,7 @@ class DataFrame(UserDict):
 
         >>> ak_df = DataFrame.from_pandas(pd_df)
         >>> type(ak_df)
-        <class 'arkouda.dataframe.DataFrame'>
+        <class 'arkouda....DataFrame'>
         >>> ak_df
            A  B
         0  1  3
@@ -2478,20 +2480,20 @@ class DataFrame(UserDict):
 
         Low-level GroupBy object:
 
-        >>> df.GroupBy("col1")  # doctest: +SKIP
+        >>> df._build_groupby("col1")  # doctest: +SKIP
         <arkouda.groupbyclass.GroupBy object at ...>
-        >>> df.GroupBy("col1").size()
-        (array([1., 2.]), array([2, 1]))
+        >>> df._build_groupby("col1").size()
+        (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
 
         pandas-compatible GroupBy:
 
-        >>> df.GroupBy("col1", use_series=True).size()
+        >>> df._build_groupby("col1", use_series=True).size()
         col1
         1.0    2
         2.0    1
         dtype: int64
 
-        >>> df.GroupBy("col1", use_series=True, as_index=False).size()
+        >>> df._build_groupby("col1", use_series=True, as_index=False).size()
            col1  size
         0   1.0     2
         1   2.0     1 (2 rows x 2 columns)
@@ -2654,7 +2656,7 @@ class DataFrame(UserDict):
         >>> import arkouda as ak
         >>> ak_df = ak.DataFrame({"A": ak.arange(2), "B": -1 * ak.arange(2)})
         >>> type(ak_df)
-        <class 'arkouda.dataframe.DataFrame'>
+        <class 'arkouda...DataFrame'>
         >>> ak_df
            A  B
         0  0  0
@@ -2663,7 +2665,7 @@ class DataFrame(UserDict):
         >>> import pandas as pd
         >>> pd_df = ak_df.to_pandas()
         >>> type(pd_df)
-        <class 'pandas.core.frame.DataFrame'>
+        <class 'pandas...DataFrame'>
         >>> pd_df
            A  B
         0  0  0
@@ -3064,7 +3066,6 @@ class DataFrame(UserDict):
 
         >>> df = ak.DataFrame({"A":[1,2],"B":[3,4]})
         >>> df.to_parquet(my_path + "/my_data")
-        File written successfully!
 
         >>> df.load(my_path + "/my_data")
            B  A
@@ -3262,7 +3263,6 @@ class DataFrame(UserDict):
         >>> Path(my_path).mkdir(parents=True, exist_ok=True)
         >>> df = ak.DataFrame({"A": ak.arange(5), "B": -1 * ak.arange(5)})
         >>> df.to_parquet(my_path + "/my_data")
-        File written successfully!
 
         >>> df.load(my_path + "/my_data")
            B  A
@@ -3724,17 +3724,20 @@ class DataFrame(UserDict):
         2   2.0     6
         3   NaN     7 (4 rows x 2 columns)
 
-        >>> df.GroupBy("col1") # doctest: +SKIP
+        >>> df.groupby("col1") # doctest: +SKIP
         <arkouda.groupbyclass.GroupBy object at 0x795584773f00>
-        >>> df.GroupBy("col1").size()
-        (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
-
-        >>> df.GroupBy("col1",use_series=True).size()
+        >>> df.groupby("col1").size()
         col1
         1.0    2
         2.0    1
         dtype: int64
-        >>> df.GroupBy("col1",use_series=True, as_index = False).size()
+
+        >>> df.groupby("col1",use_series=True).size()
+        col1
+        1.0    2
+        2.0    1
+        dtype: int64
+        >>> df.groupby("col1",use_series=True, as_index = False).size()
            col1  size
         0   1.0     2
         1   2.0     1 (2 rows x 2 columns)
