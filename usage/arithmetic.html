@@ -513,7 +513,7 @@ array elements</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>where</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the sine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -546,7 +546,7 @@ of the original pdarray</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>)</p></li>
-<li><p><strong>where</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
+<li><p><strong>where</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em> or </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>default=True</em>) – This condition is broadcast over the input. At locations where the condition is True,
 the cosine will be applied to the corresponding value. Elsewhere, it will retain
 its original value. Default set to True.</p></li>
 </ul>
@@ -674,14 +674,14 @@ of the original pdarray</p>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indicates if any pdarray element evaluates to True.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -702,14 +702,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indicates if all pdarray elements evaluate to True.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -730,14 +730,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Indicates if the array is monotonically non-decreasing.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool">bool</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -758,14 +758,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The sum of all elements in the array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.float64" title="arkouda.float64">float64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.float64" title="arkouda.numpy.dtypes.float64">float64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -786,14 +786,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The product calculated from the pda.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -814,14 +814,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The min calculated from the pda.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -842,14 +842,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The max calculated from the pda.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numeric_scalars" title="arkouda.numeric_scalars">numeric_scalars</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numeric_scalars" title="arkouda.numpy.dtypes.numeric_scalars">numeric_scalars</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -871,14 +871,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis along which to compute the index reduction.
 If None, the reduction of the entire array is
 computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>This argmin of the array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.uint64" title="arkouda.uint64">uint64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64">uint64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -901,14 +901,14 @@ computed (returning a scalar).</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis along which to compute the index reduction.
 If None, the reduction of the entire array is
 computed (returning a scalar).</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>This argmax of the array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int64" title="arkouda.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.uint64" title="arkouda.uint64">uint64</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64">int64</a>, <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.uint64" title="arkouda.numpy.dtypes.uint64">uint64</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -930,14 +930,14 @@ computed (returning a scalar).</p></li>
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The pdarray instance to be evaluated.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The product calculated from the pda.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numpy_scalars" title="arkouda.numpy_scalars">numpy_scalars</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars">numpy_scalars</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -959,14 +959,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>ddof</strong> (<em>the delta degrees</em><em> of </em><em>freedom argument for var</em><em> or </em><em>std</em>)</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The product calculated from the pda.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numpy_scalars" title="arkouda.numpy_scalars">numpy_scalars</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars">numpy_scalars</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -988,14 +988,14 @@ If None, the computation is done across the entire array.</p></li>
 <li><p><strong>ddof</strong> (<em>the delta degrees</em><em> of </em><em>freedom argument for var</em><em> or </em><em>std</em>)</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em><em>, </em><em>default = None</em>) – The axis or axes along which to compute the function.
 If None, the computation is done across the entire array.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.bool" title="arkouda.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default = False</em>) – Whether to keep the singleton dimension(s) along <cite>axis</cite> in the result.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The product calculated from the pda.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.numpy_scalars" title="arkouda.numpy_scalars">numpy_scalars</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.numpy_scalars" title="arkouda.numpy.dtypes.numpy_scalars">numpy_scalars</a>, <a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1015,7 +1015,7 @@ If None, the computation is done across the entire array.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of minimum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1057,7 +1057,7 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of maximum values to be returned by the output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1098,7 +1098,7 @@ about a <cite>k</cite> of 5 million is where performance degredation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to minimum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1140,7 +1140,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – Input array.</p></li>
-<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.int_scalars" title="arkouda.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
+<li><p><strong>k</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars"><em>int_scalars</em></a>) – The desired count of indices corresponding to maxmum array values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

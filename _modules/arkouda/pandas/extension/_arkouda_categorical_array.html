@@ -393,7 +393,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.core.dtypes.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtensionDtype</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">bool_</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._arkouda_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaArray</span>
@@ -722,10 +721,44 @@
 
 <div class="viewcode-block" id="ArkoudaCategorical.isna">
 <a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategorical.isna">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isna</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # Return a boolean mask indicating missing values.</span>
 
-        <span class="k">return</span> <span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">bool_</span><span class="p">)</span></div>
+<span class="sd">        # This implements the pandas ExtensionArray.isna contract and returns a</span>
+<span class="sd">        # NumPy ndarray[bool] of the same length as this categorical array.</span>
+
+<span class="sd">        # Returns</span>
+<span class="sd">        # -------</span>
+<span class="sd">        # np.ndarray</span>
+<span class="sd">        #     Boolean mask where True indicates a missing value.</span>
+
+<span class="sd">        # Raises</span>
+<span class="sd">        # ------</span>
+<span class="sd">        # TypeError</span>
+<span class="sd">        #     If the underlying categorical cannot expose its codes or if missing</span>
+<span class="sd">        #     detection is unsupported.</span>
+<span class="sd">        #</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>  <span class="c1"># should be an arkouda.Categorical</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;ArkoudaCategorical.isna requires an arkouda.Categorical backend&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Missing values in ArkoudaCategorical are represented by code == -1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">codes</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to determine missing values: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+
+<div class="viewcode-block" id="ArkoudaCategorical.isnull">
+<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategorical.isnull">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isnull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Alias for isna().&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span></div>
 
 
     <span class="nd">@property</span>
@@ -941,12 +974,6 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_codes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;from_codes is not yet implemented for ArkoudaCategorical.&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ArkoudaCategorical.isnull">
-<a class="viewcode-back" href="../../../../autoapi/arkouda/pandas/index.html#arkouda.ArkoudaCategorical.isnull">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">isnull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_categorical_not_implemented</span><span class="p">(</span><span class="s2">&quot;isnull&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArkoudaCategorical.memory_usage">

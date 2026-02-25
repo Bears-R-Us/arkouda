@@ -620,7 +620,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="finfo.epsneg">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.finfo.epsneg">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.epsneg">[docs]</a>
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">epsneg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Assume typical floating point logic.  Could also use nextafter.</span>
@@ -628,28 +628,28 @@
 
 
 <div class="viewcode-block" id="finfo.resolution">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.finfo.resolution">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.resolution">[docs]</a>
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">**-</span><span class="bp">self</span><span class="o">.</span><span class="n">precision</span></div>
 
 
 <div class="viewcode-block" id="finfo.machep">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.finfo.machep">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.machep">[docs]</a>
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">machep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="finfo.negep">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.finfo.negep">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.negep">[docs]</a>
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">negep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsneg</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="finfo.nexp">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.finfo.nexp">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.nexp">[docs]</a>
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nexp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># considering all ones (inf/nan) and all zeros (subnormal/zero)</span>
@@ -657,7 +657,7 @@
 
 
 <div class="viewcode-block" id="finfo.iexp">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.finfo.iexp">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.iexp">[docs]</a>
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">iexp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Calculate exponent bits from it&#39;s range:</span>
@@ -732,7 +732,7 @@
         <span class="k">return</span> <span class="n">repr_str</span>
 
 <div class="viewcode-block" id="finfo.tiny">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.finfo.tiny">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.imports.finfo.tiny">[docs]</a>
     <span class="nd">@cached_property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tiny</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the value for tiny, alias of smallest_normal.</span>

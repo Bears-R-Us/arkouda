@@ -506,7 +506,7 @@
 
 
 <div class="viewcode-block" id="geterr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.geterr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.geterr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">geterr</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ErrorMode</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the current Arkouda floating-point error handling settings.</span>
@@ -522,7 +522,7 @@
 
 
 <div class="viewcode-block" id="seterr">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.seterr">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.seterr">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">seterr</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">_ErrorMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_ErrorMode</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set how Arkouda handles floating-point errors.</span>
@@ -558,7 +558,7 @@
 
 
 <div class="viewcode-block" id="geterrcall">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.geterrcall">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.geterrcall">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">geterrcall</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the current callable used when error mode is &#39;call&#39;.</span>
@@ -573,7 +573,7 @@
 
 
 <div class="viewcode-block" id="seterrcall">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.seterrcall">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.seterrcall">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">seterrcall</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the callable invoked when an error category is set to &#39;call&#39;.</span>
@@ -604,7 +604,7 @@
 
 
 <div class="viewcode-block" id="errstate">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.errstate">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.err.errstate">[docs]</a>
 <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">errstate</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>

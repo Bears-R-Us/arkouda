@@ -628,42 +628,31 @@ Package Contents
 
 
 
-   .. py:method:: isna()
+   .. py:method:: isna() -> numpy.ndarray
 
-      A 1-D array indicating if each value is missing.
+      # Return a boolean mask indicating missing values.
 
-      :returns: In most cases, this should return a NumPy ndarray. For
-                exceptional cases like ``SparseArray``, where returning
-                an ndarray would be expensive, an ExtensionArray may be
-                returned.
-      :rtype: numpy.ndarray or pandas.api.extensions.ExtensionArray
+      # This implements the pandas ExtensionArray.isna contract and returns a
+      # NumPy ndarray[bool] of the same length as this categorical array.
 
-      .. seealso::
+      # Returns
+      # -------
+      # np.ndarray
+      #     Boolean mask where True indicates a missing value.
 
-         :py:obj:`ExtensionArray.dropna`
-             Return ExtensionArray without NA values.
-
-         :py:obj:`ExtensionArray.fillna`
-             Fill NA/NaN values using the specified method.
-
-      .. rubric:: Notes
-
-      If returning an ExtensionArray, then
-
-      * ``na_values._is_boolean`` should be True
-      * ``na_values`` should implement :func:`ExtensionArray._reduce`
-      * ``na_values`` should implement :func:`ExtensionArray._accumulate`
-      * ``na_values.any`` and ``na_values.all`` should be implemented
-
-      .. rubric:: Examples
-
-      >>> arr = pd.array([1, 2, np.nan, np.nan])
-      >>> arr.isna()
-      array([False, False,  True,  True])
+      # Raises
+      # ------
+      # TypeError
+      #     If the underlying categorical cannot expose its codes or if missing
+      #     detection is unsupported.
+      #
 
 
 
-   .. py:method:: isnull(*args, **kwargs)
+   .. py:method:: isnull()
+
+      Alias for isna().
+
 
 
    .. py:method:: max(*args, **kwargs)

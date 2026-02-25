@@ -304,6 +304,7 @@ Functions
    arkouda.numpy.putmask
    arkouda.numpy.quantile
    arkouda.numpy.rad2deg
+   arkouda.numpy.rand
    arkouda.numpy.randint
    arkouda.numpy.random_strings_lognormal
    arkouda.numpy.random_strings_uniform
@@ -11715,6 +11716,28 @@ Package Contents
    >>> a = ak.linspace(0,6.28,4)
    >>> ak.rad2deg(a)
    array([0.00000000... 119.939165... 239.878330... 359.817495...])
+
+
+.. py:function:: rand(*size: arkouda.numpy.dtypes.int_scalars, seed: Union[None, arkouda.numpy.dtypes.int_scalars] = None) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.dtypes.float64]
+
+   Generate a pdarray of float values in the range (0,1).
+
+   :param size: Dimensions of the returned array. Multiple arguments define a shape tuple.
+   :type size: int
+   :param seed: The seed for the random number generator
+   :type seed: int_scalars, optional
+
+   :returns: Values drawn uniformly from the range (0,1).
+             Returned as pdarray if size is provided, else as scalar.
+   :rtype: pdarray, float_scalar
+
+   :raises TypeError: Raised if size is not an int or a sequence of ints, or if seed is not an int
+
+   .. rubric:: Examples
+
+   >>> import arkouda as ak
+   >>> ak.rand(3,seed=1701)
+   array([0.011410423448327005 0.73618171558685619 0.12367222192448891])
 
 
 .. py:function:: randint(low: arkouda.numpy.dtypes.numeric_scalars, high: arkouda.numpy.dtypes.numeric_scalars, size: Union[arkouda.numpy.dtypes.int_scalars, Tuple[arkouda.numpy.dtypes.int_scalars, Ellipsis]] = 1, dtype=akint64, seed: Optional[arkouda.numpy.dtypes.int_scalars] = None) -> arkouda.numpy.pdarrayclass.pdarray
