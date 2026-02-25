@@ -1004,9 +1004,8 @@ Module Contents
 
    .. py:method:: format_other(other) -> str
 
-      Attempt to cast scalar other to the element dtype of this pdarray,
-      and print the resulting value to a string (e.g. for sending to a
-      server command). The user should not call this function directly.
+      Cast a scalar to this array's dtype and return its formatted string
+      representation (internal use for server command construction).
 
       :param other: The scalar to be cast to the pdarray.dtype
       :type other: object

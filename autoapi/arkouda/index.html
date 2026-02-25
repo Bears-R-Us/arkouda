@@ -17553,9 +17553,8 @@ bigint pdarray and the last item will be the lowest 64 bits.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pdarray.format_other">
 <span class="sig-name descname"><span class="pre">format_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/numpy/pdarrayclass.html#pdarray.format_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pdarray.format_other" title="Link to this definition">¶</a></dt>
-<dd><p>Attempt to cast scalar other to the element dtype of this pdarray,
-and print the resulting value to a string (e.g. for sending to a
-server command). The user should not call this function directly.</p>
+<dd><p>Cast a scalar to this array’s dtype and return its formatted string
+representation (internal use for server command construction).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> (<em>object</em>) – The scalar to be cast to the pdarray.dtype</p>

@@ -392,7 +392,15 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.zeros">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.zeros" title="Link to this definition">¶</a></dt>
-<dd><p>Create a pdarray filled with zeros.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Overloads<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<span class="sphinx_autodoc_typehints-type">Union[int_scalars, Tuple[int_scalars, …], str]</span>), <strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type">Union[NumericDTypeTypes, type[bigint]]</span>), <strong>max_bits</strong> (<span class="sphinx_autodoc_typehints-type">Optional[int]</span>) → <span class="sphinx_autodoc_typehints-type">pdarray</span></p></li>
+<li><p><strong>size</strong> (<span class="sphinx_autodoc_typehints-type">Union[int_scalars, Tuple[int_scalars, …], str]</span>), <strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type">StringDTypeTypes</span>), <strong>max_bits</strong> (<span class="sphinx_autodoc_typehints-type">Optional[int]</span>) → <span class="sphinx_autodoc_typehints-type">Never</span></p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a pdarray filled with zeros.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -442,7 +450,15 @@ of the value of max_bits</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.ones">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#ones"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.ones" title="Link to this definition">¶</a></dt>
-<dd><p>Create a pdarray filled with ones.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Overloads<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<span class="sphinx_autodoc_typehints-type">Union[int_scalars, Tuple[int_scalars, …], str]</span>), <strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type">StringDTypeTypes</span>), <strong>max_bits</strong> (<span class="sphinx_autodoc_typehints-type">Optional[int]</span>) → <span class="sphinx_autodoc_typehints-type">Strings</span></p></li>
+<li><p><strong>size</strong> (<span class="sphinx_autodoc_typehints-type">Union[int_scalars, Tuple[int_scalars, …], str]</span>), <strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type">Union[NumericDTypeTypes, type[bigint]]</span>), <strong>max_bits</strong> (<span class="sphinx_autodoc_typehints-type">Optional[int]</span>) → <span class="sphinx_autodoc_typehints-type">pdarray</span></p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a pdarray filled with ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -579,7 +595,16 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.arange">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">arange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/pdarraycreation.html#arange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.arange" title="Link to this definition">¶</a></dt>
-<dd><p>Create a pdarray of consecutive integers within the interval [start, stop).</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Overloads<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>__arg1</strong> (<span class="sphinx_autodoc_typehints-type">int_scalars</span>), <strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type">Optional[Union[np.dtype, type, bigint]]</span>), <strong>max_bits</strong> (<span class="sphinx_autodoc_typehints-type">Optional[int]</span>) → <span class="sphinx_autodoc_typehints-type">pdarray</span></p></li>
+<li><p><strong>__arg1</strong> (<span class="sphinx_autodoc_typehints-type">int_scalars</span>), <strong>__arg2</strong> (<span class="sphinx_autodoc_typehints-type">int_scalars</span>), <strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type">Optional[Union[np.dtype, type, bigint]]</span>), <strong>max_bits</strong> (<span class="sphinx_autodoc_typehints-type">Optional[int]</span>) → <span class="sphinx_autodoc_typehints-type">pdarray</span></p></li>
+<li><p><strong>__arg1</strong> (<span class="sphinx_autodoc_typehints-type">int_scalars</span>), <strong>__arg2</strong> (<span class="sphinx_autodoc_typehints-type">int_scalars</span>), <strong>__arg3</strong> (<span class="sphinx_autodoc_typehints-type">int_scalars</span>), <strong>dtype</strong> (<span class="sphinx_autodoc_typehints-type">Optional[Union[np.dtype, type, bigint]]</span>), <strong>max_bits</strong> (<span class="sphinx_autodoc_typehints-type">Optional[int]</span>) → <span class="sphinx_autodoc_typehints-type">pdarray</span></p></li>
+</ul>
+</dd>
+</dl>
+<p>Create a pdarray of consecutive integers within the interval [start, stop).</p>
 <p>Called as: arange([start,] stop[, step,] dtype=int64).</p>
 <p>If only one arg is given then arg is the stop parameter. If two args are
 given, then the first arg is start and second is stop. If three args are

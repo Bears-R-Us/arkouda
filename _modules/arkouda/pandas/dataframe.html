@@ -471,8 +471,7 @@
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span> <span class="k">as</span> <span class="n">akcast</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.segarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegArray</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.strings</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strings</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span>
@@ -1086,11 +1085,16 @@
     <span class="n">values</span><span class="p">:</span> <span class="n">Series</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gb</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">gb</span> <span class="o">=</span> <span class="n">gb</span>
 
         <span class="n">values</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">series</span><span class="p">),</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
         <span class="n">series_permuted</span> <span class="o">=</span> <span class="n">series</span><span class="p">[</span><span class="n">gb</span><span class="o">.</span><span class="n">permutation</span><span class="p">]</span>
-        <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">akcast</span><span class="p">(</span><span class="n">series_permuted</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">series_permuted</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+        <span class="n">diffs</span> <span class="o">=</span> <span class="n">series_permuted</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">series_permuted</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">diffs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
         <span class="n">values</span><span class="p">[</span><span class="n">gb</span><span class="o">.</span><span class="n">segments</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
 
@@ -1837,7 +1841,7 @@
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">        &gt;&gt;&gt; pd_df = pd.DataFrame({&quot;A&quot;:[1,2],&quot;B&quot;:[3,4]})</span>
 <span class="sd">        &gt;&gt;&gt; type(pd_df)</span>
-<span class="sd">        &lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;</span>
+<span class="sd">        &lt;class &#39;pandas....DataFrame&#39;&gt;</span>
 <span class="sd">        &gt;&gt;&gt; pd_df</span>
 <span class="sd">           A  B</span>
 <span class="sd">        0  1  3</span>
@@ -1845,7 +1849,7 @@
 
 <span class="sd">        &gt;&gt;&gt; ak_df = DataFrame.from_pandas(pd_df)</span>
 <span class="sd">        &gt;&gt;&gt; type(ak_df)</span>
-<span class="sd">        &lt;class &#39;arkouda.dataframe.DataFrame&#39;&gt;</span>
+<span class="sd">        &lt;class &#39;arkouda....DataFrame&#39;&gt;</span>
 <span class="sd">        &gt;&gt;&gt; ak_df</span>
 <span class="sd">           A  B</span>
 <span class="sd">        0  1  3</span>
@@ -2920,20 +2924,20 @@
 
 <span class="sd">        Low-level GroupBy object:</span>
 
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;)  # doctest: +SKIP</span>
+<span class="sd">        &gt;&gt;&gt; df._build_groupby(&quot;col1&quot;)  # doctest: +SKIP</span>
 <span class="sd">        &lt;arkouda.groupbyclass.GroupBy object at ...&gt;</span>
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;).size()</span>
-<span class="sd">        (array([1., 2.]), array([2, 1]))</span>
+<span class="sd">        &gt;&gt;&gt; df._build_groupby(&quot;col1&quot;).size()</span>
+<span class="sd">        (array([1.00000000000000000 2.00000000000000000]), array([2 1]))</span>
 
 <span class="sd">        pandas-compatible GroupBy:</span>
 
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;, use_series=True).size()</span>
+<span class="sd">        &gt;&gt;&gt; df._build_groupby(&quot;col1&quot;, use_series=True).size()</span>
 <span class="sd">        col1</span>
 <span class="sd">        1.0    2</span>
 <span class="sd">        2.0    1</span>
 <span class="sd">        dtype: int64</span>
 
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;, use_series=True, as_index=False).size()</span>
+<span class="sd">        &gt;&gt;&gt; df._build_groupby(&quot;col1&quot;, use_series=True, as_index=False).size()</span>
 <span class="sd">           col1  size</span>
 <span class="sd">        0   1.0     2</span>
 <span class="sd">        1   2.0     1 (2 rows x 2 columns)</span>
@@ -3104,7 +3108,7 @@
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; ak_df = ak.DataFrame({&quot;A&quot;: ak.arange(2), &quot;B&quot;: -1 * ak.arange(2)})</span>
 <span class="sd">        &gt;&gt;&gt; type(ak_df)</span>
-<span class="sd">        &lt;class &#39;arkouda.dataframe.DataFrame&#39;&gt;</span>
+<span class="sd">        &lt;class &#39;arkouda...DataFrame&#39;&gt;</span>
 <span class="sd">        &gt;&gt;&gt; ak_df</span>
 <span class="sd">           A  B</span>
 <span class="sd">        0  0  0</span>
@@ -3113,7 +3117,7 @@
 <span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">        &gt;&gt;&gt; pd_df = ak_df.to_pandas()</span>
 <span class="sd">        &gt;&gt;&gt; type(pd_df)</span>
-<span class="sd">        &lt;class &#39;pandas.core.frame.DataFrame&#39;&gt;</span>
+<span class="sd">        &lt;class &#39;pandas...DataFrame&#39;&gt;</span>
 <span class="sd">        &gt;&gt;&gt; pd_df</span>
 <span class="sd">           A  B</span>
 <span class="sd">        0  0  0</span>
@@ -3526,7 +3530,6 @@
 
 <span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;:[1,2],&quot;B&quot;:[3,4]})</span>
 <span class="sd">        &gt;&gt;&gt; df.to_parquet(my_path + &quot;/my_data&quot;)</span>
-<span class="sd">        File written successfully!</span>
 
 <span class="sd">        &gt;&gt;&gt; df.load(my_path + &quot;/my_data&quot;)</span>
 <span class="sd">           B  A</span>
@@ -3733,7 +3736,6 @@
 <span class="sd">        &gt;&gt;&gt; Path(my_path).mkdir(parents=True, exist_ok=True)</span>
 <span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;: ak.arange(5), &quot;B&quot;: -1 * ak.arange(5)})</span>
 <span class="sd">        &gt;&gt;&gt; df.to_parquet(my_path + &quot;/my_data&quot;)</span>
-<span class="sd">        File written successfully!</span>
 
 <span class="sd">        &gt;&gt;&gt; df.load(my_path + &quot;/my_data&quot;)</span>
 <span class="sd">           B  A</span>
@@ -4219,17 +4221,20 @@
 <span class="sd">        2   2.0     6</span>
 <span class="sd">        3   NaN     7 (4 rows x 2 columns)</span>
 
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;) # doctest: +SKIP</span>
+<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;col1&quot;) # doctest: +SKIP</span>
 <span class="sd">        &lt;arkouda.groupbyclass.GroupBy object at 0x795584773f00&gt;</span>
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;).size()</span>
-<span class="sd">        (array([1.00000000000000000 2.00000000000000000]), array([2 1]))</span>
-
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;,use_series=True).size()</span>
+<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;col1&quot;).size()</span>
 <span class="sd">        col1</span>
 <span class="sd">        1.0    2</span>
 <span class="sd">        2.0    1</span>
 <span class="sd">        dtype: int64</span>
-<span class="sd">        &gt;&gt;&gt; df.GroupBy(&quot;col1&quot;,use_series=True, as_index = False).size()</span>
+
+<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;col1&quot;,use_series=True).size()</span>
+<span class="sd">        col1</span>
+<span class="sd">        1.0    2</span>
+<span class="sd">        2.0    1</span>
+<span class="sd">        dtype: int64</span>
+<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;col1&quot;,use_series=True, as_index = False).size()</span>
 <span class="sd">           col1  size</span>
 <span class="sd">        0   1.0     2</span>
 <span class="sd">        1   2.0     1 (2 rows x 2 columns)</span>
