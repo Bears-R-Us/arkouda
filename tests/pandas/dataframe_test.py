@@ -44,7 +44,7 @@ class TestDataFrame:
     def test_dataframe_docstrings(self, df_test_base_tmp):
         import doctest
 
-        from arkouda import dataframe
+        from arkouda.pandas import dataframe
 
         with tempfile.TemporaryDirectory(dir=df_test_base_tmp) as tmp_dirname:
             old_cwd = os.getcwd()
