@@ -1288,7 +1288,9 @@ module ParquetMsg {
 
         const ref DataDom = getDomain(e);
 
-        for (off, filedom, filename) in zip(this.offsets, subdoms, this.filenames) {
+        forall (off, filedom, filename) in zip(this.offsets,
+                                               subdoms,
+                                               this.filenames) with (ref this) {
           for locdom in DataDom.localSubdomains() {
             const intersection = domain_intersection(locdom, filedom);
             if intersection.size > 0 {
