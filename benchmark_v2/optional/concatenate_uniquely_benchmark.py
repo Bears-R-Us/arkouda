@@ -76,15 +76,11 @@ def bench_strings_concat_unique(benchmark, overlap, method):
     bytes_b = calc_num_bytes(b)
     num_bytes = bytes_a + bytes_b
 
-    fns = [
-        _unique_concat,
-        _concatenate_uniquely,
-    ]
-    fn = fns[method - 1]
+    fn = _unique_concat if method == 1 else _concatenate_uniquely
 
     benchmark.pedantic(
         fn,
-        args=(a, b),
+        args=[a, b],
         rounds=pytest.trials,
     )
 

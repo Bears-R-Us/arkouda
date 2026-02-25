@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 import arkouda as ak
+import arkouda.pandas.extension._index_accessor as idx_mod
 
 from arkouda.index import Index as ak_Index
 from arkouda.index import MultiIndex as ak_MultiIndex
@@ -201,6 +202,54 @@ class TestArkoudaIndexAccessor:
         assert not idx_local.ak.is_arkouda
         assert not midx_local.ak.is_arkouda
 
+    def test_pandas_index_to_ak_rangeindex_default_roundtrips(self):
+        """
+        RangeIndex(start=0, step=1) should convert to an ak.Index without materializing
+        on the client, and the values should round-trip back to the same RangeIndex.
+        """
+        idx = pd.RangeIndex(0, 10, 1, name="r")
+        ak_idx = _pandas_index_to_ak(idx)
+
+        assert isinstance(ak_idx, ak_Index)
+        assert ak_idx.name == "r"
+
+        pd_back = ak_idx.to_pandas()
+        assert isinstance(pd_back, pd.Index)
+        assert pd_back.equals(pd.RangeIndex(0, 10, 1, name="r"))
+
+    def test_pandas_index_to_ak_rangeindex_nontrivial_roundtrips(self):
+        """
+        RangeIndex(start!=0 or step!=1) should convert to an ak.Index and round-trip
+        back to an equivalent RangeIndex.
+        """
+        idx = pd.RangeIndex(5, 20, 3, name="r2")
+        ak_idx = _pandas_index_to_ak(idx)
+
+        assert isinstance(ak_idx, ak_Index)
+        assert ak_idx.name == "r2"
+
+        pd_back = ak_idx.to_pandas()
+        assert pd_back.equals(pd.RangeIndex(5, 20, 3, name="r2"))
+
+    def test_pandas_index_to_ak_rangeindex_negative_step_roundtrips_or_errors(self):
+        """
+        Descending RangeIndex is valid in pandas. If Arkouda supports negative-step arange,
+        it should round-trip; otherwise the conversion should raise a clear error.
+
+        This test allows either outcome to avoid being over-prescriptive about backend support.
+        """
+        idx = pd.RangeIndex(10, 0, -2, name="desc")
+
+        try:
+            ak_idx = _pandas_index_to_ak(idx)
+        except Exception as e:
+            # If unsupported, at least ensure we fail loudly (not silently wrong).
+            assert isinstance(e, (ValueError, NotImplementedError, RuntimeError))
+            return
+
+        pd_back = ak_idx.to_pandas()
+        assert pd_back.equals(pd.RangeIndex(10, 0, -2, name="desc"))
+
     def test_from_ak_legacy_roundtrip_index(self):
         """Round-trip using to_ak_legacy() + from_ak_legacy()."""
         idx = pd.Index([7, 8, 9], name="nums")
@@ -249,3 +298,164 @@ class TestArkoudaIndexAccessor:
         assert ArkoudaIndexAccessor(s.index).is_arkouda is True
         assert s.index.name == "id"
         assert np.array_equal(s.index.to_numpy(), np.array([100, 101, 102, 103]))
+
+    def test_concat_simple_index_via_accessor(self):
+        # plain pandas indices
+        left = pd.Index([1, 2, 3], name="id")
+        right = pd.Index([4, 5], name="id")
+
+        # Run through the .ak accessor (no need to call to_ak() explicitly;
+        # concat should lift to legacy and back internally).
+        out = left.ak.concat(right)
+
+        # Result is a pandas Index, Arkouda-backed
+        assert isinstance(out, pd.Index)
+        assert out.ak.is_arkouda
+        assert out.name == "id"
+
+        # Values are concatenated in order
+        _assert_index_equal_values(out, [1, 2, 3, 4, 5])
+
+        # Collect should give us a plain NumPy-backed Index with same values
+        collected = out.ak.collect()
+        assert isinstance(collected, pd.Index)
+        assert not collected.ak.is_arkouda
+        assert collected.equals(pd.Index([1, 2, 3, 4, 5], name="id"))
+
+    def test_concat_multiindex_via_accessor(self):
+        arrays_left = [[1, 1, 2], ["red", "blue", "red"]]
+        arrays_right = [[3, 3], ["green", "red"]]
+
+        left = pd.MultiIndex.from_arrays(arrays_left, names=["num", "color"])
+        right = pd.MultiIndex.from_arrays(arrays_right, names=["num", "color"])
+
+        out = left.ak.concat(right)
+
+        # Result is a pandas.MultiIndex, Arkouda-backed
+        assert isinstance(out, pd.MultiIndex)
+        assert out.ak.is_arkouda
+        assert out.names == ["num", "color"]
+
+        # Order-preserving concat of the tuples
+        expected_tuples = list(left.tolist()) + list(right.tolist())
+        assert list(out.tolist()) == expected_tuples
+
+        # Collect should give a plain MultiIndex with same tuples / names
+        collected = out.ak.collect()
+        assert isinstance(collected, pd.MultiIndex)
+        assert not collected.ak.is_arkouda
+        assert list(collected.tolist()) == expected_tuples
+        assert collected.names == ["num", "color"]
+
+    @pytest.mark.requires_chapel_module("In1dMsg")
+    def test_lookup_simple_index_scalar_and_array_via_accessor(self):
+        idx = pd.Index([10, 20, 30], name="nums")
+        ak_idx = idx.ak.to_ak()
+
+        # Scalar lookup should be handled by wrapping it into a one-element pdarray
+        mask_scalar = ak_idx.ak.lookup(20)
+        import arkouda as ak  # local import to avoid confusion with other modules
+
+        assert isinstance(mask_scalar, ak.pdarray)
+        assert mask_scalar.tolist() == [False, True, False]
+
+        # Array lookup should be passed through directly
+        keys = ak.array([5, 10, 30])
+        mask_array = ak_idx.ak.lookup(keys)
+        assert isinstance(mask_array, ak.pdarray)
+        # in1d(self.values, [5, 10, 30]) → [10, 30] are present
+        assert mask_array.tolist() == [True, False, True]
+
+    # We monkeypatch ak_Index._from_return_msg and ArkoudaIndexAccessor.from_ak_legacy
+    # because this test only verifies delegation logic. We don't want to invoke the
+    # real Arkouda client or start a server; we just need to confirm that the correct
+    # methods are called with the correct arguments and that their return value is
+    # passed through.
+    def test_from_return_msg_delegates_to_ak_index_and_wraps(self, monkeypatch):
+        # Arrange
+        rep_msg = "INDEX some return message"
+        dummy_akidx = object()
+        calls = {}
+
+        def fake_from_return_msg(msg):
+            calls["msg"] = msg
+            return dummy_akidx
+
+        def fake_from_ak_legacy(akidx):
+            calls["akidx"] = akidx
+            return "wrapped-index"
+
+        # ak_Index._from_return_msg is a classmethod; patch as staticmethod so it
+        # doesn't receive the class as the first argument.
+        monkeypatch.setattr(
+            idx_mod.ak_Index,
+            "from_return_msg",
+            staticmethod(fake_from_return_msg),
+        )
+
+        # ArkoudaIndexAccessor.from_ak_legacy is a staticmethod as well.
+        monkeypatch.setattr(
+            ArkoudaIndexAccessor,
+            "from_ak_legacy",
+            staticmethod(fake_from_ak_legacy),
+        )
+
+        # Act
+        result = ArkoudaIndexAccessor._from_return_msg(rep_msg)
+
+        # Assert: result is whatever from_ak_legacy returns
+        assert result == "wrapped-index"
+        # Assert: the legacy parser was called with the original message
+        assert calls["msg"] == rep_msg
+        # Assert: the wrapper was called with the object produced by ak_Index._from_return_msg
+        assert calls["akidx"] is dummy_akidx
+
+    def test_to_dict_single_level_index(self):
+        # Create a single-level Arkouda Index
+        ak_idx = ak.Index(ak.arange(3))
+        idx = ArkoudaIndexAccessor.from_ak_legacy(ak_idx)
+
+        # 1) Default behavior: labels=None → key "idx"
+        out_default = idx.ak.to_dict()
+        assert list(out_default.keys()) == ["idx"]
+
+        default_val = out_default["idx"]
+        # ak_Index.to_dict stores the underlying data; this should be an Arkouda array
+        assert isinstance(default_val, ak.pdarray)
+        assert default_val.tolist() == [0, 1, 2]
+
+        # 2) Passing a list of labels → only the first element is used as the key
+        out_list = idx.ak.to_dict(labels=["foo", "bar"])
+        assert list(out_list.keys()) == ["foo"]
+        assert "bar" not in out_list
+
+        list_val = out_list["foo"]
+        assert isinstance(list_val, ak.pdarray)
+        assert list_val.tolist() == [0, 1, 2]
+
+    def test_to_dict_multiindex(self):
+        # Create a real MultiIndex via Arkouda
+        level0 = ak.array([1, 1, 2])
+        level1 = ak.array([10, 20, 30])
+        ak_mi = ak.MultiIndex([level0, level1])
+
+        # Convert to pandas-backed Arkouda Index
+        mi = ArkoudaIndexAccessor.from_ak_legacy(ak_mi)
+
+        labels = ["L0", "L1"]
+        out = mi.ak.to_dict(labels=labels)
+
+        # Underlying MultiIndex.to_dict uses *all* labels when a list is passed
+        assert list(out.keys()) == labels
+
+        # Each entry is an arkouda pdarray corresponding to a level
+        idx0 = out["L0"]
+        idx1 = out["L1"]
+
+        # Type checks: these are Arkouda arrays, not pandas Index objects
+        assert isinstance(idx0, ak.pdarray)
+        assert isinstance(idx1, ak.pdarray)
+
+        # Value checks: they match the original levels
+        assert idx0.tolist() == [1, 1, 2]
+        assert idx1.tolist() == [10, 20, 30]

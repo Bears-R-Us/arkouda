@@ -15,6 +15,7 @@ from arkouda.pandas.extension._series_accessor import (
 )
 from arkouda.pandas.index import MultiIndex
 from arkouda.pandas.series import Series as ak_Series
+from tests.apply_test import supports_apply
 
 
 def _assert_series_equal_values(s: pd.Series, values):
@@ -120,6 +121,26 @@ class TestArkoudaSeriesAccessor:
 
         s_local = s_ak.ak.collect()
         assert not s_local.ak.is_arkouda
+
+    def test_is_arkouda_true_for_to_ak_series_with_default_rangeindex(self):
+        s = pd.Series([1, 2, 3])  # default RangeIndex
+        ak_s = s.ak.to_ak()
+
+        assert isinstance(getattr(ak_s, "array", None), ArkoudaExtensionArray)
+        assert ak_s.ak.is_arkouda is True
+
+    def test_is_arkouda_true_for_to_ak_series_with_nontrivial_index(self):
+        s = pd.Series([10, 20, 30], index=pd.Index([100, 200, 300], name="i"))
+        ak_s = s.ak.to_ak()
+
+        assert ak_s.ak.is_arkouda is True
+
+    def test_is_arkouda_true_for_to_ak_series_with_multiindex(self):
+        mi = pd.MultiIndex.from_product([["a", "b"], [1, 2]], names=["l0", "l1"])
+        s = pd.Series([0, 1, 2, 3], index=mi)
+
+        ak_s = s.ak.to_ak()
+        assert ak_s.ak.is_arkouda is True
 
     def test_to_ak_preserves_index_and_name(self):
         idx = pd.Index([100, 200, 300], name="id")
@@ -399,3 +420,85 @@ class TestArkoudaSeriesAccessorArgsort:
 
         assert perm.ak.is_arkouda
         assert np.array_equal(perm.to_numpy(), np.array([1, 0, 2]))
+
+
+@pytest.mark.requires_chapel_module("ApplyMsg")
+class TestArkoudaSeriesApply:
+    @classmethod
+    def setup_class(cls):
+        if not supports_apply():
+            pytest.skip("apply not supported")
+
+    def test_series_accessor_apply_requires_arkouda_backed(self):
+        s = pd.Series([1, 2, 3], name="x")
+        with pytest.raises(TypeError, match="Series must be Arkouda-backed"):
+            s.ak.apply(lambda x: x + 1)
+
+    def test_series_accessor_apply_callable_preserves_index_and_name(self):
+        idx = pd.Index([10, 20, 30], name="id")
+        s = pd.Series([1, 2, 3], index=idx, name="x").ak.to_ak()
+
+        out = s.ak.apply(lambda v: v + 1)
+
+        # still distributed
+        assert out.ak.is_arkouda
+
+        # preserves metadata
+        assert out.name == "x"
+        assert out.index.equals(s.index)
+        assert out.index.name == "id"
+
+        # correct values (materialize for assertion)
+        expected = pd.Series([2, 3, 4], index=idx, name="x")
+        got = out.ak.collect()
+        assert got.equals(expected)
+
+    def test_series_accessor_apply_callable_dtype_change(self):
+        idx = pd.Index([0, 1, 2], name="i")
+        s = pd.Series([2, 4, 6], index=idx, name="y").ak.to_ak()
+
+        out = s.ak.apply(lambda v: v * 0.5, result_dtype="float64")
+
+        assert out.ak.is_arkouda
+        assert out.name == "y"
+        assert out.index.equals(s.index)
+
+        expected = pd.Series([1.0, 2.0, 3.0], index=idx, name="y")
+        got = out.ak.collect()
+        # use allclose-like semantics for float comparisons
+        assert got.index.equals(expected.index)
+        assert got.name == expected.name
+        assert pytest.approx(got.to_numpy().tolist()) == expected.to_numpy().tolist()
+
+    def test_series_accessor_apply_string_lambda_same_dtype(self):
+        idx = pd.Index([5, 6, 7], name="row")
+        s = pd.Series([1, 2, 3], index=idx, name="z").ak.to_ak()
+
+        out = s.ak.apply("lambda x,: x+2")
+
+        assert out.ak.is_arkouda
+        assert out.name == "z"
+        assert out.index.equals(s.index)
+
+        expected = pd.Series([3, 4, 5], index=idx, name="z")
+        got = out.ak.collect()
+        assert got.equals(expected)
+
+    def test_series_accessor_apply_string_lambda_rejects_result_dtype_change(self):
+        s = pd.Series([1, 2, 3], name="a").ak.to_ak()
+
+        # apply.py enforces: for string funcs, result_dtype must match input dtype
+        with pytest.raises(TypeError, match="result_dtype must match"):
+            _ = s.ak.apply("lambda x,: x+1", result_dtype="float64")
+
+    def test_series_accessor_apply_rejects_strings(self):
+        s = pd.Series(["a", "b", "c"]).ak.to_ak()
+        with pytest.raises(TypeError, match="only supports numeric pdarray"):
+            s.ak.apply(lambda x: x)
+
+    def test_series_accessor_apply_rejects_categorical(self):
+        ak_cat = ak.Categorical(ak.array(["red", "blue", "red"]))
+        s = pd.Series.ak.from_ak_legacy(ak_cat, name="color")
+
+        with pytest.raises(TypeError, match="only supports numeric pdarray"):
+            s.ak.apply(lambda x: x)

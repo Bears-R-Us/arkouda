@@ -594,7 +594,7 @@ class ArkoudaExtensionArray(ExtensionArray):
     @classmethod
     def _from_factorized(cls, values, original):
         # Build EA back from factorized NumPy values
-        return cls._from_numpy(values)
+        return cls._from_sequence(values)
 
     def to_numpy(self, dtype=None, copy=False, na_value=None):
         """
