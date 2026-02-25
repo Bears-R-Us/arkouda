@@ -13,7 +13,6 @@ from pandas import StringDtype as pd_StringDtype
 from pandas.api.extensions import ExtensionArray
 from pandas.core.dtypes.dtypes import ExtensionDtype
 
-from arkouda.numpy.dtypes import bool_
 from arkouda.numpy.pdarrayclass import pdarray
 
 from ._arkouda_array import ArkoudaArray
@@ -335,10 +334,41 @@ class ArkoudaCategorical(ArkoudaExtensionArray, ExtensionArray):
         casted = data.astype(dtype)
         return ArkoudaExtensionArray._from_sequence(casted)
 
-    def isna(self):
-        from arkouda.numpy.pdarraycreation import zeros
+    def isna(self) -> np.ndarray:
+        """
+        # Return a boolean mask indicating missing values.
 
-        return zeros(self._data.size, dtype=bool_)
+        # This implements the pandas ExtensionArray.isna contract and returns a
+        # NumPy ndarray[bool] of the same length as this categorical array.
+
+        # Returns
+        # -------
+        # np.ndarray
+        #     Boolean mask where True indicates a missing value.
+
+        # Raises
+        # ------
+        # TypeError
+        #     If the underlying categorical cannot expose its codes or if missing
+        #     detection is unsupported.
+        #
+        """
+        from arkouda.categorical import Categorical
+
+        data = self._data  # should be an arkouda.Categorical
+
+        if not isinstance(data, Categorical):
+            raise TypeError("ArkoudaCategorical.isna requires an arkouda.Categorical backend")
+
+        # Missing values in ArkoudaCategorical are represented by code == -1
+        try:
+            return (data.codes == -1).to_ndarray()
+        except Exception as e:
+            raise TypeError(f"Unable to determine missing values: {e}") from e
+
+    def isnull(self):
+        """Alias for isna()."""
+        return self.isna()
 
     @property
     def dtype(self):
@@ -533,9 +563,6 @@ class ArkoudaCategorical(ArkoudaExtensionArray, ExtensionArray):
     @classmethod
     def from_codes(cls, *args, **kwargs):
         raise NotImplementedError("from_codes is not yet implemented for ArkoudaCategorical.")
-
-    def isnull(self, *args, **kwargs):
-        self._categorical_not_implemented("isnull")
 
     def memory_usage(self, *args, **kwargs):
         self._categorical_not_implemented("memory_usage")
