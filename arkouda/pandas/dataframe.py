@@ -91,7 +91,7 @@ from arkouda.pandas.row import Row
 
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
-    from arkouda.numpy.pdarraycreation import array, zeros
+    from arkouda.numpy.pdarraycreation import array
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
     from arkouda.pandas.series import Series
@@ -682,6 +682,8 @@ class DiffAggregate:
     values: Series
 
     def __init__(self, gb, series):
+        from arkouda.numpy.pdarraycreation import zeros
+
         self.gb = gb
 
         values = zeros(len(series), "float64")
