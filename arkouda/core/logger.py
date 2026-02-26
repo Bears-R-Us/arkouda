@@ -57,7 +57,6 @@ See Also
 """
 
 import os
-import warnings
 
 from dataclasses import dataclass
 from enum import Enum
@@ -72,7 +71,7 @@ from logging import (
     Logger,
     StreamHandler,
 )
-from typing import Any, Final, List, Optional, Union, cast
+from typing import Final, List, Optional, Union, cast
 
 from typeguard import typechecked
 
@@ -82,8 +81,6 @@ __all__ = [
     "enable_verbose",
     "disable_verbose",
     "write_log",
-    "enableVerbose",
-    "disableVerbose",
 ]
 
 loggers = {}
@@ -221,32 +218,6 @@ class ArkoudaLogger(Logger):
         the individual handlers.
 
         """
-        # --- log_level alias handling ---
-        if "logLevel" in kwargs:
-            if log_level is not _UNSET:
-                raise TypeError("Pass only one of 'logLevel' or 'log_level'")
-            warnings.warn(
-                "'logLevel' is deprecated; use 'log_level' instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            log_level = kwargs.pop("logLevel")
-        elif log_level is _UNSET:
-            log_level = LogLevel.INFO
-
-        # --- log_format alias handling ---
-        if "logFormat" in kwargs:
-            if log_format is not _UNSET:
-                raise TypeError("Pass only one of 'logFormat' or 'log_format'")
-            warnings.warn(
-                "'logFormat' is deprecated; use 'log_format' instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            log_format = kwargs.pop("logFormat")
-        elif log_format is _UNSET:
-            log_format = "[%(name)s] Line %(lineno)d %(levelname)s: %(message)s"
-
         if not isinstance(log_level, LogLevel):
             raise TypeError("log_level must be a LogLevel")
 
@@ -304,66 +275,9 @@ class ArkoudaLogger(Logger):
                 if name == handler.name:
                     handler.setLevel(new_level)
 
-    def changeLogLevel(self, *args: Any, **kwargs: Any) -> None:
-        """
-        Deprecated alias for :meth:`change_log_level`.
-
-        This method exists for backward compatibility only. Use
-        :meth:`change_log_level` instead.
-
-        Parameters
-        ----------
-        *args : tuple
-            Positional arguments forwarded to :meth:`change_log_level`.
-        **kwargs : dict
-            Keyword arguments forwarded to :meth:`change_log_level`.
-
-        Returns
-        -------
-        None
-
-        See Also
-        --------
-        change_log_level : Preferred replacement.
-        """
-        warnings.warn(
-            "changeLogLevel is deprecated; use change_log_level",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.change_log_level(*args, **kwargs)
-
     def enable_verbose(self) -> None:
         """Enable verbose output by setting the log level for all handlers to DEBUG."""
         self.change_log_level(LogLevel.DEBUG)
-
-    def enableVerbose(self):
-        """
-        Deprecated alias for :meth:`enable_verbose`.
-
-        This method exists for backward compatibility only. Use
-        :meth:`enable_verbose` instead.
-
-        Returns
-        -------
-        None
-
-        Warns
-        -----
-        DeprecationWarning
-            Always raised. ``enableVerbose`` is deprecated and will be removed
-            in a future release.
-
-        See Also
-        --------
-        enable_verbose : Preferred replacement.
-        """
-        warnings.warn(
-            "enableVerbose is deprecated; use enable_verbose",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.enable_verbose()
 
     @typechecked
     def disable_verbose(self, log_level: LogLevel | _Unset = _UNSET, **kwargs) -> None:
@@ -384,60 +298,16 @@ class ArkoudaLogger(Logger):
         TypeError
             Raised if log_level is not a LogLevel enum
         """
-        if "logLevel" in kwargs:
-            if not isinstance(log_level, _Unset):
-                raise TypeError("Pass only one of 'logLevel' or 'log_level'")
-            warnings.warn(
-                "'logLevel' is deprecated; use 'log_level' instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            log_level = kwargs.pop("logLevel")
-        elif isinstance(log_level, _Unset):
-            log_level = LogLevel.INFO
-
         if kwargs:
             raise TypeError(f"Unexpected keyword argument(s): {', '.join(kwargs)}")
+
+        if log_level is _UNSET:
+            log_level = LogLevel.INFO
 
         if not isinstance(log_level, LogLevel):
             raise TypeError("log_level must be a LogLevel")
 
         self.change_log_level(log_level)
-
-    def disableVerbose(self, logLevel: LogLevel = LogLevel.INFO):
-        """
-        Deprecated alias for :meth:`disable_verbose`.
-
-        This method exists for backward compatibility only. Use
-        :meth:`disable_verbose` instead.
-
-        Parameters
-        ----------
-        logLevel : LogLevel, default LogLevel.INFO
-            The log level to set for all handlers, disabling verbose
-            (DEBUG-level) output.
-
-        Returns
-        -------
-        None
-
-        Warns
-        -----
-        DeprecationWarning
-            Always raised. ``disableVerbose`` is deprecated and will be removed
-            in a future release.
-
-        See Also
-        --------
-        disable_verbose : Preferred replacement.
-        enable_verbose : Enable verbose (DEBUG-level) output.
-        """
-        warnings.warn(
-            "disableVerbose is deprecated; use disable_verbose",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.disable_verbose(logLevel)
 
     @typechecked
     def get_handler(self, name: str) -> Handler:
@@ -467,47 +337,6 @@ class ArkoudaLogger(Logger):
                 return handler
         raise ValueError(f"The name {name} does not match any handler")
 
-    def getHandler(self, name: str):
-        """
-        Deprecated alias for :meth:`get_handler`.
-
-        This method exists for backward compatibility only. Use
-        :meth:`get_handler` instead.
-
-        Parameters
-        ----------
-        name : str
-            The name of the handler to retrieve.
-
-        Returns
-        -------
-        Handler
-            The handler with the matching ``Handler.name``.
-
-        Raises
-        ------
-        TypeError
-            Raised if ``name`` is not a string.
-        ValueError
-            Raised if no configured handler matches ``name``.
-
-        Warns
-        -----
-        DeprecationWarning
-            Always raised. ``getHandler`` is deprecated and will be removed
-            in a future release.
-
-        See Also
-        --------
-        get_handler : Preferred replacement.
-        """
-        warnings.warn(
-            "getHandler is deprecated; use get_handler",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return self.get_handler(name)
-
 
 @typechecked
 def get_arkouda_logger(
@@ -517,30 +346,6 @@ def get_arkouda_logger(
     log_level: Optional[LogLevel] = None,  # keep as-is (env fallback)
     **kwargs,
 ) -> ArkoudaLogger:
-    if "logFormat" in kwargs:
-        # If caller passed both names, always error (regardless of value)
-        if log_format is not None:
-            raise TypeError("Pass only one of 'logFormat' or 'log_format'")
-        warnings.warn(
-            "'logFormat' is deprecated; use 'log_format' instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        log_format = kwargs.pop("logFormat")
-
-    if "logLevel" in kwargs:
-        if log_level is not None:
-            raise TypeError("Pass only one of 'logLevel' or 'log_level'")
-        warnings.warn(
-            "'logLevel' is deprecated; use 'log_level' instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        log_level = kwargs.pop("logLevel")
-
-    if kwargs:
-        raise TypeError(f"Unexpected keyword argument(s): {', '.join(kwargs)}")
-
     # Resolve defaults BEFORE validation
     if log_format is None:
         log_format = ArkoudaLogger.DEFAULT_LOG_FORMAT
@@ -566,58 +371,6 @@ def get_arkouda_logger(
     )
     loggers[logger.name] = logger
     return logger
-
-
-def getArkoudaLogger(
-    name: str,
-    handlers: Optional[List[Handler]] = None,
-    logFormat: Optional[str] = ArkoudaLogger.DEFAULT_LOG_FORMAT,
-    logLevel: Optional[LogLevel] = None,
-):
-    """
-    Deprecated alias for :func:`get_arkouda_logger`.
-
-    This function exists for backward compatibility only. Use
-    :func:`get_arkouda_logger` instead.
-
-    Parameters
-    ----------
-    name : str
-        The name of the ArkoudaLogger.
-    handlers : list of logging.Handler, optional
-        A list of handlers to attach to the logger.
-    logFormat : str, optional
-        The log message format string.
-    logLevel : LogLevel, optional
-        The logging level to use. If not provided, the value is
-        read from the ``ARKOUDA_LOG_LEVEL`` environment variable.
-
-    Returns
-    -------
-    ArkoudaLogger
-        The configured ArkoudaLogger instance.
-
-    Warns
-    -----
-    DeprecationWarning
-        Always raised. ``getArkoudaLogger`` is deprecated and will be removed
-        in a future release.
-
-    See Also
-    --------
-    get_arkouda_logger : Preferred replacement.
-    """
-    warnings.warn(
-        "getArkoudaLogger is deprecated; use get_arkouda_logger",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return get_arkouda_logger(
-        name=name,
-        handlers=handlers,
-        logFormat=logFormat,
-        logLevel=logLevel,
-    )
 
 
 @typechecked
@@ -653,75 +406,10 @@ def get_arkouda_client_logger(name: str) -> ArkoudaLogger:
     return get_arkouda_logger(name=name, log_format=ArkoudaLogger.CLIENT_LOG_FORMAT)
 
 
-def getArkoudaClientLogger(name: str):
-    """
-    Deprecated alias for :func:`get_arkouda_client_logger`.
-
-    This function exists for backward compatibility only. Use
-    :func:`get_arkouda_client_logger` instead.
-
-    Parameters
-    ----------
-    name : str
-        The name of the ArkoudaLogger.
-
-    Returns
-    -------
-    ArkoudaLogger
-        A logger configured to emit unformatted messages to stdout.
-
-    Warns
-    -----
-    DeprecationWarning
-        Always raised. ``getArkoudaClientLogger`` is deprecated and will be
-        removed in a future release.
-
-    See Also
-    --------
-    get_arkouda_client_logger : Preferred replacement.
-    get_arkouda_logger : Base logger factory.
-    """
-    warnings.warn(
-        "getArkoudaClientLogger is deprecated; use get_arkouda_client_logger",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return get_arkouda_client_logger(name=name)
-
-
 def enable_verbose() -> None:
     """Enable verbose logging (DEBUG log level) for all ArkoudaLoggers."""
     for logger in loggers.values():
         logger.enable_verbose()
-
-
-def enableVerbose():
-    """
-    Deprecated alias for :func:`enable_verbose`.
-
-    This function exists for backward compatibility only. Use
-    :func:`enable_verbose` instead.
-
-    Returns
-    -------
-    None
-
-    Warns
-    -----
-    DeprecationWarning
-        Always raised. ``enableVerbose`` is deprecated and will be removed
-        in a future release.
-
-    See Also
-    --------
-    enable_verbose : Enable verbose (DEBUG-level) logging for all loggers.
-    """
-    warnings.warn(
-        "enableVerbose is deprecated; use enable_verbose",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return enable_verbose()
 
 
 @typechecked
@@ -745,42 +433,6 @@ def disable_verbose(logLevel: LogLevel = LogLevel.INFO) -> None:
     """
     for logger in loggers.values():
         logger.disable_verbose(logLevel)
-
-
-def disableVerbose(logLevel: LogLevel = LogLevel.INFO):
-    """
-    Deprecated alias for :func:`disable_verbose`.
-
-    This function exists for backward compatibility only. Use
-    :func:`disable_verbose` instead.
-
-    Parameters
-    ----------
-    logLevel : LogLevel, default LogLevel.INFO
-        The log level to apply to all ArkoudaLoggers, disabling
-        verbose (DEBUG-level) output.
-
-    Returns
-    -------
-    None
-
-    Warns
-    -----
-    DeprecationWarning
-        Always raised. ``disableVerbose`` is deprecated and will be removed
-        in a future release.
-
-    See Also
-    --------
-    disable_verbose : Disable verbose logging for all loggers.
-    enable_verbose : Enable verbose logging for all loggers.
-    """
-    warnings.warn(
-        "disableVerbose is deprecated; use disable_verbose",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return disable_verbose(logLevel)
 
 
 @typechecked

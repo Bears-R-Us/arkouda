@@ -280,7 +280,7 @@ class Index:
             Printable representation of the Index object.
 
         """
-        return f"Index({repr(self.index)}, dtype='{self.dtype}')"
+        return f"Index({repr(self.values)}, dtype='{self.dtype}')"
 
     def __len__(self):
         """
@@ -292,7 +292,7 @@ class Index:
             Number of elements in the Index.
 
         """
-        return len(self.index)
+        return len(self.values)
 
     def _get_arrays_for_comparison(
         self, other
@@ -429,34 +429,6 @@ class Index:
     def names(self):
         """Return Index or MultiIndex names."""
         return [self.name]
-
-    @property
-    def index(self):
-        """
-        Deprecated alias for `values`.
-
-        This property is maintained for backward compatibility and returns the same
-        array as the `values` attribute. It will be removed in a future release;
-        use `values` directly instead.
-
-        Returns
-        -------
-        arkouda.numpy.pdarray
-            The underlying values of this object (same as `values`).
-
-        Deprecated
-        ----------
-        Use the `values` attribute directly. This alias will be removed in a future release.
-
-        Examples
-        --------
-        >>> import arkouda as ak
-        >>> idx = ak.Index(ak.array([1, 2, 3]))
-        >>> idx.index
-        array([1 2 3])
-
-        """
-        return self.values
 
     @property
     def shape(self):
@@ -1054,7 +1026,7 @@ class Index:
             label = "idx"
         elif isinstance(label, list):
             label = label[0]
-        data[label] = self.index
+        data[label] = self.values
         return data
 
     def _check_types(self, other):

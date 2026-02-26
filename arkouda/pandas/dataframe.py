@@ -955,7 +955,7 @@ class DataFrame(UserDict):
         if key not in self.columns.values:
             raise AttributeError(f"Attribute {key} not found")
         # Should this be cached?
-        return Series(data=self[key], index=self.index.index)
+        return Series(data=self[key], index=self.index.values)
 
     def __dir__(self):
         """
@@ -1027,7 +1027,7 @@ class DataFrame(UserDict):
             for k in self._columns:
                 result[k] = UserDict.__getitem__(self, k)[key]
             # To stay consistent with numpy, provide the old index values
-            return DataFrame(initialdata=result, index=self.index.index[key])
+            return DataFrame(initialdata=result, index=self.index.values[key])
 
         # Select rows or columns using a list
         if isinstance(key, (list, tuple)):
@@ -1069,7 +1069,7 @@ class DataFrame(UserDict):
             s = key
             for k in self._columns:
                 rtn_data[k] = UserDict.__getitem__(self, k)[s]
-            return DataFrame(initialdata=rtn_data, index=self.index.index[arange(self._nrows)[s]])
+            return DataFrame(initialdata=rtn_data, index=self.index.values[arange(self._nrows)[s]])
         else:
             raise IndexError("Invalid selector: unknown error.")
 
@@ -1211,7 +1211,7 @@ class DataFrame(UserDict):
                 newdf[col] = self[col].categories[self[col].codes[idx]]
             else:
                 newdf[col] = self[col][idx]
-        newdf._set_index(self.index.index[idx])
+        newdf._set_index(self.index.values[idx])
         return newdf.to_pandas(retain_index=True)
 
     def _get_head_tail_server(self):
@@ -1306,7 +1306,7 @@ class DataFrame(UserDict):
                 df_dict[msg[1]] = create_pdarray(msg[2])
 
         new_df = DataFrame(df_dict)
-        new_df._set_index(self.index.index[idx])
+        new_df._set_index(self.index.values[idx])
         return new_df.to_pandas(retain_index=True)[self._columns]
 
     def transfer(self, hostname, port):
@@ -1473,10 +1473,10 @@ class DataFrame(UserDict):
         for k in keys:
             if not isinstance(k, int):
                 raise TypeError("Index keys must be integers.")
-            idx_list.append(self.index.index[(last_idx + 1) : k])
+            idx_list.append(self.index.values[(last_idx + 1) : k])
             last_idx = k
 
-        idx_list.append(self.index.index[(last_idx + 1) :])
+        idx_list.append(self.index.values[(last_idx + 1) :])
 
         idx_to_keep = concatenate(idx_list)
         for key in self.keys():
@@ -3678,7 +3678,7 @@ class DataFrame(UserDict):
                 res[key] = val[:]
 
             # if this is not a slice, renaming indexes with update both
-            res._set_index(Index(self.index.index[:]))
+            res._set_index(Index(self.index.values[:]))
 
             return res
         else:
@@ -3843,7 +3843,7 @@ class DataFrame(UserDict):
             # create the dataframe with all false
             df_def = {col: zeros(self._nrows, dtype=akbool) for col in self.columns.values}
             # identify the indexes in both
-            rows_self, rows_val = intersect(self.index.index, values.index.index, unique=True)
+            rows_self, rows_val = intersect(self.index.values, values.index.values, unique=True)
 
             # used to sort the rows with only the indexes in both
             sort_self = self.index[rows_self].argsort()
