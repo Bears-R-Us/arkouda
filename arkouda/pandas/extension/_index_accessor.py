@@ -61,10 +61,10 @@ import pandas as pd
 
 from pandas.api.extensions import register_index_accessor
 
-from arkouda.index import Index as ak_Index
-from arkouda.index import MultiIndex as ak_MultiIndex
 from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.pandas.extension import ArkoudaExtensionArray
+from arkouda.pandas.index import Index as ak_Index
+from arkouda.pandas.index import MultiIndex as ak_MultiIndex
 
 
 # ---------------------------------------------------------------------------
@@ -76,8 +76,8 @@ def _pandas_index_to_ak(index: Union[pd.Index, pd.MultiIndex]) -> Union[ak_Index
     """
     Convert a pandas Index or MultiIndex into a legacy Arkouda Index/MultiIndex.
 
-    This mirrors the behavior of :class:`arkouda.index.Index` and
-    :class:`arkouda.index.MultiIndex` constructors, which already know how to
+    This mirrors the behavior of :class:`arkouda.pandas.index.Index` and
+    :class:`arkouda.pandas.index.MultiIndex` constructors, which already know how to
     consume pandas Index / MultiIndex, including categorical levels.
 
     Parameters
@@ -576,8 +576,8 @@ class ArkoudaIndexAccessor:
         Perform a server-side lookup on the underlying Arkouda index.
 
         This is a thin convenience wrapper around the legacy
-        :meth:`arkouda.index.Index.lookup` /
-        :meth:`arkouda.index.MultiIndex.lookup` methods. It converts the
+        :meth:`arkouda.pandas.index.Index.lookup` /
+        :meth:`arkouda.pandas.index.MultiIndex.lookup` methods. It converts the
         pandas index to a legacy Arkouda index, performs the lookup on the
         server, and returns the resulting boolean mask.
 

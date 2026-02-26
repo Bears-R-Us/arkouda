@@ -47,7 +47,7 @@ Save the figure to disk:
 See Also
 --------
 - matplotlib.pyplot
-- arkouda.DataFrame
+- arkouda.pandas.DataFrame
 - arkouda.histogram
 
 """
@@ -66,15 +66,14 @@ from numpy.typing import NDArray
 
 import arkouda as ak
 
-from arkouda.categorical import Categorical
-from arkouda.dataframe import DataFrame
-from arkouda.groupbyclass import GroupBy
 from arkouda.numpy import histogram, isnan
-from arkouda.numpy.pdarrayclass import skew
+from arkouda.numpy.pdarrayclass import pdarray, skew
 from arkouda.numpy.pdarraycreation import arange
 from arkouda.numpy.strings import Strings
 from arkouda.numpy.timeclass import Datetime, Timedelta, date_range, timedelta_range
-from arkouda.pdarrayclass import pdarray
+from arkouda.pandas.categorical import Categorical
+from arkouda.pandas.dataframe import DataFrame
+from arkouda.pandas.groupbyclass import GroupBy
 
 
 __all__ = [

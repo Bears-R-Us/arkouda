@@ -33,9 +33,9 @@ Notes
 See Also
 --------
 - arkouda.join
-- arkouda.groupbyclass
+- arkouda.pandas.groupbyclass
 - arkouda.pandas.merge
-- arkouda.categorical.Categorical
+- arkouda.pandas.categorical.Categorical
 
 """
 
@@ -44,8 +44,8 @@ import re
 
 from typing import cast
 
+from arkouda.core.infoclass import list_symbol_table
 from arkouda.core.logger import get_arkouda_logger
-from arkouda.infoclass import list_symbol_table
 from arkouda.numpy.dtypes import str_scalars
 from arkouda.numpy.pdarrayclass import create_pdarray, pdarray
 from arkouda.pandas.match import Match, MatchType

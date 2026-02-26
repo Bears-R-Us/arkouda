@@ -307,7 +307,7 @@ If you find yourself in one of the situations demonstrated above, please contact
 Arkouda and `Pandas` support `DataFrame` objects. Throughout this section, you will notice that there are some key differences. Arkouda DataFrame support is fairly new and is continually being updated. The most common way to construct a `DataFrame` in both packages is by using a dictionary. However, other methods exist. Links to the documentation are below if you would like to review alternative methods. For the purposes of this document, we will be using Python Dictionaries.
 
 - [Pandas DataFrame Documentation](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html)
-- [Arkouda DataFrame Documentation](https://bears-r-us.github.io/arkouda/usage/dataframe.html?highlight=dataframe#arkouda.DataFrame)
+- [Arkouda DataFrame Documentation](https://bears-r-us.github.io/arkouda/usage/dataframe.html?highlight=dataframe#arkouda.pandas.DataFrame)
 
 <a id="df_pd_create"></a>
 ### Creating Pandas DataFrame

@@ -23,8 +23,8 @@ from typeguard import typechecked
 
 import arkouda.numpy.dtypes
 
+from arkouda.core.infoclass import information, list_symbol_table
 from arkouda.core.logger import ArkoudaLogger, get_arkouda_logger
-from arkouda.infoclass import information, list_symbol_table
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
     bool_scalars,
@@ -432,7 +432,7 @@ class Strings:
         Strings
             A deep copy of the Strings.
         """
-        from arkouda.pdarraycreation import array
+        from arkouda.numpy.pdarraycreation import array
 
         ret = array(self, copy=True)
         if isinstance(ret, Strings):

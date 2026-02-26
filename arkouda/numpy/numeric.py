@@ -25,7 +25,6 @@ import numpy as np
 
 from typeguard import typechecked
 
-from arkouda.groupbyclass import GroupBy, groupable
 from arkouda.numpy.dtypes import (
     ARKOUDA_SUPPORTED_INTS,
     _datatype_check,
@@ -59,6 +58,7 @@ from arkouda.numpy.pdarrayclass import any as ak_any
 from arkouda.numpy.pdarraycreation import array, linspace
 from arkouda.numpy.sorting import sort
 from arkouda.numpy.strings import Strings
+from arkouda.pandas.groupbyclass import GroupBy, groupable
 
 from ._typing import ArkoudaNumericTypes, BuiltinNumericTypes, NumericDTypeTypes, StringDTypeTypes
 

@@ -933,11 +933,11 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
             If the underlying data buffer does not support missing-value
             detection or cannot produce a boolean mask.
         """
-        from arkouda.categorical import Categorical
         from arkouda.numpy import isnan
         from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import full
         from arkouda.numpy.segarray import SegArray
+        from arkouda.pandas.categorical import Categorical
 
         data = self._data
 

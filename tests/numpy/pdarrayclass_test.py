@@ -6,7 +6,7 @@ import pytest
 import arkouda as ak
 
 from arkouda.core.client import get_array_ranks, get_max_array_rank
-from arkouda.dtypes import bigint, uint8
+from arkouda.numpy.dtypes import bigint, uint8
 from arkouda.testing import assert_almost_equivalent as ak_assert_almost_equivalent
 from arkouda.testing import assert_arkouda_array_equivalent, assert_equivalent
 from arkouda.testing import assert_equal as ak_assert_equal
@@ -602,7 +602,7 @@ class TestPdarrayClass:
         assert isinstance(result, ak.pdarray)
 
     def test_argsort_algorithm_enum(self):
-        from arkouda.sorting import SortingAlgorithm
+        from arkouda.numpy.sorting import SortingAlgorithm
 
         a = ak.array([4, 1, 3])
         result = a.argsort(algorithm=SortingAlgorithm.RadixSortLSD)

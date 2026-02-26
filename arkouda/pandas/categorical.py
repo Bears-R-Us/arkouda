@@ -25,7 +25,7 @@ Features
 Typical Use
 -----------
 >>> import arkouda as ak
->>> from arkouda.categorical import Categorical
+>>> from arkouda.pandas.categorical import Categorical
 >>> strings = ak.array(["apple", "banana", "apple", "banana", "pear"])
 >>> cat = Categorical(strings)
 >>> cat.codes
@@ -40,7 +40,7 @@ Notes
 See Also
 --------
 - arkouda.Strings
-- arkouda.groupbyclass.GroupBy
+- arkouda.pandas.groupbyclass.GroupBy
 - pandas.Categorical
 
 """
@@ -72,8 +72,8 @@ from pandas import Categorical as pd_Categorical
 from pandas import Index as pd_Index
 from typeguard import typechecked
 
+from arkouda.core.infoclass import information
 from arkouda.core.logger import get_arkouda_logger
-from arkouda.infoclass import information
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import bool_scalars, int_scalars, resolve_scalar_dtype, str_, str_scalars
 from arkouda.numpy.dtypes import dtype as akdtype

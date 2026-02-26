@@ -31,7 +31,7 @@ groupable : type alias
 Examples
 --------
 >>> import arkouda as ak
->>> from arkouda.groupbyclass import GroupBy
+>>> from arkouda.pandas.groupbyclass import GroupBy
 
 >>> keys = ak.array([0, 1, 0, 1, 0])
 >>> values = ak.array([10, 20, 30, 40, 50])
@@ -1496,7 +1496,7 @@ class GroupBy:
         # Count number of values per key
         keyorder, nuniq = g2.size()
 
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         if not isinstance(keyorder, (pdarray, Strings, Categorical)):
             raise TypeError(

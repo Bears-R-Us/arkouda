@@ -5,16 +5,16 @@ import pytest
 import arkouda as ak
 
 from arkouda import Series
-from arkouda.accessor import (
+from arkouda.numpy.pdarraycreation import array
+from arkouda.numpy.timeclass import Datetime
+from arkouda.pandas.accessor import (
     CachedAccessor,
     DatetimeAccessor,
     StringAccessor,
     date_operators,
     string_operators,
 )
-from arkouda.categorical import Categorical
-from arkouda.numpy.pdarraycreation import array
-from arkouda.numpy.timeclass import Datetime
+from arkouda.pandas.categorical import Categorical
 from arkouda.testing import assert_arkouda_pdarray_equal
 
 

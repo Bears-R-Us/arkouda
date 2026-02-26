@@ -8,6 +8,7 @@ from numpy.testing import assert_equal as np_assert_equal
 
 import arkouda as ak
 
+from arkouda.numpy.pdarrayclass import pdarray
 from arkouda.numpy.strings import Strings
 from arkouda.pandas.categorical import Categorical
 from arkouda.pandas.extension import (
@@ -16,7 +17,6 @@ from arkouda.pandas.extension import (
     ArkoudaExtensionArray,
     ArkoudaStringArray,
 )
-from arkouda.pdarrayclass import pdarray
 from arkouda.testing import assert_arkouda_array_equal, assert_equal
 
 
