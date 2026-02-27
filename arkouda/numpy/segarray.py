@@ -153,7 +153,7 @@ class SegArray:
 
     @property
     def non_empty(self):
-        from arkouda.infoclass import list_symbol_table
+        from arkouda.core.infoclass import list_symbol_table
 
         if self._non_empty.name not in list_symbol_table():
             self._non_empty = self.lengths > 0

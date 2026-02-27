@@ -5,14 +5,14 @@ import pytest
 import arkouda as ak
 import arkouda.pandas.extension._index_accessor as idx_mod
 
-from arkouda.index import Index as ak_Index
-from arkouda.index import MultiIndex as ak_MultiIndex
 from arkouda.pandas.extension import ArkoudaExtensionArray
 from arkouda.pandas.extension._index_accessor import (
     ArkoudaIndexAccessor,
     _ak_index_to_pandas_no_copy,
     _pandas_index_to_ak,
 )
+from arkouda.pandas.index import Index as ak_Index
+from arkouda.pandas.index import MultiIndex as ak_MultiIndex
 
 
 def _assert_index_equal_values(p_idx: pd.Index, values):

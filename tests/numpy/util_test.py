@@ -4,9 +4,8 @@ import pytest
 import arkouda as ak
 
 from arkouda.numpy import util
-from arkouda.numpy.util import may_share_memory, shares_memory
+from arkouda.numpy.util import is_float, is_int, is_numeric, map, may_share_memory, shares_memory
 from arkouda.testing import assert_arkouda_array_equivalent
-from arkouda.util import is_float, is_int, is_numeric, map
 
 
 class TestUtil:
@@ -262,7 +261,7 @@ def test_categorical_components_share_with_self():
 def test_segarray_components_and_aliasing():
     segs = ak.array([0, 2, 5])
     vals = ak.array([10, 11, 20, 21, 22])
-    from arkouda.segarray import SegArray
+    from arkouda.numpy.segarray import SegArray
 
     sa = SegArray(segs, vals)
     # SegArray reports sharing with its own components

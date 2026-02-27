@@ -14,22 +14,22 @@ from typeguard import typechecked
 
 import arkouda.pandas.dataframe
 
-from arkouda.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.numpy.dtypes import bool_scalars, dtype, float64, int64
 from arkouda.numpy.pdarrayclass import RegistrationError, any, argmaxk, create_pdarray, pdarray
 from arkouda.numpy.pdarraysetops import argsort, concatenate, in1d, indexof1d
 from arkouda.numpy.util import get_callback, is_float
+from arkouda.pandas.accessor import CachedAccessor, DatetimeAccessor, StringAccessor
 from arkouda.pandas.groupbyclass import GroupBy, groupable, groupable_element_type
 from arkouda.pandas.index import Index, MultiIndex
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
     from arkouda.numpy import cast as akcast
     from arkouda.numpy.alignment import lookup
     from arkouda.numpy.pdarraycreation import arange, zeros
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
+    from arkouda.pandas.categorical import Categorical
 else:
     Categorical = TypeVar("Categorical")
     SegArray = TypeVar("SegArray")
@@ -513,7 +513,7 @@ class Series:
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda.series import Series
+        >>> from arkouda.pandas.series import Series
         >>> s = ak.Series(ak.arange(3))
         >>> s.memory_usage()
         48
@@ -1457,9 +1457,9 @@ class Series:
 
         """
         from arkouda import Series
-        from arkouda.categorical import Categorical
         from arkouda.numpy.strings import Strings
         from arkouda.numpy.util import map
+        from arkouda.pandas.categorical import Categorical
 
         if not isinstance(self.values, (pdarray, Strings, Categorical)):
             raise TypeError("Series values must be of type pdarray, Categorical, or Strings to use map")

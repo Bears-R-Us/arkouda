@@ -73,7 +73,6 @@ from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector, Fields, IPv4
 from arkouda.core.client import maxTransferBytes
-from arkouda.index import Index, MultiIndex
 from arkouda.numpy.dtypes import _is_dtype_in_union, bigint, numeric_scalars
 from arkouda.numpy.dtypes import bool_ as akbool
 from arkouda.numpy.dtypes import float64 as akfloat64
@@ -85,15 +84,16 @@ from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.sorting import sort as aksort
 from arkouda.numpy.timeclass import Datetime, Timedelta
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
+from arkouda.pandas.index import Index, MultiIndex
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
     from arkouda.numpy.pdarraycreation import array
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
+    from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.series import Series
 else:
     Categorical = TypeVar("Categorical")
@@ -1753,7 +1753,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.index.Index
+        arkouda.pandas.index.Index
             The values of the index are the column names of the dataframe.
 
         Examples
@@ -1783,7 +1783,7 @@ class DataFrame(UserDict):
 
         Returns
         -------
-        arkouda.index.Index or arkouda.index.MultiIndex
+        arkouda.pandas.index.Index or arkouda.pandas.index.MultiIndex
             The index of the dataframe.
 
         Examples
@@ -2464,7 +2464,7 @@ class DataFrame(UserDict):
         See Also
         --------
         DataFrame.groupby
-        arkouda.groupbyclass.GroupBy
+        arkouda.pandas.groupbyclass.GroupBy
 
         Examples
         --------
@@ -2483,7 +2483,7 @@ class DataFrame(UserDict):
         Low-level GroupBy object:
 
         >>> df._build_groupby("col1")  # doctest: +SKIP
-        <arkouda.groupbyclass.GroupBy object at ...>
+        <arkouda.pandas.groupbyclass.GroupBy object at ...>
         >>> df._build_groupby("col1").size()
         (array([1.00000000000000000 2.00000000000000000]), array([2 1]))
 
@@ -2542,8 +2542,8 @@ class DataFrame(UserDict):
         See Also
         --------
         arkouda.numpy.pdarrayclass.nbytes
-        arkouda.index.Index.memory_usage
-        arkouda.index.MultiIndex.memory_usage
+        arkouda.pandas.index.Index.memory_usage
+        arkouda.pandas.index.MultiIndex.memory_usage
         arkouda.pandas.series.Series.memory_usage
 
         Examples
@@ -3727,7 +3727,7 @@ class DataFrame(UserDict):
         3   NaN     7 (4 rows x 2 columns)
 
         >>> df.groupby("col1") # doctest: +SKIP
-        <arkouda.groupbyclass.GroupBy object at 0x795584773f00>
+        <arkouda.pandas.groupbyclass.GroupBy object at 0x795584773f00>
         >>> df.groupby("col1").size()
         col1
         1.0    2
@@ -5149,7 +5149,7 @@ def invert_permutation(perm):
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.index import Index
+    >>> from arkouda.pandas.index import Index
     >>> i = Index(ak.array([1,2,0,5,4]))
     >>> perm = i.argsort()
     >>> print(perm)

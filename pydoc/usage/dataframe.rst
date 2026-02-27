@@ -4,7 +4,7 @@ DataFrames in Arkouda
 
 Like Pandas, Arkouda supports ``DataFrames``. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on ``arkouda.pdarrays``.
 
-.. autoclass:: arkouda.DataFrame
+.. autoclass:: arkouda.pandas.DataFrame
 
 Data Types
 ==========
@@ -28,7 +28,7 @@ Iteration
 
 Iterating directly over a ``DataFrame`` with ``for x in df`` is not recommended. Doing so is discouraged because it requires transferring all array data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_pandas`` function to return the ``DataFrame`` as a ``pandas.DataFrame``. This transfer will raise an error if it exceeds the byte limit defined in ``ak.client.maxTransferBytes``.
 
-.. autofunction:: arkouda.DataFrame.to_pandas
+.. autofunction:: arkouda.pandas.DataFrame.to_pandas
 
 Features
 ==========
@@ -36,41 +36,41 @@ Features
 
 Drop
 ---------
-.. autofunction:: arkouda.DataFrame.drop
+.. autofunction:: arkouda.pandas.DataFrame.drop
 
 GroupBy
 ----------
-.. autofunction:: arkouda.DataFrame.groupby
+.. autofunction:: arkouda.pandas.DataFrame.groupby
 
 Copy
 ----------
-.. autofunction:: arkouda.DataFrame.copy
+.. autofunction:: arkouda.pandas.DataFrame.copy
 
 Filter
 ----------
-.. autofunction:: arkouda.DataFrame.filter_by_ranges
+.. autofunction:: arkouda.pandas.DataFrame.filter_by_ranges
 
 Permutations
 -------------
-.. autofunction:: arkouda.DataFrame.apply_permutation
+.. autofunction:: arkouda.pandas.DataFrame.apply_permutation
 
 Sorting
 ----------
-.. autofunction:: arkouda.DataFrame.argsort
+.. autofunction:: arkouda.pandas.DataFrame.argsort
 
-.. autofunction:: arkouda.DataFrame.coargsort
+.. autofunction:: arkouda.pandas.DataFrame.coargsort
 
-.. autofunction:: arkouda.DataFrame.sort_values
+.. autofunction:: arkouda.pandas.DataFrame.sort_values
 
 Tail/Head of Data
 ------------------
-.. autofunction:: arkouda.DataFrame.tail
+.. autofunction:: arkouda.pandas.DataFrame.tail
 
-.. autofunction:: arkouda.DataFrame.head
+.. autofunction:: arkouda.pandas.DataFrame.head
 
 Rename Columns
 ---------------
-.. autofunction:: arkouda.DataFrame.rename
+.. autofunction:: arkouda.pandas.DataFrame.rename
 
 Append
 ----------
@@ -78,12 +78,12 @@ Append
 
 Concatenate
 ------------
-.. autofunction:: arkouda.DataFrame.concat
+.. autofunction:: arkouda.pandas.DataFrame.concat
 
 Reset Indexes
 --------------
-.. autofunction:: arkouda.DataFrame.reset_index
+.. autofunction:: arkouda.pandas.DataFrame.reset_index
 
 Deduplication
 --------------
-.. autofunction:: arkouda.DataFrame.drop_duplicates
+.. autofunction:: arkouda.pandas.DataFrame.drop_duplicates

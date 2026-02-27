@@ -415,10 +415,10 @@ from arkouda.pandas import (
 )
 
 from arkouda.client_dtypes import BitVector, bit_vectorizer, BitVectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
-from arkouda.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, broadcast, groupable, unique
-from arkouda.categorical import Categorical
+from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, broadcast, groupable, unique
+from arkouda.pandas.categorical import Categorical
 
-from arkouda.dataframe import (
+from arkouda.pandas.dataframe import (
     DataFrame,
     DataFrameGroupBy,
     DiffAggregate,
@@ -427,7 +427,7 @@ from arkouda.dataframe import (
     invert_permutation,
     merge,
 )
-from arkouda.index import Index, MultiIndex
+from arkouda.pandas.index import Index, MultiIndex
 from arkouda.numpy.alignment import (
     NonUniqueError,
     align,
@@ -451,7 +451,7 @@ from arkouda.pandas.accessor import (
     date_operators,
     string_operators,
 )
-from arkouda.io import (
+from arkouda.pandas.io import (
     export,
     get_columns,
     get_datasets,

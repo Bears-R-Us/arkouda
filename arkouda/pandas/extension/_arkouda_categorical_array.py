@@ -22,7 +22,7 @@ from ._dtypes import ArkoudaCategoricalDtype
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
+    from arkouda.pandas.categorical import Categorical
 else:
     Categorical = TypeVar("Categorical")
 
@@ -353,7 +353,7 @@ class ArkoudaCategorical(ArkoudaExtensionArray, ExtensionArray):
         #     detection is unsupported.
         #
         """
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         data = self._data  # should be an arkouda.Categorical
 

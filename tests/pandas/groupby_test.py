@@ -14,7 +14,7 @@ from arkouda.testing import assert_equal
 
 #  block of variables and functions used in test_unique
 
-UNIQUE_TYPES = [ak.categorical, ak.int64, ak.float64, ak.str_]
+UNIQUE_TYPES = [ak.Categorical, ak.int64, ak.float64, ak.str_]
 VOWELS_AND_SUCH = ["a", "e", "i", "o", "u", "AB", 47, 2, 3.14159]
 PICKS = np.array([f"base {i}" for i in range(10)])
 
@@ -408,7 +408,7 @@ class TestGroupBy:
         a = ak.arange(3, dtype=ak.bigint)
         a += 2**200
         segs = ak.array([0, 2, 5])
-        bi_broad = ak.groupbyclass.broadcast(segs, a, 8)
+        bi_broad = ak.pandas.groupbyclass.broadcast(segs, a, 8)
         indices = ak.broadcast(segs, ak.arange(3), 8)
         assert bi_broad.tolist() == a[indices].tolist()
         assert bi_broad.max_bits == a.max_bits
@@ -851,7 +851,7 @@ class TestGroupBy:
             ak.str_: np.random.choice(VOWELS_AND_SUCH, prob_size),
             ak.int64: np.random.randint(0, prob_size // 3, prob_size),
             ak.float64: np.random.uniform(0, prob_size // 3, prob_size),
-            ak.categorical: np.random.choice(PICKS, prob_size),
+            ak.Categorical: np.random.choice(PICKS, prob_size),
         }
         nda = arrays[data_type]
         np_unique = np.unique(nda)  # get unique keys from np for comparison

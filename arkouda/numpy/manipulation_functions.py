@@ -183,9 +183,9 @@ def repeat(
     array([array([1 2]) array([3 4]) array([3 4])])
     """
     from arkouda.core.client import generic_msg
+    from arkouda.numpy.pdarrayclass import any as akany
     from arkouda.numpy.pdarraycreation import array as ak_array
     from arkouda.numpy.util import _integer_axis_validation
-    from arkouda.pdarrayclass import any as akany
 
     if isinstance(repeats, int):
         ak_repeats = ak_array([repeats], int)

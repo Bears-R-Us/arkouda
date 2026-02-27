@@ -79,6 +79,6 @@ Due to differences in execution of the CSV format, generic load/read functionali
 ### DataFrame
 
 ```{eval-rst}  
-- :py:meth:`arkouda.DataFrame.to_csv`
+- :py:meth:`arkouda.pandas.DataFrame.to_csv`
 - :py:meth:`arkodua.DataFrame.read_csv`
 ```

@@ -32,7 +32,7 @@ Notes
 
 Examples
 --------
->>> from arkouda.io_util import delete_directory, get_directory, write_line_to_file
+>>> from arkouda.pandas.io_util import delete_directory, get_directory, write_line_to_file
 >>> path = get_directory("tmp/output")
 >>> write_line_to_file(path / "log.txt", "Computation completed")
 >>> delete_directory(path)

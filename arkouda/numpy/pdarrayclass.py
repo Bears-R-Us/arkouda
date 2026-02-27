@@ -12,8 +12,8 @@ import numpy as np
 
 from typeguard import typechecked
 
+from arkouda.core.infoclass import information, pretty_print_information
 from arkouda.core.logger import get_arkouda_logger
-from arkouda.infoclass import information, pretty_print_information
 from arkouda.numpy import err as akerr
 from arkouda.numpy.dtypes import (
     NUMBER_FORMAT_STRINGS,
@@ -567,7 +567,7 @@ class pdarray:
         The size in bytes of each element
     """
 
-    from arkouda.dtypes import DType
+    from arkouda.numpy.dtypes import DType
 
     name: str
     dtype: np.dtype
@@ -769,7 +769,7 @@ class pdarray:
         pdarray
             A deep copy of the pdarray.
         """
-        from arkouda.pdarraycreation import array
+        from arkouda.numpy.pdarraycreation import array
 
         ret = array(self, copy=True)
         if isinstance(ret, pdarray):
@@ -4548,7 +4548,7 @@ def divmod(
     """
     from arkouda.numpy import cast as akcast
     from arkouda.numpy import where as akwhere
-    from arkouda.pdarraycreation import full
+    from arkouda.numpy.pdarraycreation import full
 
     if not isinstance(x, pdarray) and not isinstance(y, pdarray):
         raise TypeError("At least one entry must be a pdarray.")
@@ -4924,7 +4924,7 @@ def clz(pda: pdarray) -> pdarray:
         if pda.max_bits == -1:
             raise ValueError("max_bits must be set to count leading zeros")
         from arkouda.numpy import where
-        from arkouda.pdarraycreation import zeros
+        from arkouda.numpy.pdarraycreation import zeros
 
         uint_arrs = pda.bigint_to_uint_arrays()
 
@@ -5010,7 +5010,7 @@ def ctz(pda: pdarray) -> pdarray:
         # which is only relevant when ctz(0) which is defined to be 0
 
         from arkouda.numpy import where
-        from arkouda.pdarraycreation import zeros
+        from arkouda.numpy.pdarraycreation import zeros
 
         # reverse the list, so we visit low bits first
 

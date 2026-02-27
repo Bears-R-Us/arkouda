@@ -1655,8 +1655,8 @@ def linspace(
         array([2.00000000000000000 3.00000000000000000])])
     """
     from arkouda import newaxis
-    from arkouda.numeric import transpose
     from arkouda.numpy.manipulation_functions import tile
+    from arkouda.numpy.numeric import transpose
     from arkouda.numpy.pdarrayclass import pdarray
     from arkouda.numpy.util import (
         _integer_axis_validation,

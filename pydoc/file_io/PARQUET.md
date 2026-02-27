@@ -56,9 +56,9 @@ Data can also be saved using no compression. Arkouda now supports writting Parqu
 ### DataFrame
 
 ```{eval-rst}  
-- :py:meth:`arkouda.DataFrame.to_parquet`
-- :py:meth:`arkouda.DataFrame.save`
-- :py:meth:`arkouda.DataFrame.load`
+- :py:meth:`arkouda.pandas.DataFrame.to_parquet`
+- :py:meth:`arkouda.pandas.DataFrame.save`
+- :py:meth:`arkouda.pandas.DataFrame.load`
 ```
 
 ### Strings

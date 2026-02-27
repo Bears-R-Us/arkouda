@@ -434,7 +434,7 @@ class ArkoudaDataFrameAccessor:
 
     def to_ak_legacy(self) -> ak_DataFrame:
         """
-        Convert this pandas DataFrame into the legacy :class:`arkouda.DataFrame`.
+        Convert this pandas DataFrame into the legacy :class:`arkouda.pandas.DataFrame`.
 
         This method performs a *materializing* conversion of a pandas DataFrame
         into the legacy Arkouda DataFrame structure. Every column is converted

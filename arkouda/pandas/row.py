@@ -27,7 +27,7 @@ class Row(UserDict):
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.row import Row
+    >>> from arkouda.pandas.row import Row
     >>> df = ak.DataFrame({'x': ak.array([10, 20]), 'y': ak.array(['a', 'b'])})
 
     Suppose df[0] returns {'x': 10, 'y': 'a'}
@@ -52,7 +52,7 @@ class Row(UserDict):
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda.row import Row
+        >>> from arkouda.pandas.row import Row
         >>> row = Row({'a': 1, 'b': 'foo'})
         >>> print(str(row))
         keys    values
@@ -87,7 +87,7 @@ class Row(UserDict):
         Examples
         --------
         >>> import arkouda as ak
-        >>> from arkouda.row import Row
+        >>> from arkouda.pandas.row import Row
         >>> row = Row({'a': 1, 'b': 'foo'})
         >>> html = row._repr_html_()
         >>> print(html.startswith('<table'))

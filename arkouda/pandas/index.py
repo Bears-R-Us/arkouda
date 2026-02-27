@@ -36,7 +36,7 @@ Notes
 Examples
 --------
 >>> import arkouda as ak
->>> from arkouda.index import Index, MultiIndex
+>>> from arkouda.pandas.index import Index, MultiIndex
 
 >>> idx = Index([10, 20, 30], name="id")
 >>> idx
@@ -51,7 +51,7 @@ Index(array(['a', 'b']), dtype='<U0')
 See Also
 --------
 - arkouda.pandas.series.Series
-- arkouda.categorical.Categorical
+- arkouda.pandas.categorical.Categorical
 
 """
 
@@ -753,7 +753,7 @@ class Index:
         See Also
         --------
         arkouda.numpy.pdarrayclass.nbytes
-        arkouda.index.MultiIndex.memory_usage
+        arkouda.pandas.index.MultiIndex.memory_usage
         arkouda.pandas.series.Series.memory_usage
         arkouda.pandas.dataframe.DataFrame.memory_usage
 
@@ -1200,7 +1200,7 @@ class Index:
 
         Returns
         -------
-        arkouda.index.Index
+        arkouda.pandas.index.Index
             A new index with the values transformed by the mapping correspondence.
 
         Raises
@@ -1616,7 +1616,7 @@ class MultiIndex(Index):
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.index import MultiIndex
+    >>> from arkouda.pandas.index import MultiIndex
     >>> a = ak.array([1, 2, 3])
     >>> b = ak.array(['a', 'b', 'c'])
     >>> mi = MultiIndex([a, b])
@@ -1901,7 +1901,7 @@ class MultiIndex(Index):
         See Also
         --------
         arkouda.numpy.pdarrayclass.nbytes
-        arkouda.index.Index.memory_usage
+        arkouda.pandas.index.Index.memory_usage
         arkouda.pandas.series.Series.memory_usage
         arkouda.pandas.dataframe.DataFrame.memory_usage
 
@@ -1909,7 +1909,7 @@ class MultiIndex(Index):
         --------
         >>> import arkouda as ak
 
-        >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
+        >>> m = ak.pandas.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
         >>> m.memory_usage()
         48
 

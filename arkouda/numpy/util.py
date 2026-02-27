@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, List, Literal, Sequence, Tuple, TypeVar, Union
 from typeguard import typechecked
 
 from arkouda.client_dtypes import BitVector, IPv4, bit_vectorizer
-from arkouda.infoclass import list_registry
+from arkouda.core.infoclass import list_registry
 from arkouda.numpy.dtypes import (
     _is_dtype_in_union,
     dtype,
@@ -58,11 +58,11 @@ __all__ = [
 
 
 if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
     from arkouda.core.client import get_config, get_mem_used
     from arkouda.numpy.pdarraycreation import arange
     from arkouda.numpy.segarray import SegArray
     from arkouda.numpy.strings import Strings
+    from arkouda.pandas.categorical import Categorical
     from arkouda.pandas.index import Index
     from arkouda.pandas.series import Series
 else:
@@ -223,7 +223,7 @@ def register(obj, name):
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.util import register
+    >>> from arkouda.numpy.util import register
     >>> obj = ak.array([1, 2, 3])
     >>> registered_obj = register(obj, "my_array")
     >>> print(registered_obj)
@@ -768,7 +768,7 @@ def broadcast_dims(sa: Sequence[int], sb: Sequence[int]) -> Tuple[int, ...]:
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.util import broadcast_dims
+    >>> from arkouda.numpy.util import broadcast_dims
     >>> broadcast_dims((5, 1), (1, 3))
     (5, 3)
 
@@ -826,7 +826,7 @@ def convert_bytes(nbytes: int_scalars, unit: Literal["B", "KB", "MB", "GB"] = "B
     Examples
     --------
     >>> import arkouda as ak
-    >>> from arkouda.util import convert_bytes
+    >>> from arkouda.numpy.util import convert_bytes
     >>> convert_bytes(2048, unit="KB")
     2.0
 
@@ -1262,7 +1262,7 @@ def _ak_buffer_names(x):
 
     # Strings: typically has .offsets and .values (or .offsets and .bytes)
     try:
-        from arkouda.strings import Strings
+        from arkouda.numpy.strings import Strings
 
         if isinstance(x, Strings):
             # Some versions expose .values, older expose .bytes
@@ -1276,7 +1276,7 @@ def _ak_buffer_names(x):
 
     # SegArray: segments + values
     try:
-        from arkouda.segarray import SegArray
+        from arkouda.numpy.segarray import SegArray
 
         if isinstance(x, SegArray):
             if hasattr(x, "segments"):
@@ -1289,7 +1289,7 @@ def _ak_buffer_names(x):
 
     # Categorical: codes + categories (Strings)
     try:
-        from arkouda.categorical import Categorical
+        from arkouda.pandas.categorical import Categorical
 
         if isinstance(x, Categorical):
             if hasattr(x, "codes"):

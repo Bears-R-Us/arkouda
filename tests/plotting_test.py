@@ -37,7 +37,7 @@ def _connected_to_arkouda():
 
 
 arkouda = pytest.importorskip("arkouda", reason="arkouda not installed")
-pdarrayclass = pytest.importorskip("arkouda.pdarrayclass", reason="arkouda not installed")
+pdarrayclass = pytest.importorskip("arkouda.numpy.pdarrayclass", reason="arkouda not installed")
 
 
 class TestPlotting:
