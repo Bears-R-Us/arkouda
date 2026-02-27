@@ -111,11 +111,13 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
 
     @classmethod
     def _from_sequence(cls, scalars, dtype=None, copy=False):
+        from arkouda.numpy.numeric import cast as ak_cast
+        from arkouda.numpy.pdarrayclass import pdarray
         from arkouda.numpy.pdarraycreation import array as ak_array
+        from arkouda.pandas.categorical import Categorical
 
         from ._dtypes import ArkoudaBigintDtype
 
-        # normalize dtype input
         if (
             dtype is not None
             and (
@@ -130,7 +132,21 @@ class ArkoudaArray(ArkoudaExtensionArray, ExtensionArray):
         if dtype is not None and hasattr(dtype, "numpy_dtype"):
             dtype = dtype.numpy_dtype
 
-        # If scalars is already a numpy array, we can preserve its dtype
+        if isinstance(scalars, Categorical):
+            codes = scalars.codes
+
+            # Some implementations might return an ArkoudaArray here
+            if isinstance(codes, ArkoudaArray):
+                codes = codes._data
+
+            if not isinstance(codes, pdarray):
+                raise TypeError(f"Categorical.codes expected pdarray, got {type(codes).__name__}")
+
+            if dtype is not None:
+                codes = ak_cast(codes, dtype)
+
+            return cls(codes)
+
         return cls(ak_array(scalars, dtype=dtype, copy=copy))
 
     def __getitem__(self, key: Any) -> Any:
