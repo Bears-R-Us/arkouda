@@ -144,7 +144,7 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.util import broadcast_dims
+   >>> from arkouda.numpy.util import broadcast_dims
    >>> broadcast_dims((5, 1), (1, 3))
    (5, 3)
 
@@ -193,7 +193,7 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.util import convert_bytes
+   >>> from arkouda.numpy.util import convert_bytes
    >>> convert_bytes(2048, unit="KB")
    2.0
 
@@ -281,7 +281,7 @@ Module Contents
    [1 3 0 2]
 
 
-.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
+.. py:function:: is_float(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is a float type.
 
@@ -307,7 +307,7 @@ Module Contents
    False
 
 
-.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
+.. py:function:: is_int(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is an integer type.
 
@@ -333,7 +333,7 @@ Module Contents
    False
 
 
-.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
+.. py:function:: is_numeric(arry: Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, arkouda.pandas.series.Series, arkouda.pandas.index.Index]) -> bool
 
    Check if the dtype of the given array-like object is numeric.
 
@@ -460,7 +460,7 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.util import register
+   >>> from arkouda.numpy.util import register
    >>> obj = ak.array([1, 2, 3])
    >>> registered_obj = register(obj, "my_array")
    >>> print(registered_obj)

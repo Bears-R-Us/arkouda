@@ -232,8 +232,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
@@ -250,7 +248,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/core/index.html">arkouda.core</a><input aria-label="Toggle navigation of arkouda.core" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -261,9 +258,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/message/index.html">arkouda.message</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
@@ -327,7 +321,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -1177,7 +1170,7 @@
 
 
 <div class="viewcode-block" id="connect">
-<a class="viewcode-back" href="../../../usage/startup.html#arkouda.client.connect">[docs]</a>
+<a class="viewcode-back" href="../../../usage/startup.html#arkouda.core.client.connect">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span>
     <span class="n">server</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5555</span><span class="p">,</span>
@@ -1339,7 +1332,7 @@
 
 
 <div class="viewcode-block" id="disconnect">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.disconnect">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.disconnect">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Disconnect the client from the Arkouda server.</span>
@@ -1372,7 +1365,7 @@
 
 
 <div class="viewcode-block" id="shutdown">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.shutdown">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.shutdown">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Send a shutdown message and disconnect.</span>
@@ -1589,7 +1582,7 @@
 
 
 <div class="viewcode-block" id="get_config">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.get_config">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.get_config">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get runtime information about the server.</span>
@@ -1626,7 +1619,7 @@
 
 
 <div class="viewcode-block" id="get_registration_config">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.get_registration_config">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.get_registration_config">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_registration_config</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the registration settings the server was built with.</span>
@@ -1649,7 +1642,7 @@
 
 
 <div class="viewcode-block" id="get_max_array_rank">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.get_max_array_rank">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.get_max_array_rank">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_max_array_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the maximum pdarray rank the server was compiled to support.</span>
@@ -1724,7 +1717,7 @@
 
 
 <div class="viewcode-block" id="get_mem_used">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.get_mem_used">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.get_mem_used">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mem_used</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">as_percent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the amount of memory used by objects in the server&#39;s symbol table.</span>
@@ -1758,7 +1751,7 @@
 
 
 <div class="viewcode-block" id="get_mem_avail">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.get_mem_avail">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.get_mem_avail">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mem_avail</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">as_percent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the amount of memory available to be used.</span>
@@ -1792,7 +1785,7 @@
 
 
 <div class="viewcode-block" id="get_mem_status">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.get_mem_status">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.get_mem_status">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mem_status</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrieve the memory status for each locale.</span>
@@ -1834,7 +1827,7 @@
 
 
 <div class="viewcode-block" id="get_server_commands">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.get_server_commands">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.get_server_commands">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_server_commands</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a dictionary of available server commands and their functions.</span>
@@ -1863,7 +1856,7 @@
 
 
 <div class="viewcode-block" id="print_server_commands">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.print_server_commands">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.print_server_commands">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_server_commands</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the list of available server commands.&quot;&quot;&quot;</span>
     <span class="n">cmd_map</span> <span class="o">=</span> <span class="n">get_server_commands</span><span class="p">()</span>
@@ -1893,7 +1886,7 @@
 
 
 <div class="viewcode-block" id="ruok">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.ruok">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.ruok">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ruok</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Quick health check that does not require error handling.</span>
@@ -1916,7 +1909,7 @@
 
 
 <div class="viewcode-block" id="generate_history">
-<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.client.generate_history">[docs]</a>
+<a class="viewcode-back" href="../../../autoapi/arkouda/core/client/index.html#arkouda.core.client.generate_history">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_history</span><span class="p">(</span>
     <span class="n">num_commands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">command_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>

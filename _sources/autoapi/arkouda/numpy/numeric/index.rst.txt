@@ -1875,7 +1875,7 @@ Module Contents
    Unlike numpy, arkouda requires out if where is used.
 
 
-.. py:function:: value_counts(pda: arkouda.numpy.pdarrayclass.pdarray) -> tuple[arkouda.groupbyclass.groupable, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: value_counts(pda: arkouda.numpy.pdarrayclass.pdarray) -> tuple[arkouda.pandas.groupbyclass.groupable, arkouda.numpy.pdarrayclass.pdarray]
 
    Count the occurrences of the unique values of an array.
 

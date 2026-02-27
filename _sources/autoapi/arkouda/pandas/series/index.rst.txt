@@ -430,7 +430,7 @@ Module Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> from arkouda.series import Series
+      >>> from arkouda.pandas.series import Series
       >>> s = ak.Series(ak.arange(3))
       >>> s.memory_usage()
       48
@@ -738,7 +738,7 @@ Module Contents
 
 
 
-   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
+   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
 
       Validate type requirements for keys when reading or writing the Series.
 

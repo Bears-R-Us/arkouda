@@ -232,8 +232,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
@@ -250,7 +248,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/core/index.html">arkouda.core</a><input aria-label="Toggle navigation of arkouda.core" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -261,9 +258,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/message/index.html">arkouda.message</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
@@ -327,7 +321,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/security/index.html">arkouda.security</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -441,10 +434,10 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_index_accessor</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span> <span class="k">as</span> <span class="n">ak_Index</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiIndex</span> <span class="k">as</span> <span class="n">ak_MultiIndex</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">pdarray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.extension</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArkoudaExtensionArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span> <span class="k">as</span> <span class="n">ak_Index</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiIndex</span> <span class="k">as</span> <span class="n">ak_MultiIndex</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -456,8 +449,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a pandas Index or MultiIndex into a legacy Arkouda Index/MultiIndex.</span>
 
-<span class="sd">    This mirrors the behavior of :class:`arkouda.index.Index` and</span>
-<span class="sd">    :class:`arkouda.index.MultiIndex` constructors, which already know how to</span>
+<span class="sd">    This mirrors the behavior of :class:`arkouda.pandas.index.Index` and</span>
+<span class="sd">    :class:`arkouda.pandas.index.MultiIndex` constructors, which already know how to</span>
 <span class="sd">    consume pandas Index / MultiIndex, including categorical levels.</span>
 
 <span class="sd">    Parameters</span>
@@ -975,8 +968,8 @@
 <span class="sd">        Perform a server-side lookup on the underlying Arkouda index.</span>
 
 <span class="sd">        This is a thin convenience wrapper around the legacy</span>
-<span class="sd">        :meth:`arkouda.index.Index.lookup` /</span>
-<span class="sd">        :meth:`arkouda.index.MultiIndex.lookup` methods. It converts the</span>
+<span class="sd">        :meth:`arkouda.pandas.index.Index.lookup` /</span>
+<span class="sd">        :meth:`arkouda.pandas.index.MultiIndex.lookup` methods. It converts the</span>
 <span class="sd">        pandas index to a legacy Arkouda index, performs the lookup on the</span>
 <span class="sd">        server, and returns the resulting boolean mask.</span>
 

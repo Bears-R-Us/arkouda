@@ -245,9 +245,9 @@ Older version of Arkouda used different schemas for `pdarray` and `Strings` obje
 ### DataFrame
 
 ```{eval-rst}  
-- :py:meth:`arkouda.DataFrame.to_hdf`
-- :py:meth:`arkouda.DataFrame.save`
-- :py:meth:`arkouda.DataFrame.load`
+- :py:meth:`arkouda.pandas.DataFrame.to_hdf`
+- :py:meth:`arkouda.pandas.DataFrame.save`
+- :py:meth:`arkouda.pandas.DataFrame.load`
 ```
 
 ### Strings

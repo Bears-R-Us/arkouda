@@ -42,7 +42,7 @@ arkouda.pandas.index
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.index import Index, MultiIndex
+   >>> from arkouda.pandas.index import Index, MultiIndex
 
    >>> idx = Index([10, 20, 30], name="id")
    >>> idx
@@ -280,7 +280,7 @@ Module Contents
       :type arg: dict or Series
 
       :returns: A new index with the values transformed by the mapping correspondence.
-      :rtype: arkouda.index.Index
+      :rtype: arkouda.pandas.index.Index
 
       :raises TypeError: Raised if arg is not of type dict or arkouda.pandas.Series.
           Raised if index values not of type pdarray, Categorical, or Strings.
@@ -316,7 +316,7 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.index.MultiIndex.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.pandas.dataframe.DataFrame.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.pandas.index.MultiIndex.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.pandas.dataframe.DataFrame.memory_usage`
 
       .. rubric:: Examples
 
@@ -687,7 +687,7 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.index import MultiIndex
+   >>> from arkouda.pandas.index import MultiIndex
    >>> a = ak.array([1, 2, 3])
    >>> b = ak.array(['a', 'b', 'c'])
    >>> mi = MultiIndex([a, b])
@@ -815,13 +815,13 @@ Module Contents
       :returns: Bytes of memory consumed.
       :rtype: int
 
-      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.index.Index.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.pandas.dataframe.DataFrame.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.pandas.index.Index.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`, :py:obj:`arkouda.pandas.dataframe.DataFrame.memory_usage`
 
       .. rubric:: Examples
 
       >>> import arkouda as ak
 
-      >>> m = ak.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
+      >>> m = ak.pandas.index.MultiIndex([ak.array([1,2,3]),ak.array([4,5,6])])
       >>> m.memory_usage()
       48
 

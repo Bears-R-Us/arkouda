@@ -37,7 +37,7 @@ arkouda.pandas.groupbyclass
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.groupbyclass import GroupBy
+   >>> from arkouda.pandas.groupbyclass import GroupBy
 
    >>> keys = ak.array([0, 1, 0, 1, 0])
    >>> values = ak.array([10, 20, 30, 40, 50])

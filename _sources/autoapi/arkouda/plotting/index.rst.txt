@@ -66,7 +66,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: hist_all(ak_df: arkouda.dataframe.DataFrame, cols: Optional[list[str]] = None)
+.. py:function:: hist_all(ak_df: arkouda.pandas.dataframe.DataFrame, cols: Optional[list[str]] = None)
 
    Create a grid of histograms for numeric columns in an Arkouda DataFrame.
 
@@ -104,7 +104,7 @@ Module Contents
    >>> fig.savefig("hist_all.png")
 
 
-.. py:function:: plot_dist(b: arkouda.pdarrayclass.pdarray | numpy.typing.NDArray[numpy.floating], h: arkouda.pdarrayclass.pdarray | numpy.typing.NDArray[numpy.floating], *, log: bool = True, xlabel: Optional[str] = None, newfig: bool = True, show: bool = False) -> Tuple[matplotlib.figure.Figure, numpy.ndarray]
+.. py:function:: plot_dist(b: arkouda.numpy.pdarrayclass.pdarray | numpy.typing.NDArray[numpy.floating], h: arkouda.numpy.pdarrayclass.pdarray | numpy.typing.NDArray[numpy.floating], *, log: bool = True, xlabel: Optional[str] = None, newfig: bool = True, show: bool = False) -> Tuple[matplotlib.figure.Figure, numpy.ndarray]
 
    Plot the distribution and cumulative distribution of histogram data.
 

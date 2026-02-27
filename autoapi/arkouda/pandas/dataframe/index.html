@@ -233,8 +233,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../../accessor/index.html">arkouda.accessor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apply/index.html">arkouda.apply</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
@@ -251,7 +249,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../core/index.html">arkouda.core</a><input aria-label="Toggle navigation of arkouda.core" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -262,9 +259,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../message/index.html">arkouda.message</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../numpy/char/index.html">arkouda.numpy.char</a></li>
@@ -328,7 +322,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../security/index.html">arkouda.security</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -475,7 +468,7 @@ for use on large-scale, distributed datasets.</p>
 <li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
 should be a homogenous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
 <li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to an stringified integer range.</p></li>
 </ul>
@@ -925,7 +918,7 @@ of the columns depends on another one defined within the same assign:</p>
 <dd class="field-odd"><p>The values of the index are the column names of the dataframe.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>arkouda.index.Index</p>
+<dd class="field-even"><p><a class="reference internal" href="../index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index">arkouda.pandas.index.Index</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1477,7 +1470,7 @@ Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.</p>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span>
-<span class="go">&lt;arkouda.groupbyclass.GroupBy object at 0x795584773f00&gt;</span>
+<span class="go">&lt;arkouda.pandas.groupbyclass.GroupBy object at 0x795584773f00&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
 <span class="go">col1</span>
 <span class="go">1.0    2</span>
@@ -1563,7 +1556,7 @@ appending rows.</p>
 <dd class="field-odd"><p>The index of the dataframe.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>arkouda.index.Index or arkouda.index.MultiIndex</p>
+<dd class="field-even"><p><a class="reference internal" href="../index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index">arkouda.pandas.index.Index</a> or <a class="reference internal" href="../index/index.html#arkouda.pandas.index.MultiIndex" title="arkouda.pandas.index.MultiIndex">arkouda.pandas.index.MultiIndex</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1826,7 +1819,7 @@ is the memory usage of each column in bytes.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.numpy.pdarrayclass.nbytes</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.index.Index.memory_usage</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.index.MultiIndex.memory_usage</span></code>, <a class="reference internal" href="../series/index.html#arkouda.pandas.series.Series.memory_usage" title="arkouda.pandas.series.Series.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.series.Series.memory_usage</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.numpy.pdarrayclass.nbytes</span></code>, <a class="reference internal" href="../index/index.html#arkouda.pandas.index.Index.memory_usage" title="arkouda.pandas.index.Index.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.index.Index.memory_usage</span></code></a>, <a class="reference internal" href="../index/index.html#arkouda.pandas.index.MultiIndex.memory_usage" title="arkouda.pandas.index.MultiIndex.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.index.MultiIndex.memory_usage</span></code></a>, <a class="reference internal" href="../series/index.html#arkouda.pandas.series.Series.memory_usage" title="arkouda.pandas.series.Series.memory_usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.series.Series.memory_usage</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -3431,7 +3424,7 @@ Strings, pdarrays of int64 type, and Categorical <em>should</em> work.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perm</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>

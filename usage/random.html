@@ -233,8 +233,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
@@ -251,7 +249,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/core/index.html">arkouda.core</a><input aria-label="Toggle navigation of arkouda.core" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -262,9 +259,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/message/index.html">arkouda.message</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
@@ -328,7 +322,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/security/index.html">arkouda.security</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -415,7 +408,7 @@ This mimics the behavior we see in numpy</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
+<dt><a class="reference internal" href="#arkouda.random.default_rng" title="arkouda.random.default_rng"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></a></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
 </dd>
 </dl>
 </div>
@@ -424,6 +417,27 @@ This mimics the behavior we see in numpy</p></li>
 <section id="creation">
 <h2>Creation<a class="headerlink" href="#creation" title="Link to this heading">¶</a></h2>
 <p>To create a <code class="docutils literal notranslate"><span class="pre">Generator</span></code> use the <code class="docutils literal notranslate"><span class="pre">default_rng</span></code> constructor</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.random.default_rng">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">default_rng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/random/generator.html#default_rng"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.default_rng" title="Link to this definition">¶</a></dt>
+<dd><p>Construct a new Generator.</p>
+<p>Right now we only support PCG64, since this is what is available in chapel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seed</strong> (<em>{None</em><em>, </em><em>int</em><em>, </em><em>Generator}</em><em>, </em><em>optional</em>) – A seed to initialize the <cite>Generator</cite>. If None, then the seed will
+be generated by chapel in an implementation specific manner based on the current time.
+This behavior is currently unstable and may change in the future. If an int,
+then the value must be non-negative. If passed a <cite>Generator</cite>, it will be returned unaltered.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The initialized generator object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.random.Generator" title="arkouda.random.Generator">Generator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
@@ -1036,7 +1050,10 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
             <ul>
 <li><a class="reference internal" href="#">Random in Arkouda</a><ul>
 <li><a class="reference internal" href="#arkouda.random.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a></li>
-<li><a class="reference internal" href="#creation">Creation</a></li>
+<li><a class="reference internal" href="#creation">Creation</a><ul>
+<li><a class="reference internal" href="#arkouda.random.default_rng"><code class="docutils literal notranslate"><span class="pre">default_rng()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#features">Features</a><ul>
 <li><a class="reference internal" href="#choice">choice</a><ul>
 <li><a class="reference internal" href="#arkouda.random.Generator.choice"><code class="docutils literal notranslate"><span class="pre">choice()</span></code></a></li>

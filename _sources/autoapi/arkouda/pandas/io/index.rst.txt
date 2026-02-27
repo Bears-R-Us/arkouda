@@ -7,7 +7,7 @@ arkouda.pandas.io
 
    Input/output utilities for Arkouda.
 
-   The `arkouda.io` module provides a comprehensive interface for reading from and writing to
+   The `arkouda.pandas.io` module provides a comprehensive interface for reading from and writing to
    various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting
    data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.
 
@@ -37,7 +37,7 @@ arkouda.pandas.io
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.io import to_parquet, read_parquet
+   >>> from arkouda.pandas.io import to_parquet, read_parquet
    >>> import os.path
    >>> from pathlib import Path
    >>> my_path = os.path.join(os.getcwd(), 'output')
@@ -61,7 +61,7 @@ arkouda.pandas.io
    >>> df = ak.DataFrame({'a': ak.arange(10), 'b': ak.linspace(0, 1, 10)})
    >>> df2 = ak.export(my_path + '/parquet_data/data.parquet')
 
-   .. seealso:: :py:obj:`arkouda.DataFrame`, :py:obj:`arkouda.pdarray`, :py:obj:`arkouda.strings.Strings`, :py:obj:`arkouda.segarray.SegArray`, :py:obj:`arkouda.categorical.Categorical`, :py:obj:`arkouda.index.Index`, :py:obj:`arkouda.index.MultiIndex`
+   .. seealso:: :py:obj:`arkouda.pandas.DataFrame`, :py:obj:`arkouda.pdarray`, :py:obj:`arkouda.strings.Strings`, :py:obj:`arkouda.numpy.segarray.SegArray`, :py:obj:`arkouda.pandas.categorical.Categorical`, :py:obj:`arkouda.pandas.index.Index`, :py:obj:`arkouda.pandas.index.MultiIndex`
 
 
 

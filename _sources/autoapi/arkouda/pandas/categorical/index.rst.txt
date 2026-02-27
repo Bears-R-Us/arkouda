@@ -31,7 +31,7 @@ arkouda.pandas.categorical
    Typical Use
    -----------
    >>> import arkouda as ak
-   >>> from arkouda.categorical import Categorical
+   >>> from arkouda.pandas.categorical import Categorical
    >>> strings = ak.array(["apple", "banana", "apple", "banana", "pear"])
    >>> cat = Categorical(strings)
    >>> cat.codes

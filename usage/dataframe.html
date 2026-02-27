@@ -233,8 +233,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../autoapi/arkouda/index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/accessor/index.html">arkouda.accessor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/apply/index.html">arkouda.apply</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
@@ -251,7 +249,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/core/index.html">arkouda.core</a><input aria-label="Toggle navigation of arkouda.core" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -262,9 +259,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/message/index.html">arkouda.message</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../autoapi/arkouda/numpy/index.html">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/numpy/alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/numpy/char/index.html">arkouda.numpy.char</a></li>
@@ -328,7 +322,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../autoapi/arkouda/scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/security/index.html">arkouda.security</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../autoapi/arkouda/testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -387,105 +380,6 @@
           <section id="dataframes-in-arkouda">
 <h1>DataFrames in Arkouda<a class="headerlink" href="#dataframes-in-arkouda" title="Link to this heading">¶</a></h1>
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">DataFrames</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="arkouda.DataFrame">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/dataframe.html#DataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame" title="Link to this definition">¶</a></dt>
-<dd><p>A DataFrame structure based on arkouda arrays.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
-should be a homogenous type. Different columns may have different
-types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
-be strings. Defaults to an stringified integer range.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-</pre></div>
-</div>
-<p>Create an empty DataFrame and add a column of data:
-&gt;&gt;&gt; import arkouda as ak
-&gt;&gt;&gt; df = ak.DataFrame()
-&gt;&gt;&gt; df[‘a’] = ak.array([1,2,3])
-&gt;&gt;&gt; df</p>
-<blockquote>
-<div><p>a</p>
-</div></blockquote>
-<p>0  1
-1  2
-2  3 (3 rows x 1 columns)</p>
-<p>Create a new DataFrame using a dictionary of data:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">userName</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">userID</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">111</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">item</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">day</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">amount</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">4.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-<span class="gp">... </span>    <span class="s1">&#39;userName&#39;</span><span class="p">:</span> <span class="n">userName</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;userID&#39;</span><span class="p">:</span> <span class="n">userID</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;amount&#39;</span><span class="p">:</span> <span class="n">amount</span>
-<span class="gp">... </span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">  userName  userID  item  day  amount</span>
-<span class="go">0    Alice     111     0    5     0.5</span>
-<span class="go">1      Bob     222     0    5     0.6</span>
-<span class="go">2    Alice     111     1    6     1.1</span>
-<span class="go">3    Carol     333     1    5     1.2</span>
-<span class="go">4      Bob     222     2    6     4.3</span>
-<span class="go">5    Alice     111     0    6     0.6 (6 rows x 5 columns)</span>
-</pre></div>
-</div>
-<p>Indexing works slightly differently than with pandas:
-&gt;&gt;&gt; df[0]
-{‘userName’: np.str_(‘Alice’), ‘userID’: np.int64(111), ‘item’: np.int64(0),
-‘day’: np.int64(5), ‘amount’: np.float64(0.5)}
-&gt;&gt;&gt; df[‘userID’]
-array([111 222 111 333 222 111])</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;userName&#39;</span><span class="p">]</span>
-<span class="go">array([&#39;Alice&#39;, &#39;Bob&#39;, &#39;Alice&#39;, &#39;Carol&#39;, &#39;Bob&#39;, &#39;Alice&#39;])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">])]</span>
-<span class="go">  userName  userID  item  day  amount</span>
-<span class="go">1      Bob     222     0    5     0.6</span>
-<span class="go">3    Carol     333     1    5     1.2</span>
-<span class="go">5    Alice     111     0    6     0.6 (3 rows x 5 columns)</span>
-</pre></div>
-</div>
-<p>Compute the stride:
-&gt;&gt;&gt; df[1:5:1]</p>
-<blockquote>
-<div><p>userName  userID  item  day  amount</p>
-</div></blockquote>
-<p>1      Bob     222     0    5     0.6
-2    Alice     111     1    6     1.1
-3    Carol     333     1    5     1.2
-4      Bob     222     2    6     4.3 (4 rows x 5 columns)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])]</span>
-<span class="go">  userName  userID  item  day  amount</span>
-<span class="go">1      Bob     222     0    5     0.6</span>
-<span class="go">2    Alice     111     1    6     1.1</span>
-<span class="go">3    Carol     333     1    5     1.2 (3 rows x 5 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;userID&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">]]</span>
-<span class="go">   userID  day</span>
-<span class="go">0     111    5</span>
-<span class="go">1     222    5</span>
-<span class="go">2     111    6</span>
-<span class="go">3     333    5</span>
-<span class="go">4     222    6</span>
-<span class="go">5     111    6 (6 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 <section id="data-types">
 <h2>Data Types<a class="headerlink" href="#data-types" title="Link to this heading">¶</a></h2>
 <p>Currently, <code class="docutils literal notranslate"><span class="pre">DataFrames</span></code> support 4 Arkouda data types for supplying columns.</p>
@@ -508,48 +402,9 @@ array([111 222 111 333 222 111])</p>
 <h2>Iteration<a class="headerlink" href="#iteration" title="Link to this heading">¶</a></h2>
 <p>Iterating directly over a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">df</span></code> is not recommended. Doing so is discouraged because it requires transferring all array data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code> function to return the <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">ak.client.maxTransferBytes</span></code>.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.to_pandas">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datalimit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1073741824</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retain_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.to_pandas" title="Link to this definition">¶</a></dt>
-<dd><p>Send this DataFrame to a pandas DataFrame.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>datalimit</strong> (<em>int</em><em>, </em><em>default=arkouda.core.client.maxTransferBytes</em>) – The maximum number size, in megabytes to transfer. The requested
-DataFrame will be converted to a pandas DataFrame only if the
-estimated size of the DataFrame does not exceed this value.</p></li>
-<li><p><strong>retain_index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Normally, to_pandas() creates a new range index object. If you want
-to keep the index column, set this to True.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The result of converting this DataFrame to a pandas DataFrame.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">)})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">ak_df</span><span class="p">)</span>
-<span class="go">&lt;class &#39;arkouda...DataFrame&#39;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak_df</span>
-<span class="go">   A  B</span>
-<span class="go">0  0  0</span>
-<span class="go">1  1 -1 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pd_df</span> <span class="o">=</span> <span class="n">ak_df</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">pd_df</span><span class="p">)</span>
-<span class="go">&lt;class &#39;pandas...DataFrame&#39;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pd_df</span>
-<span class="go">   A  B</span>
-<span class="go">0  0  0</span>
-<span class="go">1  1 -1</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.to_pandas">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">to_pandas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.to_pandas" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="features">
@@ -558,537 +413,80 @@ to keep the index column, set this to True.</p></li>
 <section id="drop">
 <h3>Drop<a class="headerlink" href="#drop" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.drop">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.drop" title="Link to this definition">¶</a></dt>
-<dd><p>Drop column/s or row/s from the dataframe.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>int</em><em> or </em><em>list</em>) – The labels to be dropped on the given axis.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The axis on which to drop from. 0/’index’ - drop rows, 1/’columns’ - drop columns.</p></li>
-<li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
-When False, return a new object.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DateFrame when <cite>inplace=False</cite>;
-None when <cite>inplace=True</cite></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a> or None</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     1     3</span>
-<span class="go">1     2     4 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-<p>Drop column
-&gt;&gt;&gt; df.drop(‘col1’, axis = 1)</p>
-<blockquote>
-<div><p>col2</p>
-</div></blockquote>
-<p>0     3
-1     4 (2 rows x 1 columns)</p>
-<p>Drop row
-&gt;&gt;&gt; df.drop(0, axis = 0)</p>
-<blockquote>
-<div><p>col1  col2</p>
-</div></blockquote>
-<p>1     2     4 (1 rows x 2 columns)</p>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.drop">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.drop" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="groupby">
 <h3>GroupBy<a class="headerlink" href="#groupby" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.groupby">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.groupby" title="Link to this definition">¶</a></dt>
-<dd><p>Group the dataframe by a column or a list of columns.</p>
-<p>Alias for GroupBy.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>list</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – An (ordered) list of column names or a single string to group by.</p></li>
-<li><p><strong>use_series</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-Otherwise an arkouda.pandas.groupbyclass.GroupBy object.</p></li>
-<li><p><strong>as_index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, groupby columns will be set as index
-otherwise, the groupby columns will be treated as DataFrame columns.</p></li>
-<li><p><strong>dropna</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, and the groupby keys contain NaN values,
-the NaN values together with the corresponding row will be dropped.
-Otherwise, the rows corresponding to NaN values will be kept.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>If use_series = True, returns an arkouda.pandas.dataframe.DataFrameGroupBy object.
-Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrameGroupBy" title="arkouda.pandas.dataframe.DataFrameGroupBy">arkouda.pandas.dataframe.DataFrameGroupBy</a> or <a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.GroupBy" title="arkouda.pandas.groupbyclass.GroupBy">arkouda.pandas.groupbyclass.GroupBy</a></p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="groupby.html#arkouda.GroupBy" title="arkouda.GroupBy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.GroupBy</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0   1.0     4</span>
-<span class="go">1   1.0     5</span>
-<span class="go">2   2.0     6</span>
-<span class="go">3   NaN     7 (4 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span>
-<span class="go">&lt;arkouda.groupbyclass.GroupBy object at 0x795584773f00&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-<span class="go">col1</span>
-<span class="go">1.0    2</span>
-<span class="go">2.0    1</span>
-<span class="go">dtype: int64</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span><span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-<span class="go">col1</span>
-<span class="go">1.0    2</span>
-<span class="go">2.0    1</span>
-<span class="go">dtype: int64</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span><span class="n">use_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-<span class="go">   col1  size</span>
-<span class="go">0   1.0     2</span>
-<span class="go">1   2.0     1 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.groupby">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">groupby</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.groupby" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="copy">
 <h3>Copy<a class="headerlink" href="#copy" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.copy">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.copy" title="Link to this definition">¶</a></dt>
-<dd><p>Make a copy of this object’s data.</p>
-<p>When <cite>deep = True</cite> (default), a new object will be created with a copy of
-the calling object’s data. Modifications to the data of the copy will not
-be reflected in the original object.</p>
-<p>When <cite>deep = False</cite> a new object will be created without copying the
-calling object’s data. Any changes to the data of the original object will
-be reflected in the shallow copy, and vice versa.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>deep</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – When True, return a deep copy. Otherwise, return a shallow copy.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A deep or shallow copy according to caller specification.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     1     3</span>
-<span class="go">1     2     4 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df_deep</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df_deep</span><span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">]</span> <span class="o">+=</span><span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     1     3</span>
-<span class="go">1     2     4 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df_shallow</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df_shallow</span><span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">]</span> <span class="o">+=</span><span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     2     3</span>
-<span class="go">1     3     4 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.copy">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.copy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="filter">
 <h3>Filter<a class="headerlink" href="#filter" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.filter_by_ranges">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">filter_by_ranges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.filter_by_ranges" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="permutations">
 <h3>Permutations<a class="headerlink" href="#permutations" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.apply_permutation">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">apply_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.apply_permutation" title="Link to this definition">¶</a></dt>
-<dd><p>Apply a permutation to an entire DataFrame.</p>
-<p>The operation is done in place and the original DataFrame will be modified.</p>
-<p>This may be useful if you want to unsort an DataFrame, or even to
-apply an arbitrary permutation such as the inverse of a sorting
-permutation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>perm</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – A permutation array. Should be the same size as the data
-arrays, and should consist of the integers [0,size-1] in
-some order. Very minimal testing is done to ensure this
-is a permutation.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     1     4</span>
-<span class="go">1     2     5</span>
-<span class="go">2     3     6 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">perm_arry</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">apply_permutation</span><span class="p">(</span><span class="n">perm_arry</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     1     4</span>
-<span class="go">2     3     6</span>
-<span class="go">1     2     5 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.apply_permutation">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">apply_permutation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.apply_permutation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="sorting">
 <h3>Sorting<a class="headerlink" href="#sorting" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.argsort">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.argsort" title="Link to this definition">¶</a></dt>
-<dd><p>Return the permutation that sorts the dataframe by <cite>key</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The key to sort on.</p></li>
-<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – If true, sort the key in ascending order.
-Otherwise, sort the key in descending order.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The permutation array that sorts the data on <cite>key</cite>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">arkouda.numpy.pdarrayclass.pdarray</a></p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.DataFrame.coargsort" title="arkouda.DataFrame.coargsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coargsort</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0   1.1     6</span>
-<span class="go">1   3.1     5</span>
-<span class="go">2   2.1     4 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">)</span>
-<span class="go">array([0 2 1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sorted_df1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="s1">&#39;col1&#39;</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sorted_df1</span>
-<span class="go">   col1  col2</span>
-<span class="go">0   1.1     6</span>
-<span class="go">2   2.1     4</span>
-<span class="go">1   3.1     5 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="s1">&#39;col2&#39;</span><span class="p">)</span>
-<span class="go">array([2 1 0])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sorted_df2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="s1">&#39;col2&#39;</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sorted_df2</span>
-<span class="go">   col1  col2</span>
-<span class="go">2   2.1     4</span>
-<span class="go">1   3.1     5</span>
-<span class="go">0   1.1     6 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.argsort">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.argsort" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.coargsort">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">coargsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.coargsort" title="Link to this definition">¶</a></dt>
-<dd><p>Return the permutation that sorts the dataframe by <cite>keys</cite>.</p>
-<p>Note: Sorting using Strings may not yield correct sort order.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>keys</strong> (<em>list</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The keys to sort on.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The permutation array that sorts the data on <cite>keys</cite>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray">arkouda.numpy.pdarrayclass.pdarray</a></p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;col3&#39;</span><span class="p">:[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2  col3</span>
-<span class="go">0     2     3     5</span>
-<span class="go">1     2     4     6</span>
-<span class="go">2     1     3     7 (3 rows x 3 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">coargsort</span><span class="p">([</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">])</span>
-<span class="go">array([2 0 1])</span>
-<span class="gp">&gt;&gt;&gt;</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.coargsort">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">coargsort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.coargsort" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.sort_values">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">sort_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.sort_values" title="Link to this definition">¶</a></dt>
-<dd><p>Sort the DataFrame by one or more columns.</p>
-<p>If no column is specified, all columns are used.</p>
-<p>Note: Fails on order of arkouda.numpy.strings.Strings columns when multiple columns being sorted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>by</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>list/tuple</em><em> of </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default = None</em>) – The name(s) of the column(s) to sort by.</p></li>
-<li><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default = True</em>) – Sort values in ascending (default) or descending order.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.DataFrame.apply_permutation" title="arkouda.DataFrame.apply_permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_permutation</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;col3&#39;</span><span class="p">:[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2  col3</span>
-<span class="go">0     2     3     5</span>
-<span class="go">1     2     4     6</span>
-<span class="go">2     1     3     7 (3 rows x 3 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
-<span class="go">   col1  col2  col3</span>
-<span class="go">2     1     3     7</span>
-<span class="go">0     2     3     5</span>
-<span class="go">1     2     4     6 (3 rows x 3 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;col3&quot;</span><span class="p">)</span>
-<span class="go">   col1  col2  col3</span>
-<span class="go">0     2     3     5</span>
-<span class="go">1     2     4     6</span>
-<span class="go">2     1     3     7 (3 rows x 3 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.sort_values">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">sort_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.sort_values" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="tail-head-of-data">
 <h3>Tail/Head of Data<a class="headerlink" href="#tail-head-of-data" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.tail">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">tail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.tail" title="Link to this definition">¶</a></dt>
-<dd><p>Return the last <cite>n</cite> rows.</p>
-<p>This function returns the last <cite>n</cite> rows for the dataframe. It is
-useful for quickly testing if your object has the right type of data in
-it.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>default=5</em>) – Number of rows to select.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The last <cite>n</cite> rows of the DataFrame.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pandas.dataframe.head</span></code></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     0     0</span>
-<span class="go">1     1    -1</span>
-<span class="go">2     2    -2</span>
-<span class="go">3     3    -3</span>
-<span class="go">4     4    -4</span>
-<span class="go">5     5    -5</span>
-<span class="go">6     6    -6</span>
-<span class="go">7     7    -7</span>
-<span class="go">8     8    -8</span>
-<span class="go">9     9    -9 (10 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
-<span class="go">   col1  col2</span>
-<span class="go">5     5    -5</span>
-<span class="go">6     6    -6</span>
-<span class="go">7     7    -7</span>
-<span class="go">8     8    -8</span>
-<span class="go">9     9    -9 (5 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">   col1  col2</span>
-<span class="go">8     8    -8</span>
-<span class="go">9     9    -9 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.tail">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">tail</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.tail" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.head">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.head" title="Link to this definition">¶</a></dt>
-<dd><p>Return the first <cite>n</cite> rows.</p>
-<p>This function returns the first <cite>n</cite> rows of the the dataframe. It is
-useful for quickly verifying data, for example, after sorting or
-appending rows.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>default = 5</em>) – Number of rows to select.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The first <cite>n</cite> rows of the DataFrame.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.DataFrame.tail" title="arkouda.DataFrame.tail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tail</span></code></a></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     0     0</span>
-<span class="go">1     1    -1</span>
-<span class="go">2     2    -2</span>
-<span class="go">3     3    -3</span>
-<span class="go">4     4    -4</span>
-<span class="go">5     5    -5</span>
-<span class="go">6     6    -6</span>
-<span class="go">7     7    -7</span>
-<span class="go">8     8    -8</span>
-<span class="go">9     9    -9 (10 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     0     0</span>
-<span class="go">1     1    -1</span>
-<span class="go">2     2    -2</span>
-<span class="go">3     3    -3</span>
-<span class="go">4     4    -4 (5 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     0     0</span>
-<span class="go">1     1    -1 (2 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.head">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.head" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="rename-columns">
 <h3>Rename Columns<a class="headerlink" href="#rename-columns" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.rename">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.rename" title="Link to this definition">¶</a></dt>
-<dd><p>Rename indexes or columns according to a mapping.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mapper</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing values to new values.
-Nonexistent names will not raise an error.
-Uses the value of axis to determine if renaming column or index</p></li>
-<li><p><strong>index</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing index names to
-new index names. Nonexistent names will not raise an
-error.
-When this is set, axis is ignored.</p></li>
-<li><p><strong>column</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing column names to
-new column names. Nonexistent names will not raise an
-error.
-When this is set, axis is ignored.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=0</em>) – Indicates which axis to perform the rename.
-0/”index” - Indexes
-1/”column” - Columns</p></li>
-<li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
-When False, return a new object.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DateFrame when <cite>inplace=False</cite>;
-None when <cite>inplace=True</cite>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a> or None</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   A  B</span>
-<span class="go">0  1  4</span>
-<span class="go">1  2  5</span>
-<span class="go">2  3  6 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-<p>Rename columns using a mapping:
-&gt;&gt;&gt; df.rename(column={‘A’:’a’, ‘B’:’c’})</p>
-<blockquote>
-<div><p>a  c</p>
-</div></blockquote>
-<p>0  1  4
-1  2  5
-2  3  6 (3 rows x 2 columns)</p>
-<p>Rename indexes using a mapping:
-&gt;&gt;&gt; df.rename(index={0:99, 2:11})</p>
-<blockquote>
-<div><p>A  B</p>
-</div></blockquote>
-<p>99  1  4
-1   2  5
-11  3  6 (3 rows x 2 columns)</p>
-<p>Rename using an axis style parameter:
-&gt;&gt;&gt; df.rename(str.lower, axis=’column’)</p>
-<blockquote>
-<div><p>a  b</p>
-</div></blockquote>
-<p>0  1  4
-1  2  5
-2  3  6 (3 rows x 2 columns)</p>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.rename">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.rename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="append">
@@ -1097,112 +495,25 @@ None when <cite>inplace=True</cite>.</p>
 <section id="concatenate">
 <h3>Concatenate<a class="headerlink" href="#concatenate" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.concat">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.concat" title="Link to this definition">¶</a></dt>
-<dd><p>Essentially an append, but different formatting.</p>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.concat">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.concat" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="reset-indexes">
 <h3>Reset Indexes<a class="headerlink" href="#reset-indexes" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.reset_index">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.reset_index" title="Link to this definition">¶</a></dt>
-<dd><p>Set the index to an integer range.</p>
-<p>Useful if this dataframe is the result of a slice operation from
-another dataframe, or if you have permuted the rows and no longer need
-to keep that ordering on the rows.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – If size is passed, do not attempt to determine size based on
-existing column sizes. Assume caller handles consistency correctly.</p></li>
-<li><p><strong>inplace</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
-When False, return a new object.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DateFrame when <cite>inplace=False</cite>;
-None when <cite>inplace=True</cite>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a> or None</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Pandas adds a column ‘index’ to indicate the original index. Arkouda does not currently
-support this behavior.</p>
-</div>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   A  B</span>
-<span class="go">0  1  4</span>
-<span class="go">1  2  5</span>
-<span class="go">2  3  6 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">perm_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">])]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">perm_df</span>
-<span class="go">   A  B</span>
-<span class="go">0  1  4</span>
-<span class="go">2  3  6</span>
-<span class="go">1  2  5 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">perm_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-<span class="go">   A  B</span>
-<span class="go">0  1  4</span>
-<span class="go">1  3  6</span>
-<span class="go">2  2  5 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.reset_index">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">reset_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.reset_index" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="deduplication">
 <h3>Deduplication<a class="headerlink" href="#deduplication" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.DataFrame.drop_duplicates">
-<span class="sig-prename descclassname"><span class="pre">arkouda.DataFrame.</span></span><span class="sig-name descname"><span class="pre">drop_duplicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'first'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.DataFrame.drop_duplicates" title="Link to this definition">¶</a></dt>
-<dd><p>Drop duplcated rows and returns resulting DataFrame.</p>
-<p>If a subset of the columns are provided then only one instance of each
-duplicated row will be returned (keep determines which row).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>subset</strong> (<em>Iterable</em>) – Iterable of column names to use to dedupe.</p></li>
-<li><p><strong>keep</strong> (<em>{'first'</em><em>, </em><em>'last'}</em><em>, </em><em>default='first'</em>) – Determines which duplicates (if any) to keep.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DataFrame with duplicates removed.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame">DataFrame</a></p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     1     4</span>
-<span class="go">1     2     5</span>
-<span class="go">2     2     5</span>
-<span class="go">3     3     6 (4 rows x 2 columns)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
-<span class="go">   col1  col2</span>
-<span class="go">0     1     4</span>
-<span class="go">1     2     5</span>
-<span class="go">3     3     6 (3 rows x 2 columns)</span>
-</pre></div>
-</div>
-</dd></dl>
+<dt class="sig sig-object py" id="arkouda.pandas.DataFrame.drop_duplicates">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pandas.DataFrame.</span></span><span class="sig-name descname"><span class="pre">drop_duplicates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pandas.DataFrame.drop_duplicates" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 </section>
@@ -1246,56 +557,58 @@ duplicated row will be returned (keep determines which row).</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">DataFrames in Arkouda</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame"><code class="docutils literal notranslate"><span class="pre">DataFrame</span></code></a></li>
 <li><a class="reference internal" href="#data-types">Data Types</a></li>
 <li><a class="reference internal" href="#iteration">Iteration</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.to_pandas"><code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.to_pandas"><code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#features">Features</a><ul>
 <li><a class="reference internal" href="#drop">Drop</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.drop"><code class="docutils literal notranslate"><span class="pre">drop()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.drop"><code class="docutils literal notranslate"><span class="pre">drop()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#groupby">GroupBy</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.groupby"><code class="docutils literal notranslate"><span class="pre">groupby()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.groupby"><code class="docutils literal notranslate"><span class="pre">groupby()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#copy">Copy</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.copy"><code class="docutils literal notranslate"><span class="pre">copy()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.copy"><code class="docutils literal notranslate"><span class="pre">copy()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#filter">Filter</a></li>
+<li><a class="reference internal" href="#filter">Filter</a><ul>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.filter_by_ranges"><code class="docutils literal notranslate"><span class="pre">filter_by_ranges()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#permutations">Permutations</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.apply_permutation"><code class="docutils literal notranslate"><span class="pre">apply_permutation()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.apply_permutation"><code class="docutils literal notranslate"><span class="pre">apply_permutation()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#sorting">Sorting</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.argsort"><code class="docutils literal notranslate"><span class="pre">argsort()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.DataFrame.coargsort"><code class="docutils literal notranslate"><span class="pre">coargsort()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.DataFrame.sort_values"><code class="docutils literal notranslate"><span class="pre">sort_values()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.argsort"><code class="docutils literal notranslate"><span class="pre">argsort()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.coargsort"><code class="docutils literal notranslate"><span class="pre">coargsort()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.sort_values"><code class="docutils literal notranslate"><span class="pre">sort_values()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#tail-head-of-data">Tail/Head of Data</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.tail"><code class="docutils literal notranslate"><span class="pre">tail()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.DataFrame.head"><code class="docutils literal notranslate"><span class="pre">head()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.tail"><code class="docutils literal notranslate"><span class="pre">tail()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.head"><code class="docutils literal notranslate"><span class="pre">head()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#rename-columns">Rename Columns</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.rename"><code class="docutils literal notranslate"><span class="pre">rename()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.rename"><code class="docutils literal notranslate"><span class="pre">rename()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#append">Append</a></li>
 <li><a class="reference internal" href="#concatenate">Concatenate</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.concat"><code class="docutils literal notranslate"><span class="pre">concat()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.concat"><code class="docutils literal notranslate"><span class="pre">concat()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#reset-indexes">Reset Indexes</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.reset_index"><code class="docutils literal notranslate"><span class="pre">reset_index()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.reset_index"><code class="docutils literal notranslate"><span class="pre">reset_index()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#deduplication">Deduplication</a><ul>
-<li><a class="reference internal" href="#arkouda.DataFrame.drop_duplicates"><code class="docutils literal notranslate"><span class="pre">drop_duplicates()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.DataFrame.drop_duplicates"><code class="docutils literal notranslate"><span class="pre">drop_duplicates()</span></code></a></li>
 </ul>
 </li>
 </ul>

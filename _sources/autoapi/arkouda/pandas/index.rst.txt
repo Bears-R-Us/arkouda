@@ -513,7 +513,7 @@ Package Contents
       instances of `type`.
 
 
-.. py:class:: ArkoudaCategorical(data: arkouda.categorical.Categorical | ArkoudaCategorical | numpy.ndarray | Sequence[Any])
+.. py:class:: ArkoudaCategorical(data: arkouda.pandas.categorical.Categorical | ArkoudaCategorical | numpy.ndarray | Sequence[Any])
 
    Bases: :py:obj:`arkouda.pandas.extension._arkouda_extension_array.ArkoudaExtensionArray`, :py:obj:`pandas.api.extensions.ExtensionArray`
 
@@ -1084,7 +1084,7 @@ Package Contents
 
    .. py:method:: to_ak_legacy() -> arkouda.pandas.dataframe.DataFrame
 
-      Convert this pandas DataFrame into the legacy :class:`arkouda.DataFrame`.
+      Convert this pandas DataFrame into the legacy :class:`arkouda.pandas.DataFrame`.
 
       This method performs a *materializing* conversion of a pandas DataFrame
       into the legacy Arkouda DataFrame structure. Every column is converted
@@ -1332,7 +1332,7 @@ Package Contents
 
 
 
-   .. py:method:: from_ak_legacy(akidx: Union[arkouda.index.Index, arkouda.index.MultiIndex]) -> Union[pandas.Index, pandas.MultiIndex]
+   .. py:method:: from_ak_legacy(akidx: Union[arkouda.pandas.index.Index, arkouda.pandas.index.MultiIndex]) -> Union[pandas.Index, pandas.MultiIndex]
       :staticmethod:
 
 
@@ -1447,8 +1447,8 @@ Package Contents
       Perform a server-side lookup on the underlying Arkouda index.
 
       This is a thin convenience wrapper around the legacy
-      :meth:`arkouda.index.Index.lookup` /
-      :meth:`arkouda.index.MultiIndex.lookup` methods. It converts the
+      :meth:`arkouda.pandas.index.Index.lookup` /
+      :meth:`arkouda.pandas.index.MultiIndex.lookup` methods. It converts the
       pandas index to a legacy Arkouda index, performs the lookup on the
       server, and returns the resulting boolean mask.
 
@@ -1498,7 +1498,7 @@ Package Contents
 
 
 
-   .. py:method:: to_ak_legacy() -> Union[arkouda.index.Index, arkouda.index.MultiIndex]
+   .. py:method:: to_ak_legacy() -> Union[arkouda.pandas.index.Index, arkouda.pandas.index.MultiIndex]
 
       Convert this pandas Index or MultiIndex into a legacy Arkouda
       ``ak.Index`` or ``ak.MultiIndex`` object.
@@ -2352,7 +2352,7 @@ Package Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.row import Row
+   >>> from arkouda.pandas.row import Row
    >>> df = ak.DataFrame({'x': ak.array([10, 20]), 'y': ak.array(['a', 'b'])})
 
    Suppose df[0] returns {'x': 10, 'y': 'a'}
@@ -2779,7 +2779,7 @@ Package Contents
       .. rubric:: Examples
 
       >>> import arkouda as ak
-      >>> from arkouda.series import Series
+      >>> from arkouda.pandas.series import Series
       >>> s = ak.Series(ak.arange(3))
       >>> s.memory_usage()
       48
@@ -3087,7 +3087,7 @@ Package Contents
 
 
 
-   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
+   .. py:method:: validate_key(key: Union[Series, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, List, supported_scalars, arkouda.numpy.segarray.SegArray]) -> Union[arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, supported_scalars, arkouda.numpy.segarray.SegArray]
 
       Validate type requirements for keys when reading or writing the Series.
 

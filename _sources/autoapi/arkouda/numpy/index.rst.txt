@@ -5505,7 +5505,7 @@ Package Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.util import broadcast_dims
+   >>> from arkouda.numpy.util import broadcast_dims
    >>> broadcast_dims((5, 1), (1, 3))
    (5, 3)
 
@@ -13967,7 +13967,7 @@ Package Contents
 
 
 
-.. py:function:: value_counts(pda: arkouda.numpy.pdarrayclass.pdarray) -> tuple[arkouda.groupbyclass.groupable, arkouda.numpy.pdarrayclass.pdarray]
+.. py:function:: value_counts(pda: arkouda.numpy.pdarrayclass.pdarray) -> tuple[arkouda.pandas.groupbyclass.groupable, arkouda.numpy.pdarrayclass.pdarray]
 
    Count the occurrences of the unique values of an array.
 

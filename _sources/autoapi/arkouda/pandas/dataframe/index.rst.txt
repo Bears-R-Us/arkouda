@@ -492,7 +492,7 @@ Module Contents
       An Index where the values are the column names of the dataframe.
 
       :returns: The values of the index are the column names of the dataframe.
-      :rtype: arkouda.index.Index
+      :rtype: arkouda.pandas.index.Index
 
       .. rubric:: Examples
 
@@ -970,7 +970,7 @@ Module Contents
       3   NaN     7 (4 rows x 2 columns)
 
       >>> df.groupby("col1") # doctest: +SKIP
-      <arkouda.groupbyclass.GroupBy object at 0x795584773f00>
+      <arkouda.pandas.groupbyclass.GroupBy object at 0x795584773f00>
       >>> df.groupby("col1").size()
       col1
       1.0    2
@@ -1042,7 +1042,7 @@ Module Contents
       The index of the dataframe.
 
       :returns: The index of the dataframe.
-      :rtype: arkouda.index.Index or arkouda.index.MultiIndex
+      :rtype: arkouda.pandas.index.Index or arkouda.pandas.index.MultiIndex
 
       .. rubric:: Examples
 
@@ -1262,7 +1262,7 @@ Module Contents
                 is the memory usage of each column in bytes.
       :rtype: Series
 
-      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.index.Index.memory_usage`, :py:obj:`arkouda.index.MultiIndex.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`
+      .. seealso:: :py:obj:`arkouda.numpy.pdarrayclass.nbytes`, :py:obj:`arkouda.pandas.index.Index.memory_usage`, :py:obj:`arkouda.pandas.index.MultiIndex.memory_usage`, :py:obj:`arkouda.pandas.series.Series.memory_usage`
 
       .. rubric:: Examples
 
@@ -2657,7 +2657,7 @@ Module Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> from arkouda.index import Index
+   >>> from arkouda.pandas.index import Index
    >>> i = Index(ak.array([1,2,0,5,4]))
    >>> perm = i.argsort()
    >>> print(perm)

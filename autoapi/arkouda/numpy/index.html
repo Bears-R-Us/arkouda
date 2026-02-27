@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="arkouda.numpy.alignment" href="alignment/index.html"><link rel="prev" title="arkouda.message" href="../message/index.html">
+<link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="arkouda.numpy.alignment" href="alignment/index.html"><link rel="prev" title="arkouda.history" href="../history/index.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>arkouda.numpy - arkouda documentation</title>
@@ -233,8 +233,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../CONTRIBUTING_LINK.html">Contributing</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../index.html">arkouda</a><input aria-label="Toggle navigation of arkouda" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../accessor/index.html">arkouda.accessor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../alignment/index.html">arkouda.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apply/index.html">arkouda.apply</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../array_api/index.html">arkouda.array_api</a><input aria-label="Toggle navigation of arkouda.array_api" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../array_api/array_object/index.html">arkouda.array_api.array_object</a></li>
@@ -251,7 +249,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../array_api/utility_functions/index.html">arkouda.array_api.utility_functions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../client/index.html">arkouda.client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../client_dtypes/index.html">arkouda.client_dtypes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../comm_diagnostics/index.html">arkouda.comm_diagnostics</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../core/index.html">arkouda.core</a><input aria-label="Toggle navigation of arkouda.core" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -262,9 +259,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../history/index.html">arkouda.history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../infoclass/index.html">arkouda.infoclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logger/index.html">arkouda.logger</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../message/index.html">arkouda.message</a></li>
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">arkouda.numpy</a><input aria-label="Toggle navigation of arkouda.numpy" checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="alignment/index.html">arkouda.numpy.alignment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="char/index.html">arkouda.numpy.char</a></li>
@@ -328,7 +322,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../scipy/stats/index.html">arkouda.scipy.stats</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../security/index.html">arkouda.security</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../testing/index.html">arkouda.testing</a></li>
 </ul>
 </li>
@@ -1303,7 +1296,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.unsqueeze" title="arkouda.numpy.unsqueeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsqueeze</span></code></a>(p)</p></td>
 <td><p>Ensure that the input is returned as a list.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.value_counts" title="arkouda.numpy.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(→ tuple[arkouda.groupbyclass.groupable, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.value_counts" title="arkouda.numpy.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(...)</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.vecdot" title="arkouda.numpy.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vecdot</span></code></a>(→ Union[arkouda.numpy.dtypes.numeric_scalars, ...)</p></td>
@@ -6652,7 +6645,7 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The array to sort (supported: int64, uint64, float64 for pdarray).</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to sort (supported: int64, uint64, float64 for pdarray).</p></li>
 <li><p><strong>algorithm</strong> (<a class="reference internal" href="#arkouda.numpy.SortingAlgorithm" title="arkouda.numpy.SortingAlgorithm"><em>SortingAlgorithm</em></a><em>, </em><em>default SortingAlgorithm.RadixSortLSD</em>) – The algorithm to use for sorting.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>default 0</em>) – Axis to sort along. Negative values are normalized against the array rank.
 For 1D types (Strings, Categorical), must be 0.</p></li>
@@ -7462,7 +7455,7 @@ to compute the shape resulting from broadcasting two arrays together.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_dims</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">broadcast_dims</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">broadcast_dims</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="go">(5, 3)</span>
 </pre></div>
@@ -8053,7 +8046,7 @@ False</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The array of values to cast</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array of values to cast</p></li>
 <li><p><strong>dt</strong> (<em>np.dtype</em><em>, </em><a class="reference internal" href="../index.html#arkouda.ArkoudaBigintDtype.type" title="arkouda.ArkoudaBigintDtype.type"><em>type</em></a><em>, </em><a class="reference internal" href="../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, or </em><a class="reference internal" href="#arkouda.numpy.bigint" title="arkouda.numpy.bigint"><em>bigint</em></a>) – The target dtype to cast values to</p></li>
 <li><p><strong>errors</strong> (<em>{strict</em><em>, </em><a class="reference internal" href="#arkouda.numpy.ErrorMode.ignore" title="arkouda.numpy.ErrorMode.ignore"><em>ignore</em></a><em>, </em><em>return_validity}</em><em>, </em><em>default=ErrorMode.strict</em>) – <p>Controls how errors are handled when casting strings to a numeric type
 (ignored for casts from numeric types).</p>
@@ -8086,7 +8079,7 @@ returned with True where the cast succeeded and False where it failed.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical">Categorical</a>], Tuple[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]]</p>
+<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, <a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>], Tuple[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>]]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -8293,7 +8286,7 @@ columns, but not Strings or Categoricals — those are grouped, not ordered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>Sequence</em><em> of </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.</p></li>
+<li><p><strong>arrays</strong> (<em>Sequence</em><em> of </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The columns (int64, uint64, float64, Strings, or Categorical) to sort by row.</p></li>
 <li><p><strong>algorithm</strong> (<a class="reference internal" href="#arkouda.numpy.SortingAlgorithm" title="arkouda.numpy.SortingAlgorithm"><em>SortingAlgorithm</em></a><em>, </em><em>default=SortingAlgorithm.RadixSortLSD</em>) – The algorithm to be used for sorting the arrays.</p></li>
 <li><p><strong>ascending</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – Whether to sort in ascending order. Ignored when arrays have ndim &gt; 1.</p></li>
 </ul>
@@ -8378,7 +8371,7 @@ one <code class="docutils literal notranslate"><span class="pre">pdarray</span><
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
+<li><p><strong>arrays</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>,</em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>]</em><em>]</em>) – The arrays to concatenate. Must all have same dtype.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>default = 0</em>) – The axis along which the arrays will be joined.
 If axis is None, arrays are flattened before use. Only for use with pdarray, and when
 ordered is True. Default is 0.</p></li>
@@ -8393,7 +8386,7 @@ results in non-deterministic ordering of elements.</p></li>
 the original order</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>,<a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>,<a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical">Categorical</a>]</p>
+<dd class="field-odd"><p><a class="reference internal" href="dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>,<a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>,<a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -9793,7 +9786,7 @@ instantiation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – <p>Reverse the order of elements in an array along the given axis.</p>
+<li><p><strong>x</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – <p>Reverse the order of elements in an array along the given axis.</p>
 <p>The shape of the array is preserved, but the elements are reordered.</p>
 </p></li>
 <li><p><strong>axis</strong> (<em>int</em><em> or </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>...</em><em>]</em><em>, </em><em>optional</em>) – The axis or axes along which to flip the array. If None, flip the array along all axes.</p></li>
@@ -9803,7 +9796,7 @@ instantiation.</p>
 <dd class="field-even"><p>An array with the entries of axis reversed.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, or <a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical">Categorical</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, or <a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>IndexError</strong> – Raised if operation fails server-side.</p>
@@ -10484,7 +10477,7 @@ value, and <code class="docutils literal notranslate"><span class="pre">False</s
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em>     or </em><em>List</em><em> of </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>pda</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>     or </em><em>List</em><em> of </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>full</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – This is only used when a single pdarray is passed into hash
 By default, a 128-bit hash is computed and returned as
 two int64 arrays. If full=False, then a 64-bit hash
@@ -10888,8 +10881,8 @@ shape as <code class="docutils literal notranslate"><span class="pre">A</span></
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – Entries will be tested for membership in B</p></li>
-<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The set of elements in which to test membership</p></li>
+<li><p><strong>A</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Entries will be tested for membership in B</p></li>
+<li><p><strong>B</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The set of elements in which to test membership</p></li>
 <li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>defaults to False</em>) – If true, assume rows of a and b are each unique and sorted.
 By default, sort and unique them explicitly.</p></li>
 <li><p><strong>symmetric</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>defaults to False</em>) – Return in1d(A, B), in1d(B, A) when A and B are single items.</p></li>
@@ -10999,8 +10992,8 @@ When duplicate terms are present in search space return indices of all occurrenc
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>query</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The items to search for. If multiple arrays, each “row” is an item.</p></li>
-<li><p><strong>space</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>) – The set of items in which to search. Must have same shape/dtype as query.</p></li>
+<li><p><strong>query</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The items to search for. If multiple arrays, each “row” is an item.</p></li>
+<li><p><strong>space</strong> (<em>(</em><em>sequence of</em><em>) </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em> or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The set of items in which to search. Must have same shape/dtype as query.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -11305,8 +11298,8 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
@@ -15587,8 +15580,8 @@ If the dtype of <cite>a</cite> and <cite>v</cite> does not match</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
@@ -15688,8 +15681,8 @@ input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 <li><p><strong>assume_unique</strong> (<a class="reference internal" href="#arkouda.numpy.bool" title="arkouda.numpy.bool"><em>bool</em></a>) – If True, the input arrays are both assumed to be unique, which
 can speed up the calculation.  Default is False.</p></li>
 </ul>
@@ -17341,8 +17334,8 @@ of the two input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
-<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar1</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
+<li><p><strong>ar2</strong> (<em>list</em><em> of </em><em>pdarrays</em><em>, </em><a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -17453,7 +17446,7 @@ If the input is a single pdarray, Strings, or Categorical object, wrap it in a l
 Otherwise, return the input unchanged.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>p</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><em>Categorical</em></a><em>, or </em><em>Sequence</em>) – The input object to be wrapped or returned as-is.</p>
+<dd class="field-odd"><p><strong>p</strong> (<a class="reference internal" href="#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, or </em><em>Sequence</em>) – The input object to be wrapped or returned as-is.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list containing the input, or the input itself if it is already a sequence.</p>
@@ -17504,7 +17497,7 @@ Analogous to the builtin <cite>int.bit_count</cite> or <code class="docutils lit
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.value_counts">
-<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">arkouda.groupbyclass.groupable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/numeric.html#value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.value_counts" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.numpy.</span></span><span class="sig-name descname"><span class="pre">value_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">arkouda.pandas.groupbyclass.groupable</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/arkouda/numpy/numeric.html#value_counts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.value_counts" title="Link to this definition">¶</a></dt>
 <dd><p>Count the occurrences of the unique values of an array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -17876,14 +17869,14 @@ pdarray.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../message/index.html">
+          <a class="prev-page" href="../history/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">arkouda.message</div>
+                <div class="title">arkouda.history</div>
                 
               </div>
             </a>
