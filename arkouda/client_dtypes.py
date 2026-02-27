@@ -49,8 +49,6 @@ array([True True])
 
 """
 
-import warnings
-
 from functools import partial
 from ipaddress import ip_address as _ip_address
 from typing import TYPE_CHECKING, Literal, Optional, TypeVar, Union
@@ -104,37 +102,6 @@ def bit_vectorizer(width=64, reverse=False):
 
     """
     return partial(BitVector, width=width, reverse=reverse)
-
-
-def BitVectorizer(*args, **kwargs):
-    """
-    Deprecated alias for :func:`bit_vectorizer`.
-
-    This function exists for backward compatibility only. Use
-    :func:`bit_vectorizer` instead.
-
-    Parameters
-    ----------
-    *args : tuple
-        Positional arguments forwarded to :func:`bit_vectorizer`.
-    **kwargs : dict
-        Keyword arguments forwarded to :func:`bit_vectorizer`.
-
-    Returns
-    -------
-    bitvectorizer : callable
-        A function that takes an array and returns a BitVector instance.
-
-    See Also
-    --------
-    bit_vectorizer : Preferred replacement.
-    """
-    warnings.warn(
-        "BitVectorizer is deprecated; use bit_vectorizer",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return bit_vectorizer(*args, **kwargs)
 
 
 class BitVector(pdarray):

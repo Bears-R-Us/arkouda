@@ -35,7 +35,7 @@ Notes
 
 See Also
 --------
-arkouda.strings.Strings
+arkouda.numpy.strings.Strings
 arkouda.core.client.regexMaxCaptures
 
 """

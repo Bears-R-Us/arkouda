@@ -713,14 +713,14 @@ class Series:
 
         # ---- Series key: preserve its index, lookup by its values (Arkouda Series)
         if isinstance(key, Series):
-            return Series(index=key.index, data=lookup(self.index.index, self.values, key.values))
+            return Series(index=key.index, data=lookup(self.index.values, self.values, key.values))
 
         # ---- Direct index objects
         if isinstance(key, MultiIndex):
             return finalize(self.index.lookup(key.index))
 
         if isinstance(key, Index):
-            return finalize(self.index.lookup(key.index))
+            return finalize(self.index.lookup(key.values))
 
         # ---- pdarray key
         if isinstance(key, pdarray):
@@ -799,8 +799,8 @@ class Series:
                     return cls((self.index, operator(self.values, other.values)))
                 else:
                     idx = self.index._merge(other.index).index
-                    a = lookup(self.index.index, self.values, idx, fillvalue=0)
-                    b = lookup(other.index.index, other.values, idx, fillvalue=0)
+                    a = lookup(self.index.values, self.values, idx, fillvalue=0)
+                    b = lookup(other.index.values, other.values, idx, fillvalue=0)
                     return cls((idx, operator(a, b)))
             else:
                 return cls((self.index, operator(self.values, other)))
@@ -823,7 +823,7 @@ class Series:
 
     @typechecked
     def add(self, b: Series) -> Series:
-        index = self.index.concat(b.index).index
+        index = self.index.concat(b.index).values
 
         values = concatenate([self.values, b.values], ordered=False)
 
@@ -852,7 +852,7 @@ class Series:
         idx = argmaxk(v, n)
         idx = idx[-1 : -n - 1 : -1]
 
-        return Series(index=k.index[idx], data=v[idx])
+        return Series(index=k.values[idx], data=v[idx])
 
     def _reindex(self, idx):
         if isinstance(self.index, MultiIndex):
@@ -921,13 +921,13 @@ class Series:
     def tail(self, n: int = 10) -> Series:
         """Return the last n values of the series."""
         idx_series = self.index[-n:]
-        return Series(index=idx_series.index, data=self.values[-n:])
+        return Series(index=idx_series.values, data=self.values[-n:])
 
     @typechecked
     def head(self, n: int = 10) -> Series:
         """Return the first n values of the series."""
         idx_series = self.index[0:n]
-        return Series(index=idx_series.index, data=self.values[0:n])
+        return Series(index=idx_series.values, data=self.values[0:n])
 
     @typechecked
     def to_pandas(self) -> pd.Series:
@@ -1391,7 +1391,7 @@ class Series:
                 if value_labels is not None:
                     # Expect value_labels to always be not None; were doing the check for mypy
                     for col, label in zip(arrays, value_labels):
-                        data[str(label)] = lookup(col.index.index, col.values, idx.index, fillvalue=0)
+                        data[str(label)] = lookup(col.index.values, col.values, idx.values, fillvalue=0)
 
             return arkouda.pandas.dataframe.DataFrame(data)
         else:
@@ -1401,7 +1401,7 @@ class Series:
             for other in arrays[1:]:
                 idx = idx.concat(other.index)
                 v = concatenate([v, other.values], ordered=True)
-            return Series(index=idx.index, data=v)
+            return Series(index=idx.values, data=v)
 
     def map(self, arg: Union[dict, Series]) -> Series:
         """

@@ -559,7 +559,7 @@ class TestDataFrame:
         assert_frame_equal(ref_df, df.to_pandas())
 
         idx = np.arange(8)
-        assert idx.tolist() == df.index.index.tolist()
+        assert idx.tolist() == df.index.values.tolist()
 
         df_keyerror = self.build_ak_keyerror()
         with pytest.raises(KeyError):
@@ -1017,7 +1017,7 @@ class TestDataFrame:
 
         # test against series
         i = ak.Index(ak.arange(2))
-        s = ak.Series(data=ak.array([3, 9]), index=i.index)
+        s = ak.Series(data=ak.array([3, 9]), index=i.values)
         test_df = df.isin(s)
         assert test_df["col_A"].tolist() == [False, False]
         assert test_df["col_B"].tolist() == [False, True]
@@ -1077,11 +1077,11 @@ class TestDataFrame:
 
         bool_idx = df[df["cnt"] > 3]
         bool_idx.__repr__()
-        assert bool_idx.index.index.tolist() == list(range(4, 65))
+        assert bool_idx.index.values.tolist() == list(range(4, 65))
 
         slice_idx = df[:]
         slice_idx.__repr__()
-        assert slice_idx.index.index.tolist() == list(range(65))
+        assert slice_idx.index.values.tolist() == list(range(65))
 
         # verify it persists non-int Index
         idx = ak.concatenate([ak.zeros(5, bool), ak.ones(60, bool)])
@@ -1091,11 +1091,11 @@ class TestDataFrame:
         bool_idx.__repr__()
         # the new index is first False and rest True (because we lose first 4),
         # so equivalent to arange(61, bool)
-        assert bool_idx.index.index.tolist() == ak.arange(61, dtype=bool).tolist()
+        assert bool_idx.index.values.tolist() == ak.arange(61, dtype=bool).tolist()
 
         slice_idx = df[:]
         slice_idx.__repr__()
-        assert slice_idx.index.index.tolist() == idx.tolist()
+        assert slice_idx.index.values.tolist() == idx.tolist()
 
     def test_subset(self):
         df = ak.DataFrame(

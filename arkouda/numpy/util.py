@@ -1059,7 +1059,7 @@ def map(
         # Normalize mapping index keys into a "groupable" (single array OR tuple-of-arrays)
         mindex = mapping.index
         if isinstance(mindex, MultiIndex):
-            mkeys = tuple(mindex.index)
+            mkeys = tuple(mindex.values)
         else:
             mkeys = mindex.values
 
