@@ -609,14 +609,8 @@ to Python users.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.date_operators" title="arkouda.date_operators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">date_operators</span></code></a>(cls)</p></td>
 <td><p>Add common datetime operation methods to a DatetimeAccessor class.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.disableVerbose" title="arkouda.disableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disableVerbose</span></code></a>([logLevel])</p></td>
-<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a>(→ None)</p></td>
 <td><p>Disables verbose logging.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.enableVerbose" title="arkouda.enableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enableVerbose</span></code></a>()</p></td>
-<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a>(→ None)</p></td>
 <td><p>Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.</p></td>
@@ -2598,17 +2592,6 @@ work in initialization.</p>
 <dt class="sig sig-object py" id="arkouda.Categorical.BinOps">
 <span class="sig-name descname"><span class="pre">BinOps</span></span><a class="headerlink" href="#arkouda.Categorical.BinOps" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="arkouda.Categorical.NAvalue">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NAvalue</span></span><a class="headerlink" href="#arkouda.Categorical.NAvalue" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <cite>na_value</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Same value as <cite>na_value</cite>.</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Categorical.RegisterablePieces">
@@ -6539,33 +6522,6 @@ If a tuple of array-like objects, returns a MultiIndex.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="arkouda.Index.index">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.Index.index" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <cite>values</cite>.</p>
-<p>This property is maintained for backward compatibility and returns the same
-array as the <cite>values</cite> attribute. It will be removed in a future release;
-use <cite>values</cite> directly instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><em>arkouda.numpy.pdarray</em> – The underlying values of this object (same as <cite>values</cite>).</p></li>
-<li><p><em>Deprecated</em></p></li>
-<li><p><em>———-</em></p></li>
-<li><p>Use the <cite>values</cite> attribute directly. This alias will be removed in a future release.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span><span class="o">.</span><span class="n">index</span>
-<span class="go">array([1 2 3])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.Index.inferred_type">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">inferred_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><a class="headerlink" href="#arkouda.Index.inferred_type" title="Link to this definition">¶</a></dt>
 <dd><p>Return a string of the type inferred from the values.</p>
@@ -9355,36 +9311,6 @@ both the number of elements and number of bytes required for the join.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.disableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/core/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.disableVerbose" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p>
-<p>This function exists for backward compatibility only. Use
-<a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a> instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logLevel</strong> (<a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><em>LogLevel</em></a><em>, </em><em>default LogLevel.INFO</em>) – The log level to apply to all ArkoudaLoggers, disabling
-verbose (DEBUG-level) output.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Warns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">disableVerbose</span></code> is deprecated and will be removed
-in a future release.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#arkouda.disable_verbose" title="arkouda.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a></dt><dd><p>Disable verbose logging for all loggers.</p>
-</dd>
-<dt><a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose logging for all loggers.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.disable_verbose">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">disable_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.LogLevel" title="arkouda.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/arkouda/core/logger.html#disable_verbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.disable_verbose" title="Link to this definition">¶</a></dt>
 <dd><p>Disables verbose logging.</p>
@@ -9398,30 +9324,6 @@ the log level for each to the logLevel parameter.</p>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if logLevel is not a LogLevel enum</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.enableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">enableVerbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/core/logger.html#enableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.enableVerbose" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p>
-<p>This function exists for backward compatibility only. Use
-<a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a> instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Warns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">enableVerbose</span></code> is deprecated and will be removed
-in a future release.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#arkouda.enable_verbose" title="arkouda.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose (DEBUG-level) logging for all loggers.</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 <dl class="py function">
@@ -11377,7 +11279,6 @@ Defaults to LogLevel.INFO</p></li>
 <li><a class="reference internal" href="#arkouda.Categorical.ndim"><code class="docutils literal notranslate"><span class="pre">Categorical.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.shape"><code class="docutils literal notranslate"><span class="pre">Categorical.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.BinOps"><code class="docutils literal notranslate"><span class="pre">Categorical.BinOps</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.Categorical.NAvalue"><code class="docutils literal notranslate"><span class="pre">Categorical.NAvalue</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.RegisterablePieces"><code class="docutils literal notranslate"><span class="pre">Categorical.RegisterablePieces</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.RequiredPieces"><code class="docutils literal notranslate"><span class="pre">Categorical.RequiredPieces</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Categorical.argsort"><code class="docutils literal notranslate"><span class="pre">Categorical.argsort()</span></code></a></li>
@@ -11520,7 +11421,6 @@ Defaults to LogLevel.INFO</p></li>
 <li><a class="reference internal" href="#arkouda.Index.equals"><code class="docutils literal notranslate"><span class="pre">Index.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.factory"><code class="docutils literal notranslate"><span class="pre">Index.factory()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Index.from_return_msg()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.Index.index"><code class="docutils literal notranslate"><span class="pre">Index.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.inferred_type"><code class="docutils literal notranslate"><span class="pre">Index.inferred_type</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.is_registered"><code class="docutils literal notranslate"><span class="pre">Index.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.Index.is_unique"><code class="docutils literal notranslate"><span class="pre">Index.is_unique</span></code></a></li>
@@ -11671,9 +11571,7 @@ Defaults to LogLevel.INFO</p></li>
 <li><a class="reference internal" href="#arkouda.chisquare"><code class="docutils literal notranslate"><span class="pre">chisquare()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.compute_join_size"><code class="docutils literal notranslate"><span class="pre">compute_join_size()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.date_operators"><code class="docutils literal notranslate"><span class="pre">date_operators()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.disableVerbose"><code class="docutils literal notranslate"><span class="pre">disableVerbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.disable_verbose"><code class="docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.enableVerbose"><code class="docutils literal notranslate"><span class="pre">enableVerbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.enable_verbose"><code class="docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.from_series"><code class="docutils literal notranslate"><span class="pre">from_series()</span></code></a></li>

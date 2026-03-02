@@ -102,11 +102,6 @@ Functions
    arkouda.numpy.dtypes.dtype_for_chapel
    arkouda.numpy.dtypes.get_byteorder
    arkouda.numpy.dtypes.get_server_byteorder
-   arkouda.numpy.dtypes.isSupportedBool
-   arkouda.numpy.dtypes.isSupportedDType
-   arkouda.numpy.dtypes.isSupportedFloat
-   arkouda.numpy.dtypes.isSupportedInt
-   arkouda.numpy.dtypes.isSupportedNumber
    arkouda.numpy.dtypes.is_supported_bool
    arkouda.numpy.dtypes.is_supported_dtype
    arkouda.numpy.dtypes.is_supported_float
@@ -2308,106 +2303,6 @@ Module Contents
 
 
    .. py:method:: copy_with(params)
-
-
-.. py:function:: isSupportedBool(num)
-
-   Deprecated alias for :func:`is_supported_bool`.
-
-   This function exists for backward compatibility only. Use
-   :func:`is_supported_bool` instead.
-
-   :param num: A scalar value to test.
-   :type num: object
-
-   :returns: True if ``num`` is an arkouda-supported boolean dtype,
-             otherwise False.
-   :rtype: bool
-
-   .. seealso::
-
-      :py:obj:`is_supported_bool`
-          Preferred replacement.
-
-
-.. py:function:: isSupportedDType(num)
-
-   Deprecated alias for :func:`is_supported_dtype`.
-
-   This function exists for backward compatibility only. Use
-   :func:`is_supported_dtype` instead.
-
-   :param num: A scalar value to test.
-   :type num: object
-
-   :returns: True if ``num`` is an arkouda-supported dtype,
-             otherwise False.
-   :rtype: bool
-
-   .. seealso::
-
-      :py:obj:`is_supported_dtype`
-          Preferred replacement.
-
-
-.. py:function:: isSupportedFloat(num)
-
-   Deprecated alias for :func:`is_supported_float`.
-
-   This function exists for backward compatibility only. Use
-   :func:`is_supported_float` instead.
-
-   :param num: A scalar value to test.
-   :type num: object
-
-   :returns: True if ``num`` is an arkouda-supported float dtype,
-             otherwise False.
-   :rtype: bool
-
-   .. seealso::
-
-      :py:obj:`is_supported_float`
-          Preferred replacement.
-
-
-.. py:function:: isSupportedInt(num)
-
-   Deprecated alias for :func:`is_supported_int`.
-
-   This function exists for backward compatibility only. Use
-   :func:`is_supported_int` instead.
-
-   :param num: A scalar value to test.
-   :type num: object
-
-   :returns: True if ``num`` is an arkouda-supported integer dtype,
-             otherwise False.
-   :rtype: bool
-
-   .. seealso::
-
-      :py:obj:`is_supported_int`
-          Preferred replacement.
-
-
-.. py:function:: isSupportedNumber(num)
-
-   Deprecated alias for :func:`is_supported_number`.
-
-   This function exists for backward compatibility only. Use
-   :func:`is_supported_number` instead.
-
-   :param num: A scalar value to test.
-   :type num: object
-
-   :returns: True if ``num`` is an arkouda-supported numeric dtype,
-             otherwise False.
-   :rtype: bool
-
-   .. seealso::
-
-      :py:obj:`is_supported_number`
-          Preferred replacement.
 
 
 .. py:function:: is_supported_bool(num) -> TypeGuard[bool_scalars]

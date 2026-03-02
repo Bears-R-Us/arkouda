@@ -123,13 +123,6 @@ Module Contents
    .. py:attribute:: BinOps
 
 
-   .. py:property:: NAvalue
-
-      Deprecated alias for `na_value`.
-
-      :rtype: Same value as `na_value`.
-
-
    .. py:attribute:: RegisterablePieces
 
 

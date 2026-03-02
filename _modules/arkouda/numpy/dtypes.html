@@ -375,7 +375,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: F401</span>
@@ -531,11 +530,6 @@
     <span class="s2">&quot;ULongLongDType&quot;</span><span class="p">,</span>
     <span class="s2">&quot;UShortDType&quot;</span><span class="p">,</span>
     <span class="s2">&quot;VoidDType&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isSupportedDType&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isSupportedInt&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isSupportedFloat&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isSupportedBool&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isSupportedNumber&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -1272,39 +1266,6 @@
 
 
 
-<div class="viewcode-block" id="isSupportedInt">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedInt">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedInt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deprecated alias for :func:`is_supported_int`.</span>
-
-<span class="sd">    This function exists for backward compatibility only. Use</span>
-<span class="sd">    :func:`is_supported_int` instead.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    num : object</span>
-<span class="sd">        A scalar value to test.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        True if ``num`` is an arkouda-supported integer dtype,</span>
-<span class="sd">        otherwise False.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    is_supported_int : Preferred replacement.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;isSupportedInt is deprecated; use is_supported_int instead&quot;</span><span class="p">,</span>
-        <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">is_supported_int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="is_supported_float">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_float">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">float_scalars</span><span class="p">]:</span>
@@ -1331,39 +1292,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_FLOATS</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="isSupportedFloat">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedFloat">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedFloat</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deprecated alias for :func:`is_supported_float`.</span>
-
-<span class="sd">    This function exists for backward compatibility only. Use</span>
-<span class="sd">    :func:`is_supported_float` instead.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    num : object</span>
-<span class="sd">        A scalar value to test.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        True if ``num`` is an arkouda-supported float dtype,</span>
-<span class="sd">        otherwise False.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    is_supported_float : Preferred replacement.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;isSupportedFloat is deprecated; use is_supported_float instead&quot;</span><span class="p">,</span>
-        <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">is_supported_float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
 
 
 
@@ -1396,39 +1324,6 @@
 
 
 
-<div class="viewcode-block" id="isSupportedNumber">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedNumber">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedNumber</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deprecated alias for :func:`is_supported_number`.</span>
-
-<span class="sd">    This function exists for backward compatibility only. Use</span>
-<span class="sd">    :func:`is_supported_number` instead.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    num : object</span>
-<span class="sd">        A scalar value to test.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        True if ``num`` is an arkouda-supported numeric dtype,</span>
-<span class="sd">        otherwise False.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    is_supported_number : Preferred replacement.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;isSupportedNumber is deprecated; use is_supported_number instead&quot;</span><span class="p">,</span>
-        <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">is_supported_number</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="is_supported_bool">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_bool">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_bool</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGuard</span><span class="p">[</span><span class="n">bool_scalars</span><span class="p">]:</span>
@@ -1458,39 +1353,6 @@
 
 
 
-<div class="viewcode-block" id="isSupportedBool">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedBool">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedBool</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deprecated alias for :func:`is_supported_bool`.</span>
-
-<span class="sd">    This function exists for backward compatibility only. Use</span>
-<span class="sd">    :func:`is_supported_bool` instead.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    num : object</span>
-<span class="sd">        A scalar value to test.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        True if ``num`` is an arkouda-supported boolean dtype,</span>
-<span class="sd">        otherwise False.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    is_supported_bool : Preferred replacement.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;isSupportedBool is deprecated; use is_supported_bool instead&quot;</span><span class="p">,</span>
-        <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">is_supported_bool</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="is_supported_dtype">
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.is_supported_dtype">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_dtype</span><span class="p">(</span><span class="n">scalar</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
@@ -1516,39 +1378,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">ARKOUDA_SUPPORTED_DTYPES</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="isSupportedDType">
-<a class="viewcode-back" href="../../../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtypes.isSupportedDType">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">isSupportedDType</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deprecated alias for :func:`is_supported_dtype`.</span>
-
-<span class="sd">    This function exists for backward compatibility only. Use</span>
-<span class="sd">    :func:`is_supported_dtype` instead.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    num : object</span>
-<span class="sd">        A scalar value to test.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    bool</span>
-<span class="sd">        True if ``num`` is an arkouda-supported dtype,</span>
-<span class="sd">        otherwise False.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    is_supported_dtype : Preferred replacement.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-        <span class="s2">&quot;isSupportedDType is deprecated; use is_supported_dtype instead&quot;</span><span class="p">,</span>
-        <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">is_supported_dtype</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
 
 
 

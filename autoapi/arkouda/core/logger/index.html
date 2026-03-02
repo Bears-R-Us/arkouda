@@ -451,14 +451,8 @@ log formatting, and runtime handler reconfiguration.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.logger.disableVerbose" title="arkouda.core.logger.disableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disableVerbose</span></code></a>([logLevel])</p></td>
-<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.core.logger.disable_verbose" title="arkouda.core.logger.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.logger.disable_verbose" title="arkouda.core.logger.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.logger.disable_verbose" title="arkouda.core.logger.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a>(→ None)</p></td>
 <td><p>Disables verbose logging.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.core.logger.enableVerbose" title="arkouda.core.logger.enableVerbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enableVerbose</span></code></a>()</p></td>
-<td><p>Deprecated alias for <a class="reference internal" href="#arkouda.core.logger.enable_verbose" title="arkouda.core.logger.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.core.logger.enable_verbose" title="arkouda.core.logger.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a>(→ None)</p></td>
 <td><p>Enable verbose logging (DEBUG log level) for all ArkoudaLoggers.</p></td>
@@ -523,36 +517,6 @@ instances. These are mapped internally to the standard Python <cite>logging</cit
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.core.logger.disableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.core.logger.</span></span><span class="sig-name descname"><span class="pre">disableVerbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.core.logger.LogLevel" title="arkouda.core.logger.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/core/logger.html#disableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.core.logger.disableVerbose" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.core.logger.disable_verbose" title="arkouda.core.logger.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a>.</p>
-<p>This function exists for backward compatibility only. Use
-<a class="reference internal" href="#arkouda.core.logger.disable_verbose" title="arkouda.core.logger.disable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a> instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logLevel</strong> (<a class="reference internal" href="#arkouda.core.logger.LogLevel" title="arkouda.core.logger.LogLevel"><em>LogLevel</em></a><em>, </em><em>default LogLevel.INFO</em>) – The log level to apply to all ArkoudaLoggers, disabling
-verbose (DEBUG-level) output.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Warns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">disableVerbose</span></code> is deprecated and will be removed
-in a future release.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#arkouda.core.logger.disable_verbose" title="arkouda.core.logger.disable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_verbose</span></code></a></dt><dd><p>Disable verbose logging for all loggers.</p>
-</dd>
-<dt><a class="reference internal" href="#arkouda.core.logger.enable_verbose" title="arkouda.core.logger.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose logging for all loggers.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="arkouda.core.logger.disable_verbose">
 <span class="sig-prename descclassname"><span class="pre">arkouda.core.logger.</span></span><span class="sig-name descname"><span class="pre">disable_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logLevel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.core.logger.LogLevel" title="arkouda.core.logger.LogLevel"><span class="pre">LogLevel</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">LogLevel.INFO</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/core/logger.html#disable_verbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.core.logger.disable_verbose" title="Link to this definition">¶</a></dt>
 <dd><p>Disables verbose logging.</p>
@@ -566,30 +530,6 @@ the log level for each to the logLevel parameter.</p>
 <dd class="field-even"><p><strong>TypeError</strong> – Raised if logLevel is not a LogLevel enum</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="arkouda.core.logger.enableVerbose">
-<span class="sig-prename descclassname"><span class="pre">arkouda.core.logger.</span></span><span class="sig-name descname"><span class="pre">enableVerbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/core/logger.html#enableVerbose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.core.logger.enableVerbose" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <a class="reference internal" href="#arkouda.core.logger.enable_verbose" title="arkouda.core.logger.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a>.</p>
-<p>This function exists for backward compatibility only. Use
-<a class="reference internal" href="#arkouda.core.logger.enable_verbose" title="arkouda.core.logger.enable_verbose"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a> instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Warns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>DeprecationWarning</strong> – Always raised. <code class="docutils literal notranslate"><span class="pre">enableVerbose</span></code> is deprecated and will be removed
-in a future release.</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#arkouda.core.logger.enable_verbose" title="arkouda.core.logger.enable_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_verbose</span></code></a></dt><dd><p>Enable verbose (DEBUG-level) logging for all loggers.</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 <dl class="py function">
@@ -694,9 +634,7 @@ Defaults to LogLevel.INFO</p></li>
 <li><a class="reference internal" href="#arkouda.core.logger.LogLevel.WARN"><code class="docutils literal notranslate"><span class="pre">LogLevel.WARN</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#arkouda.core.logger.disableVerbose"><code class="docutils literal notranslate"><span class="pre">disableVerbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.core.logger.disable_verbose"><code class="docutils literal notranslate"><span class="pre">disable_verbose()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.core.logger.enableVerbose"><code class="docutils literal notranslate"><span class="pre">enableVerbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.core.logger.enable_verbose"><code class="docutils literal notranslate"><span class="pre">enable_verbose()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.core.logger.write_log"><code class="docutils literal notranslate"><span class="pre">write_log()</span></code></a></li>
 </ul>

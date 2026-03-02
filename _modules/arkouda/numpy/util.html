@@ -1500,7 +1500,7 @@
         <span class="c1"># Normalize mapping index keys into a &quot;groupable&quot; (single array OR tuple-of-arrays)</span>
         <span class="n">mindex</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">index</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mindex</span><span class="p">,</span> <span class="n">MultiIndex</span><span class="p">):</span>
-            <span class="n">mkeys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">mindex</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">mkeys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">mindex</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mkeys</span> <span class="o">=</span> <span class="n">mindex</span><span class="o">.</span><span class="n">values</span>
 

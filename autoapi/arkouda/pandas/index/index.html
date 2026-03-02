@@ -617,33 +617,6 @@ If a tuple of array-like objects, returns a MultiIndex.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="arkouda.pandas.index.Index.index">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#arkouda.pandas.index.Index.index" title="Link to this definition">¶</a></dt>
-<dd><p>Deprecated alias for <cite>values</cite>.</p>
-<p>This property is maintained for backward compatibility and returns the same
-array as the <cite>values</cite> attribute. It will be removed in a future release;
-use <cite>values</cite> directly instead.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><em>arkouda.numpy.pdarray</em> – The underlying values of this object (same as <cite>values</cite>).</p></li>
-<li><p><em>Deprecated</em></p></li>
-<li><p><em>———-</em></p></li>
-<li><p>Use the <cite>values</cite> attribute directly. This alias will be removed in a future release.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span><span class="o">.</span><span class="n">index</span>
-<span class="go">array([1 2 3])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pandas.index.Index.inferred_type">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">inferred_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span><a class="headerlink" href="#arkouda.pandas.index.Index.inferred_type" title="Link to this definition">¶</a></dt>
 <dd><p>Return a string of the type inferred from the values.</p>
@@ -1692,7 +1665,6 @@ file with the new data</p></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.equals"><code class="docutils literal notranslate"><span class="pre">Index.equals()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.factory"><code class="docutils literal notranslate"><span class="pre">Index.factory()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.from_return_msg"><code class="docutils literal notranslate"><span class="pre">Index.from_return_msg()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.pandas.index.Index.index"><code class="docutils literal notranslate"><span class="pre">Index.index</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.inferred_type"><code class="docutils literal notranslate"><span class="pre">Index.inferred_type</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.is_registered"><code class="docutils literal notranslate"><span class="pre">Index.is_registered()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.index.Index.is_unique"><code class="docutils literal notranslate"><span class="pre">Index.is_unique</span></code></a></li>

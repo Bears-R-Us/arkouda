@@ -125,9 +125,7 @@ Functions
    arkouda.chisquare
    arkouda.compute_join_size
    arkouda.date_operators
-   arkouda.disableVerbose
    arkouda.disable_verbose
-   arkouda.enableVerbose
    arkouda.enable_verbose
    arkouda.export
    arkouda.from_series
@@ -1799,13 +1797,6 @@ Package Contents
 
 
    .. py:attribute:: BinOps
-
-
-   .. py:property:: NAvalue
-
-      Deprecated alias for `na_value`.
-
-      :rtype: Same value as `na_value`.
 
 
    .. py:attribute:: RegisterablePieces
@@ -5181,27 +5172,6 @@ Package Contents
 
 
 
-   .. py:property:: index
-
-      Deprecated alias for `values`.
-
-      This property is maintained for backward compatibility and returns the same
-      array as the `values` attribute. It will be removed in a future release;
-      use `values` directly instead.
-
-      :returns: * *arkouda.numpy.pdarray* -- The underlying values of this object (same as `values`).
-                * *Deprecated*
-                * *----------*
-                * Use the `values` attribute directly. This alias will be removed in a future release.
-
-      .. rubric:: Examples
-
-      >>> import arkouda as ak
-      >>> idx = ak.Index(ak.array([1, 2, 3]))
-      >>> idx.index
-      array([1 2 3])
-
-
    .. py:property:: inferred_type
       :type: str
 
@@ -7651,31 +7621,6 @@ Package Contents
    Used internally to implement the `.dt` accessor API.
 
 
-.. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO)
-
-   Deprecated alias for :func:`disable_verbose`.
-
-   This function exists for backward compatibility only. Use
-   :func:`disable_verbose` instead.
-
-   :param logLevel: The log level to apply to all ArkoudaLoggers, disabling
-                    verbose (DEBUG-level) output.
-   :type logLevel: LogLevel, default LogLevel.INFO
-
-   :rtype: None
-
-   :Warns: **DeprecationWarning** -- Always raised. ``disableVerbose`` is deprecated and will be removed
-           in a future release.
-
-   .. seealso::
-
-      :py:obj:`disable_verbose`
-          Disable verbose logging for all loggers.
-
-      :py:obj:`enable_verbose`
-          Enable verbose logging for all loggers.
-
-
 .. py:function:: disable_verbose(logLevel: LogLevel = LogLevel.INFO) -> None
 
    Disables verbose logging.
@@ -7687,24 +7632,6 @@ Package Contents
    :type logLevel: LogLevel
 
    :raises TypeError: Raised if logLevel is not a LogLevel enum
-
-
-.. py:function:: enableVerbose()
-
-   Deprecated alias for :func:`enable_verbose`.
-
-   This function exists for backward compatibility only. Use
-   :func:`enable_verbose` instead.
-
-   :rtype: None
-
-   :Warns: **DeprecationWarning** -- Always raised. ``enableVerbose`` is deprecated and will be removed
-           in a future release.
-
-   .. seealso::
-
-      :py:obj:`enable_verbose`
-          Enable verbose (DEBUG-level) logging for all loggers.
 
 
 .. py:function:: enable_verbose() -> None
