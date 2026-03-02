@@ -1,7 +1,7 @@
 module CheckpointMsg {
   use FileSystem;
   use List;
-  use ArkoudaJSONCompat;
+  use JSON;
   import IO, Path, Time;
   import Reflection.{getModuleName as M,
                      getRoutineName as R,
