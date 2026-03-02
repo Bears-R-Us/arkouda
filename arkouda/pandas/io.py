@@ -1,7 +1,7 @@
 """
 Input/output utilities for Arkouda.
 
-The `arkouda.pandas.io` module provides a comprehensive interface for reading from and writing to
+The `arkouda.io` module provides a comprehensive interface for reading from and writing to
 various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting
 data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.
 
@@ -57,8 +57,8 @@ Export to Pandas-compatible Parquet
 
 See Also
 --------
-arkouda.pandas.DataFrame, arkouda.pdarray, arkouda.strings.Strings, arkouda.numpy.segarray.SegArray,
-arkouda.pandas.categorical.Categorical, arkouda.pandas.index.Index, arkouda.pandas.index.MultiIndex
+arkouda.DataFrame, arkouda.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray,
+arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
 
 """
 

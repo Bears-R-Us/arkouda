@@ -37,7 +37,7 @@ from ._version import get_versions
 __version__ = get_versions()["version"]
 del get_versions
 
-from arkouda.core.logger import LogLevel, disableVerbose, enableVerbose, disable_verbose, enable_verbose, write_log
+from arkouda.core.logger import LogLevel, disable_verbose, enable_verbose, write_log
 
 from arkouda.core.client import (
     connect,
@@ -384,11 +384,6 @@ from arkouda.numpy import (
     where,
     zeros,
     zeros_like,
-    isSupportedInt,
-    isSupportedNumber,
-    isSupportedBool,
-    isSupportedFloat,
-    isSupportedDType,
 )
 from arkouda.pandas import (
     Row,
@@ -414,7 +409,7 @@ from arkouda.pandas import (
     ArkoudaArrayLike,
 )
 
-from arkouda.client_dtypes import BitVector, bit_vectorizer, BitVectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
+from arkouda.client_dtypes import BitVector, bit_vectorizer, Fields, IPv4, ip_address, is_ipv4, is_ipv6
 from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, broadcast, groupable, unique
 from arkouda.pandas.categorical import Categorical
 
