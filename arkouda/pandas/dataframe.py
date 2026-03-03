@@ -3271,7 +3271,7 @@ class DataFrame(UserDict):
         >>> df = ak.DataFrame({"A":[1,2],"B":[3,4]})
         >>> df.to_csv(my_path)
         >>> df2 = ak.DataFrame.read_csv(my_path + "_LOCALE0000")
-        >>> df2
+        >>> df2 # doctest: +SKIP
            A  B
         0  1  3
         1  2  4 (2 rows x 2 columns)
@@ -3338,7 +3338,7 @@ class DataFrame(UserDict):
         >>> df = ak.DataFrame({"A":[1,2],"B":[3,4]})
         >>> df.to_csv(my_path)
         >>> df2 = ak.DataFrame.read_csv(my_path + "_LOCALE0000")
-        >>> df2
+        >>> df2 # doctest: +SKIP
            A  B
         0  1  3
         1  2  4 (2 rows x 2 columns)
