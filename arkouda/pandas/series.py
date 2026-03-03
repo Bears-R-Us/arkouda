@@ -86,14 +86,7 @@ def unary_operators(cls) -> type:
     return cls
 
 
-def aggregation_operators(cls) -> type:
-    for name in ["max", "min", "mean", "sum", "std", "var", "argmax", "argmin", "prod"]:
-        setattr(cls, name, cls._make_aggop(name))
-    return cls
-
-
 @unary_operators
-@aggregation_operators
 @natural_binary_operators
 class Series:
     """
@@ -814,12 +807,32 @@ class Series:
 
         return unaryop
 
-    @classmethod
-    def _make_aggop(cls, name):
-        def aggop(self) -> Series:
-            return getattr(self.values, name)()
+    def max(self):
+        return self.values.max()
 
-        return aggop
+    def min(self):
+        return self.values.min()
+
+    def mean(self):
+        return self.values.mean()
+
+    def sum(self):
+        return self.values.sum()
+
+    def std(self):
+        return self.values.std()
+
+    def var(self):
+        return self.values.var()
+
+    def argmax(self):
+        return self.values.argmax()
+
+    def argmin(self):
+        return self.values.argmin()
+
+    def prod(self):
+        return self.values.prod()
 
     @typechecked
     def add(self, b: Series) -> Series:
