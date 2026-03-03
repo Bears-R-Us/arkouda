@@ -50,21 +50,28 @@ Substring search
 ----------------
   
   .. automethod:: arkouda.numpy.Strings.contains
+     :no-index:
                     
   .. automethod:: arkouda.numpy.Strings.startswith
+     :no-index:
                     
   .. automethod:: arkouda.numpy.Strings.endswith
+     :no-index:
 
 Splitting and joining
 ---------------------
 
   .. automethod:: arkouda.numpy.Strings.peel
+     :no-index:
                   
   .. automethod:: arkouda.numpy.Strings.rpeel
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.stick
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.lstick
+     :no-index:
 
 Flattening
 ----------
@@ -72,6 +79,7 @@ Flattening
 Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe
   
   .. automethod:: arkouda.numpy.Strings.flatten
+     :no-index:
 
 Regular Expressions
 -------------------
@@ -79,29 +87,43 @@ Regular Expressions
 ``Strings`` implements behavior similar to the re python library applied to every element. This functionality is based on Chapel's regex module which is built on google's re2. re2 sacrifices some functionality (notably lookahead/lookbehind) in exchange for guarantees that searches complete in linear time and in a fixed amount of stack space
 
   .. automethod:: arkouda.numpy.Strings.search
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.match
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.fullmatch
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.split
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.findall
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.sub
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.subn
+     :no-index:
 
   .. automethod:: arkouda.numpy.Strings.find_locations
+     :no-index:
 
 Match Object
 ____________
 
 search, match, and fullmatch return a ``Match`` object which supports the following methods
 
-  .. automethod:: arkouda.match.Match.matched
-  .. automethod:: arkouda.match.Match.start
-  .. automethod:: arkouda.match.Match.end
-  .. automethod:: arkouda.match.Match.match_type
-  .. automethod:: arkouda.match.Match.find_matches
-  .. automethod:: arkouda.match.Match.group
+  .. automethod:: arkouda.pandas.match.Match.matched
+     :no-index:
+  .. automethod:: arkouda.pandas.match.Match.start
+     :no-index:
+  .. automethod:: arkouda.pandas.match.Match.end
+     :no-index:
+  .. automethod:: arkouda.pandas.match.Match.match_type
+     :no-index:
+  .. automethod:: arkouda.pandas.match.Match.find_matches
+     :no-index:
+  .. automethod:: arkouda.pandas.match.Match.group
+     :no-index:

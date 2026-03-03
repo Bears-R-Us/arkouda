@@ -82,7 +82,7 @@ Printed tables and verbose messages appear in the server-side Chapel logs.
 
 See Also
 --------
-arkouda.pandas.DataFrame, arkouda.core.client.generic_msg
+arkouda.pandas.dataframe.DataFrame, arkouda.core.client.generic_msg
 
 """
 

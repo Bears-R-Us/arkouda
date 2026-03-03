@@ -133,7 +133,7 @@ module ServerDaemon {
         }
         
         /**
-         * Encapsulates logic that is to be invoked once a ArkoduaSeverDaemon
+         * Encapsulates logic that is to be invoked once a ArkoudaSeverDaemon
          * has exited the daemon loop.
          */
         proc shutdown() throws {

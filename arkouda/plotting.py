@@ -47,7 +47,7 @@ Save the figure to disk:
 See Also
 --------
 - matplotlib.pyplot
-- arkouda.pandas.DataFrame
+- arkouda.DataFrame
 - arkouda.histogram
 
 """

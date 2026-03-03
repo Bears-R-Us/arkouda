@@ -309,55 +309,52 @@ class GroupBy:
     """
     Group an array or list of arrays by value.
 
-    Usually in preparation
-    for aggregating the within-group values of another array.
+    Usually in preparation for aggregating the within-group values of another array.
 
     Parameters
     ----------
     keys : (list of) pdarray, Strings, or Categorical
-        The array to group by value, or if list, the column arrays to group by row
+        The array to group by value, or if list, the column arrays to group by row.
     assume_sorted : bool
-        If True, assume keys is already sorted (Default: False)
+        If True, assume keys is already sorted (default: False).
 
     Attributes
     ----------
     nkeys : int
-        The number of key arrays (columns)
+        The number of key arrays (columns).
     permutation : pdarray
-        The permutation that sorts the keys array(s) by value (row)
+        The permutation that sorts the key array(s) by value (row).
     unique_keys : pdarray, Strings, or Categorical
-        The unique values of the keys array(s), in grouped order
+        The unique values of the key array(s), in grouped order.
     ngroups : int_scalars
-        The length of the unique_keys array(s), i.e. number of groups
+        The length of the unique_keys array(s), i.e., the number of groups.
     segments : pdarray
-        The start index of each group in the grouped array(s)
+        The start index of each group in the grouped array(s).
     logger : ArkoudaLogger
-        Used for all logging operations
-    dropna : bool (default=True)
-        If True, and the groupby keys contain NaN values,
-        the NaN values together with the corresponding row will be dropped.
-        Otherwise, the rows corresponding to NaN values will be kept.
-        The default is True
+        Used for all logging operations.
+    dropna : bool, default=True
+        If True and the groupby keys contain NaN values, the NaN values together
+        with the corresponding row will be dropped. Otherwise, rows corresponding
+        to NaN values will be kept.
 
     Raises
     ------
     TypeError
-        Raised if keys is a pdarray with a dtype other than int64
+        Raised if keys is a pdarray with a dtype other than int64.
 
     Notes
     -----
     Integral pdarrays, Strings, and Categoricals are natively supported, but
     float64 and bool arrays are not.
 
-    For a user-defined class to be groupable, it must inherit from pdarray
-    and define or overload the grouping API:
-      1) a ._get_grouping_keys() method that returns a list of pdarrays
-         that can be (co)argsorted.
-      2) (Optional) a .group() method that returns the permutation that
-         groups the array
-    If the input is a single array with a .group() method defined, method 2
-    will be used; otherwise, method 1 will be used.
+    For a user-defined class to be groupable, it must inherit from ``pdarray``
+    and provide the grouping API:
 
+    - ``._get_grouping_keys()``: Return a list of pdarrays that can be (co)argsorted.
+    - ``.group()`` (optional): Return the permutation that groups the array.
+
+    If the input is a single array with a ``.group()`` method defined, that method
+    is used. Otherwise, ``._get_grouping_keys()`` is used.
     """
 
     nkeys: int
