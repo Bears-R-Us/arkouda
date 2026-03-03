@@ -4702,9 +4702,24 @@ Package Contents
       :type: bool
 
 
+   .. py:method:: all(colnames=None)
+
+
    .. py:attribute:: all_non_nan
       :value: False
 
+
+
+   .. py:method:: and_(colnames=None)
+
+
+   .. py:method:: any(colnames=None)
+
+
+   .. py:method:: argmax(colnames=None)
+
+
+   .. py:method:: argmin(colnames=None)
 
 
    .. py:attribute:: as_index
@@ -4750,6 +4765,9 @@ Package Contents
 
 
 
+   .. py:method:: count(colnames=None)
+
+
    .. py:attribute:: df
       :type:  DataFrame
 
@@ -4787,6 +4805,9 @@ Package Contents
 
 
    .. py:attribute:: dropna
+
+
+   .. py:method:: first(colnames=None)
 
 
    .. py:attribute:: gb
@@ -4836,6 +4857,30 @@ Package Contents
       4  1  4
       5  2  5 (6 rows x 2 columns)
 
+
+
+   .. py:method:: max(colnames=None)
+
+
+   .. py:method:: mean(colnames=None)
+
+
+   .. py:method:: median(colnames=None)
+
+
+   .. py:method:: min(colnames=None)
+
+
+   .. py:method:: mode(colnames=None)
+
+
+   .. py:method:: nunique(colnames=None)
+
+
+   .. py:method:: or_(colnames=None)
+
+
+   .. py:method:: prod(colnames=None)
 
 
    .. py:method:: sample(n=None, frac=None, replace=False, weights=None, random_state=None)
@@ -4938,6 +4983,12 @@ Package Contents
 
 
 
+   .. py:method:: std(colnames=None)
+
+
+   .. py:method:: sum(colnames=None)
+
+
    .. py:method:: tail(n: int = 5, sort_index: bool = True) -> DataFrame
 
       Return the last n rows from each group.
@@ -4979,9 +5030,18 @@ Package Contents
 
 
 
+   .. py:method:: unique(colnames=None)
+
+
+   .. py:method:: var(colnames=None)
+
+
    .. py:attribute:: where_not_nan
       :value: None
 
+
+
+   .. py:method:: xor(colnames=None)
 
 
 .. py:class:: DatetimeAccessor(series)
@@ -5031,15 +5091,75 @@ Package Contents
 
       A column to compute the difference on.
 
-      :type: Series
+      :type: pdarray
+
+
+   .. py:method:: all()
+
+
+   .. py:method:: and_()
+
+
+   .. py:method:: any()
+
+
+   .. py:method:: argmax()
+
+
+   .. py:method:: argmin()
+
+
+   .. py:method:: count()
+
+
+   .. py:method:: first()
 
 
    .. py:attribute:: gb
       :type:  arkouda.pandas.groupbyclass.GroupBy
 
 
+   .. py:method:: max()
+
+
+   .. py:method:: mean()
+
+
+   .. py:method:: median()
+
+
+   .. py:method:: min()
+
+
+   .. py:method:: mode()
+
+
+   .. py:method:: nunique()
+
+
+   .. py:method:: or_()
+
+
+   .. py:method:: prod()
+
+
+   .. py:method:: std()
+
+
+   .. py:method:: sum()
+
+
+   .. py:method:: unique()
+
+
    .. py:attribute:: values
-      :type:  arkouda.pandas.series.Series
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:method:: var()
+
+
+   .. py:method:: xor()
 
 
 .. py:class:: Index(values: Union[List, arkouda.numpy.pdarrayclass.pdarray, arkouda.numpy.strings.Strings, arkouda.pandas.categorical.Categorical, pandas.Index, Index, pandas.Categorical], name: Optional[str] = None, allow_list=False, max_list_size=1000)
@@ -6131,6 +6251,12 @@ Package Contents
    .. py:method:: add(b: Series) -> Series
 
 
+   .. py:method:: argmax()
+
+
+   .. py:method:: argmin()
+
+
    .. py:property:: at
       :type: _LocIndexer
 
@@ -6491,6 +6617,12 @@ Package Contents
 
 
 
+   .. py:method:: max()
+
+
+   .. py:method:: mean()
+
+
    .. py:method:: memory_usage(index: bool = True, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> int
 
       Return the memory usage of the Series.
@@ -6529,6 +6661,9 @@ Package Contents
       >>> s.memory_usage(unit="KB")
       46.875
 
+
+
+   .. py:method:: min()
 
 
    .. py:property:: ndim
@@ -6630,6 +6765,9 @@ Package Contents
 
 
 
+   .. py:method:: prod()
+
+
    .. py:method:: register(user_defined_name: str)
 
       Register this Series object and underlying components with the Arkouda server.
@@ -6696,7 +6834,13 @@ Package Contents
 
 
 
+   .. py:method:: std()
+
+
    .. py:attribute:: str
+
+
+   .. py:method:: sum()
 
 
    .. py:method:: tail(n: int = 10) -> Series
@@ -6869,6 +7013,9 @@ Package Contents
                 their counts in the original Series.
       :rtype: Series
 
+
+
+   .. py:method:: var()
 
 
 .. py:class:: StringAccessor(series)

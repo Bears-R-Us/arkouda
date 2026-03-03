@@ -459,16 +459,9 @@
     <span class="k">return</span> <span class="bp">cls</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">aggregation_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;prod&quot;</span><span class="p">]:</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_aggop</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-    <span class="k">return</span> <span class="bp">cls</span>
-
-
 <div class="viewcode-block" id="Series">
 <a class="viewcode-back" href="../../../usage/series.html#arkouda.Series">[docs]</a>
 <span class="nd">@unary_operators</span>
-<span class="nd">@aggregation_operators</span>
 <span class="nd">@natural_binary_operators</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1210,12 +1203,59 @@
 
         <span class="k">return</span> <span class="n">unaryop</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">)()</span>
+<div class="viewcode-block" id="Series.max">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.max">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="p">()</span></div>
 
-        <span class="k">return</span> <span class="n">aggop</span>
+
+<div class="viewcode-block" id="Series.min">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.min">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.mean">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.sum">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.sum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.std">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.std">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">std</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.var">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.var">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">var</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.argmax">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.argmax">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.argmin">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.argmin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Series.prod">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.prod">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="Series.add">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/series/index.html#arkouda.Series.add">[docs]</a>

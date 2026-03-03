@@ -2398,6 +2398,12 @@ Package Contents
    .. py:method:: add(b: Series) -> Series
 
 
+   .. py:method:: argmax()
+
+
+   .. py:method:: argmin()
+
+
    .. py:property:: at
       :type: _LocIndexer
 
@@ -2758,6 +2764,12 @@ Package Contents
 
 
 
+   .. py:method:: max()
+
+
+   .. py:method:: mean()
+
+
    .. py:method:: memory_usage(index: bool = True, unit: Literal['B', 'KB', 'MB', 'GB'] = 'B') -> int
 
       Return the memory usage of the Series.
@@ -2796,6 +2808,9 @@ Package Contents
       >>> s.memory_usage(unit="KB")
       46.875
 
+
+
+   .. py:method:: min()
 
 
    .. py:property:: ndim
@@ -2897,6 +2912,9 @@ Package Contents
 
 
 
+   .. py:method:: prod()
+
+
    .. py:method:: register(user_defined_name: str)
 
       Register this Series object and underlying components with the Arkouda server.
@@ -2963,7 +2981,13 @@ Package Contents
 
 
 
+   .. py:method:: std()
+
+
    .. py:attribute:: str
+
+
+   .. py:method:: sum()
 
 
    .. py:method:: tail(n: int = 10) -> Series
@@ -3136,6 +3160,9 @@ Package Contents
                 their counts in the original Series.
       :rtype: Series
 
+
+
+   .. py:method:: var()
 
 
 .. py:class:: StringAccessor(series)

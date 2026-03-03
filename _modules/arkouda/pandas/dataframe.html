@@ -456,7 +456,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">argsort</span><span class="p">,</span> <span class="n">coargsort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">sort</span> <span class="k">as</span> <span class="n">aksort</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.timeclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">Datetime</span><span class="p">,</span> <span class="n">Timedelta</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GROUPBY_REDUCTION_TYPES</span><span class="p">,</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">unique</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span><span class="p">,</span> <span class="n">unique</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.index</span><span class="w"> </span><span class="kn">import</span> <span class="n">Index</span><span class="p">,</span> <span class="n">MultiIndex</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.join</span><span class="w"> </span><span class="kn">import</span> <span class="n">inner_join</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.row</span><span class="w"> </span><span class="kn">import</span> <span class="n">Row</span>
@@ -506,15 +506,8 @@
     <span class="k">return</span> <span class="n">maybe_callable</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">groupby_operators</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">GROUPBY_REDUCTION_TYPES</span><span class="p">:</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_make_aggop</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-    <span class="k">return</span> <span class="bp">cls</span>
-
-
 <div class="viewcode-block" id="DataFrameGroupBy">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy">[docs]</a>
-<span class="nd">@groupby_operators</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataFrameGroupBy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A DataFrame that has been grouped by a subset of columns.</span>
@@ -589,58 +582,174 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">where_not_nan</span><span class="p">]</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opname</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opname</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Aggregate the operation, with the grouped column(s) values as keys.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        colnames : (list of) str, default=None</span>
+<span class="sd">            Column name or list of column names to compute the aggregation over.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        DataFrame</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">numerical_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">akfloat64</span><span class="p">,</span> <span class="n">akint64</span><span class="p">,</span> <span class="n">akuint64</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">colnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">colnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colnames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">colnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">colnames</span><span class="p">]</span>
+        <span class="n">colnames</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">c</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span>
+            <span class="k">if</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">numerical_dtypes</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span>
+                <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">c</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">))</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Aggregate the operation, with the grouped column(s) values as keys.</span>
-
-<span class="sd">            Parameters</span>
-<span class="sd">            ----------</span>
-<span class="sd">            colnames : (list of) str, default=None</span>
-<span class="sd">                Column name or list of column names to compute the aggregation over.</span>
-
-<span class="sd">            Returns</span>
-<span class="sd">            -------</span>
-<span class="sd">            DataFrame</span>
-
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">if</span> <span class="n">colnames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">colnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colnames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">colnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">colnames</span><span class="p">]</span>
-            <span class="n">colnames</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">c</span>
-                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span>
-                <span class="k">if</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="n">numerical_dtypes</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">bigint</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="p">(</span>
-                    <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">c</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">))</span>
-                    <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colnames</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_df_col</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">opname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span><span class="p">},</span>
+                    <span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">),</span>
                 <span class="p">)</span>
-            <span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_df_col</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">opname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span><span class="p">},</span>
+                    <span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">column_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span><span class="p">:</span>
+                    <span class="n">column_dict</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_df_col</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">opname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">column_dict</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colnames</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
-                        <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_df_col</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">opname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span><span class="p">},</span>
-                        <span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">),</span>
-                    <span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span>
-                        <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_df_col</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">opname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span><span class="p">},</span>
-                        <span class="n">index</span><span class="o">=</span><span class="n">Index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-                    <span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="n">column_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb_key_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_keys</span><span class="p">))</span>
-                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colnames</span><span class="p">:</span>
-                        <span class="n">column_dict</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_df_col</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">opname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">column_dict</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">None</span>
+<div class="viewcode-block" id="DataFrameGroupBy.sum">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.sum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
 
-        <span class="k">return</span> <span class="n">aggop</span>
+
+<div class="viewcode-block" id="DataFrameGroupBy.count">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.prod">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.prod">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;prod&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.var">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.var">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.std">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.std">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.mean">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.median">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.median">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.min">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.min">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.max">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.max">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.argmin">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.argmin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.argmax">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.argmax">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.nunique">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.nunique">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nunique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;nunique&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.any">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.any">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.all">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Keywords: cannot do `def or(self, ...)` / `def and(self, ...)`</span>
+<div class="viewcode-block" id="DataFrameGroupBy.or_">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.or_">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">or_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.and_">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.and_">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">and_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.xor">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.xor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">xor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;xor&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.first">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.first">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.mode">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.mode">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataFrameGroupBy.unique">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.unique">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregate</span><span class="p">(</span><span class="s2">&quot;unique&quot;</span><span class="p">,</span> <span class="n">colnames</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="DataFrameGroupBy.size">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrameGroupBy.size">[docs]</a>
@@ -1056,9 +1165,13 @@
 
 
 
+<span class="c1"># Create keyword aliases so users can call gb.or(...) / gb.and(...)</span>
+<span class="nb">setattr</span><span class="p">(</span><span class="n">DataFrameGroupBy</span><span class="p">,</span> <span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="n">DataFrameGroupBy</span><span class="o">.</span><span class="n">or_</span><span class="p">)</span>
+<span class="nb">setattr</span><span class="p">(</span><span class="n">DataFrameGroupBy</span><span class="p">,</span> <span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">DataFrameGroupBy</span><span class="o">.</span><span class="n">and_</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="DiffAggregate">
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate">[docs]</a>
-<span class="nd">@groupby_operators</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiffAggregate</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A column in a GroupBy that has been differenced.</span>
@@ -1069,13 +1182,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    gb : GroupBy</span>
 <span class="sd">        GroupBy object, where the aggregation keys are values of column(s) of a dataframe.</span>
-<span class="sd">    values : Series</span>
+<span class="sd">    values : pdarray</span>
 <span class="sd">        A column to compute the difference on.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">gb</span><span class="p">:</span> <span class="n">GroupBy</span>
-    <span class="n">values</span><span class="p">:</span> <span class="n">Series</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">pdarray</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gb</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">zeros</span>
@@ -1091,14 +1204,136 @@
         <span class="n">values</span><span class="p">[</span><span class="n">gb</span><span class="o">.</span><span class="n">segments</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_make_aggop</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opname</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">aggop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">opname</span><span class="p">))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_agg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opname</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a groupby aggregation to the diff values.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">opname</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">aggop</span></div>
+<div class="viewcode-block" id="DiffAggregate.sum">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.sum">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="DiffAggregate.count">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.prod">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.prod">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;prod&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.var">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.var">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;var&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.std">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.std">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;std&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.mean">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.mean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.median">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.median">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;median&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.min">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.min">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.max">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.max">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.argmin">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.argmin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;argmin&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.argmax">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.argmax">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;argmax&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.nunique">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.nunique">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nunique</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;nunique&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.any">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.any">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;any&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.all">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.all">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.xor">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.xor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">xor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;xor&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.first">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.first">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;first&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.mode">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.mode">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.unique">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.unique">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;unique&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Python keyword-safe definitions</span>
+<div class="viewcode-block" id="DiffAggregate.or_">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.or_">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">or_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiffAggregate.and_">
+<a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DiffAggregate.and_">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">and_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agg</span><span class="p">(</span><span class="s2">&quot;and&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># Add keyword aliases so gb.diff(...).or() works</span>
+<span class="nb">setattr</span><span class="p">(</span><span class="n">DiffAggregate</span><span class="p">,</span> <span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="n">DiffAggregate</span><span class="o">.</span><span class="n">or_</span><span class="p">)</span>
+<span class="nb">setattr</span><span class="p">(</span><span class="n">DiffAggregate</span><span class="p">,</span> <span class="s2">&quot;and&quot;</span><span class="p">,</span> <span class="n">DiffAggregate</span><span class="o">.</span><span class="n">and_</span><span class="p">)</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">DataFrame structure based on Arkouda arrays.</span>

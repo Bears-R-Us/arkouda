@@ -438,6 +438,16 @@ If entering keywords,</p>
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">Series</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.add" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.argmax">
+<span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.argmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.argmax" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.argmin">
+<span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.argmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.argmin" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series.at">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">at</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_LocIndexer</span></span><a class="headerlink" href="#arkouda.pandas.series.Series.at" title="Link to this definition">¶</a></dt>
@@ -871,6 +881,16 @@ Raised if series values not of type pdarray, Categorical, or Strings.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.max">
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.max" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.mean">
+<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.mean" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series.memory_usage">
 <span class="sig-name descname"><span class="pre">memory_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Literal" title="arkouda.numpy.dtypes.Literal"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'B'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'KB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'MB'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'GB'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.memory_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.memory_usage" title="Link to this definition">¶</a></dt>
 <dd><p>Return the memory usage of the Series.</p>
@@ -916,6 +936,11 @@ is necessarily smaller:</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.min">
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.min" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series.ndim">
@@ -1028,6 +1053,11 @@ Defaults to 0.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.prod">
+<span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.prod" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pandas.series.Series.str" title="arkouda.pandas.series.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.register" title="Link to this definition">¶</a></dt>
 <dd><p>Register this Series object and underlying components with the Arkouda server.</p>
@@ -1112,9 +1142,19 @@ Defaults to True.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.std">
+<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.std" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series.str">
 <span class="sig-name descname"><span class="pre">str</span></span><a class="headerlink" href="#arkouda.pandas.series.Series.str" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.sum">
+<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.sum" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1325,6 +1365,11 @@ their counts in the original Series.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.pandas.series.Series.var">
+<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.var" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1390,6 +1435,8 @@ their counts in the original Series.</p>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series"><code class="docutils literal notranslate"><span class="pre">Series</span></code></a><ul>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.add"><code class="docutils literal notranslate"><span class="pre">Series.add()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.argmax"><code class="docutils literal notranslate"><span class="pre">Series.argmax()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.argmin"><code class="docutils literal notranslate"><span class="pre">Series.argmin()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.at"><code class="docutils literal notranslate"><span class="pre">Series.at</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.concat"><code class="docutils literal notranslate"><span class="pre">Series.concat()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.diff"><code class="docutils literal notranslate"><span class="pre">Series.diff()</span></code></a></li>
@@ -1409,19 +1456,25 @@ their counts in the original Series.</p>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.loc"><code class="docutils literal notranslate"><span class="pre">Series.loc</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.locate"><code class="docutils literal notranslate"><span class="pre">Series.locate()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.map"><code class="docutils literal notranslate"><span class="pre">Series.map()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.max"><code class="docutils literal notranslate"><span class="pre">Series.max()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.mean"><code class="docutils literal notranslate"><span class="pre">Series.mean()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.memory_usage"><code class="docutils literal notranslate"><span class="pre">Series.memory_usage()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.min"><code class="docutils literal notranslate"><span class="pre">Series.min()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.ndim"><code class="docutils literal notranslate"><span class="pre">Series.ndim</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.notna"><code class="docutils literal notranslate"><span class="pre">Series.notna()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.notnull"><code class="docutils literal notranslate"><span class="pre">Series.notnull()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.objType"><code class="docutils literal notranslate"><span class="pre">Series.objType</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.pdconcat"><code class="docutils literal notranslate"><span class="pre">Series.pdconcat()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.prod"><code class="docutils literal notranslate"><span class="pre">Series.prod()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.register"><code class="docutils literal notranslate"><span class="pre">Series.register()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.registered_name"><code class="docutils literal notranslate"><span class="pre">Series.registered_name</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.shape"><code class="docutils literal notranslate"><span class="pre">Series.shape</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.size"><code class="docutils literal notranslate"><span class="pre">Series.size</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.sort_index"><code class="docutils literal notranslate"><span class="pre">Series.sort_index()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.sort_values"><code class="docutils literal notranslate"><span class="pre">Series.sort_values()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.std"><code class="docutils literal notranslate"><span class="pre">Series.std()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.str"><code class="docutils literal notranslate"><span class="pre">Series.str</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.sum"><code class="docutils literal notranslate"><span class="pre">Series.sum()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.tail"><code class="docutils literal notranslate"><span class="pre">Series.tail()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.to_dataframe"><code class="docutils literal notranslate"><span class="pre">Series.to_dataframe()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.to_markdown"><code class="docutils literal notranslate"><span class="pre">Series.to_markdown()</span></code></a></li>
@@ -1433,6 +1486,7 @@ their counts in the original Series.</p>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.validate_key"><code class="docutils literal notranslate"><span class="pre">Series.validate_key()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.validate_val"><code class="docutils literal notranslate"><span class="pre">Series.validate_val()</span></code></a></li>
 <li><a class="reference internal" href="#arkouda.pandas.series.Series.value_counts"><code class="docutils literal notranslate"><span class="pre">Series.value_counts()</span></code></a></li>
+<li><a class="reference internal" href="#arkouda.pandas.series.Series.var"><code class="docutils literal notranslate"><span class="pre">Series.var()</span></code></a></li>
 </ul>
 </li>
 </ul>

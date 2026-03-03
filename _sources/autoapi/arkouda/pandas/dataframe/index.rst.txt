@@ -2254,9 +2254,24 @@ Module Contents
       :type: bool
 
 
+   .. py:method:: all(colnames=None)
+
+
    .. py:attribute:: all_non_nan
       :value: False
 
+
+
+   .. py:method:: and_(colnames=None)
+
+
+   .. py:method:: any(colnames=None)
+
+
+   .. py:method:: argmax(colnames=None)
+
+
+   .. py:method:: argmin(colnames=None)
 
 
    .. py:attribute:: as_index
@@ -2302,6 +2317,9 @@ Module Contents
 
 
 
+   .. py:method:: count(colnames=None)
+
+
    .. py:attribute:: df
       :type:  DataFrame
 
@@ -2339,6 +2357,9 @@ Module Contents
 
 
    .. py:attribute:: dropna
+
+
+   .. py:method:: first(colnames=None)
 
 
    .. py:attribute:: gb
@@ -2388,6 +2409,30 @@ Module Contents
       4  1  4
       5  2  5 (6 rows x 2 columns)
 
+
+
+   .. py:method:: max(colnames=None)
+
+
+   .. py:method:: mean(colnames=None)
+
+
+   .. py:method:: median(colnames=None)
+
+
+   .. py:method:: min(colnames=None)
+
+
+   .. py:method:: mode(colnames=None)
+
+
+   .. py:method:: nunique(colnames=None)
+
+
+   .. py:method:: or_(colnames=None)
+
+
+   .. py:method:: prod(colnames=None)
 
 
    .. py:method:: sample(n=None, frac=None, replace=False, weights=None, random_state=None)
@@ -2490,6 +2535,12 @@ Module Contents
 
 
 
+   .. py:method:: std(colnames=None)
+
+
+   .. py:method:: sum(colnames=None)
+
+
    .. py:method:: tail(n: int = 5, sort_index: bool = True) -> DataFrame
 
       Return the last n rows from each group.
@@ -2531,9 +2582,18 @@ Module Contents
 
 
 
+   .. py:method:: unique(colnames=None)
+
+
+   .. py:method:: var(colnames=None)
+
+
    .. py:attribute:: where_not_nan
       :value: None
 
+
+
+   .. py:method:: xor(colnames=None)
 
 
 .. py:class:: DiffAggregate(gb, series)
@@ -2552,15 +2612,75 @@ Module Contents
 
       A column to compute the difference on.
 
-      :type: Series
+      :type: pdarray
+
+
+   .. py:method:: all()
+
+
+   .. py:method:: and_()
+
+
+   .. py:method:: any()
+
+
+   .. py:method:: argmax()
+
+
+   .. py:method:: argmin()
+
+
+   .. py:method:: count()
+
+
+   .. py:method:: first()
 
 
    .. py:attribute:: gb
       :type:  arkouda.pandas.groupbyclass.GroupBy
 
 
+   .. py:method:: max()
+
+
+   .. py:method:: mean()
+
+
+   .. py:method:: median()
+
+
+   .. py:method:: min()
+
+
+   .. py:method:: mode()
+
+
+   .. py:method:: nunique()
+
+
+   .. py:method:: or_()
+
+
+   .. py:method:: prod()
+
+
+   .. py:method:: std()
+
+
+   .. py:method:: sum()
+
+
+   .. py:method:: unique()
+
+
    .. py:attribute:: values
-      :type:  arkouda.pandas.series.Series
+      :type:  arkouda.numpy.pdarrayclass.pdarray
+
+
+   .. py:method:: var()
+
+
+   .. py:method:: xor()
 
 
 .. py:function:: intersect(a, b, positions=True, unique=False)
