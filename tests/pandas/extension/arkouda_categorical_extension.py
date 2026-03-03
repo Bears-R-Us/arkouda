@@ -185,6 +185,30 @@ class TestArkoudaCategoricalExtension:
             assert np.array_equal(out_isna, expected)
             assert np.array_equal(out_isnull, expected)
 
+    def test_pd_array_with_dtype_on_ak_categorical_should_not_iterate(self):
+        """
+        Reproducer for: #5335 pd.array on an Arkouda-backed Categorical fails when dtype is provided.
+
+        Expected: should succeed (without iterating the Categorical) and produce an ak_int64
+        array representing the categorical codes.
+        """
+        cat = Categorical(ak.array(["a", "a", "b"]))
+
+        expected = cat.codes.to_ndarray()
+
+        result = pd.array(cat, dtype="ak_int64")
+
+        assert len(result) == len(expected)
+
+        if hasattr(result, "to_ndarray"):
+            got = result.to_ndarray()
+        elif hasattr(result, "to_numpy"):
+            got = result.to_numpy()
+        else:
+            got = np.asarray(result)
+
+        assert np.array_equal(got, expected)
+
 
 class TestArkoudaCategoricalAsType:
     def test_categorical_array_astype_category_stays_extension(
