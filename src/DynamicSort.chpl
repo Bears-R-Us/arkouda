@@ -1,11 +1,11 @@
 module DynamicSort {
-    private use ArkoudaSortCompat;
+    private use Sort;
 
     proc dynamicTwoArrayRadixSort(ref Data:[], comparator:?rec=new defaultComparator()) {
       if Data._instance.isDefaultRectangular() {
-        ArkoudaSortCompat.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
+        Sort.TwoArrayRadixSort.twoArrayRadixSort(Data, comparator);
       } else {
-        ArkoudaSortCompat.sort(Data, comparator);
+        Sort.sort(Data, comparator);
       }
     }
 

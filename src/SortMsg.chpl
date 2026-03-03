@@ -4,7 +4,7 @@ module SortMsg
 
     use Time;
     use Math only;
-    use ArkoudaSortCompat only relativeComparator;
+    use Sort only relativeComparator;
     private use DynamicSort;
     use Search only;
     use Reflection;

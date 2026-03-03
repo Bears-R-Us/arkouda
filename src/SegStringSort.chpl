@@ -1,6 +1,6 @@
 module SegStringSort {
   use SegmentedString;
-  use ArkoudaSortCompat;
+  use Sort;
   use Time;
   use IO;
   use CTypes;
