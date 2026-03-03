@@ -83,7 +83,7 @@ from arkouda.numpy.pdarraysetops import concatenate, in1d, intersect1d
 from arkouda.numpy.sorting import argsort, coargsort
 from arkouda.numpy.sorting import sort as aksort
 from arkouda.numpy.timeclass import Datetime, Timedelta
-from arkouda.pandas.groupbyclass import GROUPBY_REDUCTION_TYPES, GroupBy, unique
+from arkouda.pandas.groupbyclass import GroupBy, unique
 from arkouda.pandas.index import Index, MultiIndex
 from arkouda.pandas.join import inner_join
 from arkouda.pandas.row import Row
@@ -133,13 +133,6 @@ def apply_if_callable(maybe_callable, obj, **kwargs):
     return maybe_callable
 
 
-def groupby_operators(cls):
-    for name in GROUPBY_REDUCTION_TYPES:
-        setattr(cls, name, cls._make_aggop(name))
-    return cls
-
-
-@groupby_operators
 class DataFrameGroupBy:
     """
     A DataFrame that has been grouped by a subset of columns.
@@ -214,58 +207,114 @@ class DataFrameGroupBy:
         else:
             return self.df.data[c][self.where_not_nan]
 
-    @classmethod
-    def _make_aggop(cls, opname):
+    def _aggregate(self, opname, colnames=None):
+        """
+        Aggregate the operation, with the grouped column(s) values as keys.
+
+        Parameters
+        ----------
+        colnames : (list of) str, default=None
+            Column name or list of column names to compute the aggregation over.
+
+        Returns
+        -------
+        DataFrame
+
+        """
         numerical_dtypes = [akfloat64, akint64, akuint64]
+        if colnames is None:
+            colnames = list(self.df.data.keys())
+        elif isinstance(colnames, str):
+            colnames = [colnames]
+        colnames = [
+            c
+            for c in colnames
+            if ((self.df.data[c].dtype in numerical_dtypes) or self.df.data[c].dtype == bigint)
+            and (
+                (isinstance(self.gb_key_names, str) and (c != self.gb_key_names))
+                or (isinstance(self.gb_key_names, list) and c not in self.gb_key_names)
+            )
+        ]
 
-        def aggop(self, colnames=None):
-            """
-            Aggregate the operation, with the grouped column(s) values as keys.
-
-            Parameters
-            ----------
-            colnames : (list of) str, default=None
-                Column name or list of column names to compute the aggregation over.
-
-            Returns
-            -------
-            DataFrame
-
-            """
-            if colnames is None:
-                colnames = list(self.df.data.keys())
-            elif isinstance(colnames, str):
-                colnames = [colnames]
-            colnames = [
-                c
-                for c in colnames
-                if ((self.df.data[c].dtype in numerical_dtypes) or self.df.data[c].dtype == bigint)
-                and (
-                    (isinstance(self.gb_key_names, str) and (c != self.gb_key_names))
-                    or (isinstance(self.gb_key_names, list) and c not in self.gb_key_names)
+        if isinstance(colnames, List):
+            if isinstance(self.gb_key_names, str):
+                return DataFrame(
+                    {c: self.gb.aggregate(self._get_df_col(c), opname)[1] for c in colnames},
+                    index=Index(self.gb.unique_keys, name=self.gb_key_names),
                 )
-            ]
+            elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) == 1:
+                return DataFrame(
+                    {c: self.gb.aggregate(self._get_df_col(c), opname)[1] for c in colnames},
+                    index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
+                )
+            elif isinstance(self.gb_key_names, list):
+                column_dict = dict(zip(self.gb_key_names, self.unique_keys))
+                for c in colnames:
+                    column_dict[c] = self.gb.aggregate(self._get_df_col(c), opname)[1]
+                return DataFrame(column_dict)
+            else:
+                return None
 
-            if isinstance(colnames, List):
-                if isinstance(self.gb_key_names, str):
-                    return DataFrame(
-                        {c: self.gb.aggregate(self._get_df_col(c), opname)[1] for c in colnames},
-                        index=Index(self.gb.unique_keys, name=self.gb_key_names),
-                    )
-                elif isinstance(self.gb_key_names, list) and len(self.gb_key_names) == 1:
-                    return DataFrame(
-                        {c: self.gb.aggregate(self._get_df_col(c), opname)[1] for c in colnames},
-                        index=Index(self.gb.unique_keys, name=self.gb_key_names[0]),
-                    )
-                elif isinstance(self.gb_key_names, list):
-                    column_dict = dict(zip(self.gb_key_names, self.unique_keys))
-                    for c in colnames:
-                        column_dict[c] = self.gb.aggregate(self._get_df_col(c), opname)[1]
-                    return DataFrame(column_dict)
-                else:
-                    return None
+    def sum(self, colnames=None):
+        return self._aggregate("sum", colnames=colnames)
 
-        return aggop
+    def count(self, colnames=None):
+        return self._aggregate("count", colnames=colnames)
+
+    def prod(self, colnames=None):
+        return self._aggregate("prod", colnames=colnames)
+
+    def var(self, colnames=None):
+        return self._aggregate("var", colnames=colnames)
+
+    def std(self, colnames=None):
+        return self._aggregate("std", colnames=colnames)
+
+    def mean(self, colnames=None):
+        return self._aggregate("mean", colnames=colnames)
+
+    def median(self, colnames=None):
+        return self._aggregate("median", colnames=colnames)
+
+    def min(self, colnames=None):
+        return self._aggregate("min", colnames=colnames)
+
+    def max(self, colnames=None):
+        return self._aggregate("max", colnames=colnames)
+
+    def argmin(self, colnames=None):
+        return self._aggregate("argmin", colnames=colnames)
+
+    def argmax(self, colnames=None):
+        return self._aggregate("argmax", colnames=colnames)
+
+    def nunique(self, colnames=None):
+        return self._aggregate("nunique", colnames=colnames)
+
+    def any(self, colnames=None):
+        return self._aggregate("any", colnames=colnames)
+
+    def all(self, colnames=None):
+        return self._aggregate("all", colnames=colnames)
+
+    # Keywords: cannot do `def or(self, ...)` / `def and(self, ...)`
+    def or_(self, colnames=None):
+        return self._aggregate("or", colnames=colnames)
+
+    def and_(self, colnames=None):
+        return self._aggregate("and", colnames=colnames)
+
+    def xor(self, colnames=None):
+        return self._aggregate("xor", colnames=colnames)
+
+    def first(self, colnames=None):
+        return self._aggregate("first", colnames=colnames)
+
+    def mode(self, colnames=None):
+        return self._aggregate("mode", colnames=colnames)
+
+    def unique(self, colnames=None):
+        return self._aggregate("unique", colnames=colnames)
 
     def size(self, as_series=None, sort_index=True):
         """
@@ -662,7 +711,11 @@ class DataFrameGroupBy:
         return Series(data=data, index=self.df.index)
 
 
-@groupby_operators
+# Create keyword aliases so users can call gb.or(...) / gb.and(...)
+setattr(DataFrameGroupBy, "or", DataFrameGroupBy.or_)
+setattr(DataFrameGroupBy, "and", DataFrameGroupBy.and_)
+
+
 class DiffAggregate:
     """
     A column in a GroupBy that has been differenced.
@@ -673,13 +726,13 @@ class DiffAggregate:
     ----------
     gb : GroupBy
         GroupBy object, where the aggregation keys are values of column(s) of a dataframe.
-    values : Series
+    values : pdarray
         A column to compute the difference on.
 
     """
 
     gb: GroupBy
-    values: Series
+    values: pdarray
 
     def __init__(self, gb, series):
         from arkouda.numpy.pdarraycreation import zeros
@@ -695,13 +748,75 @@ class DiffAggregate:
         values[gb.segments] = np.nan
         self.values = values
 
-    @classmethod
-    def _make_aggop(cls, opname):
-        def aggop(self):
-            return Series(self.gb.aggregate(self.values, opname))
+    def _agg(self, opname: str):
+        """Apply a groupby aggregation to the diff values."""
+        return Series(self.gb.aggregate(self.values, opname))
 
-        return aggop
+    def sum(self):
+        return self._agg("sum")
 
+    def count(self):
+        return self._agg("count")
+
+    def prod(self):
+        return self._agg("prod")
+
+    def var(self):
+        return self._agg("var")
+
+    def std(self):
+        return self._agg("std")
+
+    def mean(self):
+        return self._agg("mean")
+
+    def median(self):
+        return self._agg("median")
+
+    def min(self):
+        return self._agg("min")
+
+    def max(self):
+        return self._agg("max")
+
+    def argmin(self):
+        return self._agg("argmin")
+
+    def argmax(self):
+        return self._agg("argmax")
+
+    def nunique(self):
+        return self._agg("nunique")
+
+    def any(self):
+        return self._agg("any")
+
+    def all(self):
+        return self._agg("all")
+
+    def xor(self):
+        return self._agg("xor")
+
+    def first(self):
+        return self._agg("first")
+
+    def mode(self):
+        return self._agg("mode")
+
+    def unique(self):
+        return self._agg("unique")
+
+    # Python keyword-safe definitions
+    def or_(self):
+        return self._agg("or")
+
+    def and_(self):
+        return self._agg("and")
+
+
+# Add keyword aliases so gb.diff(...).or() works
+setattr(DiffAggregate, "or", DiffAggregate.or_)
+setattr(DiffAggregate, "and", DiffAggregate.and_)
 
 """
 DataFrame structure based on Arkouda arrays.
