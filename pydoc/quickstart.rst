@@ -11,7 +11,14 @@ Install Dependencies
 **********************
 
 1. Follow the `Chapel Quickstart Guide <https://chapel-lang.org/docs/usingchapel/QUICKSTART.html>`_
-2. Follow the `Anaconda Installation Guide <https://docs.anaconda.com/anaconda/install/index.html>`_
+2. Install chapel-py:
+
+   .. substitution-code-block:: bash
+
+       cd $CHPL_HOME
+       make chapel-py-venv
+
+3. Follow the `Anaconda Installation Guide <https://docs.anaconda.com/anaconda/install/index.html>`_
 
 **********************
 Install Arkouda
