@@ -783,7 +783,7 @@ using the specified strategy. Three methods are available:</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The array to be shuffled in place. Must be a one-dimensional Arkouda array.</p></li>
-<li><p><strong>method</strong> (<em>{&quot;FisherYates&quot;</em><em>,</em><em>&quot;MergeShuffle&quot;</em><em>,</em><em>&quot;Feistel&quot;}</em><em>, </em><em>optional</em>) – <ul>
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – <ul>
 <li><p>“FisherYates”: A <strong>serial, global</strong> Fisher–Yates shuffle implemented in Chapel.
 Simple and fast for small/medium arrays, but <strong>not distributed</strong> — the entire
 array must fit on one locale.</p></li>
@@ -797,8 +797,8 @@ Not intended for cryptographic security.</p></li>
 </ul>
 <p>Default is “FisherYates”.</p>
 </p></li>
-<li><p><strong>feistel_rounds</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>keyword-only</em><em>)</em>) – Number of Feistel rounds (default 16). Higher may cost more time.</p></li>
-<li><p><strong>feistel_key</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em><em> (</em><em>keyword-only</em><em>)</em>) – 64-bit key for the Feistel permutation. If None, the backend should derive
+<li><p><strong>feistel_rounds</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of Feistel rounds (default 16). Higher may cost more time.</p></li>
+<li><p><strong>feistel_key</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – 64-bit key for the Feistel permutation. If None, the backend should derive
 a key from the RNG stream so results remain deterministic given the client RNG state.</p></li>
 </ul>
 </dd>

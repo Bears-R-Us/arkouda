@@ -409,13 +409,13 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>server</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default &quot;localhost&quot;</em>) – Hostname visible to the current machine.</p></li>
-<li><p><strong>port</strong> (<em>int</em><em>, </em><em>default 5555</em>) – Server port.</p></li>
-<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>default 0</em>) – Timeout in seconds for send/receive. If positive, also activates
+<li><p><strong>server</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Hostname visible to the current machine.</p></li>
+<li><p><strong>port</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Server port.</p></li>
+<li><p><strong>timeout</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Timeout in seconds for send/receive. If positive, also activates
 heartbeat monitoring (ZMQ).</p></li>
-<li><p><strong>access_token</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Access token for authenticated servers.</p></li>
-<li><p><strong>connect_url</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Complete URL in the form <code class="docutils literal notranslate"><span class="pre">tcp://server:port?token=&lt;token_value&gt;</span></code>.</p></li>
-<li><p><strong>access_channel</strong> (<em>Channel</em><em>, </em><em>optional</em>) – A pre-constructed channel instance to use instead of the default.</p></li>
+<li><p><strong>access_token</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Access token for authenticated servers.</p></li>
+<li><p><strong>connect_url</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Complete URL in the form <code class="docutils literal notranslate"><span class="pre">tcp://server:port?token=&lt;token_value&gt;</span></code>.</p></li>
+<li><p><strong>access_channel</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Channel</span></code>]</span>) – A pre-constructed channel instance to use instead of the default.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>

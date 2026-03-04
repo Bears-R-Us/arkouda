@@ -424,99 +424,78 @@ for <code class="docutils literal notranslate"><span class="pre">dtype=object</s
 <p>If <code class="docutils literal notranslate"><span class="pre">unsafe=True</span></code> and the provided hints are incorrect, results may be incorrect.</p>
 </div>
 <dl class="field-list">
-<dt class="field-odd">type a<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">pdarray</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>, <a class="reference internal" href="../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>]</span></p>
-</dd>
-<dt class="field-even">param a<span class="colon">:</span></dt>
-<dd class="field-even"><p>The array-like input to convert. Supported types include Arkouda <cite>Strings</cite>, <cite>pdarray</cite>,
+<dt class="field-odd">param a<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The array-like input to convert. Supported types include Arkouda <cite>Strings</cite>, <cite>pdarray</cite>,
 NumPy <cite>ndarray</cite>, or Python iterables such as list, tuple, range, or deque.</p>
 </dd>
-<dt class="field-odd">type a<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[pdarray, np.ndarray, Iterable, Strings]</p>
-</dd>
-<dt class="field-even">type dtype<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtype" title="arkouda.numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+<dt class="field-even">type a<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">pdarray</span></code>), <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>, <a class="reference internal" href="../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">param dtype<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The target dtype to cast values to. This may be a NumPy dtype object,
 a NumPy scalar type (e.g. <cite>np.int64</cite>), or a string (e.g. <cite>‘int64’</cite>, <cite>‘str’</cite>).</p>
 </dd>
 <dt class="field-even">type dtype<span class="colon">:</span></dt>
-<dd class="field-even"><p>Union[np.dtype, type, str], optional</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.dtype" title="arkouda.numpy.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
 </dd>
-<dt class="field-odd">type copy<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
-</dd>
-<dt class="field-even">param copy<span class="colon">:</span></dt>
-<dd class="field-even"><p>If True, a deep copy of the array is made. If False, no copy is made if the input
+<dt class="field-odd">param copy<span class="colon">:</span></dt>
+<dd class="field-odd"><p>If True, a deep copy of the array is made. If False, no copy is made if the input
 is already a <cite>pdarray</cite>. <strong>Note</strong>: Arkouda does not currently support views or shallow copies.
 This differs from NumPy. Also, the default (<cite>False</cite>) is chosen to reduce performance overhead.</p>
 </dd>
-<dt class="field-odd">type copy<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool, default=False</p>
-</dd>
-<dt class="field-even">type max_bits<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
+<dt class="field-even">type copy<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 <dt class="field-odd">param max_bits<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The maximum number of bits for bigint arrays. Ignored for other dtypes.</p>
 </dd>
 <dt class="field-even">type max_bits<span class="colon">:</span></dt>
-<dd class="field-even"><p>int, optional</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
 </dd>
-<dt class="field-odd">type unsafe<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
-</dd>
-<dt class="field-even">param unsafe<span class="colon">:</span></dt>
-<dd class="field-even"><p>Enable performance-oriented shortcuts for bigint creation from dtype=object arrays.
+<dt class="field-odd">param unsafe<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Enable performance-oriented shortcuts for bigint creation from dtype=object arrays.
 When True, the caller may supply trusted hints (any_neg, num_bits) to skip Python-level
 full-array scans. If hints are not supplied, Arkouda will still do a single-pass scan
 (rather than multiple scans) for dtype=object.</p>
 <p>WARNING: If unsafe=True and provided hints are wrong, results may be incorrect.</p>
 </dd>
-<dt class="field-odd">type unsafe<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool, default=False</p>
-</dd>
-<dt class="field-even">type any_neg<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]</span></p>
+<dt class="field-even">type unsafe<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 <dt class="field-odd">param any_neg<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Bigint hint: whether any value is negative. Only used when dtype=bigint and a is numeric/object.</p>
 </dd>
 <dt class="field-even">type any_neg<span class="colon">:</span></dt>
-<dd class="field-even"><p>Optional[bool], default=None</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]</span></p>
 </dd>
-<dt class="field-odd">type num_bits<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
-</dd>
-<dt class="field-even">param num_bits<span class="colon">:</span></dt>
-<dd class="field-even"><p>Bigint hint: required bit-width for values (including sign bit if signed).
+<dt class="field-odd">param num_bits<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bigint hint: required bit-width for values (including sign bit if signed).
 If provided with unsafe=True, Arkouda can compute number of limbs without scanning.</p>
 </dd>
-<dt class="field-odd">type num_bits<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[int], default=None</p>
+<dt class="field-even">type num_bits<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span></p>
 </dd>
-<dt class="field-even">returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <cite>pdarray</cite> stored on the Arkouda server, or a <cite>Strings</cite> object.</p>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <cite>pdarray</cite> stored on the Arkouda server, or a <cite>Strings</cite> object.</p>
 </dd>
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Union[pdarray, Strings]</p>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>Union[pdarray, Strings]</p>
 </dd>
-<dt class="field-even">raises TypeError<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+<dt class="field-odd">raises TypeError<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p>If <cite>a</cite> is not a <cite>pdarray</cite>, <cite>np.ndarray</cite>, or Python iterable.
     - If <cite>a</cite> is of string type and <cite>dtype</cite> is not <cite>ak.str_</cite>.</p></li>
 </ul>
 </dd>
-<dt class="field-odd">raises RuntimeError<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
+<dt class="field-even">raises RuntimeError<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
 <li><p>If input size exceeds <cite>ak.core.client.maxTransferBytes</cite>.
     - If <cite>a.dtype</cite> is unsupported or incompatible with Arkouda.
     - If <cite>a.size * a.itemsize &gt; maxTransferBytes</cite>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">raises ValueError<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
+<dt class="field-odd">raises ValueError<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
 <li><p>If <cite>a</cite>’s rank is not supported (see <cite>get_array_ranks()</cite>).
     - If the server response is malformed or missing required fields.</p></li>
 </ul>
@@ -568,7 +547,7 @@ client.maxTransferBytes, a RuntimeError is raised.</p>
 <dd class="field-odd"><p>A numpy ndarray with the same attributes and data as the pdarray</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>np.ndarray</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
@@ -648,29 +627,29 @@ value, but proceed with caution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<em>list</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Either a list of filenames or shell expression</p></li>
-<li><p><strong>datasets</strong> (<em>list</em><em> or </em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
-<li><p><strong>iterative</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Iterative (True) or Single (False) function call(s) to server</p></li>
-<li><p><strong>strictTypes</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), require all dtypes of a given dataset to have the
+<li><p><strong>filenames</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Either a list of filenames or shell expression</p></li>
+<li><p><strong>datasets</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
+<li><p><strong>iterative</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Iterative (True) or Single (False) function call(s) to server</p></li>
+<li><p><strong>strictTypes</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True (default), require all dtypes of a given dataset to have the
 same precision and sign. If False, allow dtypes of different
 precision and sign across different files. For example, if one
 file contains a uint32 dataset and another contains an int64
 dataset with the same name, the contents of both will be read
 into an int64 pdarray.</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True will allow files with read errors to be skipped
+<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default False, if True will allow files with read errors to be skipped
 instead of failing.  A warning will be included in the return containing
 the total number of files skipped due to failure and up to 10 filenames.</p></li>
 <li><p><strong>calc_string_offsets</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False, if True this will tell the server to calculate the
 offsets/segments array on the server versus loading them from HDF5 files.
 In the future this option may be set to True as the default.</p></li>
-<li><p><strong>column_delim</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
-<li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
+<li><p><strong>column_delim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
+<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
 Ignored if datasets is not None
 Parquet Files only.</p></li>
-<li><p><strong>has_non_float_nulls</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False. This flag must be set to True to read non-float parquet columns
+<li><p><strong>has_non_float_nulls</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default False. This flag must be set to True to read non-float parquet columns
 that contain null values.</p></li>
-<li><p><strong>fixed_len</strong> (<em>int</em>) – Default -1. This value can be set for reading Parquet string columns when the
+<li><p><strong>fixed_len</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Default -1. This value can be set for reading Parquet string columns when the
 length of each string is known at runtime. This can allow for skipping byte
 calculation, which can have an impact on performance.</p></li>
 </ul>
@@ -679,7 +658,7 @@ calculation, which can have an impact on performance.</p></li>
 <dd class="field-even"><p>Dictionary of {datasetName: pdarray, String, or SegArray}</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegArray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.IPv4" title="arkouda.client_dtypes.IPv4"><code class="xref py py-class docutils literal notranslate"><span class="pre">IPv4</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/timeclass/index.html#arkouda.numpy.timeclass.Datetime" title="arkouda.numpy.timeclass.Datetime"><code class="xref py py-class docutils literal notranslate"><span class="pre">Datetime</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/timeclass/index.html#arkouda.numpy.timeclass.Timedelta" title="arkouda.numpy.timeclass.Timedelta"><code class="xref py py-class docutils literal notranslate"><span class="pre">Timedelta</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a>]]</span></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>RuntimeError</strong> – If invalid filetype is detected</p>
@@ -725,17 +704,17 @@ Reads HDF5
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filenames</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em> or </em><em>List</em><em>[</em><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – Name of the file/s from which to return datasets</p></li>
-<li><p><strong>allow_errors</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default: False
+<li><p><strong>filenames</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Name of the file/s from which to return datasets</p></li>
+<li><p><strong>allow_errors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default: False
 Whether or not to allow errors while accessing datasets</p></li>
-<li><p><strong>column_delim</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
-<li><p><strong>read_nested</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default True, when True, SegArray objects will be read from the file. When False,
+<li><p><strong>column_delim</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Column delimiter to be used if dataset is CSV. Otherwise, unused.</p></li>
+<li><p><strong>read_nested</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default True, when True, SegArray objects will be read from the file. When False,
 SegArray (or other nested Parquet columns) will be ignored.
 Only used for Parquet Files.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str">str</a>] of <a class="reference internal" href="../autoapi/arkouda/client_dtypes/index.html#arkouda.client_dtypes.Fields.names" title="arkouda.client_dtypes.Fields.names">names</a> of the datasets</p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – <ul class="simple">
@@ -782,10 +761,10 @@ a file formatted to be read by Arkouda.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>read_path</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file where pandas data is stored. This can be glob expression for parquet formats.</p></li>
-<li><p><strong>write_file</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – path to file to write arkouda formatted data to. Only write file if provided</p></li>
-<li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), return the Arkouda DataFrame object. If False, return None.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True, maintain the indexes loaded from the pandas file. Default is False.</p></li>
+<li><p><strong>read_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – path to file where pandas data is stored. This can be glob expression for parquet formats.</p></li>
+<li><p><strong>write_file</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – path to file to write arkouda formatted data to. Only write file if provided</p></li>
+<li><p><strong>return_obj</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True (default), return the Arkouda DataFrame object. If False, return None.</p></li>
+<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True, maintain the indexes loaded from the pandas file. Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -826,12 +805,12 @@ to Pandas object or file formatted to be readable by Pandas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>read_path</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file where arkouda data is stored.</p></li>
-<li><p><strong>dataset_name</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – name to store dataset under</p></li>
-<li><p><strong>write_file</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – path to file to write pandas formatted data to. Only write the file if this is set.
+<li><p><strong>read_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – path to file where arkouda data is stored.</p></li>
+<li><p><strong>dataset_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – name to store dataset under</p></li>
+<li><p><strong>write_file</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – path to file to write pandas formatted data to. Only write the file if this is set.
 Default is None.</p></li>
-<li><p><strong>return_obj</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – When True (default) return the Pandas DataFrame object, otherwise return None.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
+<li><p><strong>return_obj</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – When True (default) return the Pandas DataFrame object, otherwise return None.</p></li>
+<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Default False. When True, maintain the indexes loaded from the pandas file</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>

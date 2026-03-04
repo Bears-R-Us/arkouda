@@ -387,10 +387,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
+<li><p><strong>index</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – an array of indices associated with the data array.
 If empty, it will default to a range of ints whose size match the size of the data.
 optional</p></li>
-<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – a 1D array. Must not be None.</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Strings</span></code>), <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegArray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code>]</span>) – a 1D array. Must not be None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -433,7 +433,7 @@ If entering keywords,</p>
 <dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>]</span>) – <p>The key or keys to look up. This can be:
 - A scalar
 - A list of scalars
 - A list of lists (for MultiIndex)
@@ -445,7 +445,7 @@ If entering keywords,</p>
 <dd class="field-even"><p>A Series containing the values corresponding to the key.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -459,7 +459,7 @@ If entering keywords,</p>
 <dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><code class="xref py py-class docutils literal notranslate"><span class="pre">Index</span></code></a>, <a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>]</span>) – <p>The key or keys to look up. This can be:
 - A scalar
 - A list of scalars
 - A list of lists (for MultiIndex)
@@ -471,7 +471,7 @@ If entering keywords,</p>
 <dd class="field-even"><p>A Series containing the values corresponding to the key.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -485,14 +485,14 @@ If entering keywords,</p>
 <dd><p>Sort the Series by its index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Whether to sort the index in ascending (default) or descending order.
+<dd class="field-odd"><p><strong>ascending</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to sort the index in ascending (default) or descending order.
 Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Series sorted by index.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -503,14 +503,14 @@ Defaults to True.</p>
 <dd><p>Sort the Series by its values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ascending</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Whether to sort values in ascending (default) or descending order.
+<dd class="field-odd"><p><strong>ascending</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to sort values in ascending (default) or descending order.
 Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Series sorted by its values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -524,13 +524,13 @@ Defaults to True.</p>
 <dd><p>Return the top values of the Series.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – Number of values to return. Defaults to 10.</p>
+<dd class="field-odd"><p><strong>n</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Number of values to return. Defaults to 10.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Series containing the top <cite>n</cite> values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -566,7 +566,7 @@ Defaults to True.</p>
 <dd><p>Return a Series containing counts of unique values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sort</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – Whether to sort the result by count in descending order. If False,
+<dd class="field-odd"><p><strong>sort</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to sort the result by count in descending order. If False,
 the order of the results is not guaranteed. Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -574,7 +574,7 @@ the order of the results is not guaranteed. Defaults to True.</p>
 their counts in the original Series.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../autoapi/arkouda/pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -605,12 +605,12 @@ each level is converted to a separate column.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>List</em>) – A list of Series or groupings (tuples of index and values) to concatenate.</p></li>
-<li><p><strong>axis</strong> (<em>int</em>) – The axis along which to concatenate:
+<li><p><strong>arrays</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></span>) – A list of Series or groupings (tuples of index and values) to concatenate.</p></li>
+<li><p><strong>axis</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – The axis along which to concatenate:
 - 0 = vertical (stack into a Series)
 - 1 = horizontal (align by index into a DataFrame)
 Defaults to 0.</p></li>
-<li><p><strong>labels</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – Names to assign to the resulting columns in the DataFrame.</p></li>
+<li><p><strong>labels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strings</span></code></a>]</span>) – Names to assign to the resulting columns in the DataFrame.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -621,7 +621,7 @@ Defaults to 0.</p></li>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
