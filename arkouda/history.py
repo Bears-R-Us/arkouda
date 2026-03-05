@@ -9,37 +9,42 @@ debugging, or audit purposes.
 Classes
 -------
 HistoryRetriever
-    Abstract base class defining the `retrieve` method and a helper for filtering commands.
+    Abstract base class defining the ``retrieve`` method and a helper
+    for filtering commands.
 
 ShellHistoryRetriever
-    Retrieves command history from a Python REPL shell using `readline`.
+    Retrieves command history from a Python REPL shell using ``readline``.
 
 NotebookHistoryRetriever
-    Retrieves command history from a Jupyter notebook or IPython shell via IPython's history database.
+    Retrieves command history from a Jupyter notebook or IPython shell
+    via IPython's history database.
 
 Usage
 -----
-Used internally by `arkouda.generate_history()` to provide a user-friendly interface
-for querying and filtering past commands based on optional string filters and count limits.
+Used internally by ``arkouda.generate_history()`` to provide a
+user-friendly interface for querying and filtering past commands based
+on optional string filters and count limits.
 
 Examples
 --------
 >>> from arkouda.history import ShellHistoryRetriever, NotebookHistoryRetriever
 
-# REPL mode
+REPL mode:
+
 >>> h = ShellHistoryRetriever()
->>> h.retrieve(command_filter="ak.", num_commands=5)   # doctest: +SKIP
+>>> h.retrieve(command_filter="ak.", num_commands=5)  # doctest: +SKIP
 ['ak.array([1,2,3])', 'ak.sum(...)', ...]
 
-# Notebook mode
+Notebook mode:
+
 >>> h = NotebookHistoryRetriever()  # doctest: +SKIP
 >>> h.retrieve(num_commands=3)  # doctest: +SKIP
 ['ak.connect()', 'df = ak.DataFrame(...)', 'ak.argsort(...)']
 
 See Also
 --------
-arkouda.generate_history : High-level function for retrieving command history.
-
+arkouda.generate_history
+    High-level function for retrieving command history.
 """
 
 import readline
