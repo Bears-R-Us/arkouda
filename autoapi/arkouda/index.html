@@ -8837,30 +8837,34 @@ their counts in the original Series.</p>
 <dt class="sig sig-object py" id="arkouda.apply">
 <span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/apply.html#apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.apply" title="Link to this definition">¶</a></dt>
 <dd><p>Apply a python function to a pdarray.</p>
-<p>The function should take one argument
-and return a new value. The function will then be called on each element in
-the pdarray.</p>
-<p>Warning: This function is experimental and may not work as expected.
-Known limitations:
-- Any python modules used inside of the function must be installed on the server.</p>
+<p>The function should take one argument and return a new value. The function
+will then be called on each element in the pdarray.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function is experimental and may not work as expected.</p>
+<p>Known limitations:</p>
+<ul class="simple">
+<li><p>Any python modules used inside of the function must be installed on the server.</p></li>
+</ul>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> (<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The pdarray to which the function is applied</p></li>
+<li><p><strong>arr</strong> (<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The pdarray to which the function is applied.</p></li>
 <li><p><strong>func</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>Callable</em><em>, </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em>) – The function to apply to the array. This can be a callable function or
 a string, but either way it should take a single argument and return a
 single value. If a string, it should be a lambda function that takes a
-single argument, e.g. “lambda x,: x+1”. Note the dangling comma after
-the argument, this is required for string functions.</p></li>
+single argument, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;lambda</span> <span class="pre">x,:</span> <span class="pre">x+1&quot;</span></code>. Note the dangling comma after
+the argument; this is required for string functions.</p></li>
 <li><p><strong>result_dtype</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>np.dtype</em><em>, </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>]</em><em>]</em>) – The dtype of the resulting pdarray. If None, the dtype of the resulting
-pdarray will be the same as the input pdarray. If a string, it should be
-a valid numpy dtype string, e.g. “float64”. If a numpy dtype, it should
-be a valid numpy dtype object, e.g. np.float64. This is not supported
+pdarray will be the same as the input pdarray. If a string, it should be a
+valid NumPy dtype string, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;float64&quot;</span></code>. If a NumPy dtype, it should
+be a valid NumPy dtype object, e.g. <code class="docutils literal notranslate"><span class="pre">np.float64</span></code>. This is not supported
 for functions passed as strings.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The pdarray resulting from applying the function to the input array</p>
+<dd class="field-even"><p>The pdarray resulting from applying the function to the input array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
@@ -8868,19 +8872,21 @@ for functions passed as strings.</p></li>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span>
 <span class="go">array([2 3 4])</span>
 </pre></div>
 </div>
-<p>Or,
-&gt;&gt;&gt; import math
-&gt;&gt;&gt; arr = ak.randint(0, 10, 4, seed=1)
-&gt;&gt;&gt; def times_pi(x):
-…        return x*math.pi
-&gt;&gt;&gt; arr = ak.apply(arr, times_pi, “float64”)
-&gt;&gt;&gt; arr
-array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">times_pi</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">times_pi</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span>
+<span class="go">array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">

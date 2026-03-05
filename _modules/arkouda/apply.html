@@ -457,58 +457,56 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a python function to a pdarray.</span>
 
-<span class="sd">    The function should take one argument</span>
-<span class="sd">    and return a new value. The function will then be called on each element in</span>
-<span class="sd">    the pdarray.</span>
+<span class="sd">    The function should take one argument and return a new value. The function</span>
+<span class="sd">    will then be called on each element in the pdarray.</span>
 
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function is experimental and may not work as expected.</span>
 
-
-<span class="sd">    Warning: This function is experimental and may not work as expected.</span>
 <span class="sd">    Known limitations:</span>
+
 <span class="sd">    - Any python modules used inside of the function must be installed on the server.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    arr : pdarray</span>
-<span class="sd">        The pdarray to which the function is applied</span>
+<span class="sd">        The pdarray to which the function is applied.</span>
 
 <span class="sd">    func : Union[Callable, str]</span>
-
 <span class="sd">        The function to apply to the array. This can be a callable function or</span>
 <span class="sd">        a string, but either way it should take a single argument and return a</span>
 <span class="sd">        single value. If a string, it should be a lambda function that takes a</span>
-<span class="sd">        single argument, e.g. &quot;lambda x,: x+1&quot;. Note the dangling comma after</span>
-<span class="sd">        the argument, this is required for string functions.</span>
+<span class="sd">        single argument, e.g. ``&quot;lambda x,: x+1&quot;``. Note the dangling comma after</span>
+<span class="sd">        the argument; this is required for string functions.</span>
 
 <span class="sd">    result_dtype : Optional[Union[np.dtype, str]]</span>
-
 <span class="sd">        The dtype of the resulting pdarray. If None, the dtype of the resulting</span>
-<span class="sd">        pdarray will be the same as the input pdarray. If a string, it should be</span>
-<span class="sd">        a valid numpy dtype string, e.g. &quot;float64&quot;. If a numpy dtype, it should</span>
-<span class="sd">        be a valid numpy dtype object, e.g. np.float64. This is not supported</span>
+<span class="sd">        pdarray will be the same as the input pdarray. If a string, it should be a</span>
+<span class="sd">        valid NumPy dtype string, e.g. ``&quot;float64&quot;``. If a NumPy dtype, it should</span>
+<span class="sd">        be a valid NumPy dtype object, e.g. ``np.float64``. This is not supported</span>
 <span class="sd">        for functions passed as strings.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    pdarray</span>
-<span class="sd">        The pdarray resulting from applying the function to the input array</span>
+<span class="sd">        The pdarray resulting from applying the function to the input array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; arr = ak.apply(ak.array([1, 2, 3]), lambda x: x+1)</span>
+<span class="sd">    &gt;&gt;&gt; arr = ak.apply(ak.array([1, 2, 3]), lambda x: x + 1)</span>
 <span class="sd">    &gt;&gt;&gt; arr</span>
 <span class="sd">    array([2 3 4])</span>
 
-<span class="sd">    Or,</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; import math</span>
 <span class="sd">    &gt;&gt;&gt; arr = ak.randint(0, 10, 4, seed=1)</span>
 <span class="sd">    &gt;&gt;&gt; def times_pi(x):</span>
-<span class="sd">    ...        return x*math.pi</span>
+<span class="sd">    ...     return x * math.pi</span>
 <span class="sd">    &gt;&gt;&gt; arr = ak.apply(arr, times_pi, &quot;float64&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; arr</span>
 <span class="sd">    array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarrayclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_pdarray</span>
