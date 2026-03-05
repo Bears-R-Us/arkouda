@@ -18,10 +18,13 @@ Arkouda is designed to integrate with NumPy and Pandas, with arkouda handling la
 Below are the functions that enable both sides of this transfer.
 
 .. autofunction:: arkouda.array
+   :no-index:
 		  
 .. autofunction:: arkouda.pdarray.to_ndarray
+   :no-index:
 
 .. autofunction:: arkouda.numpy.Strings.to_ndarray
+   :no-index:
 
 Large Datasets
 =================
@@ -57,17 +60,21 @@ Reading data from disk
 ---------------------------
 
 .. autofunction:: arkouda.read
+   :no-index:
 
 For convenience, multiple datasets can be read in to create a dictionary of pdarrays.
 
 .. autofunction:: arkouda.read_all
+   :no-index:
 
 
 HDF5/Parquet files can be queried via the server for dataset names and sizes.
 
 .. autofunction:: arkouda.get_datasets
+   :no-index:
 
 .. autofunction:: arkouda.ls_any
+   :no-index:
 
 Import/Export
 =============
@@ -89,5 +96,7 @@ Note: If the file being read in is Parquet, the resulting file that can be read 
 This functionality is currently performed on the client and is assuming that dataset sizes are able to be handled in the client due to being written by Pandas. Arkouda natively verifies the size of data before writing it to the client, so exports are limited.
 
 .. autofunction:: arkouda.import_data
+   :no-index:
 
 .. autofunction:: arkouda.export
+   :no-index:

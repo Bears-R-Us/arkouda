@@ -37,7 +37,7 @@ Be as specific as possible and provide examples when appropriate. If the request
 If you don't have anything in mind, check out our [outstanding issues](https://github.com/Bears-R-Us/arkouda/issues) 
 (it's likely a good idea to filter on the label `good first issue`).
 
-If you already have an idea for a new feature or have identified a bug, [add an issue](#issues) before you start working on it.
+If you already have an idea for a new feature or have identified a bug, [add an issue](https://github.com/Bears-R-Us/arkouda/issues) before you start working on it.
 
 Once you find or create an issue you intend to work, please leave a comment in the issue indicating that.
 Be sure to mention `@Bears-R-Us/arkouda-core-dev` for our awareness.
@@ -113,7 +113,7 @@ https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing
 
 #### Running python tests
 
-```terminal
+```console
 # Run all tests in pytest.ini
 make test
 
@@ -126,7 +126,7 @@ python3 -m pytest tests/categorical_test.py::CategoricalTest::foo_test
 
 #### Running chapel tests
 
-```terminal
+```console
 python3 server_util/test/parallel_start_test.py -d test
 ```
 

@@ -4,7 +4,8 @@ DataFrames in Arkouda
 
 Like Pandas, Arkouda supports ``DataFrames``. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on ``arkouda.pdarrays``.
 
-.. autoclass:: arkouda.pandas.DataFrame
+.. autoclass:: arkouda.DataFrame
+   :no-index:
 
 Data Types
 ==========
@@ -28,7 +29,8 @@ Iteration
 
 Iterating directly over a ``DataFrame`` with ``for x in df`` is not recommended. Doing so is discouraged because it requires transferring all array data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_pandas`` function to return the ``DataFrame`` as a ``pandas.DataFrame``. This transfer will raise an error if it exceeds the byte limit defined in ``ak.client.maxTransferBytes``.
 
-.. autofunction:: arkouda.pandas.DataFrame.to_pandas
+.. autofunction:: arkouda.DataFrame.to_pandas
+   :no-index:
 
 Features
 ==========
@@ -36,54 +38,69 @@ Features
 
 Drop
 ---------
-.. autofunction:: arkouda.pandas.DataFrame.drop
+.. autofunction:: arkouda.DataFrame.drop
+   :no-index:
 
 GroupBy
 ----------
-.. autofunction:: arkouda.pandas.DataFrame.groupby
+.. autofunction:: arkouda.DataFrame.groupby
+   :no-index:
 
 Copy
 ----------
-.. autofunction:: arkouda.pandas.DataFrame.copy
+.. autofunction:: arkouda.DataFrame.copy
+   :no-index:
 
 Filter
 ----------
-.. autofunction:: arkouda.pandas.DataFrame.filter_by_ranges
+.. autofunction:: arkouda.DataFrame.filter_by_ranges
+   :no-index:
 
 Permutations
 -------------
-.. autofunction:: arkouda.pandas.DataFrame.apply_permutation
+.. autofunction:: arkouda.DataFrame.apply_permutation
+   :no-index:
 
 Sorting
 ----------
-.. autofunction:: arkouda.pandas.DataFrame.argsort
+.. autofunction:: arkouda.DataFrame.argsort
+   :no-index:
 
-.. autofunction:: arkouda.pandas.DataFrame.coargsort
+.. autofunction:: arkouda.DataFrame.coargsort
+   :no-index:
 
-.. autofunction:: arkouda.pandas.DataFrame.sort_values
+.. autofunction:: arkouda.DataFrame.sort_values
+   :no-index:
 
 Tail/Head of Data
 ------------------
-.. autofunction:: arkouda.pandas.DataFrame.tail
+.. autofunction:: arkouda.DataFrame.tail
+   :no-index:
 
-.. autofunction:: arkouda.pandas.DataFrame.head
+.. autofunction:: arkouda.DataFrame.head
+   :no-index:
 
 Rename Columns
 ---------------
-.. autofunction:: arkouda.pandas.DataFrame.rename
+.. autofunction:: arkouda.DataFrame.rename
+   :no-index:
 
 Append
 ----------
 .. autofunction:: akrouda.DataFrame.append
+   :no-index:
 
 Concatenate
 ------------
-.. autofunction:: arkouda.pandas.DataFrame.concat
+.. autofunction:: arkouda.DataFrame.concat
+   :no-index:
 
 Reset Indexes
 --------------
-.. autofunction:: arkouda.pandas.DataFrame.reset_index
+.. autofunction:: arkouda.DataFrame.reset_index
+   :no-index:
 
 Deduplication
 --------------
-.. autofunction:: arkouda.pandas.DataFrame.drop_duplicates
+.. autofunction:: arkouda.DataFrame.drop_duplicates
+   :no-index:

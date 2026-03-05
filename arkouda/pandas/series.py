@@ -90,40 +90,36 @@ def unary_operators(cls) -> type:
 @natural_binary_operators
 class Series:
     """
-    One-dimensional arkouda array with axis labels.
+    One-dimensional Arkouda array with axis labels.
 
     Parameters
     ----------
-    index : pdarray, Strings
-        an array of indices associated with the data array.
-        If empty, it will default to a range of ints whose size match the size of the data.
-        optional
-    data : Tuple, List, groupable_element_type, Series, SegArray
-        a 1D array. Must not be None.
+    index : pdarray or Strings, optional
+        An array of indices associated with the data array.
+        If not provided (or empty), it defaults to a range of ints whose size matches
+        the size of the data.
+    data : tuple, list, groupable_element_type, Series, or SegArray
+        A 1D array-like. Must not be None.
 
     Raises
     ------
     TypeError
-        Raised if index is not a pdarray or Strings object
-        Raised if data is not a pdarray, Strings, or Categorical object
+        Raised if ``index`` is not a pdarray or Strings object.
+        Raised if ``data`` is not a supported type.
     ValueError
-        Raised if the index size does not match data size
+        Raised if the index size does not match the data size.
 
     Notes
     -----
     The Series class accepts either positional arguments or keyword arguments.
-    If entering positional arguments,
-        2 arguments entered:
-            argument 1 - data
-            argument 2 - index
-        1 argument entered:
-            argument 1 - data
-    If entering 1 positional argument, it is assumed that this is the data argument.
-    If only 'data' argument is passed in, Index will automatically be generated.
-    If entering keywords,
-        'data' (see Parameters)
-        'index' (optional) must match size of 'data'
 
+    Positional arguments
+        - ``Series(data)``: ``data`` is provided and an index is generated automatically.
+        - ``Series(data, index)``: both ``data`` and ``index`` are provided.
+
+    Keyword arguments
+        - ``Series(data=..., index=...)``: ``index`` is optional but must match the size
+          of ``data`` when provided.
     """
 
     objType = "Series"

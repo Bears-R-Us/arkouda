@@ -260,50 +260,50 @@ def cast(
     Parameters
     ----------
     pda : pdarray, Strings, or Categorical
-        The array of values to cast
+        The array of values to cast.
     dt : np.dtype, type, str, or bigint
-        The target dtype to cast values to
+        The target dtype to cast values to.
     errors : {strict, ignore, return_validity}, default=ErrorMode.strict
         Controls how errors are handled when casting strings to a numeric type
         (ignored for casts from numeric types).
-            - strict: raise RuntimeError if *any* string cannot be converted
-            - ignore: never raise an error. Uninterpretable strings get
-                converted to NaN (float64), -2**63 (int64), zero (uint64 and
-                uint8), or False (bool)
-            - return_validity: in addition to returning the same output as
-              "ignore", also return a bool array indicating where the cast
-              was successful.
-        Default set to strict.
+
+        - ``strict``: Raise ``RuntimeError`` if *any* string cannot be converted.
+        - ``ignore``: Never raise an error. Uninterpretable strings are converted
+          to ``NaN`` (float64), ``-2**63`` (int64), zero (uint64 and uint8),
+          or ``False`` (bool).
+        - ``return_validity``: In addition to returning the same output as
+          ``"ignore"``, also return a boolean array indicating where the cast
+          was successful.
 
     Returns
     -------
-    Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]
-        pdarray or Strings
-            Array of values cast to desired dtype
-        [validity : pdarray(bool)]
-            If errors="return_validity" and input is Strings, a second array is
-            returned with True where the cast succeeded and False where it failed.
+    result : pdarray, Strings, or Categorical
+        Array of values cast to the desired dtype.
+    validity : pdarray(bool), optional
+        If ``errors="return_validity"`` and the input is ``Strings``, a second
+        array is returned with ``True`` where the cast succeeded and ``False``
+        where it failed.
 
     Notes
     -----
-    The cast is performed according to Chapel's casting rules and is NOT safe
-    from overflows or underflows. The user must ensure that the target dtype
-    has the precision and capacity to hold the desired result.
+    The cast is performed according to Chapel's casting rules and is **not**
+    safe from overflows or underflows. The user must ensure that the target
+    dtype has the precision and capacity to hold the desired result.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+    >>> ak.cast(ak.linspace(1.0, 5.0, 5), dt=ak.int64)
     array([1 2 3 4 5])
 
-    >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+    >>> ak.cast(ak.arange(0, 5), dt=ak.float64).dtype
     dtype('float64')
 
-    >>> ak.cast(ak.arange(0,5), dt=ak.bool_)
-    array([False True True True True])
+    >>> ak.cast(ak.arange(0, 5), dt=ak.bool_)
+    array([False  True  True  True  True])
 
-    >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool_)
-    array([False True True True True])
+    >>> ak.cast(ak.linspace(0, 4, 5), dt=ak.bool_)
+    array([False  True  True  True  True])
     """
     from arkouda.core.client import generic_msg
     from arkouda.pandas.categorical import Categorical  # type: ignore
@@ -2039,20 +2039,22 @@ def where(
     """
     Return values chosen from ``x`` and ``y`` depending on ``condition``.
 
-    Broadcasting rules (NumPy-style):
+    Broadcasting rules (NumPy-style)
+    -------------------------------
     - If ``condition`` is a boolean ``pdarray``, the output shape is the broadcasted
       shape of ``condition`` and any array-like operands among ``x`` and ``y``.
     - If ``condition`` is a scalar bool:
-        * if any operand is array-like, broadcast the condition to the broadcasted
-          shape of the array-like operands and return an array-like result
-        * if both operands are scalars, return a scalar
+
+      - If any operand is array-like, broadcast the condition to the broadcasted
+        shape of the array-like operands and return an array-like result.
+      - If both operands are scalars, return a scalar.
 
     Notes
     -----
-    * For numeric/bool ``pdarray`` inputs, Arkouda requires matching dtypes between
+    - For numeric/bool ``pdarray`` inputs, Arkouda requires matching dtypes between
       array operands (server-side constraint).
-    * Broadcasting is performed for ``pdarray`` operands via ``broadcast_to``.
-    * ``Strings`` and ``Categorical`` are treated as 1D; we validate broadcast
+    - Broadcasting is performed for ``pdarray`` operands via ``broadcast_to``.
+    - ``Strings`` and ``Categorical`` are treated as 1D; we validate broadcast
       compatibility but do not currently broadcast these objects.
     """
     from arkouda.core.client import generic_msg

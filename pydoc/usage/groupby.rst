@@ -17,4 +17,5 @@ For example, imagine a dataset with two columns, ``userID`` and ``dayOfWeek``. T
 
 
 .. autoclass:: arkouda.GroupBy
+   :no-index:
    :members:

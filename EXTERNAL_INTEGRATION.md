@@ -6,7 +6,7 @@ Given the crucial Exploratory Data Analysis (EDA) role Arkouda fulfills in a var
 
 ## Design
 
-Delivering integration with external systems such as Kubernetes requires three elements, all of which are encapsulated within the [ExternalIntegration](src/ExternalIntegration.chpl) module with the exception of one enum: 
+Delivering integration with external systems such as Kubernetes requires three elements, all of which are encapsulated within the `ExternalIntegration` (src/ExternalIntegration.chpl) module with the exception of one enum: 
 
 1. Channel--implements logic for writing to external systems via export channels such as file systems and HTTP/S servers.
 2. register/deregister--various register and deregister functions that register/deregister Arkouda with external systems via the corresponding Channel.
@@ -28,13 +28,13 @@ The following enums provide controlled vocabulary to configure external integrat
 2. ChannelType--defines the type of channel used to integrate with an external systems, examples of which are FILE and HTTP.
 3. ServiceEndpoint--indicates if the socket is for Arkouda client requests (for Arkouda server commands) or for metrics requests. 
 4. HttpRequestType, HttpRequestFormat--enums used internally within the ExternalIntegration module to configure the HttpChannel in terms of request type (e.g., POST or PUT) and request format (e.g., TEXT or JSON).
-5. Deployment--defined in the [ServerConfig](ServerConfig.chpl) module, the Deployment enum indicates whether Arkouda is deployed in a STANDARD environment (Slurm, bare metal) or KUBERNETES.
+5. Deployment--defined in the `ServerConfig` (ServerConfig.chpl) module, the Deployment enum indicates whether Arkouda is deployed in a STANDARD environment (Slurm, bare metal) or KUBERNETES.
 
 ## Building Arkouda with External Integration Support
 
-Since the ExternalIntegration module delegates HttpChannel registration logic to the Chaple Curl module, building Arkouda with ExternalIntegration requires the libcurl4-openssl-dev lib to be installed. For Debian and Ubuntu Linux distros, the install command is as follows:
+Since the ExternalIntegration module delegates HttpChannel registration logic to the Chapel Curl module, building Arkouda with ExternalIntegration requires the libcurl4-openssl-dev lib to be installed. For Debian and Ubuntu Linux distros, the install command is as follows:
 
-```
+```bash
 sudo apt-get install libcurl4-openssl-dev
 ```
 
@@ -46,13 +46,13 @@ The initial use case for Arkouda external integration is Kubernetes as described
 
 #### Required Files for Registering with Kubernetes
 
-The Chapel Curl logic must use HTTPS to register/deregister with Kubernetes via the Kubernetes Rest API. Accordingly, a Kubernetes [ServiceAccount](https://kubernetes.io/docs/concepts/security/service-accounts/) and corresponding TLS token secret must be generated. The token and cacert file bound to the ServiceAccount sa are used to authenticate to the Kubernetes API. A ClusterRole or Role authorizing Pod, Service, and Endpoint creates/updates/deletes is bound to the Arkouda ServiceAccount. The cacert file must be deployed to all bare metal/slurm nodes to register Arkodua-on-Slurm with Kubernetes.
+The Chapel Curl logic must use HTTPS to register/deregister with Kubernetes via the Kubernetes Rest API. Accordingly, a Kubernetes [ServiceAccount](https://kubernetes.io/docs/concepts/security/service-accounts/) and corresponding TLS token secret must be generated. The token and cacert file bound to the ServiceAccount sa are used to authenticate to the Kubernetes API. A ClusterRole or Role authorizing Pod, Service, and Endpoint creates/updates/deletes is bound to the Arkouda ServiceAccount. The cacert file must be deployed to all bare metal/slurm nodes to register Arkouda-on-Slurm with Kubernetes.
 
 #### Create Kubernetes ServiceAccount
 
 An example ServiceAccount is as follows. A key element is automountServiceAccountToken, which needs to be set to false in order to bind a long-lived token.
 
-```
+```yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -64,7 +64,7 @@ automountServiceAccountToken: false
 
 An example of secret encapsulating a ServiceAccount token is as follows. two key elements are the service-account.name and service-account-token Secret type:
 
-```
+```yaml
 apiVersion: v1
 kind: Secret
 metadata:
@@ -78,7 +78,7 @@ type: kubernetes.io/service-account-token
 
 Once the token secret is created, the token string value used in the https command is created from the token secret is as follows:
 
-```
+```bash
 export SECRET=arkouda-token
  
 export TOKEN=$(kubectl get secret ${SECRET} -o json | jq -Mr '.data.token' | base64 -d)
@@ -90,7 +90,7 @@ The token is added to the Curl header submitted to the Kubernetes API HTTPS enpo
 
 Once the token secret is created, the ca.crt string value used in the https command is created from the token secret is as follows:
 
-```
+```bash
 export SECRET=arkouda-token
  
 kubectl get secret ${SECRET} -o json | jq -Mr '.data["ca.crt"]' | base64 -d > ./ca.crt
@@ -107,7 +107,7 @@ curl $KUBE_URL/api/v1/namespaces/default/pods/ --header "Authorization: Bearer $
 
 With the Kubernetes arkouda ServiceAccount, TLS token, and ca.crt in place, create the RoleBinding or ClusterRoleBinding needed to authorize the arkouda ServiceAccount read/write access to the Kubernetes Client API.
 
-```
+```yaml
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -133,7 +133,7 @@ Important note: while this cluster role binding is valid, there may be some envi
 
 ### Kubernetes
 
-A stated above, integrating Arkouda with ML and DL workflows on Kubernetes is an increasingly important use case given the popularity of deploying ML/DL workflows to cloud environments generally, and Kubernetes specifically.
+As stated above, integrating Arkouda with ML and DL workflows on Kubernetes is an increasingly important use case given the popularity of deploying ML/DL workflows to cloud environments generally, and Kubernetes specifically.
 
 The registerWithKubernetes function generates the JSON blob containing either the standard (if Arkouda is deployed on Kubernetes) or external (Arkouda is deployed outside of Kubernetes on Slurm or bare-metal) service definition.
 
@@ -171,7 +171,7 @@ Note that the ExternalIntegration.externalSystem param is SystemType.KUBERNETES 
 
 An example Slurm BATCH file for an Arkouda instance that registers/deregisters with Kubernetes is shown below. Note that the ExternalIntegration.externalSystem param is SystemType.KUBERNETES and the deployment param is not specified because Slurm is considered a DEFAULT deployment type.
 
-```
+```bash
 #!/bin/bash
 #
 #SBATCH --job-name=arkouda-3-node
@@ -201,7 +201,7 @@ export CACERT_FILE=/etc/kubernetes/ssl/kube-ca.pem #on slurm hosts
 
 An example bare metal deployment script for an Arkouda instance that registers/deregisters with Kubernetes is shown below. As is the case with the Arkouda-on-Slurm deployment, the ExternalIntegration.externalSystem param is SystemType.KUBERNETES and the deployment param is not specified because bare metal is considered a DEFAULT deployment type.
 
-```
+```bash
 #!/bin/bash
 
 export GASNET_MASTERIP='server1'

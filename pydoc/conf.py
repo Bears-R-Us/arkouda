@@ -146,3 +146,9 @@ html_static_path = ["_static"]
 
 # Add release substitution variable
 substitutions = [("|release|", release)]
+
+suppress_warnings = [
+    "ref.python",
+    "toc.not_included",
+    "autoapi.python_import_resolution",
+]
