@@ -82,58 +82,56 @@ def apply(
     """
     Apply a python function to a pdarray.
 
-    The function should take one argument
-    and return a new value. The function will then be called on each element in
-    the pdarray.
+    The function should take one argument and return a new value. The function
+    will then be called on each element in the pdarray.
 
+    Warning
+    -------
+    This function is experimental and may not work as expected.
 
-
-    Warning: This function is experimental and may not work as expected.
     Known limitations:
+
     - Any python modules used inside of the function must be installed on the server.
 
     Parameters
     ----------
     arr : pdarray
-        The pdarray to which the function is applied
+        The pdarray to which the function is applied.
 
     func : Union[Callable, str]
-
         The function to apply to the array. This can be a callable function or
         a string, but either way it should take a single argument and return a
         single value. If a string, it should be a lambda function that takes a
-        single argument, e.g. "lambda x,: x+1". Note the dangling comma after
-        the argument, this is required for string functions.
+        single argument, e.g. ``"lambda x,: x+1"``. Note the dangling comma after
+        the argument; this is required for string functions.
 
     result_dtype : Optional[Union[np.dtype, str]]
-
         The dtype of the resulting pdarray. If None, the dtype of the resulting
-        pdarray will be the same as the input pdarray. If a string, it should be
-        a valid numpy dtype string, e.g. "float64". If a numpy dtype, it should
-        be a valid numpy dtype object, e.g. np.float64. This is not supported
+        pdarray will be the same as the input pdarray. If a string, it should be a
+        valid NumPy dtype string, e.g. ``"float64"``. If a NumPy dtype, it should
+        be a valid NumPy dtype object, e.g. ``np.float64``. This is not supported
         for functions passed as strings.
 
     Returns
     -------
     pdarray
-        The pdarray resulting from applying the function to the input array
+        The pdarray resulting from applying the function to the input array.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>> arr = ak.apply(ak.array([1, 2, 3]), lambda x: x+1)
+    >>> arr = ak.apply(ak.array([1, 2, 3]), lambda x: x + 1)
     >>> arr
     array([2 3 4])
 
-    Or,
+    >>> import arkouda as ak
     >>> import math
     >>> arr = ak.randint(0, 10, 4, seed=1)
     >>> def times_pi(x):
-    ...        return x*math.pi
+    ...     return x * math.pi
     >>> arr = ak.apply(arr, times_pi, "float64")
     >>> arr
     array([21.991148575128552 28.274333882308138 15.707963267948966 3.1415926535897931])
-
     """
     from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarrayclass import create_pdarray
