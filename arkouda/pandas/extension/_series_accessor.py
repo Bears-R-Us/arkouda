@@ -44,6 +44,8 @@ from arkouda.pandas.extension import ArkoudaExtensionArray, ArkoudaIndexAccessor
 from arkouda.pandas.groupbyclass import GroupBy
 from arkouda.pandas.series import Series as ak_Series
 
+from ._index_accessor import _ak_index_to_pandas_no_copy
+
 
 # ---------------------------------------------------------------------------
 # Helpers: wrapping and unwrapping
@@ -454,9 +456,7 @@ class ArkoudaSeriesAccessor:
 
         out_ak = aks.locate(key)
 
-        # Wrap result into an Arkouda-backed pandas Series
-        # (keep the returned index/name from the legacy result).
-        idx = ArkoudaIndexAccessor(out_ak.index.to_pandas()).to_ak()  # preserve names/levels
+        idx = _ak_index_to_pandas_no_copy(out_ak.index)
         return _ak_array_to_pandas_series(out_ak.values, name=out_ak.name).set_axis(idx)
 
     @staticmethod
