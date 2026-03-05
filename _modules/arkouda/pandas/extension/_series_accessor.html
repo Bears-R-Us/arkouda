@@ -417,6 +417,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.groupbyclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupBy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.series</span><span class="w"> </span><span class="kn">import</span> <span class="n">Series</span> <span class="k">as</span> <span class="n">ak_Series</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">._index_accessor</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ak_index_to_pandas_no_copy</span>
+
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <span class="c1"># Helpers: wrapping and unwrapping</span>
@@ -843,9 +845,7 @@
 
         <span class="n">out_ak</span> <span class="o">=</span> <span class="n">aks</span><span class="o">.</span><span class="n">locate</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-        <span class="c1"># Wrap result into an Arkouda-backed pandas Series</span>
-        <span class="c1"># (keep the returned index/name from the legacy result).</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">ArkoudaIndexAccessor</span><span class="p">(</span><span class="n">out_ak</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">())</span><span class="o">.</span><span class="n">to_ak</span><span class="p">()</span>  <span class="c1"># preserve names/levels</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">_ak_index_to_pandas_no_copy</span><span class="p">(</span><span class="n">out_ak</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_ak_array_to_pandas_series</span><span class="p">(</span><span class="n">out_ak</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">out_ak</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">set_axis</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span></div>
 
 
