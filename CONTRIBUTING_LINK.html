@@ -422,7 +422,7 @@ Providing simplified programs demonstrating the problem will be appreciated.</p>
 <h2>Developing Arkouda<a class="headerlink" href="#developing-arkouda" title="Link to this heading">¶</a></h2>
 <p>If you don’t have anything in mind, check out our <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/issues">outstanding issues</a>
 (it’s likely a good idea to filter on the label <code class="docutils literal notranslate"><span class="pre">good</span> <span class="pre">first</span> <span class="pre">issue</span></code>).</p>
-<p>If you already have an idea for a new feature or have identified a bug, <a class="reference internal" href="#issues"><span class="xref myst">add an issue</span></a> before you start working on it.</p>
+<p>If you already have an idea for a new feature or have identified a bug, <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/issues">add an issue</a> before you start working on it.</p>
 <p>Once you find or create an issue you intend to work, please leave a comment in the issue indicating that.
 Be sure to mention <code class="docutils literal notranslate"><span class="pre">&#64;Bears-R-Us/arkouda-core-dev</span></code> for our awareness.
 We will then assign the issue to you to avoid anyone duplicating your work.</p>
@@ -489,20 +489,20 @@ $<span class="w"> </span>flake8<span class="w"> </span>arkouda/example_feature.p
 <a class="reference external" href="https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing">https://github.com/Bears-R-Us/arkouda/wiki/Unit-Testing</a></p>
 <section id="running-python-tests">
 <h4>Running python tests<a class="headerlink" href="#running-python-tests" title="Link to this heading">¶</a></h4>
-<div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span># Run all tests in pytest.ini
-make test
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Run<span class="w"> </span>all<span class="w"> </span>tests<span class="w"> </span><span class="k">in</span><span class="w"> </span>pytest.ini
+<span class="go">make test</span>
 
-# Run all tests in the CategoricalTest class (-v will print out the test name)
-python3 -m pytest tests/categorical_test.py::CategoricalTest -v
+<span class="gp"># </span>Run<span class="w"> </span>all<span class="w"> </span>tests<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>CategoricalTest<span class="w"> </span>class<span class="w"> </span><span class="o">(</span>-v<span class="w"> </span>will<span class="w"> </span>print<span class="w"> </span>out<span class="w"> </span>the<span class="w"> </span><span class="nb">test</span><span class="w"> </span>name<span class="o">)</span>
+<span class="go">python3 -m pytest tests/categorical_test.py::CategoricalTest -v</span>
 
-# Run a single test from CategoricalTest named foo_test
-python3 -m pytest tests/categorical_test.py::CategoricalTest::foo_test
+<span class="gp"># </span>Run<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span><span class="nb">test</span><span class="w"> </span>from<span class="w"> </span>CategoricalTest<span class="w"> </span>named<span class="w"> </span>foo_test
+<span class="go">python3 -m pytest tests/categorical_test.py::CategoricalTest::foo_test</span>
 </pre></div>
 </div>
 </section>
 <section id="running-chapel-tests">
 <h4>Running chapel tests<a class="headerlink" href="#running-chapel-tests" title="Link to this heading">¶</a></h4>
-<div class="highlight-terminal notranslate"><div class="highlight"><pre><span></span>python3 server_util/test/parallel_start_test.py -d test
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 server_util/test/parallel_start_test.py -d test</span>
 </pre></div>
 </div>
 </section>

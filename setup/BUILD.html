@@ -396,7 +396,7 @@ However, if you have manually installed dependencies (such as ZeroMQ or HDF5), y
 <h4>Using <code class="docutils literal notranslate"><span class="pre">conda</span></code><a class="headerlink" href="#using-conda" title="Link to this heading">¶</a></h4>
 <p>If you are using a conda environment to manage your dependencies. All you need to do is <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span></code> that
 environment and run this command:</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>echo -e &quot;\$(eval \$(call add-path,$CONDA_PREFIX))&quot; &gt;&gt; Makefile.paths
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">echo -e &quot;\$(eval \$(call add-path,$CONDA_PREFIX))&quot; &gt;&gt; Makefile.paths</span>
 </pre></div>
 </div>
 </section>
@@ -412,9 +412,9 @@ environment and run this command:</p>
 </div>
 <p>The path may vary based on the installation location of pip and your environment name.
 Here are some tips to locate the path.</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span># when installing via pip, run `pip show` on a package you&#39;ve installed with pip
-% pip show hdf5 | grep Location
-Location: /opt/homebrew/Caskroom/miniforge/base/envs/arkouda/lib/python3.12/site-packages
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>when<span class="w"> </span>installing<span class="w"> </span>via<span class="w"> </span>pip,<span class="w"> </span>run<span class="w"> </span><span class="sb">`</span>pip<span class="w"> </span>show<span class="sb">`</span><span class="w"> </span>on<span class="w"> </span>a<span class="w"> </span>package<span class="w"> </span>you<span class="err">&#39;</span>ve<span class="w"> </span>installed<span class="w"> </span>with<span class="w"> </span>pip
+<span class="gp">% </span>pip<span class="w"> </span>show<span class="w"> </span>hdf5<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Location
+<span class="go">Location: /opt/homebrew/Caskroom/miniforge/base/envs/arkouda/lib/python3.12/site-packages</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">chpl</span></code> compiler will be executed with <code class="docutils literal notranslate"><span class="pre">-I</span></code>, <code class="docutils literal notranslate"><span class="pre">-L</span></code> and <code class="docutils literal notranslate"><span class="pre">-rpath</span></code> for each path in your <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code></p>

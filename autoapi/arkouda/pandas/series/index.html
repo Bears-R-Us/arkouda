@@ -385,7 +385,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Series</span></code></a></p></td>
-<td><p>One-dimensional arkouda array with axis labels.</p></td>
+<td><p>One-dimensional Arkouda array with axis labels.</p></td>
 </tr>
 </tbody>
 </table>
@@ -396,43 +396,38 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.series.</span></span><span class="sig-name descname"><span class="pre">Series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">arkouda.pandas.groupbyclass.groupable_element_type</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/segarray/index.html#arkouda.numpy.segarray.SegArray" title="arkouda.numpy.segarray.SegArray"><span class="pre">arkouda.numpy.segarray.SegArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index.html#arkouda.pandas.Series" title="arkouda.pandas.Series"><span class="pre">pandas.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pandas.Categorical</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../index/index.html#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><span class="pre">arkouda.pandas.index.Index</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series" title="Link to this definition">¶</a></dt>
-<dd><p>One-dimensional arkouda array with axis labels.</p>
+<dd><p>One-dimensional Arkouda array with axis labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – an array of indices associated with the data array.
-If empty, it will default to a range of ints whose size match the size of the data.
-optional</p></li>
-<li><p><strong>data</strong> (<em>Tuple</em><em>, </em><em>List</em><em>, </em><em>groupable_element_type</em><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – a 1D array. Must not be None.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em> or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><em>optional</em>) – An array of indices associated with the data array.
+If not provided (or empty), it defaults to a range of ints whose size matches
+the size of the data.</p></li>
+<li><p><strong>data</strong> (<em>tuple</em><em>, </em><em>list</em><em>, </em><em>groupable_element_type</em><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – A 1D array-like. Must not be None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if index is not a pdarray or Strings object
-Raised if data is not a pdarray, Strings, or Categorical object</p></li>
-<li><p><strong>ValueError</strong> – Raised if the index size does not match data size</p></li>
+<li><p><strong>TypeError</strong> – Raised if <code class="docutils literal notranslate"><span class="pre">index</span></code> is not a pdarray or Strings object.
+Raised if <code class="docutils literal notranslate"><span class="pre">data</span></code> is not a supported type.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the index size does not match the data size.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The Series class accepts either positional arguments or keyword arguments.
-If entering positional arguments,</p>
-<blockquote>
-<div><dl class="simple">
-<dt>2 arguments entered:</dt><dd><p>argument 1 - data
-argument 2 - index</p>
+<p>The Series class accepts either positional arguments or keyword arguments.</p>
+<dl class="simple">
+<dt>Positional arguments</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Series(data)</span></code>: <code class="docutils literal notranslate"><span class="pre">data</span></code> is provided and an index is generated automatically.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Series(data,</span> <span class="pre">index)</span></code>: both <code class="docutils literal notranslate"><span class="pre">data</span></code> and <code class="docutils literal notranslate"><span class="pre">index</span></code> are provided.</p></li>
+</ul>
 </dd>
-<dt>1 argument entered:</dt><dd><p>argument 1 - data</p>
+<dt>Keyword arguments</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Series(data=...,</span> <span class="pre">index=...)</span></code>: <code class="docutils literal notranslate"><span class="pre">index</span></code> is optional but must match the size
+of <code class="docutils literal notranslate"><span class="pre">data</span></code> when provided.</p></li>
+</ul>
 </dd>
 </dl>
-</div></blockquote>
-<p>If entering 1 positional argument, it is assumed that this is the data argument.
-If only ‘data’ argument is passed in, Index will automatically be generated.
-If entering keywords,</p>
-<blockquote>
-<div><p>‘data’ (see Parameters)
-‘index’ (optional) must match size of ‘data’</p>
-</div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">Series</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.add" title="Link to this definition">¶</a></dt>
@@ -808,7 +803,7 @@ that indicates whether an element is an NA value.</p>
 <dd><p>Lookup values by index label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><em>List</em><em>, or </em><em>Tuple</em>) – <p>The key or keys to look up. This can be:
 - A scalar
 - A list of scalars
 - A list of lists (for MultiIndex)
@@ -827,7 +822,7 @@ that indicates whether an element is an NA value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.series.Series.map">
-<span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><span class="pre">arkouda.Series</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><span class="pre">arkouda.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.map" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../index.html#arkouda.Series" title="arkouda.Series"><span class="pre">arkouda.Series</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../index.html#arkouda.Series" title="arkouda.Series"><span class="pre">arkouda.Series</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/series.html#Series.map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.series.Series.map" title="Link to this definition">¶</a></dt>
 <dd><p>Map values of Series according to an input mapping.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1305,7 +1300,7 @@ they are unregistered.</p>
 <p>Also converts list and tuple arguments into pdarrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>List</em><em>, </em><em>supported_scalars</em><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – The key or container of keys that might be used to index into the Series.</p>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>List</em><em>, </em><em>supported_scalars</em><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.SegArray" title="arkouda.numpy.SegArray"><em>SegArray</em></a>) – The key or container of keys that might be used to index into the Series.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>The validated key(s), with lists and tuples converted to pdarrays</p>

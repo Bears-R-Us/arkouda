@@ -638,50 +638,50 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pda : pdarray, Strings, or Categorical</span>
-<span class="sd">        The array of values to cast</span>
+<span class="sd">        The array of values to cast.</span>
 <span class="sd">    dt : np.dtype, type, str, or bigint</span>
-<span class="sd">        The target dtype to cast values to</span>
+<span class="sd">        The target dtype to cast values to.</span>
 <span class="sd">    errors : {strict, ignore, return_validity}, default=ErrorMode.strict</span>
 <span class="sd">        Controls how errors are handled when casting strings to a numeric type</span>
 <span class="sd">        (ignored for casts from numeric types).</span>
-<span class="sd">            - strict: raise RuntimeError if *any* string cannot be converted</span>
-<span class="sd">            - ignore: never raise an error. Uninterpretable strings get</span>
-<span class="sd">                converted to NaN (float64), -2**63 (int64), zero (uint64 and</span>
-<span class="sd">                uint8), or False (bool)</span>
-<span class="sd">            - return_validity: in addition to returning the same output as</span>
-<span class="sd">              &quot;ignore&quot;, also return a bool array indicating where the cast</span>
-<span class="sd">              was successful.</span>
-<span class="sd">        Default set to strict.</span>
+
+<span class="sd">        - ``strict``: Raise ``RuntimeError`` if *any* string cannot be converted.</span>
+<span class="sd">        - ``ignore``: Never raise an error. Uninterpretable strings are converted</span>
+<span class="sd">          to ``NaN`` (float64), ``-2**63`` (int64), zero (uint64 and uint8),</span>
+<span class="sd">          or ``False`` (bool).</span>
+<span class="sd">        - ``return_validity``: In addition to returning the same output as</span>
+<span class="sd">          ``&quot;ignore&quot;``, also return a boolean array indicating where the cast</span>
+<span class="sd">          was successful.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Union[Union[pdarray, Strings, Categorical], Tuple[pdarray, pdarray]]</span>
-<span class="sd">        pdarray or Strings</span>
-<span class="sd">            Array of values cast to desired dtype</span>
-<span class="sd">        [validity : pdarray(bool)]</span>
-<span class="sd">            If errors=&quot;return_validity&quot; and input is Strings, a second array is</span>
-<span class="sd">            returned with True where the cast succeeded and False where it failed.</span>
+<span class="sd">    result : pdarray, Strings, or Categorical</span>
+<span class="sd">        Array of values cast to the desired dtype.</span>
+<span class="sd">    validity : pdarray(bool), optional</span>
+<span class="sd">        If ``errors=&quot;return_validity&quot;`` and the input is ``Strings``, a second</span>
+<span class="sd">        array is returned with ``True`` where the cast succeeded and ``False``</span>
+<span class="sd">        where it failed.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The cast is performed according to Chapel&#39;s casting rules and is NOT safe</span>
-<span class="sd">    from overflows or underflows. The user must ensure that the target dtype</span>
-<span class="sd">    has the precision and capacity to hold the desired result.</span>
+<span class="sd">    The cast is performed according to Chapel&#39;s casting rules and is **not**</span>
+<span class="sd">    safe from overflows or underflows. The user must ensure that the target</span>
+<span class="sd">    dtype has the precision and capacity to hold the desired result.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)</span>
+<span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(1.0, 5.0, 5), dt=ak.int64)</span>
 <span class="sd">    array([1 2 3 4 5])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0,5), dt=ak.float64).dtype</span>
+<span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0, 5), dt=ak.float64).dtype</span>
 <span class="sd">    dtype(&#39;float64&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0,5), dt=ak.bool_)</span>
-<span class="sd">    array([False True True True True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.cast(ak.arange(0, 5), dt=ak.bool_)</span>
+<span class="sd">    array([False  True  True  True  True])</span>
 
-<span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(0,4,5), dt=ak.bool_)</span>
-<span class="sd">    array([False True True True True])</span>
+<span class="sd">    &gt;&gt;&gt; ak.cast(ak.linspace(0, 4, 5), dt=ak.bool_)</span>
+<span class="sd">    array([False  True  True  True  True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.categorical</span><span class="w"> </span><span class="kn">import</span> <span class="n">Categorical</span>  <span class="c1"># type: ignore</span>
@@ -2516,20 +2516,22 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return values chosen from ``x`` and ``y`` depending on ``condition``.</span>
 
-<span class="sd">    Broadcasting rules (NumPy-style):</span>
+<span class="sd">    Broadcasting rules (NumPy-style)</span>
+<span class="sd">    -------------------------------</span>
 <span class="sd">    - If ``condition`` is a boolean ``pdarray``, the output shape is the broadcasted</span>
 <span class="sd">      shape of ``condition`` and any array-like operands among ``x`` and ``y``.</span>
 <span class="sd">    - If ``condition`` is a scalar bool:</span>
-<span class="sd">        * if any operand is array-like, broadcast the condition to the broadcasted</span>
-<span class="sd">          shape of the array-like operands and return an array-like result</span>
-<span class="sd">        * if both operands are scalars, return a scalar</span>
+
+<span class="sd">      - If any operand is array-like, broadcast the condition to the broadcasted</span>
+<span class="sd">        shape of the array-like operands and return an array-like result.</span>
+<span class="sd">      - If both operands are scalars, return a scalar.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    * For numeric/bool ``pdarray`` inputs, Arkouda requires matching dtypes between</span>
+<span class="sd">    - For numeric/bool ``pdarray`` inputs, Arkouda requires matching dtypes between</span>
 <span class="sd">      array operands (server-side constraint).</span>
-<span class="sd">    * Broadcasting is performed for ``pdarray`` operands via ``broadcast_to``.</span>
-<span class="sd">    * ``Strings`` and ``Categorical`` are treated as 1D; we validate broadcast</span>
+<span class="sd">    - Broadcasting is performed for ``pdarray`` operands via ``broadcast_to``.</span>
+<span class="sd">    - ``Strings`` and ``Categorical`` are treated as 1D; we validate broadcast</span>
 <span class="sd">      compatibility but do not currently broadcast these objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>

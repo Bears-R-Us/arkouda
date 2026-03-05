@@ -920,7 +920,7 @@ instances of <cite>type</cite>.</p>
 <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> or converts from Python/NumPy sequences of labels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="../../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em> | </em><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategorical" title="arkouda.pandas.extension.ArkoudaCategorical"><em>ArkoudaCategorical</em></a><em> | </em><em>ndarray</em><em> | </em><em>Sequence</em><em>[</em><em>Any</em><em>]</em>) – Input to wrap or convert.
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em> | </em><a class="reference internal" href="#arkouda.pandas.extension.ArkoudaCategorical" title="arkouda.pandas.extension.ArkoudaCategorical"><em>ArkoudaCategorical</em></a><em> | </em><em>ndarray</em><em> | </em><em>Sequence</em><em>[</em><em>Any</em><em>]</em>) – Input to wrap or convert.
 - If <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>, used directly.
 - If another <code class="docutils literal notranslate"><span class="pre">ArkoudaCategorical</span></code>, its backing object is reused.
 - If list/tuple/ndarray, converted via <code class="docutils literal notranslate"><span class="pre">ak.Categorical(ak.array(data))</span></code>.</p>
@@ -1548,7 +1548,7 @@ For that (server-side DataFrame structure), use <a class="reference internal" hr
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.extension.ArkoudaDataFrameAccessor.to_ak_legacy">
 <span class="sig-name descname"><span class="pre">to_ak_legacy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dataframe/index.html#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><span class="pre">arkouda.pandas.dataframe.DataFrame</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/extension/_dataframe_accessor.html#ArkoudaDataFrameAccessor.to_ak_legacy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.extension.ArkoudaDataFrameAccessor.to_ak_legacy" title="Link to this definition">¶</a></dt>
-<dd><p>Convert this pandas DataFrame into the legacy <code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.pandas.DataFrame</span></code>.</p>
+<dd><p>Convert this pandas DataFrame into the legacy <a class="reference internal" href="../../index.html#arkouda.DataFrame" title="arkouda.DataFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.DataFrame</span></code></a>.</p>
 <p>This method performs a <em>materializing</em> conversion of a pandas DataFrame
 into the legacy Arkouda DataFrame structure. Every column is converted
 to Arkouda server-side data:</p>
@@ -2218,7 +2218,7 @@ order (int), e.g. arr.interpolate(method=’polynomial’, order=5).
 of similar names. See Notes.
 * ‘from_derivatives’: Refers to scipy.interpolate.BPoly.from_derivatives.</p></li>
 <li><p><strong>axis</strong> (<em>int</em>) – Axis to interpolate along. For 1-dimensional data, use 0.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – Index to use for interpolation.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="../../index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – Index to use for interpolation.</p></li>
 <li><p><strong>limit</strong> (<em>int</em><em> or </em><em>None</em>) – Maximum number of consecutive NaNs to fill. Must be greater than 0.</p></li>
 <li><p><strong>limit_direction</strong> (<em>{'forward'</em><em>, </em><em>'backward'</em><em>, </em><em>'both'}</em>) – Consecutive NaNs will be filled in this direction.</p></li>
 <li><p><strong>limit_area</strong> (<em>{'inside'</em><em>, </em><em>'outside'}</em><em> or </em><em>None</em>) – If limit is specified, consecutive NaNs will be filled with this
@@ -2929,7 +2929,7 @@ the legacy <code class="docutils literal notranslate"><span class="pre">update_h
 <p>Extension dtype for Arkouda-backed 64-bit integers.</p>
 <p>This dtype allows seamless use of Arkouda’s distributed <code class="docutils literal notranslate"><span class="pre">int64</span></code>
 arrays inside pandas objects (<code class="docutils literal notranslate"><span class="pre">Series</span></code>, <code class="docutils literal notranslate"><span class="pre">Index</span></code>, <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>).
-It is backed by <a class="reference internal" href="../../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.pdarray</span></code></a> with <code class="docutils literal notranslate"><span class="pre">dtype='int64'</span></code>
+It is backed by <code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.pdarray</span></code> with <code class="docutils literal notranslate"><span class="pre">dtype='int64'</span></code>
 and integrates with pandas via the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">ArkoudaArray</span></code>
 extension array.</p>

@@ -472,20 +472,19 @@ Acceptable types include:</p>
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.groupbyclass.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">groupable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/groupbyclass.html#GroupBy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy" title="Link to this definition">¶</a></dt>
 <dd><p>Group an array or list of arrays by value.</p>
-<p>Usually in preparation
-for aggregating the within-group values of another array.</p>
+<p>Usually in preparation for aggregating the within-group values of another array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row</p></li>
-<li><p><strong>assume_sorted</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True, assume keys is already sorted (Default: False)</p></li>
+<li><p><strong>keys</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – The array to group by value, or if list, the column arrays to group by row.</p></li>
+<li><p><strong>assume_sorted</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True, assume keys is already sorted (default: False).</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.nkeys">
 <span class="sig-name descname"><span class="pre">nkeys</span></span><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.nkeys" title="Link to this definition">¶</a></dt>
-<dd><p>The number of key arrays (columns)</p>
+<dd><p>The number of key arrays (columns).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
@@ -496,7 +495,7 @@ for aggregating the within-group values of another array.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.permutation">
 <span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.permutation" title="Link to this definition">¶</a></dt>
-<dd><p>The permutation that sorts the keys array(s) by value (row)</p>
+<dd><p>The permutation that sorts the key array(s) by value (row).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
@@ -507,10 +506,10 @@ for aggregating the within-group values of another array.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.unique_keys">
 <span class="sig-name descname"><span class="pre">unique_keys</span></span><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.unique_keys" title="Link to this definition">¶</a></dt>
-<dd><p>The unique values of the keys array(s), in grouped order</p>
+<dd><p>The unique values of the key array(s), in grouped order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, or <a class="reference internal" href="../../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, or <a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -518,7 +517,7 @@ for aggregating the within-group values of another array.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.ngroups">
 <span class="sig-name descname"><span class="pre">ngroups</span></span><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.ngroups" title="Link to this definition">¶</a></dt>
-<dd><p>The length of the unique_keys array(s), i.e. number of groups</p>
+<dd><p>The length of the unique_keys array(s), i.e., the number of groups.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
@@ -529,7 +528,7 @@ for aggregating the within-group values of another array.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.segments">
 <span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.segments" title="Link to this definition">¶</a></dt>
-<dd><p>The start index of each group in the grouped array(s)</p>
+<dd><p>The start index of each group in the grouped array(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
@@ -540,7 +539,7 @@ for aggregating the within-group values of another array.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.logger">
 <span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.logger" title="Link to this definition">¶</a></dt>
-<dd><p>Used for all logging operations</p>
+<dd><p>Used for all logging operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ArkoudaLogger</p>
@@ -551,37 +550,32 @@ for aggregating the within-group values of another array.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.dropna">
 <span class="sig-name descname"><span class="pre">dropna</span></span><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.dropna" title="Link to this definition">¶</a></dt>
-<dd><p>If True, and the groupby keys contain NaN values,
-the NaN values together with the corresponding row will be dropped.
-Otherwise, the rows corresponding to NaN values will be kept.
-The default is True</p>
+<dd><p>If True and the groupby keys contain NaN values, the NaN values together
+with the corresponding row will be dropped. Otherwise, rows corresponding
+to NaN values will be kept.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a> (default=True)</p>
+<dd class="field-odd"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a>, default=True</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – Raised if keys is a pdarray with a dtype other than int64</p>
+<dd class="field-odd"><p><strong>TypeError</strong> – Raised if keys is a pdarray with a dtype other than int64.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Integral pdarrays, Strings, and Categoricals are natively supported, but
 float64 and bool arrays are not.</p>
-<p>For a user-defined class to be groupable, it must inherit from pdarray
-and define or overload the grouping API:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>a ._get_grouping_keys() method that returns a list of pdarrays
-that can be (co)argsorted.</p></li>
-<li><p>(Optional) a .group() method that returns the permutation that
-groups the array</p></li>
-</ol>
-</div></blockquote>
-<p>If the input is a single array with a .group() method defined, method 2
-will be used; otherwise, method 1 will be used.</p>
+<p>For a user-defined class to be groupable, it must inherit from <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>
+and provide the grouping API:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">._get_grouping_keys()</span></code>: Return a list of pdarrays that can be (co)argsorted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.group()</span></code> (optional): Return the permutation that groups the array.</p></li>
+</ul>
+<p>If the input is a single array with a <code class="docutils literal notranslate"><span class="pre">.group()</span></code> method defined, that method
+is used. Otherwise, <code class="docutils literal notranslate"><span class="pre">._get_grouping_keys()</span></code> is used.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.AND">
 <span class="sig-name descname"><span class="pre">AND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/strings/index.html#arkouda.numpy.strings.Strings" title="arkouda.numpy.strings.Strings"><span class="pre">arkouda.numpy.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/groupbyclass.html#GroupBy.AND"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.AND" title="Link to this definition">¶</a></dt>
@@ -2051,7 +2045,7 @@ of times each unique value comes up in the input array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pda</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
+<li><p><strong>pda</strong> (<em>(</em><em>list of</em><em>) </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, or </em><a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a>) – Input array.</p></li>
 <li><p><strong>return_groups</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, also return grouping information for the array.</p></li>
 <li><p><strong>assume_sorted</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em>) – If True, assume pda is sorted and skip sorting step</p></li>
 <li><p><strong>return_indices</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em>) – Only applicable if return_groups is True.

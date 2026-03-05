@@ -78,7 +78,7 @@ Arkouda provides 2 files for installing dependencies, one for users and one for 
 **When running the commands below, replace `<env_name>` with the name you want to give/have given your conda environment.
 Replace `<yaml_file>` with the file appropriate to your interaction with Arkouda.**
 
-```commandline
+```console
 # Creating a new environment with dependencies installed
 conda env create -n <env_name> -f <yaml_file>
 
@@ -92,7 +92,7 @@ conda env update -n <env_name> -f <yaml_file> --prune
 When you `pip install Arkouda`, dependencies should be installed as well. However, dependencies
 may change during the life-cycle of Arkouda, so here we detail how to update dependencies when using `pip` for package management.
 
-```commandline
+```console
 # navigate to arkouda directory
 cd <path_to_arkouda>/arkouda
 

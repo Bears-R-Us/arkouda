@@ -389,13 +389,13 @@ Running these prior to pushing will speed up the approval process and help ensur
 <section id="using-pip">
 <h3>Using Pip<a class="headerlink" href="#using-pip" title="Link to this heading">¶</a></h3>
 <p>Using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>, the following applications can be downloaded to your arkouda directory.</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span># navigate to the arkouda directory
-cd &lt;path_to_arkouda&gt;/arkouda
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>navigate<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>arkouda<span class="w"> </span>directory
+<span class="go">cd &lt;path_to_arkouda&gt;/arkouda</span>
 
-# Download each of the following applications
-pip install black==25.1.0
-pip install flake8
-pip install isort==5.13.2
+<span class="gp"># </span>Download<span class="w"> </span>each<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>applications
+<span class="go">pip install black==25.1.0</span>
+<span class="go">pip install flake8</span>
+<span class="go">pip install isort==5.13.2</span>
 </pre></div>
 </div>
 </section>
@@ -415,55 +415,55 @@ pip install isort==5.13.2
 <p>The following are the configurations and settings for each of the external tools.</p>
 <section id="black">
 <h4><code class="docutils literal notranslate"><span class="pre">black</span></code><a class="headerlink" href="#black" title="Link to this heading">¶</a></h4>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>Name: black     Group: External Tools
-Description: python formating
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Name: black     Group: External Tools</span>
+<span class="go">Description: python formating</span>
 
-Tool Settings
-    Program: $PyInterpreterDirectory$/black
-    Augments: --line-length 105 &quot;$FilePath$&quot;
-    Working Directory: $ProjectFileDir$
+<span class="go">Tool Settings</span>
+<span class="go">    Program: $PyInterpreterDirectory$/black</span>
+<span class="go">    Augments: --line-length 105 &quot;$FilePath$&quot;</span>
+<span class="go">    Working Directory: $ProjectFileDir$</span>
 
-Advanced Options
-    Synchronized Files after execution: Selected
-    Open console for tool output: Selected
-        Make console active on message in stdout: Unselected
-        Make console active on message in stderr: Unselected
+<span class="go">Advanced Options</span>
+<span class="go">    Synchronized Files after execution: Selected</span>
+<span class="go">    Open console for tool output: Selected</span>
+<span class="go">        Make console active on message in stdout: Unselected</span>
+<span class="go">        Make console active on message in stderr: Unselected</span>
 </pre></div>
 </div>
 </section>
 <section id="flake8">
 <h4><code class="docutils literal notranslate"><span class="pre">flake8</span></code><a class="headerlink" href="#flake8" title="Link to this heading">¶</a></h4>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>Name: flake8     Group: External Tools
-Description: pep8 formatting validation
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Name: flake8     Group: External Tools</span>
+<span class="go">Description: pep8 formatting validation</span>
 
-Tool Settings
-    Program: $PyInterpreterDirectory$/flake8
-    Augments: &quot;$FilePath$&quot;
-    Working Directory: $ProjectFileDir$
+<span class="go">Tool Settings</span>
+<span class="go">    Program: $PyInterpreterDirectory$/flake8</span>
+<span class="go">    Augments: &quot;$FilePath$&quot;</span>
+<span class="go">    Working Directory: $ProjectFileDir$</span>
 
-Advanced Options
-    Synchronized Files after execution: Selected
-    Open console for tool output: Selected
-        Make console active on message in stdout: Unselected
-        Make console active on message in stderr: Unselected
+<span class="go">Advanced Options</span>
+<span class="go">    Synchronized Files after execution: Selected</span>
+<span class="go">    Open console for tool output: Selected</span>
+<span class="go">        Make console active on message in stdout: Unselected</span>
+<span class="go">        Make console active on message in stderr: Unselected</span>
 </pre></div>
 </div>
 </section>
 <section id="isort">
 <h4><code class="docutils literal notranslate"><span class="pre">isort</span></code><a class="headerlink" href="#isort" title="Link to this heading">¶</a></h4>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>Name: isort     Group: External Tools
-Description: sort/group imports
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Name: isort     Group: External Tools</span>
+<span class="go">Description: sort/group imports</span>
 
-Tool Settings
-    Program: $PyInterpreterDirectory$/isort
-    Augments: &quot;$FilePath$&quot;
-    Working Directory: $ProjectFileDir$
+<span class="go">Tool Settings</span>
+<span class="go">    Program: $PyInterpreterDirectory$/isort</span>
+<span class="go">    Augments: &quot;$FilePath$&quot;</span>
+<span class="go">    Working Directory: $ProjectFileDir$</span>
 
-Advanced Options
-    Synchronized Files after execution: Selected
-    Open console for tool output: Selected
-        Make console active on message in stdout: Unselected
-        Make console active on message in stderr: Unselected
+<span class="go">Advanced Options</span>
+<span class="go">    Synchronized Files after execution: Selected</span>
+<span class="go">    Open console for tool output: Selected</span>
+<span class="go">        Make console active on message in stdout: Unselected</span>
+<span class="go">        Make console active on message in stderr: Unselected</span>
 </pre></div>
 </div>
 </section>

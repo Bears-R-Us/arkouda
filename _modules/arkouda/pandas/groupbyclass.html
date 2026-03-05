@@ -687,55 +687,52 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Group an array or list of arrays by value.</span>
 
-<span class="sd">    Usually in preparation</span>
-<span class="sd">    for aggregating the within-group values of another array.</span>
+<span class="sd">    Usually in preparation for aggregating the within-group values of another array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    keys : (list of) pdarray, Strings, or Categorical</span>
-<span class="sd">        The array to group by value, or if list, the column arrays to group by row</span>
+<span class="sd">        The array to group by value, or if list, the column arrays to group by row.</span>
 <span class="sd">    assume_sorted : bool</span>
-<span class="sd">        If True, assume keys is already sorted (Default: False)</span>
+<span class="sd">        If True, assume keys is already sorted (default: False).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    nkeys : int</span>
-<span class="sd">        The number of key arrays (columns)</span>
+<span class="sd">        The number of key arrays (columns).</span>
 <span class="sd">    permutation : pdarray</span>
-<span class="sd">        The permutation that sorts the keys array(s) by value (row)</span>
+<span class="sd">        The permutation that sorts the key array(s) by value (row).</span>
 <span class="sd">    unique_keys : pdarray, Strings, or Categorical</span>
-<span class="sd">        The unique values of the keys array(s), in grouped order</span>
+<span class="sd">        The unique values of the key array(s), in grouped order.</span>
 <span class="sd">    ngroups : int_scalars</span>
-<span class="sd">        The length of the unique_keys array(s), i.e. number of groups</span>
+<span class="sd">        The length of the unique_keys array(s), i.e., the number of groups.</span>
 <span class="sd">    segments : pdarray</span>
-<span class="sd">        The start index of each group in the grouped array(s)</span>
+<span class="sd">        The start index of each group in the grouped array(s).</span>
 <span class="sd">    logger : ArkoudaLogger</span>
-<span class="sd">        Used for all logging operations</span>
-<span class="sd">    dropna : bool (default=True)</span>
-<span class="sd">        If True, and the groupby keys contain NaN values,</span>
-<span class="sd">        the NaN values together with the corresponding row will be dropped.</span>
-<span class="sd">        Otherwise, the rows corresponding to NaN values will be kept.</span>
-<span class="sd">        The default is True</span>
+<span class="sd">        Used for all logging operations.</span>
+<span class="sd">    dropna : bool, default=True</span>
+<span class="sd">        If True and the groupby keys contain NaN values, the NaN values together</span>
+<span class="sd">        with the corresponding row will be dropped. Otherwise, rows corresponding</span>
+<span class="sd">        to NaN values will be kept.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if keys is a pdarray with a dtype other than int64</span>
+<span class="sd">        Raised if keys is a pdarray with a dtype other than int64.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Integral pdarrays, Strings, and Categoricals are natively supported, but</span>
 <span class="sd">    float64 and bool arrays are not.</span>
 
-<span class="sd">    For a user-defined class to be groupable, it must inherit from pdarray</span>
-<span class="sd">    and define or overload the grouping API:</span>
-<span class="sd">      1) a ._get_grouping_keys() method that returns a list of pdarrays</span>
-<span class="sd">         that can be (co)argsorted.</span>
-<span class="sd">      2) (Optional) a .group() method that returns the permutation that</span>
-<span class="sd">         groups the array</span>
-<span class="sd">    If the input is a single array with a .group() method defined, method 2</span>
-<span class="sd">    will be used; otherwise, method 1 will be used.</span>
+<span class="sd">    For a user-defined class to be groupable, it must inherit from ``pdarray``</span>
+<span class="sd">    and provide the grouping API:</span>
 
+<span class="sd">    - ``._get_grouping_keys()``: Return a list of pdarrays that can be (co)argsorted.</span>
+<span class="sd">    - ``.group()`` (optional): Return the permutation that groups the array.</span>
+
+<span class="sd">    If the input is a single array with a ``.group()`` method defined, that method</span>
+<span class="sd">    is used. Otherwise, ``._get_grouping_keys()`` is used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">nkeys</span><span class="p">:</span> <span class="nb">int</span>

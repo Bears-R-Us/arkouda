@@ -386,7 +386,7 @@
 <p>In most cases, running the full benchmark suite is desired. The simplest way to do this is to navigate into the
 root-level of arkouda and run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">benchmark</span></code></p>
 <p>This will run the entire benchmark suite with the following command:</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks</span>
 </pre></div>
 </div>
 <p>The results for the benchmarks can be found within the provided benchmark storage path, which by default is within
@@ -446,7 +446,7 @@ given time, will be treated as number of seconds to run for.</p>
 <div><p>Dtypes to run benchmarks against. Comma separated list (NO SPACES) allowing for multiple. Accepted values:
 int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate sets of multiple types.</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>--dtype=&quot;int64,bigint,bool,str&quot;
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--dtype=&quot;int64,bigint,bool,str&quot;</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -485,7 +485,7 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 <blockquote>
 <div><p>Comma separated list (NO SPACES) allowing for multiple encoding to be used. Accepted values: idna, ascii</p>
 <p><strong>Example:</strong></p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>--encoding=&quot;idna,ascii&quot;   
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--encoding=&quot;idna,ascii&quot;   </span>
 </pre></div>
 </div>
 <p><em>Only used by Encoding benchmarks, other benchmarks will be unaffected</em></p>
@@ -519,7 +519,7 @@ int64, uint64, bigint, float64, bool, str and mixed. Mixed is used to generate s
 <div><p><strong>Default:</strong> All types</p>
 <p>Compression types to run Parquet IO benchmarks against. Comma delimited list (NO SPACES) allowing for multiple.
 Accepted values: none, snappy, gzip, brotli, zstd, and lz4</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>--io_compression=&quot;none,snappy,brotli,lz4&quot;
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">--io_compression=&quot;none,snappy,brotli,lz4&quot;</span>
 </pre></div>
 </div>
 <p><em>Only applies to IO benchmarks</em></p>
@@ -534,37 +534,37 @@ Accepted values: none, snappy, gzip, brotli, zstd, and lz4</p>
 <section id="running-single-files-or-tests">
 <h2>Running Single Files or Tests<a class="headerlink" href="#running-single-files-or-tests" title="Link to this heading">¶</a></h2>
 <p>In instances where a single test or set of tests needs to be run, use the <code class="docutils literal notranslate"><span class="pre">-k</span> <span class="pre">&lt;expression&gt;</span></code> flag.</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k encoding_benchmark.py
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k encoding_benchmark.py</span>
 </pre></div>
 </div>
 <p>Running this command, you can expect to see an output table similar to this</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>benchmark_v2/encoding_benchmark.py ....                                                                                                                                       [100%]
-Saved benchmark data in: &lt;Arkouda_root&gt;/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0014_31de39be8b19c76d073a8999def6673a305c250d_20230405_145759_uncommited-changes.json
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">benchmark_v2/encoding_benchmark.py ....                                                                                                                                       [100%]</span>
+<span class="go">Saved benchmark data in: &lt;Arkouda_root&gt;/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0014_31de39be8b19c76d073a8999def6673a305c250d_20230405_145759_uncommited-changes.json</span>
 
--------------------------------------------------------------------- benchmark &#39;Strings_EncodeDecode&#39;: 4 tests ---------------------------------------------------------------------
-Name (time in ms)          Min               Max              Mean            StdDev            Median               IQR            Outliers       OPS            Rounds  Iterations
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bench_encode[idna]      3.3304 (1.0)      9.2561 (2.10)     4.7544 (1.27)     2.5306 (6.18)     3.8075 (1.11)     1.9012 (3.62)          1;1  210.3306 (0.79)          5           1
-bench_encode[ascii]     3.3805 (1.02)     4.8800 (1.10)     3.7336 (1.0)      0.6465 (1.58)     3.4231 (1.0)      0.5246 (1.0)           1;1  267.8380 (1.0)           5           1
-bench_decode[idna]      3.4444 (1.03)     4.4177 (1.0)      3.7852 (1.01)     0.4097 (1.0)      3.5622 (1.04)     0.5837 (1.11)          1;0  264.1882 (0.99)          5           1
-bench_decode[ascii]     3.4621 (1.04)     4.9177 (1.11)     4.2250 (1.13)     0.6125 (1.50)     4.0197 (1.17)     0.9991 (1.90)          2;0  236.6864 (0.88)          5           1
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<span class="go">-------------------------------------------------------------------- benchmark &#39;Strings_EncodeDecode&#39;: 4 tests ---------------------------------------------------------------------</span>
+<span class="go">Name (time in ms)          Min               Max              Mean            StdDev            Median               IQR            Outliers       OPS            Rounds  Iterations</span>
+<span class="go">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="go">bench_encode[idna]      3.3304 (1.0)      9.2561 (2.10)     4.7544 (1.27)     2.5306 (6.18)     3.8075 (1.11)     1.9012 (3.62)          1;1  210.3306 (0.79)          5           1</span>
+<span class="go">bench_encode[ascii]     3.3805 (1.02)     4.8800 (1.10)     3.7336 (1.0)      0.6465 (1.58)     3.4231 (1.0)      0.5246 (1.0)           1;1  267.8380 (1.0)           5           1</span>
+<span class="go">bench_decode[idna]      3.4444 (1.03)     4.4177 (1.0)      3.7852 (1.01)     0.4097 (1.0)      3.5622 (1.04)     0.5837 (1.11)          1;0  264.1882 (0.99)          5           1</span>
+<span class="go">bench_decode[ascii]     3.4621 (1.04)     4.9177 (1.11)     4.2250 (1.13)     0.6125 (1.50)     4.0197 (1.17)     0.9991 (1.90)          2;0  236.6864 (0.88)          5           1</span>
+<span class="go">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
 </pre></div>
 </div>
 <p>Similarly, to only run a single test within a file, specify the test name with the <code class="docutils literal notranslate"><span class="pre">-k</span></code> flag instead of a filename. The following example will run only the <code class="docutils literal notranslate"><span class="pre">bench_encode</span></code> benchmark.</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k bench_encode
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 -m pytest -c benchmark.ini --benchmark-autosave --benchmark-storage=file://benchmark_v2/.benchmarks -k bench_encode</span>
 </pre></div>
 </div>
 <p>Results:</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>benchmark_v2/encoding_benchmark.py ..                                                                                                                                         [100%]
-Saved benchmark data in: &lt;Arkouda_root&gt;/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0015_31de39be8b19c76d073a8999def6673a305c250d_20230405_145947_uncommited-changes.json
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">benchmark_v2/encoding_benchmark.py ..                                                                                                                                         [100%]</span>
+<span class="go">Saved benchmark data in: &lt;Arkouda_root&gt;/benchmark_v2/.benchmarks/Linux-CPython-3.9-64bit/0015_31de39be8b19c76d073a8999def6673a305c250d_20230405_145947_uncommited-changes.json</span>
 
--------------------------------------------------------------------- benchmark &#39;Strings_EncodeDecode&#39;: 2 tests ---------------------------------------------------------------------
-Name (time in ms)          Min               Max              Mean            StdDev            Median               IQR            Outliers       OPS            Rounds  Iterations
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bench_encode[ascii]     3.4298 (1.0)      3.6450 (1.0)      3.5541 (1.0)      0.0889 (1.0)      3.5801 (1.00)     0.1436 (1.0)           2;0  281.3620 (1.0)           5           1
-bench_encode[idna]      3.4875 (1.02)     4.5255 (1.24)     3.7912 (1.07)     0.4328 (4.87)     3.5652 (1.0)      0.4869 (3.39)          1;0  263.7659 (0.94)          5           1
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<span class="go">-------------------------------------------------------------------- benchmark &#39;Strings_EncodeDecode&#39;: 2 tests ---------------------------------------------------------------------</span>
+<span class="go">Name (time in ms)          Min               Max              Mean            StdDev            Median               IQR            Outliers       OPS            Rounds  Iterations</span>
+<span class="go">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+<span class="go">bench_encode[ascii]     3.4298 (1.0)      3.6450 (1.0)      3.5541 (1.0)      0.0889 (1.0)      3.5801 (1.00)     0.1436 (1.0)           2;0  281.3620 (1.0)           5           1</span>
+<span class="go">bench_encode[idna]      3.4875 (1.02)     4.5255 (1.24)     3.7912 (1.07)     0.4328 (4.87)     3.5652 (1.0)      0.4869 (3.39)          1;0  263.7659 (0.94)          5           1</span>
+<span class="go">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>
 </pre></div>
 </div>
 <p>More information on running single files, sets of files, or benchmarks can be found

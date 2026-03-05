@@ -460,7 +460,7 @@ created from lists of values or pandas MultiIndex objects.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<em>List</em><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a>)</p></li>
+<li><p><strong>values</strong> (<em>List</em><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>, </em><a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em>, </em><em>pandas.Categorical</em><em>, </em><em>pandas.Index</em><em>, or </em><a class="reference internal" href="#arkouda.pandas.index.Index" title="arkouda.pandas.index.Index"><em>Index</em></a>)</p></li>
 <li><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=None</em>) – Name to be stored in the index.</p></li>
 <li><p><strong>False</strong> (<em>allow_list =</em>) – If False, list values will be converted to a pdarray.
 If True, list values will remain as a list, provided the data length is less than max_list_size.</p></li>
@@ -687,7 +687,7 @@ the Index are present in <cite>key</cite>.</p>
 <dd><p>Map values of Index according to an input mapping.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>arg</strong> (<em>dict</em><em> or </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – The mapping correspondence.</p>
+<dd class="field-odd"><p><strong>arg</strong> (<em>dict</em><em> or </em><a class="reference internal" href="../../index.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a>) – The mapping correspondence.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new index with the values transformed by the mapping correspondence.</p>

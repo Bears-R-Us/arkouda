@@ -384,8 +384,8 @@ Just like in numpy the preferred way to access the random functionality in arkou
 If a <code class="docutils literal notranslate"><span class="pre">Generator</span></code> is initialized with a seed, the stream of random numbers it produces can be reproduced
 by a new <code class="docutils literal notranslate"><span class="pre">Generator</span></code> with the same seed. This reproducibility is not guaranteed across releases.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="arkouda.random.Generator">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/random/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.Generator" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/random/generator.html#Generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">Generator</span></code> exposes a number of methods for generating random
 numbers drawn from a variety of probability distributions. In addition to
 the distribution-specific arguments, each method takes a keyword argument
@@ -408,7 +408,7 @@ This mimics the behavior we see in numpy</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#arkouda.random.default_rng" title="arkouda.random.default_rng"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></a></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_rng</span></code></dt><dd><p>Recommended constructor for <cite>Generator</cite>.</p>
 </dd>
 </dl>
 </div>
@@ -418,8 +418,8 @@ This mimics the behavior we see in numpy</p></li>
 <h2>Creation<a class="headerlink" href="#creation" title="Link to this heading">¶</a></h2>
 <p>To create a <code class="docutils literal notranslate"><span class="pre">Generator</span></code> use the <code class="docutils literal notranslate"><span class="pre">default_rng</span></code> constructor</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.default_rng">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">default_rng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/random/generator.html#default_rng"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.random.default_rng" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.</span></span><span class="sig-name descname"><span class="pre">default_rng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/numpy/random/generator.html#default_rng"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Construct a new Generator.</p>
 <p>Right now we only support PCG64, since this is what is available in chapel.</p>
 <dl class="field-list simple">
@@ -433,7 +433,7 @@ then the value must be non-negative. If passed a <cite>Generator</cite>, it will
 <dd class="field-even"><p>The initialized generator object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.random.Generator" title="arkouda.random.Generator">Generator</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/random/generator/index.html#arkouda.numpy.random.generator.Generator" title="arkouda.numpy.random.generator.Generator">Generator</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -444,8 +444,8 @@ then the value must be non-negative. If passed a <cite>Generator</cite>, it will
 <section id="choice">
 <h3>choice<a class="headerlink" href="#choice" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.choice">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.choice" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Generate a randomly sample from a.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -471,8 +471,8 @@ Defaults to True</p></li>
 <section id="exponential">
 <h3>exponential<a class="headerlink" href="#exponential" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.exponential">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.exponential" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from an exponential distribution.</p>
 <p>Its probability density function is</p>
 <div class="math-wrapper docutils container">
@@ -506,8 +506,8 @@ non-negative. An array must have the same size as the size argument.</p></li>
 <section id="integers">
 <h3>integers<a class="headerlink" href="#integers" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.integers">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">integers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.integers" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">integers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Return random integers from low (inclusive) to high (exclusive),
 or if endpoint=True, low (inclusive) to high (inclusive).</p>
 <p>Return random integers from the “discrete uniform” distribution of the specified dtype.
@@ -548,8 +548,8 @@ or a single such random int if size not provided.</p>
 <section id="logistic">
 <h3>logistic<a class="headerlink" href="#logistic" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.logistic">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">logistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.logistic" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">logistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from a logistic distribution.</p>
 <p>Samples are drawn from a logistic distribution with specified parameters,
 loc (location or mean, also median), and scale (&gt;0).</p>
@@ -583,7 +583,7 @@ is a logistically distributed random variable.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.random.Generator.normal" title="arkouda.random.Generator.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -597,8 +597,8 @@ is a logistically distributed random variable.</p>
 <section id="lognormal">
 <h3>lognormal<a class="headerlink" href="#lognormal" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.lognormal">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">lognormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.lognormal" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">lognormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from a log-normal distribution with specified mean,
 standard deviation, and array shape.</p>
 <p>Note that the mean and standard deviation are not the values for the distribution itself,
@@ -637,7 +637,7 @@ the sum of a large number of independent, identically-distributed variables.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.random.Generator.normal" title="arkouda.random.Generator.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -651,8 +651,8 @@ the sum of a large number of independent, identically-distributed variables.</p>
 <section id="normal">
 <h3>normal<a class="headerlink" href="#normal" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.normal">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.normal" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from a normal (Gaussian) distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -683,7 +683,7 @@ The square of the standard deviation, <span class="math notranslate nohighlight"
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.random.Generator.standard_normal" title="arkouda.random.Generator.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>, <a class="reference internal" href="#arkouda.random.Generator.uniform" title="arkouda.random.Generator.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -697,8 +697,8 @@ The square of the standard deviation, <span class="math notranslate nohighlight"
 <section id="permutation">
 <h3>permutation<a class="headerlink" href="#permutation" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.permutation">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Argsort'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.permutation" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Argsort'</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Randomly permute a sequence, or return a permuted range.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -731,8 +731,8 @@ an argsort performed on randomly generated floats.</p>
 <section id="poisson">
 <h3>poisson<a class="headerlink" href="#poisson" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.poisson">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">poisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.poisson" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">poisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from a Poisson distribution.</p>
 <p>The Poisson distribution is the limit of the binomial distribution for large N.</p>
 <dl class="field-list simple">
@@ -774,8 +774,8 @@ within the observed interval <span class="math notranslate nohighlight">\(\lambd
 <section id="shuffle">
 <h3>shuffle<a class="headerlink" href="#shuffle" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.shuffle">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">shuffle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FisherYates'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">feistel_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feistel_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.shuffle" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">shuffle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FisherYates'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">feistel_rounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feistel_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Randomly shuffle the elements of a <cite>pdarray</cite> in place.</p>
 <p>This method performs a reproducible in-place shuffle of the array <cite>x</cite>
 using the specified strategy. Three methods are available:</p>
@@ -846,8 +846,8 @@ also scales in distributed settings.</p></li>
 <section id="random">
 <h3>random<a class="headerlink" href="#random" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.random">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.random" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Return random floats in the half-open interval [0.0, 1.0).</p>
 <p>Results are from the uniform distribution over the stated interval.</p>
 <dl class="field-list simple">
@@ -868,7 +868,7 @@ also scales in distributed settings.</p></li>
 </div></blockquote>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.random.Generator.uniform" title="arkouda.random.Generator.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -885,8 +885,8 @@ also scales in distributed settings.</p></li>
 <section id="standard-exponential">
 <h3>standard_exponential<a class="headerlink" href="#standard-exponential" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.standard_exponential">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">standard_exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.standard_exponential" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">standard_exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from the standard exponential distribution.</p>
 <p><cite>standard_exponential</cite> is identical to the exponential distribution
 with a scale parameter of 1.</p>
@@ -911,8 +911,8 @@ with a scale parameter of 1.</p>
 <section id="standard-normal">
 <h3>standard_normal<a class="headerlink" href="#standard-normal" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.standard_normal">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">standard_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.standard_normal" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">standard_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zig'</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from a standard Normal distribution (mean=0, stdev=1).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -937,7 +937,7 @@ with a scale parameter of 1.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.random.Generator.normal" title="arkouda.random.Generator.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -954,8 +954,8 @@ with a scale parameter of 1.</p>
 <section id="uniform">
 <h3>uniform<a class="headerlink" href="#uniform" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.random.Generator.uniform">
-<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.random.Generator.uniform" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.random.Generator.</span></span><span class="sig-name descname"><span class="pre">uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Draw samples from a uniform distribution.</p>
 <p>Samples are uniformly distributed over the half-open interval [low, high).
 In other words, any value within the given interval is equally likely to be drawn by uniform.</p>
@@ -978,7 +978,7 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.random.Generator.integers" title="arkouda.random.Generator.integers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">integers</span></code></a>, <a class="reference internal" href="#arkouda.random.Generator.random" title="arkouda.random.Generator.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">integers</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -1049,64 +1049,21 @@ high must be greater than or equal to low. The default value is 1.0.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Random in Arkouda</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a></li>
-<li><a class="reference internal" href="#creation">Creation</a><ul>
-<li><a class="reference internal" href="#arkouda.random.default_rng"><code class="docutils literal notranslate"><span class="pre">default_rng()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#creation">Creation</a></li>
 <li><a class="reference internal" href="#features">Features</a><ul>
-<li><a class="reference internal" href="#choice">choice</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.choice"><code class="docutils literal notranslate"><span class="pre">choice()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#exponential">exponential</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.exponential"><code class="docutils literal notranslate"><span class="pre">exponential()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#integers">integers</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.integers"><code class="docutils literal notranslate"><span class="pre">integers()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#logistic">logistic</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.logistic"><code class="docutils literal notranslate"><span class="pre">logistic()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#lognormal">lognormal</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.lognormal"><code class="docutils literal notranslate"><span class="pre">lognormal()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#normal">normal</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.normal"><code class="docutils literal notranslate"><span class="pre">normal()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#permutation">permutation</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.permutation"><code class="docutils literal notranslate"><span class="pre">permutation()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#poisson">poisson</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.poisson"><code class="docutils literal notranslate"><span class="pre">poisson()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#shuffle">shuffle</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.shuffle"><code class="docutils literal notranslate"><span class="pre">shuffle()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#random">random</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#standard-exponential">standard_exponential</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.standard_exponential"><code class="docutils literal notranslate"><span class="pre">standard_exponential()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#standard-normal">standard_normal</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.standard_normal"><code class="docutils literal notranslate"><span class="pre">standard_normal()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#uniform">uniform</a><ul>
-<li><a class="reference internal" href="#arkouda.random.Generator.uniform"><code class="docutils literal notranslate"><span class="pre">uniform()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#choice">choice</a></li>
+<li><a class="reference internal" href="#exponential">exponential</a></li>
+<li><a class="reference internal" href="#integers">integers</a></li>
+<li><a class="reference internal" href="#logistic">logistic</a></li>
+<li><a class="reference internal" href="#lognormal">lognormal</a></li>
+<li><a class="reference internal" href="#normal">normal</a></li>
+<li><a class="reference internal" href="#permutation">permutation</a></li>
+<li><a class="reference internal" href="#poisson">poisson</a></li>
+<li><a class="reference internal" href="#shuffle">shuffle</a></li>
+<li><a class="reference internal" href="#random">random</a></li>
+<li><a class="reference internal" href="#standard-exponential">standard_exponential</a></li>
+<li><a class="reference internal" href="#standard-normal">standard_normal</a></li>
+<li><a class="reference internal" href="#uniform">uniform</a></li>
 </ul>
 </li>
 </ul>

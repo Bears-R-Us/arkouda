@@ -381,8 +381,8 @@
 <h1>Indexs in Arkouda<a class="headerlink" href="#indexs-in-arkouda" title="Link to this heading">¶</a></h1>
 <p>Like Pandas, Arkouda supports <code class="docutils literal notranslate"><span class="pre">Indexes</span></code>. The purpose and intended functionality remains the same in Arkouda, but are configured to be based on <code class="docutils literal notranslate"><span class="pre">arkouda.pdarrays</span></code>.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="arkouda.Index">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_list_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/index.html#Index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.Index" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">Index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_list_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/index.html#Index"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Sequence used for indexing and alignment.</p>
 <p>The basic object storing axis labels for all DataFrame objects.</p>
 <dl class="field-list simple">
@@ -435,15 +435,15 @@ If True, list values will remain as a list, provided the data length is less tha
 <section id="change-dtype">
 <h3>Change Dtype<a class="headerlink" href="#change-dtype" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.Index.set_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">set_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Index.set_dtype" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">set_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Change the data type of the index.</p>
 <p>Currently only aku.ip_address and ak.array are supported.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.MultiIndex.set_dtype">
-<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">set_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.MultiIndex.set_dtype" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">set_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Change the data type of the index.</p>
 <p>Currently only aku.ip_address and ak.array are supported.</p>
 </dd></dl>
@@ -452,8 +452,8 @@ If True, list values will remain as a list, provided the data length is less tha
 <section id="argsort">
 <h3>ArgSort<a class="headerlink" href="#argsort" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.Index.argsort">
-<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Index.argsort" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Return the permutation that sorts the Index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -477,8 +477,8 @@ If False, sort in descending order.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.MultiIndex.argsort">
-<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.MultiIndex.argsort" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Return the indices that would sort the MultiIndex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -497,8 +497,8 @@ If False, sort in descending order.</p>
 <section id="lookup">
 <h3>Lookup<a class="headerlink" href="#lookup" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.Index.lookup">
-<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Index.lookup" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Check for presence of key(s) in the Index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -519,8 +519,8 @@ the Index are present in <cite>key</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.MultiIndex.lookup">
-<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.MultiIndex.lookup" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Perform element-wise lookup on the MultiIndex.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -555,18 +555,18 @@ membership.</p></li>
 <section id="concat">
 <h3>Concat<a class="headerlink" href="#concat" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.Index.concat">
-<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Index.concat" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.Index.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Concatenate this Index with another Index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – The Index to concatenate with this one.</p>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a>) – The Index to concatenate with this one.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A new Index with values from both indices.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Index" title="arkouda.Index">Index</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Index" title="arkouda.Index">Index</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>TypeError</strong> – If the types of the two Index objects do not match.</p>
@@ -575,8 +575,8 @@ membership.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="arkouda.MultiIndex.concat">
-<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.MultiIndex.concat" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">arkouda.MultiIndex.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Concatenate this MultiIndex with another, preserving duplicates and order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -636,28 +636,11 @@ membership.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Indexs in Arkouda</a><ul>
-<li><a class="reference internal" href="#arkouda.Index"><code class="docutils literal notranslate"><span class="pre">Index</span></code></a></li>
 <li><a class="reference internal" href="#features">Features</a><ul>
-<li><a class="reference internal" href="#change-dtype">Change Dtype</a><ul>
-<li><a class="reference internal" href="#arkouda.Index.set_dtype"><code class="docutils literal notranslate"><span class="pre">set_dtype()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.MultiIndex.set_dtype"><code class="docutils literal notranslate"><span class="pre">set_dtype()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#argsort">ArgSort</a><ul>
-<li><a class="reference internal" href="#arkouda.Index.argsort"><code class="docutils literal notranslate"><span class="pre">argsort()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.MultiIndex.argsort"><code class="docutils literal notranslate"><span class="pre">argsort()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#lookup">Lookup</a><ul>
-<li><a class="reference internal" href="#arkouda.Index.lookup"><code class="docutils literal notranslate"><span class="pre">lookup()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.MultiIndex.lookup"><code class="docutils literal notranslate"><span class="pre">lookup()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#concat">Concat</a><ul>
-<li><a class="reference internal" href="#arkouda.Index.concat"><code class="docutils literal notranslate"><span class="pre">concat()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.MultiIndex.concat"><code class="docutils literal notranslate"><span class="pre">concat()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#change-dtype">Change Dtype</a></li>
+<li><a class="reference internal" href="#argsort">ArgSort</a></li>
+<li><a class="reference internal" href="#lookup">Lookup</a></li>
+<li><a class="reference internal" href="#concat">Concat</a></li>
 </ul>
 </li>
 </ul>

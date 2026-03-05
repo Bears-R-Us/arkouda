@@ -457,12 +457,12 @@
 </ul>
 <p><strong>When running the commands below, replace <code class="docutils literal notranslate"><span class="pre">&lt;env_name&gt;</span></code> with the name you want to give/have given your conda environment.
 Replace <code class="docutils literal notranslate"><span class="pre">&lt;yaml_file&gt;</span></code> with the file appropriate to your interaction with Arkouda.</strong></p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span># Creating a new environment with dependencies installed
-conda env create -n &lt;env_name&gt; -f &lt;yaml_file&gt;
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Creating<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>environment<span class="w"> </span>with<span class="w"> </span>dependencies<span class="w"> </span>installed
+<span class="go">conda env create -n &lt;env_name&gt; -f &lt;yaml_file&gt;</span>
 
-# Updating env using the yaml 
-conda env update -n &lt;env_name&gt; -f &lt;yaml_file&gt; --prune 
-# Only use the --prune option if you want to remove packages that are no longer requirements for arkouda.
+<span class="gp"># </span>Updating<span class="w"> </span>env<span class="w"> </span>using<span class="w"> </span>the<span class="w"> </span>yaml<span class="w"> </span>
+<span class="go">conda env update -n &lt;env_name&gt; -f &lt;yaml_file&gt; --prune </span>
+<span class="gp"># </span>Only<span class="w"> </span>use<span class="w"> </span>the<span class="w"> </span>--prune<span class="w"> </span>option<span class="w"> </span><span class="k">if</span><span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>remove<span class="w"> </span>packages<span class="w"> </span>that<span class="w"> </span>are<span class="w"> </span>no<span class="w"> </span>longer<span class="w"> </span>requirements<span class="w"> </span><span class="k">for</span><span class="w"> </span>arkouda.
 </pre></div>
 </div>
 </section>
@@ -470,14 +470,14 @@ conda env update -n &lt;env_name&gt; -f &lt;yaml_file&gt; --prune
 <h4>Using Pip<a class="headerlink" href="#using-pip" title="Link to this heading">¶</a></h4>
 <p>When you <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">Arkouda</span></code>, dependencies should be installed as well. However, dependencies
 may change during the life-cycle of Arkouda, so here we detail how to update dependencies when using <code class="docutils literal notranslate"><span class="pre">pip</span></code> for package management.</p>
-<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span># navigate to arkouda directory
-cd &lt;path_to_arkouda&gt;/arkouda
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>navigate<span class="w"> </span>to<span class="w"> </span>arkouda<span class="w"> </span>directory
+<span class="go">cd &lt;path_to_arkouda&gt;/arkouda</span>
 
-# Update Dependencies
-pip install --upgrade --upgrade-strategy eager -e .
+<span class="gp"># </span>Update<span class="w"> </span>Dependencies
+<span class="go">pip install --upgrade --upgrade-strategy eager -e .</span>
 
-# Updating Developer Dependencies
-pip install --upgrade --upgrade-strategy eager -e .[dev]
+<span class="gp"># </span>Updating<span class="w"> </span>Developer<span class="w"> </span>Dependencies
+<span class="go">pip install --upgrade --upgrade-strategy eager -e .[dev]</span>
 </pre></div>
 </div>
 </section>

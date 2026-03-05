@@ -465,40 +465,36 @@
 <span class="nd">@natural_binary_operators</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    One-dimensional arkouda array with axis labels.</span>
+<span class="sd">    One-dimensional Arkouda array with axis labels.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    index : pdarray, Strings</span>
-<span class="sd">        an array of indices associated with the data array.</span>
-<span class="sd">        If empty, it will default to a range of ints whose size match the size of the data.</span>
-<span class="sd">        optional</span>
-<span class="sd">    data : Tuple, List, groupable_element_type, Series, SegArray</span>
-<span class="sd">        a 1D array. Must not be None.</span>
+<span class="sd">    index : pdarray or Strings, optional</span>
+<span class="sd">        An array of indices associated with the data array.</span>
+<span class="sd">        If not provided (or empty), it defaults to a range of ints whose size matches</span>
+<span class="sd">        the size of the data.</span>
+<span class="sd">    data : tuple, list, groupable_element_type, Series, or SegArray</span>
+<span class="sd">        A 1D array-like. Must not be None.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        Raised if index is not a pdarray or Strings object</span>
-<span class="sd">        Raised if data is not a pdarray, Strings, or Categorical object</span>
+<span class="sd">        Raised if ``index`` is not a pdarray or Strings object.</span>
+<span class="sd">        Raised if ``data`` is not a supported type.</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the index size does not match data size</span>
+<span class="sd">        Raised if the index size does not match the data size.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The Series class accepts either positional arguments or keyword arguments.</span>
-<span class="sd">    If entering positional arguments,</span>
-<span class="sd">        2 arguments entered:</span>
-<span class="sd">            argument 1 - data</span>
-<span class="sd">            argument 2 - index</span>
-<span class="sd">        1 argument entered:</span>
-<span class="sd">            argument 1 - data</span>
-<span class="sd">    If entering 1 positional argument, it is assumed that this is the data argument.</span>
-<span class="sd">    If only &#39;data&#39; argument is passed in, Index will automatically be generated.</span>
-<span class="sd">    If entering keywords,</span>
-<span class="sd">        &#39;data&#39; (see Parameters)</span>
-<span class="sd">        &#39;index&#39; (optional) must match size of &#39;data&#39;</span>
 
+<span class="sd">    Positional arguments</span>
+<span class="sd">        - ``Series(data)``: ``data`` is provided and an index is generated automatically.</span>
+<span class="sd">        - ``Series(data, index)``: both ``data`` and ``index`` are provided.</span>
+
+<span class="sd">    Keyword arguments</span>
+<span class="sd">        - ``Series(data=..., index=...)``: ``index`` is optional but must match the size</span>
+<span class="sd">          of ``data`` when provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;Series&quot;</span>

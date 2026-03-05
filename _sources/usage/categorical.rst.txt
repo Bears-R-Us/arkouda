@@ -10,10 +10,12 @@ Construction
 The typical way to construct a ``Categorical`` is from a ``Strings`` object:
 
   .. autoclass:: arkouda.Categorical
+     :no-index:
 
 However, if one already has pre-computed unique categories and integer indices, the following constructor is useful:
 
   .. automethod:: arkouda.Categorical.from_codes
+     :no-index:
 
 Operations
 ==========
@@ -25,10 +27,13 @@ Arkouda ``Categorical`` objects support all operations that ``Strings`` support,
 * Substring search
   
   .. automethod:: arkouda.Categorical.contains
+     :no-index:
                     
   .. automethod:: arkouda.Categorical.startswith
+     :no-index:
                     
   .. automethod:: arkouda.Categorical.endswith
+     :no-index:
                     
 * :ref:`setops-label`, e.g. ``unique`` and ``in1d``
 * :ref:`sorting-label`, via ``argsort`` and ``coargsort``
@@ -40,3 +45,4 @@ Iteration
 Iterating directly over a ``Categorical`` with ``for x in categorical`` is not supported to discourage transferring all the ``Categorical`` object's data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_ndarray`` function to return the ``categorical`` as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``ak.client.maxTransferBytes``.
 
 .. autofunction:: arkouda.Categorical.to_ndarray
+   :no-index:

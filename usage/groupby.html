@@ -175,7 +175,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -372,7 +372,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
@@ -388,23 +388,22 @@
 </pre></div>
 </div>
 <dl class="py class">
-<dt class="sig sig-object py" id="arkouda.GroupBy">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">GroupBy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group an array or list of arrays by value.</p>
-<p>Usually in preparation
-for aggregating the within-group values of another array.</p>
+<p>Usually in preparation for aggregating the within-group values of another array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Strings</span></code>), <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Strings</span></code>), <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>]], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – The array to group by value, or if list, the column arrays to group by row</p></li>
-<li><p><strong>assume_sorted</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True, assume keys is already sorted (Default: False)</p></li>
+<li><p><strong>keys</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Strings</span></code>), <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../autoapi/arkouda/numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">pdarray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Strings</span></code>), <a class="reference internal" href="../autoapi/arkouda/pandas/categorical/index.html#arkouda.pandas.categorical.Categorical" title="arkouda.pandas.categorical.Categorical"><code class="xref py py-class docutils literal notranslate"><span class="pre">Categorical</span></code></a>]], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – The array to group by value, or if list, the column arrays to group by row.</p></li>
+<li><p><strong>assume_sorted</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True, assume keys is already sorted (default: False).</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.GroupBy.nkeys">
-<span class="sig-name descname"><span class="pre">nkeys</span></span><a class="headerlink" href="#arkouda.GroupBy.nkeys" title="Link to this definition">¶</a></dt>
-<dd><p>The number of key arrays (columns)</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nkeys</span></span></dt>
+<dd><p>The number of key arrays (columns).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
@@ -413,31 +412,31 @@ for aggregating the within-group values of another array.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.GroupBy.permutation">
-<span class="sig-name descname"><span class="pre">permutation</span></span><a class="headerlink" href="#arkouda.GroupBy.permutation" title="Link to this definition">¶</a></dt>
-<dd><p>The permutation that sorts the keys array(s) by value (row)</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">permutation</span></span></dt>
+<dd><p>The permutation that sorts the key array(s) by value (row).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.GroupBy.unique_keys">
-<span class="sig-name descname"><span class="pre">unique_keys</span></span><a class="headerlink" href="#arkouda.GroupBy.unique_keys" title="Link to this definition">¶</a></dt>
-<dd><p>The unique values of the keys array(s), in grouped order</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">unique_keys</span></span></dt>
+<dd><p>The unique values of the key array(s), in grouped order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, or <a class="reference internal" href="categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>, or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.GroupBy.ngroups">
-<span class="sig-name descname"><span class="pre">ngroups</span></span><a class="headerlink" href="#arkouda.GroupBy.ngroups" title="Link to this definition">¶</a></dt>
-<dd><p>The length of the unique_keys array(s), i.e. number of groups</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">ngroups</span></span></dt>
+<dd><p>The length of the unique_keys array(s), i.e., the number of groups.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.int_scalars" title="arkouda.numpy.dtypes.int_scalars">int_scalars</a></p>
@@ -446,20 +445,20 @@ for aggregating the within-group values of another array.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.GroupBy.segments">
-<span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#arkouda.GroupBy.segments" title="Link to this definition">¶</a></dt>
-<dd><p>The start index of each group in the grouped array(s)</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">segments</span></span></dt>
+<dd><p>The start index of each group in the grouped array(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.GroupBy.logger">
-<span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#arkouda.GroupBy.logger" title="Link to this definition">¶</a></dt>
-<dd><p>Used for all logging operations</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">logger</span></span></dt>
+<dd><p>Used for all logging operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ArkoudaLogger</p>
@@ -468,42 +467,37 @@ for aggregating the within-group values of another array.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="arkouda.GroupBy.dropna">
-<span class="sig-name descname"><span class="pre">dropna</span></span><a class="headerlink" href="#arkouda.GroupBy.dropna" title="Link to this definition">¶</a></dt>
-<dd><p>If True, and the groupby keys contain NaN values,
-the NaN values together with the corresponding row will be dropped.
-Otherwise, the rows corresponding to NaN values will be kept.
-The default is True</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">dropna</span></span></dt>
+<dd><p>If True and the groupby keys contain NaN values, the NaN values together
+with the corresponding row will be dropped. Otherwise, rows corresponding
+to NaN values will be kept.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a> (default=True)</p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a>, default=True</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – Raised if keys is a pdarray with a dtype other than int64</p>
+<dd class="field-odd"><p><strong>TypeError</strong> – Raised if keys is a pdarray with a dtype other than int64.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Integral pdarrays, Strings, and Categoricals are natively supported, but
 float64 and bool arrays are not.</p>
-<p>For a user-defined class to be groupable, it must inherit from pdarray
-and define or overload the grouping API:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><p>a ._get_grouping_keys() method that returns a list of pdarrays
-that can be (co)argsorted.</p></li>
-<li><p>(Optional) a .group() method that returns the permutation that
-groups the array</p></li>
-</ol>
-</div></blockquote>
-<p>If the input is a single array with a .group() method defined, method 2
-will be used; otherwise, method 1 will be used.</p>
+<p>For a user-defined class to be groupable, it must inherit from <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>
+and provide the grouping API:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">._get_grouping_keys()</span></code>: Return a list of pdarrays that can be (co)argsorted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.group()</span></code> (optional): Return the permutation that groups the array.</p></li>
+</ul>
+<p>If the input is a single array with a <code class="docutils literal notranslate"><span class="pre">.group()</span></code> method defined, that method
+is used. Otherwise, <code class="docutils literal notranslate"><span class="pre">._get_grouping_keys()</span></code> is used.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.AND">
-<span class="sig-name descname"><span class="pre">AND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.AND"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.AND" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">AND</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.AND"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bitwise AND of values in each segment.</p>
 <p>Group another array of values and perform a bitwise AND reduction on each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
@@ -536,8 +530,8 @@ will be used; otherwise, method 1 will be used.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.OR">
-<span class="sig-name descname"><span class="pre">OR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.OR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.OR" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">OR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.OR"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bitwise OR of values in each segment.</p>
 <p>Group another array of values and perform a bitwise OR reduction on each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
@@ -570,8 +564,8 @@ will be used; otherwise, method 1 will be used.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.XOR">
-<span class="sig-name descname"><span class="pre">XOR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.XOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.XOR" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">XOR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.XOR"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bitwise XOR of values in each segment.</p>
 <p>Group another array of values and perform a bitwise XOR reduction on each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
@@ -604,8 +598,8 @@ will be used; otherwise, method 1 will be used.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.aggregate">
-<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.aggregate" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.aggregate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and apply a reduction to each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -655,8 +649,8 @@ will be used; otherwise, method 1 will be used.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.all">
-<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.all" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and perform an “and” reduction on each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -688,8 +682,8 @@ will be used; otherwise, method 1 will be used.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.any">
-<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.any"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.any" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.any"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and perform an “or” reduction on each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -720,8 +714,8 @@ will be used; otherwise, method 1 will be used.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.argmax">
-<span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.argmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.argmax" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">argmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.argmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and return the location of the first maximum of each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -770,8 +764,8 @@ not the permutation applied by the GroupBy instance.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.argmin">
-<span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.argmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.argmin" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">argmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.argmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and return the location of the first minimum of each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -821,8 +815,8 @@ passed in, not the permutation applied by the GroupBy instance.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.broadcast">
-<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.broadcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.broadcast" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.broadcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Fill each group’s segment with a constant value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -879,8 +873,8 @@ array([True False False True True False True True False True])</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.build_from_components">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">build_from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.build_from_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.build_from_components" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">build_from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.build_from_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Build a new GroupBy object from component keys and permutation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -899,8 +893,8 @@ array([True False False True True False True True False True])</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.count">
-<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.count" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Count the number of elements in each group.</p>
 <p>NaN values will be excluded from the total.</p>
 <dl class="field-list simple">
@@ -939,8 +933,8 @@ array([True False False True True False True True False True])</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.first">
-<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.first"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.first" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.first"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>First value in each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -962,8 +956,8 @@ array([True False False True True False True True False True])</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.from_return_msg">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.from_return_msg" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_return_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.from_return_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Reconstruct a GroupBy object from a server return message.</p>
 <p>This is used to deserialize a GroupBy object that was previously saved or transferred.</p>
 <dl class="field-list simple">
@@ -974,7 +968,7 @@ array([True False False True True False True True False True])</p>
 <dd class="field-even"><p>A reconstructed GroupBy object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.GroupBy" title="arkouda.pandas.groupbyclass.GroupBy">GroupBy</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If an unsupported or unknown data type is encountered during reconstruction.</p>
@@ -983,8 +977,8 @@ array([True False False True True False True True False True])</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.head">
-<span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.head" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.head"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return the first n values from each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1045,8 +1039,8 @@ O.W. the result are values.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.is_registered">
-<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.is_registered" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return True if the object is contained in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -1061,7 +1055,7 @@ O.W. the result are values.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.GroupBy.register" title="arkouda.GroupBy.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <a class="reference internal" href="#arkouda.GroupBy.unregister" title="arkouda.GroupBy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Objects registered with the server are immune to deletion until
@@ -1069,8 +1063,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.max">
-<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.max" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.max"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and return the maximum of each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1120,8 +1114,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.mean" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and compute the mean of each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1172,8 +1166,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.median">
-<span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.median"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.median" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.median"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and compute the median of each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1224,8 +1218,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.min">
-<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.min" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.min"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and return the minimum of each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1275,8 +1269,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.mode">
-<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.mode" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return the most common value in each group.</p>
 <p>If a group is multi-modal, return the
 modal value that occurs first.</p>
@@ -1300,8 +1294,8 @@ modal value that occurs first.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.nunique">
-<span class="sig-name descname"><span class="pre">nunique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.nunique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.nunique" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nunique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.nunique"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and return the number of unique values in each group.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1352,8 +1346,8 @@ Group (4) has values [4] -&gt; 1 unique value</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.prod">
-<span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.prod" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and compute the product of each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1405,8 +1399,8 @@ Group (4) has values [4] -&gt; 1 unique value</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.register">
-<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.register" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Register this GroupBy object and underlying components with the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1420,7 +1414,7 @@ fluid programming style.
 Please note you cannot register two different GroupBys with the same name.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.GroupBy" title="arkouda.GroupBy">GroupBy</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/pandas/groupbyclass/index.html#arkouda.pandas.groupbyclass.GroupBy" title="arkouda.pandas.groupbyclass.GroupBy">GroupBy</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -1431,7 +1425,7 @@ Please note you cannot register two different GroupBys with the same name.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.GroupBy.unregister" title="arkouda.GroupBy.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code>, <a class="reference internal" href="#arkouda.GroupBy.is_registered" title="arkouda.GroupBy.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Objects registered with the server are immune to deletion until
@@ -1439,8 +1433,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.sample" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permute_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return a random sample from each group.</p>
 <p>You can either specify the number of elements
 or the fraction of elements to be sampled. random_state can be used for reproducibility</p>
@@ -1454,7 +1448,7 @@ the smallest group unless replace is True.
 Default is one if frac is None.</p></li>
 <li><p><strong>frac</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of items to return. Cannot be used with n.</p></li>
 <li><p><strong>replace</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default False</em>) – Allow or disallow sampling of the value more than once.</p></li>
-<li><p><strong>weights</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Default None results in equal probability weighting.
+<li><p><strong>weights</strong> (<a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Default None results in equal probability weighting.
 If passed a pdarray, then values must have the same length as the groupby keys
 and will be used as sampling probabilities after normalization within each group.
 Weights must be non-negative with at least one positive element within each group.</p></li>
@@ -1471,14 +1465,14 @@ Otherwise, keep samples in original order.</p></li>
 Otherwise, return the sample values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.size">
-<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.size" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.size"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Count the number of elements in each group, i.e. the number of times each key appears.</p>
 <p>This counts the total number of rows (including NaN values).</p>
 <dl class="field-list simple">
@@ -1497,7 +1491,7 @@ Otherwise, return the sample values.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.GroupBy.count" title="arkouda.GroupBy.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -1515,8 +1509,8 @@ Otherwise, return the sample values.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.std">
-<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.std" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.std"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and compute the standard deviation of each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1578,8 +1572,8 @@ unbiased estimate of the standard deviation per se.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.sum">
-<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.sum" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and sum each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1629,8 +1623,8 @@ unbiased estimate of the standard deviation per se.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.tail">
-<span class="sig-name descname"><span class="pre">tail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.tail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.tail" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">tail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.tail"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return the last n values from each group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1691,8 +1685,8 @@ O.W. the result are values.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.to_hdf">
-<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groupby'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.to_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.to_hdf" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groupby'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'truncate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'distribute'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.to_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Save the GroupBy to HDF5.</p>
 <p>The result is a collection of HDF5 files, one file
 per locale of the arkouda server, where each filename starts with prefix_path.</p>
@@ -1715,8 +1709,8 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.unique">
-<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.unique" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Return the set of unique values in each group, as a SegArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1741,8 +1735,8 @@ This is only supported by HDF5 files and will have no impact of Parquet Files.</
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.unregister">
-<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.unregister" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Unregister this GroupBy object.</p>
 <p>Unregister this GroupBy object in the arkouda server which was previously
 registered using register() and/or attached to using attach().</p>
@@ -1754,7 +1748,7 @@ registered using register() and/or attached to using attach().</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.GroupBy.register" title="arkouda.GroupBy.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code>, <a class="reference internal" href="#arkouda.GroupBy.is_registered" title="arkouda.GroupBy.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_groupby_by_name</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Objects registered with the server are immune to deletion until
@@ -1762,8 +1756,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.update_hdf">
-<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groupby'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.update_hdf" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">update_hdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'groupby'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.update_hdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Update an existing HDF5 dataset with new GroupBy data.</p>
 <p>This overwrites the previous GroupBy data stored in HDF5 files and optionally repacks the file.</p>
 <dl class="field-list simple">
@@ -1781,8 +1775,8 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.GroupBy.var">
-<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.GroupBy.var" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arkouda/pandas/groupbyclass.html#GroupBy.var"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Group another array of values and compute the variance of each group’s values.</p>
 <p>Group using the permutation stored in the GroupBy instance.</p>
 <dl class="field-list simple">
@@ -1887,69 +1881,8 @@ normally distributed variables.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">GroupBy</a><ul>
-<li><a class="reference internal" href="#arkouda.GroupBy"><code class="docutils literal notranslate"><span class="pre">GroupBy</span></code></a><ul>
-<li><a class="reference internal" href="#arkouda.GroupBy.nkeys"><code class="docutils literal notranslate"><span class="pre">GroupBy.nkeys</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.permutation"><code class="docutils literal notranslate"><span class="pre">GroupBy.permutation</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.unique_keys"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique_keys</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.ngroups"><code class="docutils literal notranslate"><span class="pre">GroupBy.ngroups</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.segments"><code class="docutils literal notranslate"><span class="pre">GroupBy.segments</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.logger"><code class="docutils literal notranslate"><span class="pre">GroupBy.logger</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.dropna"><code class="docutils literal notranslate"><span class="pre">GroupBy.dropna</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.AND"><code class="docutils literal notranslate"><span class="pre">GroupBy.AND()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.OR"><code class="docutils literal notranslate"><span class="pre">GroupBy.OR()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.XOR"><code class="docutils literal notranslate"><span class="pre">GroupBy.XOR()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.aggregate"><code class="docutils literal notranslate"><span class="pre">GroupBy.aggregate()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.all"><code class="docutils literal notranslate"><span class="pre">GroupBy.all()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.any"><code class="docutils literal notranslate"><span class="pre">GroupBy.any()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.argmax"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmax()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.argmin"><code class="docutils literal notranslate"><span class="pre">GroupBy.argmin()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.broadcast"><code class="docutils literal notranslate"><span class="pre">GroupBy.broadcast()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.build_from_components"><code class="docutils literal notranslate"><span class="pre">GroupBy.build_from_components()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.count"><code class="docutils literal notranslate"><span class="pre">GroupBy.count()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.first"><code class="docutils literal notranslate"><span class="pre">GroupBy.first()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.from_return_msg"><code class="docutils literal notranslate"><span class="pre">GroupBy.from_return_msg()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.head"><code class="docutils literal notranslate"><span class="pre">GroupBy.head()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.is_registered"><code class="docutils literal notranslate"><span class="pre">GroupBy.is_registered()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.max"><code class="docutils literal notranslate"><span class="pre">GroupBy.max()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.mean"><code class="docutils literal notranslate"><span class="pre">GroupBy.mean()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.median"><code class="docutils literal notranslate"><span class="pre">GroupBy.median()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.min"><code class="docutils literal notranslate"><span class="pre">GroupBy.min()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.mode"><code class="docutils literal notranslate"><span class="pre">GroupBy.mode()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.nunique"><code class="docutils literal notranslate"><span class="pre">GroupBy.nunique()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.prod"><code class="docutils literal notranslate"><span class="pre">GroupBy.prod()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.register"><code class="docutils literal notranslate"><span class="pre">GroupBy.register()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.sample"><code class="docutils literal notranslate"><span class="pre">GroupBy.sample()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.size"><code class="docutils literal notranslate"><span class="pre">GroupBy.size()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.std"><code class="docutils literal notranslate"><span class="pre">GroupBy.std()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.sum"><code class="docutils literal notranslate"><span class="pre">GroupBy.sum()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.tail"><code class="docutils literal notranslate"><span class="pre">GroupBy.tail()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.to_hdf"><code class="docutils literal notranslate"><span class="pre">GroupBy.to_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.unique"><code class="docutils literal notranslate"><span class="pre">GroupBy.unique()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.unregister"><code class="docutils literal notranslate"><span class="pre">GroupBy.unregister()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.update_hdf"><code class="docutils literal notranslate"><span class="pre">GroupBy.update_hdf()</span></code></a></li>
-<li><a class="reference internal" href="#arkouda.GroupBy.var"><code class="docutils literal notranslate"><span class="pre">GroupBy.var()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

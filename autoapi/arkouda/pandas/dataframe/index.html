@@ -468,7 +468,7 @@ for use on large-scale, distributed datasets.</p>
 <li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
 should be a homogenous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="../../../../usage/Index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="../../index.html#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
 <li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
 be strings. Defaults to an stringified integer range.</p></li>
 </ul>
@@ -1047,7 +1047,7 @@ If 1 or ‘columns’ counts are generated for each row.</p></li>
 <dd class="field-even"><p>For each column/row the number of non-NA/null entries.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – Raised if axis is not 0, 1, ‘index’, or ‘columns’.</p>
@@ -1456,7 +1456,7 @@ Otherwise returns an arkouda.pandas.groupbyclass.GroupBy object.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../../../../usage/groupby.html#arkouda.GroupBy" title="arkouda.GroupBy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.GroupBy</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.GroupBy</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
@@ -1648,7 +1648,7 @@ they are unregistered.</p>
 <dd><p>Determine whether each element in the DataFrame is contained in values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>dict</em><em>, </em><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a>) – The values to check for in DataFrame. Series can only have a single index.</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>dict</em><em>, </em><a class="reference internal" href="../../index.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="#arkouda.pandas.dataframe.DataFrame" title="arkouda.pandas.dataframe.DataFrame"><em>DataFrame</em></a>) – The values to check for in DataFrame. Series can only have a single index.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Arkouda DataFrame of booleans showing whether each element in the DataFrame is
@@ -1814,7 +1814,7 @@ the index is the first item in the output.</p></li>
 is the memory usage of each column in bytes.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series">Series</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../index.html#arkouda.Series" title="arkouda.Series">Series</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -2998,7 +2998,7 @@ Defaults to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="../../../../usage/series.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em> or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The values to put in each group’s segment.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="../../index.html#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em> or </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – The values to put in each group’s segment.</p></li>
 <li><p><strong>permute</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If True (default), permute broadcast values back to the
 ordering of the original array on which GroupBy was called.
 If False, the broadcast values are grouped by value.</p></li>

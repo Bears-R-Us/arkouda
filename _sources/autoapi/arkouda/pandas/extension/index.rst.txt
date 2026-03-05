@@ -1053,7 +1053,7 @@ Package Contents
 
    .. py:method:: to_ak_legacy() -> arkouda.pandas.dataframe.DataFrame
 
-      Convert this pandas DataFrame into the legacy :class:`arkouda.pandas.DataFrame`.
+      Convert this pandas DataFrame into the legacy :class:`arkouda.DataFrame`.
 
       This method performs a *materializing* conversion of a pandas DataFrame
       into the legacy Arkouda DataFrame structure. Every column is converted

@@ -20,7 +20,7 @@ However, if you have manually installed dependencies (such as ZeroMQ or HDF5), y
 
 If you are using a conda environment to manage your dependencies. All you need to do is `conda activate` that
 environment and run this command:
-```commandline
+```console
 echo -e "\$(eval \$(call add-path,$CONDA_PREFIX))" >> Makefile.paths
 ```
 
@@ -39,7 +39,7 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 The path may vary based on the installation location of pip and your environment name.
 Here are some tips to locate the path.
 
-```commandline
+```console
 # when installing via pip, run `pip show` on a package you've installed with pip
 % pip show hdf5 | grep Location
 Location: /opt/homebrew/Caskroom/miniforge/base/envs/arkouda/lib/python3.12/site-packages
