@@ -1436,31 +1436,31 @@ class GroupBy:
         """
         Group another array of values and return the number of unique values in each group.
 
-        Group using the permutation stored in the GroupBy instance.
+        Grouping uses the permutation stored in the ``GroupBy`` instance.
 
         Parameters
         ----------
-        values : pdarray, int64
-            The values to group and find unique values
+        values : groupable
+            Values to group and compute the number of unique values for each group.
 
         Returns
         -------
         Tuple[groupable, pdarray]
             unique_keys : groupable
-                The unique keys, in grouped order
-            group_nunique : groupable
-                Number of unique values per unique key in the GroupBy instance
+                The unique keys in grouped order.
+            group_nunique : pdarray
+                Number of unique values for each key in the ``GroupBy`` instance.
 
         Raises
         ------
         TypeError
-            Raised if the dtype(s) of values array(s) does/do not support
-            the nunique method
+            Raised if the dtype(s) of the ``values`` array(s) do not support
+            the ``nunique`` operation.
         ValueError
-            Raised if the key array size does not match the values size or
-            if the operator is not in the GroupBy.Reductions array
+            Raised if the key array size does not match the ``values`` size or
+            if the operator is not present in ``GroupBy.Reductions``.
         RuntimeError
-            Raised if nunique is not supported for the values dtype
+            Raised if ``nunique`` is not supported for the ``values`` dtype.
 
         Examples
         --------
@@ -1468,20 +1468,24 @@ class GroupBy:
         >>> data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
         >>> data
         array([3 4 3 1 1 4 3 4 1 4])
+
         >>> labels = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
         >>> labels
         array([1 1 1 2 2 2 3 3 3 4])
+
         >>> g = ak.GroupBy(labels)
         >>> g.keys
         array([1 1 1 2 2 2 3 3 3 4])
+
         >>> g.nunique(data)
         (array([1 2 3 4]), array([2 2 3 1]))
 
-        Group (1,1,1) has values [3,4,3] -> there are 2 unique values 3&4
-        Group (2,2,2) has values [1,1,4] -> 2 unique values 1&4
-        Group (3,3,3) has values [3,4,1] -> 3 unique values
-        Group (4) has values [4] -> 1 unique value
+        Group explanations:
 
+        - Group ``(1, 1, 1)`` has values ``[3, 4, 3]`` → 2 unique values (3, 4)
+        - Group ``(2, 2, 2)`` has values ``[1, 1, 4]`` → 2 unique values (1, 4)
+        - Group ``(3, 3, 3)`` has values ``[3, 4, 1]`` → 3 unique values
+        - Group ``(4)`` has values ``[4]`` → 1 unique value
         """
         # TO DO: defer to self.aggregate once logic is ported over to Chapel
         # return self.aggregate(values, "nunique")
@@ -2160,32 +2164,32 @@ class GroupBy:
 
         Parameters
         ----------
-        values : pdarray, Strings
-            The values to put in each group's segment
-        permute : bool
-            If True (default), permute broadcast values back to the ordering
-            of the original array on which GroupBy was called. If False, the
-            broadcast values are grouped by value.
+        values : Union[pdarray, Strings]
+            Values to place in each group's segment.
+        permute : bool, default=True
+            If ``True``, permute broadcast values back to the ordering of the
+            original array on which ``GroupBy`` was called. If ``False``, the
+            broadcast values are returned in grouped order.
 
         Returns
         -------
-        pdarray, Strings
-            The broadcasted values
+        Union[pdarray, Strings]
+            The broadcasted values.
 
         Raises
         ------
         TypeError
-            Raised if value is not a pdarray object
+            Raised if ``values`` is not a ``pdarray`` or ``Strings`` object.
         ValueError
-            Raised if the values array does not have one
-            value per segment
+            Raised if the ``values`` array does not contain exactly one value
+            per segment.
 
         Notes
         -----
-        This function is a sparse analog of ``np.broadcast``. If a
-        GroupBy object represents a sparse matrix (tensor), then
-        this function takes a (dense) column vector and replicates
-        each value to the non-zero elements in the corresponding row.
+        This function is a sparse analog of ``np.broadcast``. If a ``GroupBy``
+        object represents a sparse matrix (tensor), this function takes a
+        dense column vector and replicates each value to the non-zero elements
+        in the corresponding row.
 
         Examples
         --------
@@ -2194,25 +2198,27 @@ class GroupBy:
         >>> values = ak.array([3, 5])
         >>> g = ak.GroupBy(a)
 
-        By default, result is in original order
+        By default, the result is in the original order:
+
         >>> g.broadcast(values)
         array([3 5 3 5 3])
 
-        With permute=False, result is in grouped order
+        With ``permute=False``, the result is returned in grouped order:
+
         >>> g.broadcast(values, permute=False)
         array([3 3 3 5 5])
+
         >>> a = ak.randint(1, 5, 10, seed=1)
         >>> a
         array([2 4 4 2 1 4 1 2 4 3])
         >>> g = ak.GroupBy(a)
-        >>> keys,counts = g.size()
+        >>> keys, counts = g.size()
         >>> g.broadcast(counts > 2)
         array([True True True True False True False True True False])
         >>> g.broadcast(counts == 3)
         array([True False False True False False False True False False])
         >>> g.broadcast(counts < 4)
         array([True False False True True False True True False True])
-
         """
         from arkouda.core.client import generic_msg
         from arkouda.numpy.pdarraycreation import arange
@@ -2480,52 +2486,57 @@ def broadcast(
 
     Parameters
     ----------
-    segments : pdarray, int64
-        Offsets of the start of each row in the sparse matrix or grouped array.
-        Must be sorted in ascending order.
-    values : pdarray, Strings
-        The values to broadcast, one per row (or group)
-    size : int
-        The total number of nonzeros in the matrix. If permutation is given, this
-        argument is ignored and the size is inferred from the permutation array.
-    permutation : pdarray, int64
-        The permutation to go from the original ordering of nonzeros to the ordering
-        grouped by row. To broadcast values back to the original ordering, this
-        permutation will be inverted. If no permutation is supplied, it is assumed
-        that the original nonzeros were already grouped by row. In this case, the
-        size argument must be given.
+    segments : pdarray
+        Offsets marking the start of each row in the sparse matrix or grouped
+        array. Must be sorted in ascending order.
+    values : Union[pdarray, Strings]
+        Values to broadcast, one per row (or group).
+    size : Union[int, np.int64, np.uint64], default=-1
+        Total number of nonzeros in the matrix. If ``permutation`` is given,
+        this argument is ignored and the size is inferred from the
+        permutation array.
+    permutation : Union[pdarray, None], optional
+        Permutation that maps the original ordering of nonzeros to the
+        ordering grouped by row. To broadcast values back to the original
+        ordering, this permutation will be inverted.
+
+        If no permutation is supplied, it is assumed that the original
+        nonzeros were already grouped by row. In that case, the ``size``
+        argument must be provided.
 
     Returns
     -------
-    pdarray, Strings
-        The broadcast values, one per nonzero
+    Union[pdarray, Strings]
+        Broadcast values, one per nonzero element.
 
     Raises
     ------
     ValueError
-        - If segments and values are different sizes
-        - If segments are empty
-        - If number of nonzeros (either user-specified or inferred from permutation)
-          is less than one
+        - If ``segments`` and ``values`` have different sizes.
+        - If ``segments`` is empty.
+        - If the number of nonzeros (either user-specified or inferred from
+          ``permutation``) is less than one.
 
     Examples
     --------
     >>> import arkouda as ak
-    >>>
-    # Define a sparse matrix with 3 rows and 7 nonzeros
+
+    Define a sparse matrix with 3 rows and 7 nonzeros:
+
     >>> row_starts = ak.array([0, 2, 5])
     >>> nnz = 7
 
-    Broadcast the row number to each nonzero element
+    Broadcast the row number to each nonzero element:
+
     >>> row_number = ak.arange(3)
     >>> ak.broadcast(row_starts, row_number, nnz)
     array([0 0 1 1 1 2 2])
 
-    If the original nonzeros were in reverse order...
+    If the original nonzeros were in reverse order:
+
     >>> permutation = ak.arange(6, -1, -1)
     >>> ak.broadcast(row_starts, row_number, permutation=permutation)
     array([2 2 1 1 1 0 0])
-
     """
     from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import arange
