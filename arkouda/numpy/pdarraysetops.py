@@ -590,41 +590,46 @@ def union1d(
     ar2: groupable,
 ) -> groupable:
     """
-    Find the union of two arrays/List of Arrays.
+    Find the union of two arrays or lists of arrays.
 
-    Return the unique, sorted array of values that are in either
-    of the two input arrays.
+    Return the unique, sorted array of values that appear in either
+    of the input arrays.
 
     Parameters
     ----------
     ar1 : list of pdarrays, pdarray, Strings, or Categorical
+        First input array or list of arrays.
     ar2 : list of pdarrays, pdarray, Strings, or Categorical
+        Second input array or list of arrays.
 
     Returns
     -------
     groupable
-        Unique, sorted union of the input arrays.
+        Unique, sorted union of the input arrays. If the inputs are lists
+        of arrays, a list of pdarrays is returned.
 
     Raises
     ------
     TypeError
-        Raised if either ar1 or ar2 is not a groupable
+        Raised if either `ar1` or `ar2` is not groupable.
     RuntimeError
-        Raised if the dtype of either input is not supported
+        Raised if the dtype of either input is not supported.
 
     See Also
     --------
-    intersect1d, arkouda.pandas.groupbyclass.unique
+    intersect1d
+    arkouda.pandas.groupbyclass.unique
 
     Examples
     --------
-    >>> import arkouda as ak
+    Basic 1D example:
 
-    1D Example
+    >>> import arkouda as ak
     >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
     array([-2 -1 0 1 2])
 
-    Multi-Array Example
+    Multi-array example:
+
     >>> a = ak.arange(1, 6)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -633,7 +638,6 @@ def union1d(
     >>> multib = [b, c, d]
     >>> ak.union1d(multia, multib)
     [array([1 2 2 3 4 4 5 5]), array([1 2 5 3 2 4 4 5]), array([1 2 4 3 5 4 2 5])]
-
     """
     from arkouda.core.client import generic_msg
     from arkouda.numpy.strings import Strings
@@ -678,41 +682,46 @@ def intersect1d(
     """
     Find the intersection of two arrays.
 
-    Return the sorted, unique values that are in both of the input arrays.
+    Return the sorted, unique values that are present in both input arrays.
 
     Parameters
     ----------
     ar1 : list of pdarrays, pdarray, Strings, or Categorical
+        First input array or list of arrays.
     ar2 : list of pdarrays, pdarray, Strings, or Categorical
-    assume_unique : bool
-        If True, the input arrays are both assumed to be unique, which
-        can speed up the calculation.  Default is False.
+        Second input array or list of arrays.
+    assume_unique : bool, default=False
+        If True, the input arrays are assumed to contain unique values,
+        which can speed up the calculation.
 
     Returns
     -------
-    pdarray/groupable
-        Sorted 1D array/List of sorted pdarrays of common and unique elements.
+    pdarray or groupable
+        Sorted 1D array of common unique elements. If the inputs are lists of
+        arrays, a list of sorted pdarrays is returned.
 
     Raises
     ------
     TypeError
-        Raised if either ar1 or ar2 is not a groupable
+        Raised if either `ar1` or `ar2` is not groupable.
     RuntimeError
-        Raised if the dtype of either pdarray is not supported
+        Raised if the dtype of either pdarray is not supported.
 
     See Also
     --------
-    arkouda.pandas.groupbyclass.unique, union1d
+    arkouda.pandas.groupbyclass.unique
+    union1d
 
     Examples
     --------
-    >>> import arkouda as ak
+    Basic 1D example:
 
-    1D Example
+    >>> import arkouda as ak
     >>> ak.intersect1d(ak.array([1, 3, 4, 3]), ak.array([3, 1, 2, 1]))
     array([1 3])
 
-    Multi-Array Example
+    Multi-array example:
+
     >>> a = ak.arange(5)
     >>> b = ak.array([1, 5, 3, 4, 2])
     >>> c = ak.array([1, 4, 3, 2, 5])
@@ -721,7 +730,6 @@ def intersect1d(
     >>> multib = [b, c, d]
     >>> ak.intersect1d(multia, multib)
     [array([1 3]), array([1 3]), array([1 3])]
-
     """
     from arkouda.core.client import generic_msg
     from arkouda.numpy.pdarraycreation import ones, zeros
