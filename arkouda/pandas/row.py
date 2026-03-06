@@ -14,10 +14,10 @@ Row structure based on UserDict.
 
 class Row(UserDict):
     """
-    A dictionary‐like representation of a single row in an Arkouda DataFrame.
+    Dictionary-like representation of a single row in an Arkouda ``DataFrame``.
 
-    Wraps the column→value mapping for one row and provides convenient ASCII
-    and HTML formatting for display.
+    Wraps the column-to-value mapping for one row and provides convenient
+    ASCII and HTML formatting for display.
 
     Parameters
     ----------
@@ -28,16 +28,16 @@ class Row(UserDict):
     --------
     >>> import arkouda as ak
     >>> from arkouda.pandas.row import Row
-    >>> df = ak.DataFrame({'x': ak.array([10, 20]), 'y': ak.array(['a', 'b'])})
+    >>> df = ak.DataFrame({"x": ak.array([10, 20]), "y": ak.array(["a", "b"])})
 
-    Suppose df[0] returns {'x': 10, 'y': 'a'}
-    >>> row = Row({'x': 10, 'y': 'a'})
+    Suppose ``df[0]`` returns ``{"x": 10, "y": "a}``:
+
+    >>> row = Row({"x": 10, "y": "a"})
     >>> print(row)
     keys    values
     ------  --------
     x       10
     y       a
-
     """
 
     def __str__(self) -> str:
