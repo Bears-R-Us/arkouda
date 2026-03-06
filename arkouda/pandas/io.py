@@ -1,32 +1,43 @@
 """
 Input/output utilities for Arkouda.
 
-The `arkouda.io` module provides a comprehensive interface for reading from and writing to
-various file formats including HDF5, Parquet, CSV, and Zarr. It supports importing/exporting
-data between Arkouda and Pandas, data checkpointing, and server snapshot/restore functionality.
+The ``arkouda.io`` module provides an interface for reading from and writing to
+several file formats including HDF5, Parquet, CSV, and Zarr. It supports
+importing and exporting data between Arkouda and pandas, checkpointing data,
+and snapshot/restore functionality for Arkouda server state.
 
-Core functionality includes:
+Core functionality includes
+
 - File format detection and dataset inspection
 - Reading and writing structured datasets using HDF5 and Parquet
 - CSV read/write support with header parsing
 - Zarr format support for chunked array storage
-- Pandas interop via `import_data` and `export`
-- Checkpointing (`save_checkpoint`, `load_checkpoint`)
-- Serialization and deserialization of Arkouda objects (`snapshot`, `restore`)
+- pandas interoperability via ``import_data`` and ``export``
+- Checkpointing via ``save_checkpoint`` and ``load_checkpoint``
+- Serialization and deserialization of Arkouda objects via ``snapshot`` and ``restore``
 - Dataset tagging for provenance tracking during read operations
-- Transferring arrays/dataframes between Arkouda server instances (`receive`, `receive_dataframe`)
+- Transferring arrays and DataFrames between Arkouda server instances
+  (``receive`` and ``receive_dataframe``)
 
-Supported data types include `pdarray`, `Strings`, `SegArray`, `Categorical`, `DataFrame`, `Index`,
-and `MultiIndex`. Many operations also offer compatibility with standard Pandas file formats
-for interoperability.
+Supported data types include ``pdarray``, ``Strings``, ``SegArray``,
+``Categorical``, ``DataFrame``, ``Index``, and ``MultiIndex``. Many operations
+also support compatibility with standard pandas file formats for interoperability.
 
 Functions
 ---------
-- File inspection: `get_filetype`, `ls`, `ls_csv`, `get_datasets`, `get_columns`
-- Data import/export: `read_hdf`, `read_parquet`, `read_csv`, `read_zarr`, `read`, `to_hdf`,
-  `to_parquet`, `to_csv`, `to_zarr`, `import_data`, `export`
-- Snapshotting: `snapshot`, `restore`, `save_checkpoint`, `load_checkpoint`
-- Advanced features: `update_hdf`, `load`, `load_all`, `read_tagged_data`, `receive`, `receive_dataframe`
+File inspection
+    ``get_filetype``, ``ls``, ``ls_csv``, ``get_datasets``, ``get_columns``
+
+Data import/export
+    ``read_hdf``, ``read_parquet``, ``read_csv``, ``read_zarr``, ``read``,
+    ``to_hdf``, ``to_parquet``, ``to_csv``, ``to_zarr``, ``import_data``, ``export``
+
+Snapshotting
+    ``snapshot``, ``restore``, ``save_checkpoint``, ``load_checkpoint``
+
+Advanced features
+    ``update_hdf``, ``load``, ``load_all``, ``read_tagged_data``,
+    ``receive``, ``receive_dataframe``
 
 Examples
 --------
@@ -34,32 +45,41 @@ Examples
 >>> from arkouda.pandas.io import to_parquet, read_parquet
 >>> import os.path
 >>> from pathlib import Path
->>> my_path = os.path.join(os.getcwd(), 'output')
+>>> my_path = os.path.join(os.getcwd(), "output")
 >>> Path(my_path).mkdir(parents=True, exist_ok=True)
 
-Create and save a DataFrame
+Create and save a DataFrame:
+
 >>> data = [ak.arange(10), ak.linspace(0, 1, 10)]
->>> Path(my_path + '/parquet_data').mkdir(parents=True, exist_ok=True)
->>> to_parquet(data, my_path + '/parquet_data/data.parquet')
+>>> Path(my_path + "/parquet_data").mkdir(parents=True, exist_ok=True)
+>>> to_parquet(data, my_path + "/parquet_data/data.parquet")
 
-Load the DataFrame back
->>> data2 = read_parquet(my_path + '/parquet_data/data*')
+Load the DataFrame back:
 
-Save to HDF5
->>> ak.to_hdf(data, my_path + 'data.hdf5')
+>>> data2 = read_parquet(my_path + "/parquet_data/data*")
 
-Read from HDF5 with explicit dataset name
->>> data3 = ak.read_hdf(my_path + 'data*')
+Save to HDF5:
 
-Export to Pandas-compatible Parquet
->>> df = ak.DataFrame({'a': ak.arange(10), 'b': ak.linspace(0, 1, 10)})
->>> df2 = ak.export(my_path + '/parquet_data/data.parquet')
+>>> ak.to_hdf(data, my_path + "data.hdf5")
+
+Read from HDF5 with explicit dataset name:
+
+>>> data3 = ak.read_hdf(my_path + "data*")
+
+Export to pandas-compatible Parquet:
+
+>>> df = ak.DataFrame({"a": ak.arange(10), "b": ak.linspace(0, 1, 10)})
+>>> df2 = ak.export(my_path + "/parquet_data/data.parquet")
 
 See Also
 --------
-arkouda.DataFrame, arkouda.pdarray, arkouda.strings.Strings, arkouda.segarray.SegArray,
-arkouda.categorical.Categorical, arkouda.index.Index, arkouda.index.MultiIndex
-
+arkouda.DataFrame
+arkouda.pdarray
+arkouda.strings.Strings
+arkouda.segarray.SegArray
+arkouda.categorical.Categorical
+arkouda.index.Index
+arkouda.index.MultiIndex
 """
 
 import glob
@@ -698,7 +718,7 @@ def read_hdf(
     strict_types: bool = True,
     allow_errors: bool = False,
     calc_string_offsets: bool = False,
-    tag_data=False,
+    tag_data: bool = False,
 ) -> Union[
     Mapping[
         str,
@@ -716,66 +736,86 @@ def read_hdf(
     ],
 ]:
     """
-    Read Arkouda objects from HDF5 file/s.
+    Read Arkouda objects from HDF5 files.
 
     Parameters
     ----------
-    filenames : str, List[str]
-        Filename/s to read objects from
-    datasets : Optional str, List[str]
-        datasets to read from the provided files
-    iterative : bool
-        Iterative (True) or Single (False) function call(s) to server
-    strict_types: bool
-        If True (default), require all dtypes of a given dataset to have the
-        same precision and sign. If False, allow dtypes of different
+    filenames : Union[str, List[str]]
+        Filename or list of filenames to read objects from.
+    datasets : Optional[Union[str, List[str]]], default=None
+        Dataset name or list of dataset names to read from the provided
+        files. If ``None``, all datasets are read.
+    iterative : bool, default=False
+        If ``True``, make iterative function calls to the server. If
+        ``False``, make a single function call to the server.
+    strict_types : bool, default=True
+        If ``True``, require all dtypes of a given dataset to have the
+        same precision and sign. If ``False``, allow dtypes of different
         precision and sign across different files. For example, if one
-        file contains a uint32 dataset and another contains an int64
-        dataset with the same name, the contents of both will be read
-        into an int64 pdarray.
-    allow_errors: bool
-        Default False, if True will allow files with read errors to be skipped
-        instead of failing.  A warning will be included in the return containing
-        the total number of files skipped due to failure and up to 10 filenames.
-    calc_string_offsets: bool
-        Default False, if True this will tell the server to calculate the
-        offsets/segments array on the server versus loading them from HDF5 files.
-        In the future this option may be set to True as the default.
-    tag_data: bool
-        Default False, if True tag the data with the code associated with the filename
-        that the data was pulled from.
+        file contains a ``uint32`` dataset and another contains an
+        ``int64`` dataset with the same name, the contents of both will
+        be read into an ``int64`` ``pdarray``.
+    allow_errors : bool, default=False
+        If ``True``, files with read errors may be skipped instead of
+        causing the operation to fail. A warning will be included in the
+        return containing the total number of files skipped due to failure
+        and up to 10 filenames.
+    calc_string_offsets : bool, default=False
+        If ``True``, instruct the server to calculate the offsets or
+        segments array instead of loading it from HDF5 files. In the
+        future, this option may become the default.
+    tag_data : bool, default=False
+        If ``True``, tag the returned data with the code associated with
+        the filename from which it was read.
 
     Returns
     -------
-    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
-        Dictionary of {datasetName: pdarray, String, SegArray}
+    Mapping[
+        str,
+        Union[
+            pdarray,
+            Strings,
+            SegArray,
+            Categorical,
+            DataFrame,
+            IPv4,
+            Datetime,
+            Timedelta,
+            Index,
+        ],
+    ]
+    Dictionary mapping ``datasetName`` to the loaded object. The values
+    may be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,
+    ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.
+        Dictionary mapping ``datasetName`` to the loaded object. The values
+        may be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,
+        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.
 
     Raises
     ------
     ValueError
-        Raised if all datasets are not present in all hdf5 files or if one or
-        more of the specified files do not exist
+        Raised if not all datasets are present in all HDF5 files or if one
+        or more of the specified files do not exist.
     RuntimeError
         Raised if one or more of the specified files cannot be opened.
-        If `allow_errors` is true this may be raised if no values are returned
-        from the server.
+        If ``allow_errors`` is ``True``, this may also be raised if no
+        values are returned from the server.
     TypeError
-        Raised if we receive an unknown arkouda_type returned from the server
+        Raised if an unknown Arkouda type is returned from the server.
 
     Notes
     -----
-    If filenames is a string, it is interpreted as a shell expression
-    (a single filename is a valid expression, so it will work) and is
-    expanded with glob to read all matching files.
+    If ``filenames`` is a string, it is interpreted as a shell expression.
+    A single filename is a valid expression, so it will also work. The
+    expression is expanded with ``glob`` to read all matching files.
 
-    If iterative == True each dataset name and file names are passed to
-    the server as independent sequential strings while if iterative == False
-    all dataset names and file names are passed to the server in a single
-    string.
+    If ``iterative=True``, each dataset name and filename is passed to the
+    server independently in sequence. If ``iterative=False``, all dataset
+    names and filenames are passed to the server in a single string.
 
-    If datasets is None, infer the names of datasets from the first file
-    and read all of them. Use ``get_datasets`` to show the names of datasets
-    to HDF5 files.
+    If ``datasets`` is ``None``, dataset names are inferred from the first
+    file and all datasets are read. Use ``get_datasets`` to show dataset
+    names in HDF5 files.
 
     See Also
     --------
@@ -785,12 +825,13 @@ def read_hdf(
     --------
     >>> import arkouda as ak
 
-    Read with file Extension
-    >>> x = ak.read_hdf('path/name_prefix.h5')  # doctest: +SKIP
+    Read a file with an extension:
 
-    Read Glob Expression
-    >>> x = ak.read_hdf('path/name_prefix*')  # doctest: +SKIP
+    >>> x = ak.read_hdf("path/name_prefix.h5")  # doctest: +SKIP
 
+    Read files matching a glob expression:
+
+    >>> x = ak.read_hdf("path/name_prefix*")  # doctest: +SKIP
     """
     from arkouda.core.client import generic_msg
 
@@ -859,86 +900,98 @@ def read_parquet(
     ],
 ]:
     """
-    Read Arkouda objects from Parquet file/s.
+    Read Arkouda objects from Parquet files.
 
     Parameters
     ----------
-    filenames : str, List[str]
-        Filename/s to read objects from
-    datasets : Optional str, List[str]
-        datasets to read from the provided files
-    iterative : bool
-        Iterative (True) or Single (False) function call(s) to server
-    strict_types: bool
-        If True (default), require all dtypes of a given dataset to have the
-        same precision and sign. If False, allow dtypes of different
+    filenames : Union[str, List[str]]
+        Filename or list of filenames to read objects from.
+    datasets : Optional[Union[str, List[str]]], default=None
+        Dataset name or list of dataset names to read from the provided files.
+        If ``None``, all datasets are read.
+    iterative : bool, default=False
+        If ``True``, make iterative function calls to the server. If
+        ``False``, make a single function call to the server.
+    strict_types : bool, default=True
+        If ``True``, require all dtypes of a given dataset to have the
+        same precision and sign. If ``False``, allow dtypes of different
         precision and sign across different files. For example, if one
-        file contains a uint32 dataset and another contains an int64
-        dataset with the same name, the contents of both will be read
-        into an int64 pdarray.
-    allow_errors: bool
-        Default False, if True will allow files with read errors to be skipped
-        instead of failing.  A warning will be included in the return containing
-        the total number of files skipped due to failure and up to 10 filenames.
-    tag_data: bool
-        Default False, if True tag the data with the code associated with the filename
-        that the data was pulled from.
-    read_nested: bool
-        Default True, when True, SegArray objects will be read from the file. When False,
-        SegArray (or other nested Parquet columns) will be ignored.
-        If datasets is not None, this will be ignored.
-    has_non_float_nulls: bool
-        Deprecated. Please use null_handling.
-        Default False. This flag must be set to True to read non-float parquet columns
+        file contains a ``uint32`` dataset and another contains an
+        ``int64`` dataset with the same name, the contents of both will
+        be read into an ``int64`` ``pdarray``.
+    allow_errors : bool, default=False
+        If ``True``, files with read errors may be skipped instead of
+        causing the operation to fail. A warning will be included in the
+        return containing the total number of files skipped due to failure
+        and up to 10 filenames.
+    tag_data : bool, default=False
+        If ``True``, tag the data with the code associated with the
+        filename from which the data was read.
+    read_nested : bool, default=True
+        If ``True``, ``SegArray`` objects are read from the file. If
+        ``False``, ``SegArray`` objects and other nested Parquet columns
+        are ignored. If ``datasets`` is not ``None``, this parameter is
+        ignored.
+    has_non_float_nulls : bool, default=False
+        Deprecated. Use ``null_handling`` instead.
+
+        This flag must be set to ``True`` to read non-float Parquet columns
         that contain null values.
-    null_handling: Optional str
-        Defaults to "only floats".
-        Supported values are "none", "only floats", "all".
-        If "none", the data is assumed to be free of nulls.  This results in the
-        fastest performance. However, if there is nulls in the data, the
-        behavior is undefined. If "only floats", only floating point typed
-        columns may contain nulls. This makes reading other data types faster.
-        If "all", any column can contain nulls. This is the most generally
-        applicable mode, though results in slower performance across the board.
-    fixed_len: int
-        Default -1. This value can be set for reading Parquet string columns when the
-        length of each string is known at runtime. This can allow for skipping byte
-        calculation, which can have an impact on performance.
+    null_handling : Optional[str], default=None
+        Null-handling mode. Supported values are ``"none"``,
+        ``"only floats"``, and ``"all"``. If ``None``, the default is
+        ``"only floats"``.
+
+        If ``"none"``, the data is assumed to contain no nulls. This gives
+        the best performance, but behavior is undefined if nulls are
+        present.
+
+        If ``"only floats"``, only floating-point columns may contain
+        nulls. This improves performance for other data types.
+
+        If ``"all"``, any column may contain nulls. This is the most
+        general mode, but it is slower overall.
+    fixed_len : int, default=-1
+        Fixed string length to use when reading Parquet string columns if
+        the length of each string is known at runtime. This can avoid byte
+        calculation and may improve performance.
 
     Returns
     -------
-    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
-        Dictionary of {datasetName: pdarray, String, or SegArray}
+    Mapping[str, Union[pdarray, Strings, SegArray, Categorical,
+        DataFrame, IPv4, Datetime, Timedelta, Index]]
+        Dictionary mapping ``datasetName`` to the loaded object. The values may
+        be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,
+        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.
 
     Raises
     ------
     ValueError
-        Raised if all datasets are not present in all parquet files or if one or
-        more of the specified files do not exist
+        Raised if not all datasets are present in all Parquet files or if
+        one or more of the specified files do not exist.
     RuntimeError
         Raised if one or more of the specified files cannot be opened.
-        If `allow_errors` is true this may be raised if no values are returned
-        from the server.
+        If ``allow_errors`` is ``True``, this may also be raised if no
+        values are returned from the server.
     TypeError
-        Raised if we receive an unknown arkouda_type returned from the server
+        Raised if an unknown Arkouda type is returned from the server.
 
     Notes
     -----
-    If filenames is a string, it is interpreted as a shell expression
-    (a single filename is a valid expression, so it will work) and is
-    expanded with glob to read all matching files.
+    If ``filenames`` is a string, it is interpreted as a shell expression.
+    A single filename is a valid expression, so it will also work. The
+    expression is expanded with ``glob`` to read all matching files.
 
-    If iterative == True each dataset name and file names are passed to
-    the server as independent sequential strings while if iterative == False
-    all dataset names and file names are passed to the server in a single
-    string.
+    If ``iterative=True``, each dataset name and filename is passed to the
+    server independently in sequence. If ``iterative=False``, all dataset
+    names and filenames are passed to the server in a single string.
 
-    If datasets is None, infer the names of datasets from the first file
-    and read all of them. Use ``get_datasets`` to show the names of datasets
-    to Parquet files.
+    If ``datasets`` is ``None``, dataset names are inferred from the first
+    file and all datasets are read. Use ``get_datasets`` to show the names
+    of datasets in Parquet files.
 
-    Parquet always recomputes offsets at this time
-    This will need to be updated once parquets workflow is updated
+    Parquet currently always recomputes offsets. This note should be
+    updated when the Parquet workflow changes.
 
     See Also
     --------
@@ -948,14 +1001,13 @@ def read_parquet(
     --------
     >>> import arkouda as ak
 
-    Read without file Extension
-    load Parquet
-    >>> x = ak.read_parquet('path/name_prefix.parquet')  # doctest: +SKIP
+    Read a Parquet file:
 
-    Read Glob Expression
-    Reads Parquet
-    >>> x = ak.read_parquet('path/name_prefix*')  # doctest: +SKIP
+    >>> x = ak.read_parquet("path/name_prefix.parquet")  # doctest: +SKIP
 
+    Read files matching a glob expression:
+
+    >>> x = ak.read_parquet("path/name_prefix*")  # doctest: +SKIP
     """
     from arkouda.core.client import generic_msg
 
@@ -1385,52 +1437,60 @@ def to_parquet(
     convert_categoricals: bool = False,
 ) -> None:
     """
-    Save multiple named pdarrays to Parquet files.
+    Save multiple named arrays to Parquet files.
 
     Parameters
     ----------
-    columns : dict or list of pdarrays
-        Collection of arrays to save
+    columns : Union[Mapping[str, Union[pdarray, Strings, SegArray]],
+                    List[Union[pdarray, Strings, SegArray]]]
+        Collection of arrays to save.
     prefix_path : str
-        Directory and filename prefix for output files
-    names : list of str
-        Dataset names for the pdarrays
-    mode : {"truncate", "append"}
-        By default, truncate (overwrite) the output files if they exist.
-        If 'append', attempt to create new dataset in existing files.
-        'append' is deprecated, please use the multi-column write.
-    compression : str
-            Default None.
-            Provide the compression type to use when writing the file.
-            Supported values: snappy, gzip, brotli, zstd, lz4
-        convert_categoricals: bool
-            Defaults to False
-            Parquet requires all columns to be the same size and Categoricals
-            don't satisfy that requirement.
-            if set, write the equivalent Strings in place of any Categorical columns.
+        Directory and filename prefix for the output files.
+    names : Optional[List[str]], default=None
+        Dataset names for the arrays when ``columns`` is provided as a list.
+    mode : Literal["truncate", "append"], default="truncate"
+        If ``"truncate"``, overwrite any existing output files. If
+        ``"append"``, attempt to create a new dataset in existing files.
+
+        ``"append"`` is deprecated. Use the multi-column write instead.
+    compression : Optional[str], default=None
+        Compression type to use when writing the file. Supported values
+        include ``"snappy"``, ``"gzip"``, ``"brotli"``, ``"zstd"``,
+        and ``"lz4"``.
+    convert_categoricals : bool, default=False
+        Parquet requires all columns to have the same size, and
+        ``Categorical`` objects do not satisfy that requirement. If set
+        to ``True``, write the equivalent ``Strings`` in place of any
+        ``Categorical`` columns.
 
     Raises
     ------
     ValueError
-        Raised if (1) the lengths of columns and values differ or (2) the mode
-        is not 'truncate' or 'append'
+        Raised if the lengths of ``columns`` and ``names`` differ, or if
+        ``mode`` is not ``"truncate"`` or ``"append"``.
     RuntimeError
-            Raised if a server-side error is thrown saving the pdarray
+        Raised if a server-side error occurs while saving the arrays.
 
     See Also
     --------
-    to_hdf, load, load_all, read
+    to_hdf
+    load
+    load_all
+    read
 
     Notes
     -----
-    Creates one file per locale containing that locale's chunk of each pdarray.
-    If columns is a dictionary, the keys are used as the Parquet column names.
-    Otherwise, if no names are supplied, 0-up integers are used. By default,
-    any existing files at path_prefix will be deleted
-    (regardless of whether they would be overwritten), unless the user
-    specifies the 'append' mode, in which case arkouda will attempt to add
-    <columns> as new datasets to existing files. If the wrong number of files
-    is present or dataset names already exist, a RuntimeError is raised.
+    Creates one file per locale containing that locale's chunk of each array.
+
+    If ``columns`` is a dictionary, its keys are used as the Parquet
+    column names. Otherwise, if no ``names`` are supplied, integer names
+    starting at ``0`` are used.
+
+    By default, any existing files at ``prefix_path`` are deleted
+    regardless of whether they would be overwritten. If ``mode="append"``,
+    Arkouda attempts to add ``columns`` as new datasets to existing files.
+    If the wrong number of files is present or dataset names already
+    exist, a ``RuntimeError`` is raised.
 
     Examples
     --------
@@ -1438,12 +1498,13 @@ def to_parquet(
     >>> a = ak.arange(25)
     >>> b = ak.arange(25)
 
-    Save with mapping defining dataset names
-    >>> ak.to_parquet({'a': a, 'b': b}, 'path/name_prefix') # doctest: +SKIP
+    Save with a mapping defining dataset names:
 
-    Save using names instead of mapping
-    >>> ak.to_parquet([a, b], 'path/name_prefix', names=['a', 'b']) # doctest: +SKIP
+    >>> ak.to_parquet({"a": a, "b": b}, "path/name_prefix")  # doctest: +SKIP
 
+    Save using ``names`` instead of a mapping:
+
+    >>> ak.to_parquet([a, b], "path/name_prefix", names=["a", "b"])  # doctest: +SKIP
     """
     from arkouda.core.client import generic_msg
 
@@ -1538,9 +1599,11 @@ def to_hdf(
     >>> b = ak.arange(25)
 
     Save with mapping defining dataset names
+
     >>> ak.to_hdf({'a': a, 'b': b}, 'path/name_prefix') # doctest: +SKIP
 
     Save using names instead of mapping
+
     >>> ak.to_hdf([a, b], 'path/name_prefix', names=['a', 'b']) # doctest: +SKIP
 
     """
@@ -1819,72 +1882,81 @@ def load(
     ],
 ]:
     """
-    Load a pdarray previously saved with ``pdarray.save()``.
+    Load objects previously saved with ``pdarray.save()``.
 
     Parameters
     ----------
     path_prefix : str
-        Filename prefix used to save the original pdarray
-    file_format : str
-        'INFER', 'HDF5' or 'Parquet'. Defaults to 'INFER'. Used to indicate the file type being loaded.
-        If INFER, this will be detected during processing
-    dataset : str
-        Dataset name where the pdarray was saved, defaults to 'array'
-    calc_string_offsets : bool
-        If True the server will ignore Segmented Strings 'offsets' array and derive
-        it from the null-byte terminators.  Defaults to False currently
-    column_delim : str
-        Column delimiter to be used if dataset is CSV. Otherwise, unused.
+        Filename prefix used when saving the original object.
+    file_format : str, default="INFER"
+        File format to load. One of ``"INFER"``, ``"HDF5"``, or ``"Parquet"``.
+        If ``"INFER"``, the format will be detected automatically.
+    dataset : str, default="array"
+        Dataset name where the object was saved.
+    calc_string_offsets : bool, default=False
+        If ``True``, the server ignores the segmented ``Strings`` ``offsets``
+        array and derives offsets from null-byte terminators.
+    column_delim : str, default=","
+        Column delimiter used if the dataset is CSV. Otherwise unused.
 
     Returns
     -------
-    Mapping[str, Union[pdarray, Strings, SegArray, Categorical]]
-        Dictionary of {datsetName: Union[pdarray, Strings, SegArray, Categorical]}
-        with the previously saved pdarrays, Strings, SegArrays, or Categoricals
+    Mapping[str, Union[pdarray, Strings, SegArray, Categorical,
+        DataFrame, IPv4, Datetime, Timedelta, Index]]
+        Dictionary mapping ``datasetName`` to the loaded object. The values may
+        be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,
+        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.
 
     Raises
     ------
     TypeError
-        Raised if either path_prefix or dataset is not a str
+        Raised if either ``path_prefix`` or ``dataset`` is not a ``str``.
     ValueError
-        Raised if invalid file_format or if the dataset is not present in all hdf5 files or if the
-        path_prefix does not correspond to files accessible to Arkouda
+        Raised if an invalid ``file_format`` is given, if the dataset is not
+        present in all HDF5 files, or if ``path_prefix`` does not correspond
+        to files accessible to Arkouda.
     RuntimeError
-        Raised if the hdf5 files are present but there is an error in opening
-        one or more of them
+        Raised if the HDF5 files are present but an error occurs while opening
+        one or more of them.
 
     See Also
     --------
-    to_parquet, to_hdf, load_all, read
+    to_parquet
+    to_hdf
+    load_all
+    read
 
     Notes
     -----
-    If you have a previously saved Parquet file that is raising a FileNotFound error, try loading it
-    with a .parquet appended to the prefix_path.
-    Parquet files were previously ALWAYS stored with a ``.parquet`` extension.
+    If a previously saved Parquet file raises a ``FileNotFoundError``, try
+    loading it with ``.parquet`` appended to ``path_prefix``. Older versions
+    of Arkouda always stored Parquet files with a ``.parquet`` extension.
 
-    ak.load does not support loading a single file.
-    For loading single HDF5 files without the _LOCALE#### suffix please use ak.read().
+    ``ak.load`` does not support loading a single file. To load a single HDF5
+    file without the ``_LOCALE####`` suffix, use ``ak.read()``.
 
-    CSV files without the Arkouda Header are not supported.
+    CSV files without the Arkouda header are not supported.
 
     Examples
     --------
     >>> import arkouda as ak
 
-    Loading from file without extension
-    >>> obj = ak.load('path/prefix') # doctest: +SKIP
+    Loading from file without extension:
 
-    Loads the array from numLocales files with the name ``cwd/path/name_prefix_LOCALE####``.
-    The file type is inferred during processing.
+    >>> obj = ak.load("path/prefix")  # doctest: +SKIP
 
-    Loading with an extension (HDF5)
-    >>> obj = ak.load('path/prefix.test') # doctest: +SKIP
+    This loads the array from ``numLocales`` files with the name
+    ``cwd/path/name_prefix_LOCALE####``. The file type is inferred
+    automatically.
 
-    Loads the object from numLocales files with the name ``cwd/path/name_prefix_LOCALE####.test`` where
-    #### is replaced by each locale numbers. Because filetype is inferred during processing,
-    the extension is not required to be a specific format.
+    Loading with an extension (HDF5):
 
+    >>> obj = ak.load("path/prefix.test")  # doctest: +SKIP
+
+    This loads the object from ``numLocales`` files with the name
+    ``cwd/path/name_prefix_LOCALE####.test`` where ``####`` corresponds
+    to each locale number. Because the file type is inferred, the
+    extension does not need to correspond to a specific format.
     """
     if "*" in path_prefix:
         raise ValueError(
@@ -2014,7 +2086,7 @@ def read(
     iterative: bool = False,
     strictTypes: bool = True,
     allow_errors: bool = False,
-    calc_string_offsets=False,
+    calc_string_offsets: bool = False,
     column_delim: str = ",",
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
@@ -2038,93 +2110,101 @@ def read(
     """
     Read datasets from files.
 
-    File Type is determined automatically.
+    The file type is determined automatically.
 
     Parameters
     ----------
-    filenames : list or str
-        Either a list of filenames or shell expression
-    datasets : list or str or None
-        (List of) name(s) of dataset(s) to read (default: all available)
-    iterative : bool
-        Iterative (True) or Single (False) function call(s) to server
-    strictTypes: bool
-        If True (default), require all dtypes of a given dataset to have the
-        same precision and sign. If False, allow dtypes of different
+    filenames : Union[str, List[str]]
+        Either a list of filenames or a shell expression.
+    datasets : Optional[Union[str, List[str]]], default=None
+        Name or list of names of datasets to read. If ``None``, all
+        available datasets are read.
+    iterative : bool, default=False
+        If ``True``, make iterative function calls to the server. If
+        ``False``, make a single function call to the server.
+    strictTypes : bool, default=True
+        If ``True``, require all dtypes of a given dataset to have the
+        same precision and sign. If ``False``, allow dtypes of different
         precision and sign across different files. For example, if one
-        file contains a uint32 dataset and another contains an int64
-        dataset with the same name, the contents of both will be read
-        into an int64 pdarray.
-    allow_errors: bool
-        Default False, if True will allow files with read errors to be skipped
-        instead of failing.  A warning will be included in the return containing
-        the total number of files skipped due to failure and up to 10 filenames.
-    calc_string_offsets: bool
-        Default False, if True this will tell the server to calculate the
-        offsets/segments array on the server versus loading them from HDF5 files.
-        In the future this option may be set to True as the default.
-    column_delim : str
-        Column delimiter to be used if dataset is CSV. Otherwise, unused.
-    read_nested: bool
-        Default True, when True, SegArray objects will be read from the file. When False,
-        SegArray (or other nested Parquet columns) will be ignored.
-        Ignored if datasets is not None
-        Parquet Files only.
-    has_non_float_nulls: bool
-        Default False. This flag must be set to True to read non-float parquet columns
-        that contain null values.
-    fixed_len: int
-        Default -1. This value can be set for reading Parquet string columns when the
-        length of each string is known at runtime. This can allow for skipping byte
-        calculation, which can have an impact on performance.
+        file contains a ``uint32`` dataset and another contains an
+        ``int64`` dataset with the same name, the contents of both will
+        be read into an ``int64`` ``pdarray``.
+    allow_errors : bool, default=False
+        If ``True``, files with read errors may be skipped instead of
+        causing the operation to fail. A warning will be included in the
+        return containing the total number of files skipped due to failure
+        and up to 10 filenames.
+    calc_string_offsets : bool, default=False
+        If ``True``, instruct the server to calculate the offsets or
+        segments array instead of loading it from HDF5 files.
+    column_delim : str, default=","
+        Column delimiter to use if the dataset is CSV. Otherwise unused.
+    read_nested : bool, default=True
+        If ``True``, ``SegArray`` objects are read from the file. If
+        ``False``, ``SegArray`` objects and other nested Parquet columns
+        are ignored. Ignored if ``datasets`` is not ``None``. Parquet
+        only.
+    has_non_float_nulls : bool, default=False
+        Must be set to ``True`` to read non-float Parquet columns that
+        contain null values.
+    fixed_len : int, default=-1
+        Fixed string length to use when reading Parquet string columns
+        if the length of each string is known at runtime. This can avoid
+        byte calculation and may improve performance.
 
     Returns
     -------
-    Returns a dictionary of Arkouda pdarrays, Arkouda Strings, or Arkouda Segarrays.
-        Dictionary of {datasetName: pdarray, String, or SegArray}
+    Mapping[str, Union[pdarray, Strings, SegArray, Categorical,
+        DataFrame, IPv4, Datetime, Timedelta, Index]]
+        Dictionary mapping ``datasetName`` to the loaded object. The values may
+        be ``pdarray``, ``Strings``, ``SegArray``, ``Categorical``,
+        ``DataFrame``, ``IPv4``, ``Datetime``, ``Timedelta``, or ``Index``.
 
     Raises
     ------
     RuntimeError
-        If invalid filetype is detected
+        Raised if an invalid file type is detected.
 
     See Also
     --------
-    get_datasets, ls, read_parquet, read_hdf
+    get_datasets
+    ls
+    read_parquet
+    read_hdf
 
     Notes
     -----
-    If filenames is a string, it is interpreted as a shell expression
-    (a single filename is a valid expression, so it will work) and is
-    expanded with glob to read all matching files.
+    If ``filenames`` is a string, it is interpreted as a shell expression.
+    A single filename is a valid expression, so it will also work. The
+    expression is expanded with ``glob`` to read all matching files.
 
-    If iterative == True each dataset name and file names are passed to
-    the server as independent sequential strings while if iterative == False
-    all dataset names and file names are passed to the server in a single
-    string.
+    If ``iterative=True``, each dataset name and filename is passed to the
+    server independently in sequence. If ``iterative=False``, all dataset
+    names and filenames are passed to the server in a single string.
 
-    If datasets is None, infer the names of datasets from the first file
-    and read all of them. Use ``get_datasets`` to show the names of datasets
-    to HDF5/Parquet files.
+    If ``datasets`` is ``None``, dataset names are inferred from the first
+    file and all datasets are read. Use ``get_datasets`` to show the names
+    of datasets in HDF5 or Parquet files.
 
-    CSV files without the Arkouda Header are not supported.
+    CSV files without the Arkouda header are not supported.
 
     Examples
     --------
     >>> import arkouda as ak
 
-    Read with file Extension
-    load HDF5 - processing determines file type not extension
-    >>> x = ak.read('path/name_prefix.h5')  # doctest: +SKIP
+    Read a file with an extension:
 
-    Read without file Extension
-    load Parquet
-    >>> x = ak.read('path/name_prefix.parquet') # doctest: +SKIP
+    >>> x = ak.read("path/name_prefix.h5")  # doctest: +SKIP
 
-    Read Glob Expression
-    Reads HDF5
-    >>> x = ak.read('path/name_prefix*') # doctest: +SKIP
+    The file type is determined from file contents, not the extension.
 
+    Read a Parquet file:
+
+    >>> x = ak.read("path/name_prefix.parquet")  # doctest: +SKIP
+
+    Read files matching a glob expression:
+
+    >>> x = ak.read("path/name_prefix*")  # doctest: +SKIP
     """
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -2280,59 +2360,64 @@ def read_tagged_data(
     datasets: Optional[Union[str, List[str]]] = None,
     strictTypes: bool = True,
     allow_errors: bool = False,
-    calc_string_offsets=False,
+    calc_string_offsets: bool = False,
     read_nested: bool = True,
     has_non_float_nulls: bool = False,
 ):
     """
-    Read datasets from files and tag each record to the file it was read from.
+    Read datasets from files and tag each record with the file it was read from.
 
-    File Type is determined automatically.
+    The file type is determined automatically.
 
     Parameters
     ----------
-    filenames : list or str
-        Either a list of filenames or shell expression
-    datasets : list or str or None
-        (List of) name(s) of dataset(s) to read (default: all available)
-    strictTypes: bool
-        If True (default), require all dtypes of a given dataset to have the
-        same precision and sign. If False, allow dtypes of different
+    filenames : Union[str, List[str]]
+        Either a list of filenames or a shell expression.
+    datasets : Optional[Union[str, List[str]]], default=None
+        Dataset name or list of dataset names to read. If ``None``, all
+        available datasets are read.
+    strictTypes : bool, default=True
+        If ``True``, require all dtypes of a given dataset to have the
+        same precision and sign. If ``False``, allow dtypes of different
         precision and sign across different files. For example, if one
-        file contains a uint32 dataset and another contains an int64
-        dataset with the same name, the contents of both will be read
-        into an int64 pdarray.
-    allow_errors: bool
-        Default False, if True will allow files with read errors to be skipped
-        instead of failing.  A warning will be included in the return containing
-        the total number of files skipped due to failure and up to 10 filenames.
-    calc_string_offsets: bool
-        Default False, if True this will tell the server to calculate the
-        offsets/segments array on the server versus loading them from HDF5 files.
-        In the future this option may be set to True as the default.
-    read_nested: bool
-        Default True, when True, SegArray objects will be read from the file. When False,
-        SegArray (or other nested Parquet columns) will be ignored.
-        Ignored if datasets is not `None`
-        Parquet Files only.
-    has_non_float_nulls: bool
-        Default False. This flag must be set to True to read non-float parquet columns
-        that contain null values.
+        file contains a ``uint32`` dataset and another contains an
+        ``int64`` dataset with the same name, the contents of both will
+        be read into an ``int64`` ``pdarray``.
+    allow_errors : bool, default=False
+        If ``True``, files with read errors may be skipped instead of
+        causing the operation to fail. A warning will be included in the
+        return containing the total number of files skipped due to failure
+        and up to 10 filenames.
+    calc_string_offsets : bool, default=False
+        If ``True``, instruct the server to calculate the offsets or
+        segments array instead of loading it from HDF5 files. In the
+        future, this option may become the default.
+    read_nested : bool, default=True
+        If ``True``, ``SegArray`` objects are read from the file. If
+        ``False``, ``SegArray`` objects and other nested Parquet columns
+        are ignored. Ignored if ``datasets`` is not ``None``. Parquet only.
+    has_non_float_nulls : bool, default=False
+        Must be set to ``True`` to read non-float Parquet columns that
+        contain null values.
 
     Notes
     -----
-    Not currently supported for Categorical or GroupBy datasets
+    This function is not currently supported for ``Categorical`` or
+    ``GroupBy`` datasets.
 
     Examples
     --------
     >>> import arkouda as ak
 
-    Read files and return data with tagging corresponding to the Categorical returned
-    cat.codes will link the codes in data to the filename. Data will contain the code `Filename_Codes`
-    >>> data, cat = ak.read_tagged_data('path/name') # doctest: +SKIP
-    >>> data # doctest: +SKIP
-    {'Filname_Codes': array([0 3 6 9 12]), 'col_name': array([0 0 0 1])}
+    Read files and return the data along with tagging information:
 
+    >>> data, cat = ak.read_tagged_data("path/name")  # doctest: +SKIP
+
+    The codes in ``cat`` map each record in ``data`` to the file it came
+    from. The returned data includes a ``"Filename_Codes"`` array.
+
+    >>> data  # doctest: +SKIP
+    {"Filename_Codes": array([0 3 6 9 12]), "col_name": array([0 0 0 1])}
     """
     from arkouda.core.client import generic_msg
 
