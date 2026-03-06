@@ -1,18 +1,18 @@
 """
 Plotting utilities for Arkouda data structures.
 
-The `arkouda.plotting` module provides lightweight, matplotlib-based visualization
-functions for Arkouda arrays and DataFrames. These tools are intended for exploratory
-data analysis, especially for understanding distributions and skew across numeric or
-categorical data columns.
+The ``arkouda.plotting`` module provides lightweight, matplotlib-based
+visualization functions for Arkouda arrays and DataFrames. These tools are
+intended for exploratory data analysis, especially for understanding
+distributions and skew across numeric or categorical data columns.
 
 Functions
 ---------
-plot_dist(b, h, log=True, xlabel=None, newfig=True)
+plot_dist
     Plot the histogram and cumulative distribution for binned data.
-    Useful for visualizing data generated from `ak.histogram`.
+    Useful for visualizing data generated from ``ak.histogram``.
 
-hist_all(ak_df: DataFrame, cols: list = [])
+hist_all
     Generate histograms for all numeric columns in an Arkouda DataFrame
     (or a specified subset of columns). Automatically computes the number
     of bins using Doane’s formula and handles missing values, datetime,
@@ -20,12 +20,13 @@ hist_all(ak_df: DataFrame, cols: list = [])
 
 Notes
 -----
-- These functions require `matplotlib.pyplot` and are meant for interactive
-  Python sessions or Jupyter notebooks.
-- `plot_dist` does not call `plt.show()` automatically; you must call it manually
-  to display the plot.
-- `hist_all` handles categorical grouping via Arkouda's `GroupBy` and supports
-  `Datetime` and `Timedelta` plotting by converting to numeric types.
+- These functions require ``matplotlib.pyplot`` and are meant for
+  interactive Python sessions or Jupyter notebooks.
+- ``plot_dist`` does not call ``plt.show()`` automatically; you must call it
+  manually to display the plot.
+- ``hist_all`` handles categorical grouping via Arkouda's ``GroupBy`` and
+  supports ``Datetime`` and ``Timedelta`` plotting by converting them to
+  numeric types.
 
 Examples
 --------
@@ -34,22 +35,22 @@ Examples
 >>> from arkouda.plotting import hist_all, plot_dist
 >>> df = ak.DataFrame({'x': ak.array(np.random.randn(100))})
 
-Save the figure to disk:
 >>> fig, axes = hist_all(df)
 >>> fig.savefig("hist_all.png")
+
 >>> b, h = ak.histogram(ak.arange(10), 3)
 >>> plot_dist(b.to_ndarray(), h[:-1].to_ndarray())
 (<Figure size 1200x500 with 2 Axes>, array([<Axes: title={'center': 'distribution'}>,
        <Axes: title={'center': 'cumulative distribution'}>], dtype=object))
+
 >>> import matplotlib.pyplot as plt
 >>> plt.show()
 
 See Also
 --------
-- matplotlib.pyplot
-- arkouda.DataFrame
-- arkouda.histogram
-
+matplotlib.pyplot
+arkouda.DataFrame
+arkouda.histogram
 """
 
 from __future__ import annotations
@@ -112,7 +113,8 @@ def plot_dist(
     Returns
     -------
     tuple[matplotlib.figure.Figure, numpy.ndarray]
-        (fig, axes) where axes[0] is the distribution, axes[1] the cumulative.
+        ``(fig, axes)`` where ``axes[0]`` is the distribution plot and
+        ``axes[1]`` is the cumulative distribution plot.
 
     Notes
     -----
@@ -122,6 +124,7 @@ def plot_dist(
     Examples
     --------
     Using Arkouda's histogram:
+
     >>> import arkouda as ak
     >>> import numpy as np
     >>> from matplotlib import pyplot as plt
@@ -131,11 +134,11 @@ def plot_dist(
     >>> fig.savefig("dist.png")
 
     Using NumPy's histogram:
+
     >>> data = np.random.randn(1000)
     >>> counts, edges = np.histogram(data, bins=20)
     >>> fig, axes = plot_dist(edges, counts, xlabel="Value")
     >>> plt.show()
-
     """
 
     def to_ndarray(arr: pdarray | NDArray[np.floating]) -> NDArray[np.floating]:
@@ -214,23 +217,25 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
     ak_df : DataFrame
         An Arkouda DataFrame containing the data to visualize.
     cols : list, optional
-        A list of column names to plot. If empty or not provided, all
-        columns in the DataFrame are considered.
+        A list of column names to plot. If empty or not provided, all columns
+        in the DataFrame are considered.
 
     Returns
     -------
     tuple[matplotlib.figure.Figure, numpy.ndarray]
-        A tuple containing the matplotlib Figure and an array of Axes objects.
+        ``(fig, axes)`` where ``fig`` is the matplotlib Figure and ``axes`` is
+        an array of Axes objects.
 
     Notes
     -----
-    This function uses matplotlib to display a grid of histograms. It attempts to
-    select a suitable number of bins using Doane's formula. Columns with
-    non-numeric types will be grouped and encoded before plotting.
+    This function uses ``matplotlib`` to display a grid of histograms. It
+    attempts to select a suitable number of bins using Doane's formula.
+    Columns with non-numeric types are grouped and encoded before plotting.
 
     Examples
     --------
     Basic usage with all columns:
+
     >>> import arkouda as ak
     >>> import numpy as np
     >>> from arkouda.plotting import hist_all
@@ -238,14 +243,14 @@ def hist_all(ak_df: DataFrame, cols: Optional[list[str]] = None):
     ...     "a": ak.array(np.random.randn(100)),
     ...     "b": ak.array(np.random.randn(100)),
     ...     "c": ak.array(np.random.randn(100)),
-    ...     "d": ak.array(np.random.randn(100))
+    ...     "d": ak.array(np.random.randn(100)),
     ... })
     >>> fig, axes = hist_all(ak_df)
 
     Save the figure to disk:
+
     >>> fig, axes = hist_all(ak_df, cols=["a", "b"])
     >>> fig.savefig("hist_all.png")
-
     """
     if not cols or len(cols) == 0:
         cols = ak_df.columns
