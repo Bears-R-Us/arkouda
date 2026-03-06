@@ -25,7 +25,7 @@ pd_assert_series_equal = getattr(_pd.testing, "assert_series_equal")
 
 
 class TestAccessor:
-    def test_alignment_docstrings(self):
+    def test_accessor_docstrings(self):
         import doctest
 
         from arkouda.pandas import accessor
