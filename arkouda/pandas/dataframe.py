@@ -466,43 +466,39 @@ class DataFrameGroupBy:
         """
         Return a random sample from each group.
 
-        You can either specify the number of elements
-        or the fraction of elements to be sampled. random_state can be used for reproducibility
+        You can specify either the number of elements to sample or the fraction
+        of elements to sample. ``random_state`` can be used for reproducibility.
 
         Parameters
         ----------
-        n: int, optional
-            Number of items to return for each group.
-            Cannot be used with frac and must be no larger than
-            the smallest group unless replace is True.
-            Default is one if frac is None.
-
-        frac: float, optional
-            Fraction of items to return. Cannot be used with n.
-
-        replace: bool, default False
-            Allow or disallow sampling of the same row more than once.
-
-        weights: pdarray, optional
-            Default None results in equal probability weighting.
-            If passed a pdarray, then values must have the same length as the underlying DataFrame
-            and will be used as sampling probabilities after normalization within each group.
-            Weights must be non-negative with at least one positive element within each group.
-
-        random_state: int or ak.random.Generator, optional
-            If int, seed for random number generator.
-            If ak.random.Generator, use as given.
+        n : int, optional
+            Number of items to return for each group. Cannot be used with
+            ``frac`` and must be no larger than the smallest group unless
+            ``replace`` is ``True``. Defaults to ``1`` if ``frac`` is ``None``.
+        frac : float, optional
+            Fraction of items to return. Cannot be used with ``n``.
+        replace : bool, default=False
+            Whether to allow sampling of the same row more than once.
+        weights : pdarray, optional
+            If ``None``, all rows are given equal probability. If a ``pdarray`` is
+            provided, it must have the same length as the underlying ``DataFrame``
+            and will be used as sampling probabilities after normalization within
+            each group. Weights must be non-negative, with at least one positive
+            element in each group.
+        random_state : int or ak.random.Generator, optional
+            If an ``int``, it is used as the seed for the random number generator.
+            If an ``ak.random.Generator``, it is used directly.
 
         Returns
         -------
         DataFrame
-            A new DataFrame containing items randomly sampled from each group
+            A new ``DataFrame`` containing items randomly sampled from each group,
             sorted according to the grouped columns.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({"A":[3,1,2,1,2,3],"B":[3,4,5,6,7,8]})
+        >>> df = ak.DataFrame({"A": [3, 1, 2, 1, 2, 3], "B": [3, 4, 5, 6, 7, 8]})
         >>> df
            A  B
         0  3  3
@@ -512,19 +508,33 @@ class DataFrameGroupBy:
         4  2  7
         5  3  8 (6 rows x 2 columns)
 
+        Sample one row per group:
+
         >>> df.groupby("A").sample(random_state=6)
            A  B
         3  1  6
         4  2  7
         5  3  8 (3 rows x 2 columns)
 
-        >>> df.groupby("A").sample(frac=0.5, random_state=3, weights=ak.array([1,1,1,0,0,0]))
+        Sample a fraction of each group with weights:
+
+        >>> df.groupby("A").sample(
+        ...     frac=0.5,
+        ...     random_state=3,
+        ...     weights=ak.array([1, 1, 1, 0, 0, 0]),
+        ... )
            A  B
         1  1  4
         2  2  5
         0  3  3 (3 rows x 2 columns)
 
-        >>> df.groupby("A").sample(n=3, replace=True, random_state=ak.random.default_rng(7))
+        Sample with replacement:
+
+        >>> df.groupby("A").sample(
+        ...     n=3,
+        ...     replace=True,
+        ...     random_state=ak.random.default_rng(7),
+        ... )
            A  B
         1  1  4
         3  1  6
@@ -535,7 +545,6 @@ class DataFrameGroupBy:
         0  3  3
         5  3  8
         5  3  8 (9 rows x 2 columns)
-
         """
         return self.df[
             self.gb.sample(
@@ -825,50 +834,49 @@ DataFrame structure based on Arkouda arrays.
 
 class DataFrame(UserDict):
     """
-    A DataFrame structure based on arkouda arrays.
+    A DataFrame structure based on Arkouda arrays.
 
     Parameters
     ----------
-    initialdata : List or dictionary of lists, tuples, or pdarrays
-        Each list/dictionary entry corresponds to one column of the data and
-        should be a homogenous type. Different columns may have different
+    initialdata : list or dict of lists, tuples, or pdarrays
+        Each list or dictionary entry corresponds to one column of data and
+        should be a homogeneous type. Different columns may have different
         types. If using a dictionary, keys should be strings.
-
     index : Index, pdarray, or Strings
         Index for the resulting frame. Defaults to an integer range.
-
-    columns : List, tuple, pdarray, or Strings
+    columns : list, tuple, pdarray, or Strings
         Column labels to use if the data does not include them. Elements must
-        be strings. Defaults to an stringified integer range.
+        be strings. Defaults to a stringified integer range.
 
     Examples
     --------
-    >>> import arkouda as ak
+    Create an empty ``DataFrame`` and add a column of data:
 
-    Create an empty DataFrame and add a column of data:
     >>> import arkouda as ak
     >>> df = ak.DataFrame()
-    >>> df['a'] = ak.array([1,2,3])
+    >>> df["a"] = ak.array([1, 2, 3])
     >>> df
        a
     0  1
     1  2
     2  3 (3 rows x 1 columns)
 
-    Create a new DataFrame using a dictionary of data:
+    Create a new ``DataFrame`` using a dictionary of data:
 
-    >>> userName = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
+    >>> userName = ak.array(["Alice", "Bob", "Alice", "Carol", "Bob", "Alice"])
     >>> userID = ak.array([111, 222, 111, 333, 222, 111])
     >>> item = ak.array([0, 0, 1, 1, 2, 0])
     >>> day = ak.array([5, 5, 6, 5, 6, 6])
     >>> amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-    >>> df = ak.DataFrame({
-    ...     'userName': userName,
-    ...     'userID': userID,
-    ...     'item': item,
-    ...     'day': day,
-    ...     'amount': amount
-    ... })
+    >>> df = ak.DataFrame(
+    ...     {
+    ...         "userName": userName,
+    ...         "userID": userID,
+    ...         "item": item,
+    ...         "day": day,
+    ...         "amount": amount,
+    ...     }
+    ... )
     >>> df
       userName  userID  item  day  amount
     0    Alice     111     0    5     0.5
@@ -879,22 +887,25 @@ class DataFrame(UserDict):
     5    Alice     111     0    6     0.6 (6 rows x 5 columns)
 
     Indexing works slightly differently than with pandas:
+
     >>> df[0]
     {'userName': np.str_('Alice'), 'userID': np.int64(111), 'item': np.int64(0),
     'day': np.int64(5), 'amount': np.float64(0.5)}
-    >>> df['userID']
+    >>> df["userID"]
     array([111 222 111 333 222 111])
-
-    >>> df['userName']
+    >>> df["userName"]
     array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
 
-    >>> df[ak.array([1,3,5])]
+    Select rows by integer array:
+
+    >>> df[ak.array([1, 3, 5])]
       userName  userID  item  day  amount
     1      Bob     222     0    5     0.6
     3    Carol     333     1    5     1.2
     5    Alice     111     0    6     0.6 (3 rows x 5 columns)
 
-    Compute the stride:
+    Slice rows:
+
     >>> df[1:5:1]
       userName  userID  item  day  amount
     1      Bob     222     0    5     0.6
@@ -902,13 +913,15 @@ class DataFrame(UserDict):
     3    Carol     333     1    5     1.2
     4      Bob     222     2    6     4.3 (4 rows x 5 columns)
 
-    >>> df[ak.array([1,2,3])]
+    >>> df[ak.array([1, 2, 3])]
       userName  userID  item  day  amount
     1      Bob     222     0    5     0.6
     2    Alice     111     1    6     1.1
     3    Carol     333     1    5     1.2 (3 rows x 5 columns)
 
-    >>> df[['userID', 'day']]
+    Select columns by name:
+
+    >>> df[["userID", "day"]]
        userID  day
     0     111    5
     1     222    5
@@ -916,7 +929,6 @@ class DataFrame(UserDict):
     3     333    5
     4     222    6
     5     111    6 (6 rows x 2 columns)
-
     """
 
     objType = "DataFrame"
@@ -1609,44 +1621,47 @@ class DataFrame(UserDict):
         inplace: bool = False,
     ) -> Union[None, DataFrame]:
         """
-        Drop column/s or row/s from the dataframe.
+        Drop rows or columns from the DataFrame.
 
         Parameters
         ----------
-        keys : str, int or list
-            The labels to be dropped on the given axis.
-        axis : int or str
-            The axis on which to drop from. 0/'index' - drop rows, 1/'columns' - drop columns.
-        inplace: bool, default=False
-            When True, perform the operation on the calling object.
-            When False, return a new object.
+        keys : Union[str, int, List[Union[str, int]]]
+            Label or list of labels to drop along the specified axis.
+        axis : Union[str, int], default=0
+            Axis along which to drop.
+
+            - ``0`` or ``"index"`` — drop rows
+            - ``1`` or ``"columns"`` — drop columns
+        inplace : bool, default=False
+            If ``True``, perform the operation on the calling object.
+            If ``False``, return a new object.
 
         Returns
         -------
-        DataFrame or None
-            DateFrame when `inplace=False`;
-            None when `inplace=True`
+        Union[None, DataFrame]
+            ``DataFrame`` when ``inplace=False``; otherwise ``None``.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({'col1': [1, 2], 'col2': [3, 4]})
+        >>> df = ak.DataFrame({"col1": [1, 2], "col2": [3, 4]})
         >>> df
            col1  col2
         0     1     3
         1     2     4 (2 rows x 2 columns)
 
-        Drop column
-        >>> df.drop('col1', axis = 1)
+        Drop a column:
+
+        >>> df.drop("col1", axis=1)
            col2
         0     3
         1     4 (2 rows x 1 columns)
 
-        Drop row
-        >>> df.drop(0, axis = 0)
+        Drop a row:
+
+        >>> df.drop(0, axis=0)
            col1  col2
         1     2     4 (1 rows x 2 columns)
-
         """
         if isinstance(keys, str) or isinstance(keys, int):
             keys = [keys]
@@ -2181,38 +2196,35 @@ class DataFrame(UserDict):
 
         Parameters
         ----------
-        mapper : callable or dict-like, Optional
+        mapper : Optional[Union[Callable, Dict]]
             Function or dictionary mapping existing values to new values.
-            Nonexistent names will not raise an error.
-            Uses the value of axis to determine if renaming column or index
-        index : callable or dict-like, Optional
-            Function or dictionary mapping existing index names to
-            new index names. Nonexistent names will not raise an
-            error.
-            When this is set, axis is ignored.
-        column : callable or dict-like, Optional
-            Function or dictionary mapping existing column names to
-            new column names. Nonexistent names will not raise an
-            error.
-            When this is set, axis is ignored.
-        axis: int or str, default=0
-            Indicates which axis to perform the rename.
-            0/"index" - Indexes
-            1/"column" - Columns
-        inplace: bool, default=False
-            When True, perform the operation on the calling object.
-            When False, return a new object.
+            Nonexistent names will not raise an error. The value of ``axis``
+            determines whether the mapping is applied to the index or columns.
+        index : Optional[Union[Callable, Dict]]
+            Function or dictionary mapping existing index names to new index names.
+            Nonexistent names will not raise an error. When this is set, ``axis``
+            is ignored.
+        column : Optional[Union[Callable, Dict]]
+            Function or dictionary mapping existing column names to new column
+            names. Nonexistent names will not raise an error. When this is set,
+            ``axis`` is ignored.
+        axis : Union[str, int], default=0
+            Axis to perform the rename operation on.
+
+            - ``0`` or ``"index"`` — rename index values
+            - ``1`` or ``"column"`` — rename column names
+        inplace : bool, default=False
+            If ``True``, perform the operation on the calling object.
+            If ``False``, return a new object.
 
         Returns
         -------
-        DataFrame or None
-            DateFrame when `inplace=False`;
-            None when `inplace=True`.
+        Optional[DataFrame]
+            ``DataFrame`` when ``inplace=False``; otherwise ``None``.
 
         Examples
         --------
         >>> import arkouda as ak
-
         >>> df = ak.DataFrame({"A": ak.array([1, 2, 3]), "B": ak.array([4, 5, 6])})
         >>> df
            A  B
@@ -2221,26 +2233,28 @@ class DataFrame(UserDict):
         2  3  6 (3 rows x 2 columns)
 
         Rename columns using a mapping:
-        >>> df.rename(column={'A':'a', 'B':'c'})
+
+        >>> df.rename(column={"A": "a", "B": "c"})
            a  c
         0  1  4
         1  2  5
         2  3  6 (3 rows x 2 columns)
 
         Rename indexes using a mapping:
-        >>> df.rename(index={0:99, 2:11})
+
+        >>> df.rename(index={0: 99, 2: 11})
             A  B
         99  1  4
         1   2  5
         11  3  6 (3 rows x 2 columns)
 
-        Rename using an axis style parameter:
-        >>> df.rename(str.lower, axis='column')
+        Rename using the axis-style parameter:
+
+        >>> df.rename(str.lower, axis="column")
            a  b
         0  1  4
         1  2  5
         2  3  6 (3 rows x 2 columns)
-
         """
         if column is not None and index is not None:
             raise RuntimeError("Only column or index can be renamed, cannot rename both at once")
@@ -2499,7 +2513,7 @@ class DataFrame(UserDict):
 
     def sample(self, n=5) -> DataFrame:
         """
-        Return a random sample of `n` rows.
+        Return a random sample of ``n`` rows.
 
         Parameters
         ----------
@@ -2509,10 +2523,10 @@ class DataFrame(UserDict):
         Returns
         -------
         DataFrame
-            The sampled `n` rows of the DataFrame.
+            A ``DataFrame`` containing ``n`` randomly sampled rows.
 
-        Example
-        -------
+        Examples
+        --------
         >>> import arkouda as ak
         >>> df = ak.DataFrame({"A": ak.arange(5), "B": -1 * ak.arange(5)})
         >>> df
@@ -2524,12 +2538,12 @@ class DataFrame(UserDict):
         4  4 -4 (5 rows x 2 columns)
 
         Random output of size 3:
+
         >>> df.sample(n=3)  # doctest: +SKIP
            A  B
         4  4 -4
         3  3 -3
         1  1 -1 (3 rows x 2 columns)
-
         """
         self.update_nrows()
         if self._nrows <= n:
@@ -2634,25 +2648,24 @@ class DataFrame(UserDict):
 
     def memory_usage(self, index=True, unit="B") -> Series:
         """
-        Return the memory usage of each column in bytes.
+        Return the memory usage of each column.
 
-        The memory usage can optionally include the contribution of
-        the index.
+        The memory usage can optionally include the contribution of the index.
 
         Parameters
         ----------
-        index : bool, default True
-            Specifies whether to include the memory usage of the DataFrame's
-            index in returned Series. If ``index=True``, the memory usage of
-            the index is the first item in the output.
-        unit : str, default = "B"
-            Unit to return. One of {'B', 'KB', 'MB', 'GB'}.
+        index : bool, default=True
+            Whether to include the memory usage of the DataFrame's index in the
+            returned ``Series``. If ``True``, the memory usage of the index appears
+            as the first item in the output.
+        unit : str, default="B"
+            Unit to return. One of ``{"B", "KB", "MB", "GB"}``.
 
         Returns
         -------
         Series
-            A Series whose index is the original column names and whose values
-            is the memory usage of each column in bytes.
+            A ``Series`` whose index contains the original column names and whose
+            values represent the memory usage of each column in the specified unit.
 
         See Also
         --------
@@ -2664,8 +2677,8 @@ class DataFrame(UserDict):
         Examples
         --------
         >>> import arkouda as ak
-        >>> dtypes = {"int64":ak.int64, "float64":ak.float64,  "bool":ak.bool_}
-        >>> data = dict([(t, ak.ones(5000, dtype=dtypes[t])) for t in dtypes.keys()])
+        >>> dtypes = {"int64": ak.int64, "float64": ak.float64, "bool": ak.bool_}
+        >>> data = {t: ak.ones(5000, dtype=dtypes[t]) for t in dtypes}
         >>> df = ak.DataFrame(data)
         >>> df.head()
            int64  float64  bool
@@ -2696,9 +2709,9 @@ class DataFrame(UserDict):
         dtype: float64
 
         To get the approximate total memory usage:
+
         >>> df.memory_usage(index=True).sum()
         np.int64(125000)
-
         """
         from arkouda.numpy.pdarraycreation import array
         from arkouda.numpy.util import convert_bytes
@@ -2852,30 +2865,31 @@ class DataFrame(UserDict):
 
     def to_markdown(self, mode="wt", index=True, tablefmt="grid", storage_options=None, **kwargs):
         r"""
-        Print DataFrame in Markdown-friendly format.
+        Print the DataFrame in a Markdown-friendly format.
 
         Parameters
         ----------
         mode : str, optional
-            Mode in which file is opened, "wt" by default.
-        index : bool, optional, default True
-            Add index (row) labels.
-        tablefmt: str = "grid"
-            Table format to call from tablulate:
-            https://pypi.org/project/tabulate/
-        storage_options: dict, optional
-            Extra options that make sense for a particular storage connection,
-            e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
-            e.g., starting “s3://”, “gcs://”.
-            An error will be raised if providing this argument with a non-fsspec URL.
-            See the fsspec and backend storage implementation docs for the set
-            of allowed keys and values.
+            Mode in which the file is opened, by default ``"wt"``.
+        index : bool, optional, default=True
+            Whether to include index (row) labels.
+        tablefmt : str, default="grid"
+            Table format passed to ``tabulate``.
+            See https://pypi.org/project/tabulate/ for available formats.
+        storage_options : dict, optional
+            Extra options for a particular storage connection (for example
+            host, port, username, password) when using a URL handled by
+            ``fsspec`` such as ``"s3://"``, ``"gcs://"``. An error will be
+            raised if this argument is provided with a non-fsspec URL.
+            See the fsspec and backend storage implementation documentation
+            for the set of allowed keys and values.
         **kwargs
-            These parameters will be passed to tabulate.
+            Additional keyword arguments passed to ``tabulate``.
 
-        Note
-        ----
-        This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:
+        Notes
+        -----
+        This function should only be used with small DataFrames because it
+        calls ``pandas.DataFrame.to_markdown`` internally:
         https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html
 
         Examples
@@ -2892,7 +2906,8 @@ class DataFrame(UserDict):
         +----+------------+------------+
 
         Suppress the index:
-        >>> print(df.to_markdown(index = False))
+
+        >>> print(df.to_markdown(index=False))
         +------------+------------+
         | animal_1   | animal_2   |
         +============+============+
@@ -2900,7 +2915,6 @@ class DataFrame(UserDict):
         +------------+------------+
         | pig        | quetzal    |
         +------------+------------+
-
         """
         return self.to_pandas().to_markdown(
             mode=mode,
@@ -3352,32 +3366,36 @@ class DataFrame(UserDict):
     @classmethod
     def load(cls, prefix_path, file_format="INFER"):
         """
-        Load dataframe from file.
+        Load a DataFrame from a file.
 
-        file_format needed for consistency with other load functions.
+        The ``file_format`` parameter is included for consistency with other
+        Arkouda ``load`` functions.
 
         Parameters
         ----------
         prefix_path : str
-            The prefix path for the data.
-
-        file_format : string, default = "INFER"
+            The prefix path for the stored data.
+        file_format : str, default="INFER"
+            File format of the stored data. If ``"INFER"``, the format will be
+            inferred automatically.
 
         Returns
         -------
         DataFrame
-            A dataframe loaded from the prefix_path.
+            A ``DataFrame`` loaded from ``prefix_path``.
 
         Examples
         --------
         >>> import arkouda as ak
-
-        To store data in <my_dir>/my_data_LOCALE0000,
-        use "<my_dir>/my_data" as the prefix.
         >>> import os.path
         >>> from pathlib import Path
-        >>> my_path = os.path.join(os.getcwd(), 'hdf5_output','my_data')
+
+        To store data in ``<my_dir>/my_data_LOCALE0000``, use
+        ``"<my_dir>/my_data"`` as the prefix.
+
+        >>> my_path = os.path.join(os.getcwd(), "hdf5_output", "my_data")
         >>> Path(my_path).mkdir(parents=True, exist_ok=True)
+
         >>> df = ak.DataFrame({"A": ak.arange(5), "B": -1 * ak.arange(5)})
         >>> df.to_parquet(my_path + "/my_data")
 
@@ -3388,7 +3406,6 @@ class DataFrame(UserDict):
         2 -2  2
         3 -3  3
         4 -4  4 (5 rows x 2 columns)
-
         """
         from arkouda.pandas.io import (
             _dict_recombine_segarrays_categoricals,
@@ -3865,18 +3882,19 @@ class DataFrame(UserDict):
     @typechecked
     def isin(self, values: Union[pdarray, Dict, Series, DataFrame]) -> DataFrame:
         """
-        Determine whether each element in the DataFrame is contained in values.
+        Determine whether each element in the DataFrame is contained in ``values``.
 
         Parameters
         ----------
-        values : pdarray, dict, Series, or DataFrame
-            The values to check for in DataFrame. Series can only have a single index.
+        values : Union[pdarray, Dict, Series, DataFrame]
+            The values to check for in the DataFrame. A ``Series`` must have a
+            single index.
 
         Returns
         -------
         DataFrame
-            Arkouda DataFrame of booleans showing whether each element in the DataFrame is
-            contained in values.
+            Arkouda ``DataFrame`` of booleans indicating whether each element in
+            the DataFrame is contained in ``values``.
 
         See Also
         --------
@@ -3884,34 +3902,38 @@ class DataFrame(UserDict):
 
         Notes
         -----
-        - Pandas supports values being an iterable type. In arkouda, we replace this with pdarray.
-        - Pandas supports ~ operations. Currently, ak.DataFrame does not support this.
+        - Pandas supports ``values`` being any iterable type. In Arkouda, this is
+          replaced with ``pdarray``.
+        - Pandas supports ``~`` operations. Currently, ``ak.DataFrame`` does not.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({'col_A': ak.array([7, 3]), 'col_B':ak.array([1, 9])})
+        >>> df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_B": ak.array([1, 9])})
         >>> df
            col_A  col_B
         0      7      1
         1      3      9 (2 rows x 2 columns)
 
-        When `values` is a pdarray, check every value in the DataFrame to determine if
-        it exists in values.
+        When ``values`` is a ``pdarray``, every value in the DataFrame is checked
+        to determine whether it exists in ``values``.
+
         >>> df.isin(ak.array([0, 1]))
            col_A  col_B
         0  False   True
         1  False  False (2 rows x 2 columns)
 
-        When `values` is a dict, the values in the dict are passed to check the column
-        indicated by the key.
-        >>> df.isin({'col_A': ak.array([0, 3])})
+        When ``values`` is a ``dict``, the dictionary values are used to check
+        the column indicated by each key.
+
+        >>> df.isin({"col_A": ak.array([0, 3])})
            col_A  col_B
         0  False  False
         1   True  False (2 rows x 2 columns)
 
-        When `values` is a Series, each column is checked if values is present positionally.
-        This means that for `True` to be returned, the indexes must be the same.
+        When ``values`` is a ``Series``, each column is checked positionally.
+        For ``True`` to be returned, the indexes must match.
+
         >>> i = ak.Index(ak.arange(2))
         >>> s = ak.Series(data=[3, 9], index=i)
         >>> df.isin(s)
@@ -3919,14 +3941,14 @@ class DataFrame(UserDict):
         0  False  False
         1  False   True (2 rows x 2 columns)
 
-        When `values` is a DataFrame, the index and column must match.
-        Note that 9 is not found because the column name does not match.
-        >>> other_df = ak.DataFrame({'col_A':ak.array([7, 3]), 'col_C':ak.array([0, 9])})
+        When ``values`` is a ``DataFrame``, the index and columns must match.
+        Note that ``9`` is not found because the column name differs.
+
+        >>> other_df = ak.DataFrame({"col_A": ak.array([7, 3]), "col_C": ak.array([0, 9])})
         >>> df.isin(other_df)
            col_A  col_B
         0   True  False
         1   True  False (2 rows x 2 columns)
-
         """
         from arkouda.numpy import cumsum
         from arkouda.numpy.pdarraycreation import array, zeros
@@ -4276,22 +4298,28 @@ class DataFrame(UserDict):
         """
         Detect missing values.
 
-        Return a boolean same-sized object indicating if the values are NA.
-        numpy.NaN values get mapped to True values.
-        Everything else gets mapped to False values.
+        Return a boolean object of the same size indicating whether each value
+        is missing. ``numpy.nan`` values are mapped to ``True``. All other values
+        are mapped to ``False``.
 
         Returns
         -------
         DataFrame
-            Mask of bool values for each element in DataFrame
-            that indicates whether an element is an NA value.
+            Boolean mask for each element in the ``DataFrame`` indicating
+            whether the value is NA.
 
         Examples
         --------
         >>> import arkouda as ak
         >>> import numpy as np
-        >>> df = ak.DataFrame({"A": [np.nan, 2, 2, 3], "B": [3, np.nan, 5, 6],
-        ...          "C": [1, np.nan, 2, np.nan], "D":["a","b","c","d"]})
+        >>> df = ak.DataFrame(
+        ...     {
+        ...         "A": [np.nan, 2, 2, 3],
+        ...         "B": [3, np.nan, 5, 6],
+        ...         "C": [1, np.nan, 2, np.nan],
+        ...         "D": ["a", "b", "c", "d"],
+        ...     }
+        ... )
         >>> df
              A    B    C  D
         0  NaN  3.0  1.0  a
@@ -4305,7 +4333,6 @@ class DataFrame(UserDict):
         1  False   True   True  False
         2  False  False  False  False
         3  False  False   True  False (4 rows x 4 columns)
-
         """
         from arkouda import full, isnan
         from arkouda.numpy.util import is_numeric
@@ -4986,64 +5013,71 @@ class DataFrame(UserDict):
         r"""
         Assign new columns to a DataFrame.
 
-        Return a new object with all original columns in addition to new ones.
-        Existing columns that are re-assigned will be overwritten.
+        Return a new object with all original columns in addition to the
+        newly assigned ones. Existing columns that are reassigned will
+        be overwritten.
 
         Parameters
         ----------
         **kwargs : dict of {str: callable or Series}
-            The column names are keywords. If the values are
-            callable, they are computed on the DataFrame and
-            assigned to the new columns. The callable must not
-            change input DataFrame (though pandas doesn't check it).
-            If the values are not callable, (e.g. a Series, scalar, or array),
-            they are simply assigned.
+            The column names are the keyword arguments. If the values are
+            callable, they are computed on the DataFrame and assigned to
+            the new columns. The callable must not modify the input
+            DataFrame.
+
+            If the values are not callable (for example a ``Series``,
+            scalar, or array), they are directly assigned.
 
         Returns
         -------
         DataFrame
-            A new DataFrame with the new columns in addition to
-            all the existing columns.
+            A new ``DataFrame`` with the new columns added alongside the
+            existing columns.
 
         Notes
         -----
-        Assigning multiple columns within the same ``assign`` is possible.
-        Later items in '\*\*kwargs' may refer to newly created or modified
-        columns in 'df'; items are computed and assigned into 'df' in order.
+        Assigning multiple columns within the same ``assign`` call is
+        supported. Later items in ``**kwargs`` may refer to newly created
+        or modified columns in ``df``. Items are computed and assigned
+        to ``df`` in order.
 
         Examples
         --------
         >>> import arkouda as ak
-        >>> df = ak.DataFrame({'temp_c': [17.0, 25.0]},
-        ...                   index=['Portland', 'Berkeley'])
+        >>> df = ak.DataFrame(
+        ...     {"temp_c": [17.0, 25.0]},
+        ...     index=["Portland", "Berkeley"],
+        ... )
         >>> df
                   temp_c
         Portland    17.0
         Berkeley    25.0 (2 rows x 1 columns)
 
-        Where the value is a callable, evaluated on `df`:
+        When the value is a callable, it is evaluated on ``df``:
+
         >>> df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32)
                   temp_c  temp_f
         Portland    17.0    62.6
         Berkeley    25.0    77.0 (2 rows x 2 columns)
 
-        Alternatively, the same behavior can be achieved by directly
-        referencing an existing Series or sequence:
+        The same behavior can be achieved by referencing an existing
+        column directly:
 
-        >>> df.assign(temp_f=df['temp_c'] * 9 / 5 + 32)
+        >>> df.assign(temp_f=df["temp_c"] * 9 / 5 + 32)
                   temp_c  temp_f
         Portland    17.0    62.6
         Berkeley    25.0    77.0 (2 rows x 2 columns)
 
-        You can create multiple columns within the same assign where one
-        of the columns depends on another one defined within the same assign:
+        Multiple columns can be created in a single call where one depends
+        on another defined within the same ``assign``:
 
-        >>> df.assign(temp_f=lambda x: x['temp_c'] * 9 / 5 + 32,
-        ...           temp_k=lambda x: (x['temp_f'] + 459.67) * 5 / 9)
+        >>> df.assign(
+        ...     temp_f=lambda x: x["temp_c"] * 9 / 5 + 32,
+        ...     temp_k=lambda x: (x["temp_f"] + 459.67) * 5 / 9,
+        ... )
                   temp_c  temp_f  temp_k
         Portland    17.0    62.6  290.15
         Berkeley    25.0    77.0  298.15 (2 rows x 3 columns)
-
         """
         data = self.copy(deep=None)
 
