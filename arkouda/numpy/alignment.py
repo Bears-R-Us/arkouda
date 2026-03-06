@@ -376,37 +376,38 @@ def find(query, space, all_occurrences=False, remove_missing=False):
 
 def lookup(keys, values, arguments, fillvalue=-1):
     """
-    Apply the function defined by the mapping keys --> values to arguments.
+    Apply the function defined by the mapping ``keys --> values`` to arguments.
 
     Parameters
     ----------
     keys : (sequence of) array-like
-        The domain of the function. Entries must be unique (if a sequence of
-        arrays is given, each row is treated as a tuple-valued entry).
+        The domain of the function. Entries must be unique. If a sequence of
+        arrays is given, each row is treated as a tuple-valued entry.
     values : pdarray
-        The range of the function. Must be same length as keys.
+        The range of the function. Must be the same length as ``keys``.
     arguments : (sequence of) array-like
-        The arguments on which to evaluate the function. Must have same dtype
-        (or tuple of dtypes, for a sequence) as keys.
-    fillvalue : scalar
-        The default value to return for arguments not in keys.
+        The arguments on which to evaluate the function. Must have the same
+        dtype (or tuple of dtypes, for a sequence) as ``keys``.
+    fillvalue : scalar, default=-1
+        The default value to return for arguments not in ``keys``.
 
     Returns
     -------
     evaluated : pdarray
-        The result of evaluating the function over arguments.
+        The result of evaluating the function over ``arguments``.
 
     Notes
     -----
     While the values cannot be Strings (or other complex objects), the same
-    result can be achieved by passing an arange as the values, then using
-    the return as indices into the desired object.
+    result can be achieved by passing an ``arange`` as the values and then
+    using the return value as indices into the desired object.
 
     Examples
     --------
     >>> import arkouda as ak
 
-    Lookup numbers by two-word name
+    Lookup numbers by two-word name:
+
     >>> keys1 = ak.array(['twenty' for _ in range(5)])
     >>> keys2 = ak.array(['one', 'two', 'three', 'four', 'five'])
     >>> values = ak.array([21, 22, 23, 24, 25])
@@ -415,15 +416,15 @@ def lookup(keys, values, arguments, fillvalue=-1):
     >>> ak.numpy.alignment.lookup([keys1, keys2], values, [args1, args2])
     array([24 -1 22])
 
-    Other direction requires an intermediate index
+    The reverse direction requires an intermediate index:
+
     >>> revkeys = values
     >>> revindices = ak.arange(values.size)
     >>> revargs = ak.array([24, 21, 22])
     >>> idx = ak.numpy.alignment.lookup(revkeys, revindices, revargs)
     >>> keys1[idx], keys2[idx]
     (array(['twenty', 'twenty', 'twenty']),
-    array(['four', 'one', 'two']))
-
+     array(['four', 'one', 'two']))
     """
     if isinstance(values, Categorical):
         codes = lookup(keys, values.codes, arguments, fillvalue=values._NAcode)
@@ -492,60 +493,68 @@ def search_intervals(vals, intervals, tiebreak=None, hierarchical=True):
     """
     Return the index of the best interval containing each query value.
 
-    Given an array of query vals and non-overlapping, closed intervals, return
-    the index of the best (see tiebreak) interval containing each query value,
-    or -1 if not present in any interval.
+    Given an array of query values and non-overlapping, half-open intervals,
+    return the index of the best (see ``tiebreak``) interval containing each
+    query value, or ``-1`` if not present in any interval.
 
     Parameters
     ----------
-    vals : (sequence of) pdarray(int, uint, float)
-        Values to search for in intervals. If multiple arrays, each "row" is an item.
+    vals : (sequence of) pdarray (int, uint, float)
+        Values to search for in intervals. If multiple arrays are provided,
+        each "row" is treated as a single item.
     intervals : 2-tuple of (sequences of) pdarrays
-        Non-overlapping, half-open intervals, as a tuple of
-        (lower_bounds_inclusive, upper_bounds_exclusive)
-        Must have same dtype(s) as vals.
-    tiebreak : (optional) pdarray, numeric
-        When a value is present in more than one interval, the interval with the
-        lowest tiebreak value will be chosen. If no tiebreak is given, the
-        first containing interval will be chosen.
-    hierarchical: boolean
-        When True, sequences of pdarrays will be treated as components specifying
-        a single dimension (i.e. hierarchical)
-        When False, sequences of pdarrays will be specifying multi-dimensional intervals
+        Non-overlapping, half-open intervals, given as
+        ``(lower_bounds_inclusive, upper_bounds_exclusive)``.
+        Must have the same dtype(s) as ``vals``.
+    tiebreak : pdarray, numeric, optional
+        When a value is present in more than one interval, the interval with
+        the lowest tiebreak value is chosen. If not provided, the first
+        containing interval is chosen.
+    hierarchical : bool, default=True
+        When ``True``, sequences of pdarrays are treated as components
+        specifying a single hierarchical dimension.
+        When ``False``, sequences of pdarrays specify multi-dimensional
+        intervals.
 
     Returns
     -------
     idx : pdarray(int64)
-        Index of interval containing each query value, or -1 if not found
+        Index of the interval containing each query value, or ``-1`` if not found.
 
     Notes
     -----
-    The return idx satisfies the following condition:
-        present = idx > -1
-        ((intervals[0][idx[present]] <= vals[present]) &
-         (intervals[1][idx[present]] >= vals[present])).all()
+    The returned ``idx`` satisfies the following condition:
+
+    >>> present = idx > -1  # doctest: +SKIP
+    >>> ((intervals[0][idx[present]] <= vals[present]) & # doctest: +SKIP
+    ...  (intervals[1][idx[present]] >= vals[present])).all()
 
     Examples
     --------
     >>> import arkouda as ak
     >>> starts = (ak.array([0, 5]), ak.array([0, 11]))
     >>> ends = (ak.array([5, 9]), ak.array([10, 20]))
-    >>> vals = (ak.array([0, 0, 2, 5, 5, 6, 6, 9]), ak.array([0, 20, 1, 5, 15, 0, 12, 30]))
+    >>> vals = (
+    ...     ak.array([0, 0, 2, 5, 5, 6, 6, 9]),
+    ...     ak.array([0, 20, 1, 5, 15, 0, 12, 30]),
+    ... )
     >>> ak.numpy.alignment.search_intervals(vals, (starts, ends), hierarchical=False)
     array([0 -1 0 0 1 -1 1 -1])
+
     >>> ak.numpy.alignment.search_intervals(vals, (starts, ends))
     array([0 0 0 0 1 1 1 -1])
+
     >>> bi_starts = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in starts])
     >>> bi_ends = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in ends])
     >>> bi_vals = ak.bigint_from_uint_arrays([ak.cast(a, ak.uint64) for a in vals])
     >>> bi_starts, bi_ends, bi_vals
     (array([0 92233720368547758091]),
-    array([92233720368547758090 166020696663385964564]),
-    array([0 20 36893488147419103233 92233720368547758085 92233720368547758095
-    110680464442257309696 110680464442257309708 166020696663385964574]))
+     array([92233720368547758090 166020696663385964564]),
+     array([0 20 36893488147419103233 92233720368547758085 92233720368547758095
+     110680464442257309696 110680464442257309708 166020696663385964574]))
+
     >>> ak.numpy.alignment.search_intervals(bi_vals, (bi_starts, bi_ends))
     array([0 0 0 0 1 1 1 -1])
-
     """
     from arkouda.pandas.join import gen_ranges
 
