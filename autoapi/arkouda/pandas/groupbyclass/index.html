@@ -912,31 +912,31 @@ passed in, not the permutation applied by the GroupBy instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – The values to put in each group’s segment</p></li>
-<li><p><strong>permute</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a>) – If True (default), permute broadcast values back to the ordering
-of the original array on which GroupBy was called. If False, the
-broadcast values are grouped by value.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>]</em>) – Values to place in each group’s segment.</p></li>
+<li><p><strong>permute</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, permute broadcast values back to the ordering of the
+original array on which <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> was called. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the
+broadcast values are returned in grouped order.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The broadcasted values</p>
+<dd class="field-even"><p>The broadcasted values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if value is not a pdarray object</p></li>
-<li><p><strong>ValueError</strong> – Raised if the values array does not have one
-value per segment</p></li>
+<li><p><strong>TypeError</strong> – Raised if <code class="docutils literal notranslate"><span class="pre">values</span></code> is not a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> or <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the <code class="docutils literal notranslate"><span class="pre">values</span></code> array does not contain exactly one value
+per segment.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This function is a sparse analog of <code class="docutils literal notranslate"><span class="pre">np.broadcast</span></code>. If a
-GroupBy object represents a sparse matrix (tensor), then
-this function takes a (dense) column vector and replicates
-each value to the non-zero elements in the corresponding row.</p>
+<p>This function is a sparse analog of <code class="docutils literal notranslate"><span class="pre">np.broadcast</span></code>. If a <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code>
+object represents a sparse matrix (tensor), this function takes a
+dense column vector and replicates each value to the non-zero elements
+in the corresponding row.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
@@ -944,23 +944,29 @@ each value to the non-zero elements in the corresponding row.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>By default, result is in original order
-&gt;&gt;&gt; g.broadcast(values)
-array([3 5 3 5 3])</p>
-<p>With permute=False, result is in grouped order
-&gt;&gt;&gt; g.broadcast(values, permute=False)
-array([3 3 3 5 5])
-&gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)
-&gt;&gt;&gt; a
-array([2 4 4 2 1 4 1 2 4 3])
-&gt;&gt;&gt; g = ak.GroupBy(a)
-&gt;&gt;&gt; keys,counts = g.size()
-&gt;&gt;&gt; g.broadcast(counts &gt; 2)
-array([True True True True False True False True True False])
-&gt;&gt;&gt; g.broadcast(counts == 3)
-array([True False False True False False False True False False])
-&gt;&gt;&gt; g.broadcast(counts &lt; 4)
-array([True False False True True False True True False True])</p>
+<p>By default, the result is in the original order:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="go">array([3 5 3 5 3])</span>
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">permute=False</span></code>, the result is returned in grouped order:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">permute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">array([3 3 3 5 5])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([2 4 4 2 1 4 1 2 4 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keys</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">counts</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">array([True True True True False True False True True False])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">counts</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">array([True False False True False False False True False False])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">counts</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">array([True False False True True False True True False True])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1413,16 +1419,16 @@ modal value that occurs first.</p>
 <dt class="sig sig-object py" id="arkouda.pandas.groupbyclass.GroupBy.nunique">
 <span class="sig-name descname"><span class="pre">nunique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">groupable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><span class="pre">groupable</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../../numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/arkouda/pandas/groupbyclass.html#GroupBy.nunique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.groupbyclass.GroupBy.nunique" title="Link to this definition">¶</a></dt>
 <dd><p>Group another array of values and return the number of unique values in each group.</p>
-<p>Group using the permutation stored in the GroupBy instance.</p>
+<p>Grouping uses the permutation stored in the <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – The values to group and find unique values</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="#arkouda.pandas.groupbyclass.groupable" title="arkouda.pandas.groupbyclass.groupable"><em>groupable</em></a>) – Values to group and compute the number of unique values for each group.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>unique_keys<span class="classifier">groupable</span></dt><dd><p>The unique keys, in grouped order</p>
+<dt>unique_keys<span class="classifier">groupable</span></dt><dd><p>The unique keys in grouped order.</p>
 </dd>
-<dt>group_nunique<span class="classifier">groupable</span></dt><dd><p>Number of unique values per unique key in the GroupBy instance</p>
+<dt>group_nunique<span class="classifier">pdarray</span></dt><dd><p>Number of unique values for each key in the <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> instance.</p>
 </dd>
 </dl>
 </p>
@@ -1432,11 +1438,11 @@ modal value that occurs first.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if the dtype(s) of values array(s) does/do not support
-the nunique method</p></li>
-<li><p><strong>ValueError</strong> – Raised if the key array size does not match the values size or
-if the operator is not in the GroupBy.Reductions array</p></li>
-<li><p><strong>RuntimeError</strong> – Raised if nunique is not supported for the values dtype</p></li>
+<li><p><strong>TypeError</strong> – Raised if the dtype(s) of the <code class="docutils literal notranslate"><span class="pre">values</span></code> array(s) do not support
+the <code class="docutils literal notranslate"><span class="pre">nunique</span></code> operation.</p></li>
+<li><p><strong>ValueError</strong> – Raised if the key array size does not match the <code class="docutils literal notranslate"><span class="pre">values</span></code> size or
+if the operator is not present in <code class="docutils literal notranslate"><span class="pre">GroupBy.Reductions</span></code>.</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if <code class="docutils literal notranslate"><span class="pre">nunique</span></code> is not supported for the <code class="docutils literal notranslate"><span class="pre">values</span></code> dtype.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1445,20 +1451,29 @@ if the operator is not in the GroupBy.Reductions array</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span>
 <span class="go">array([3 4 3 1 1 4 3 4 1 4])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span>
 <span class="go">array([1 1 1 2 2 2 3 3 3 4])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">keys</span>
 <span class="go">array([1 1 1 2 2 2 3 3 3 4])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="go">(array([1 2 3 4]), array([2 2 3 1]))</span>
 </pre></div>
 </div>
-<p>Group (1,1,1) has values [3,4,3] -&gt; there are 2 unique values 3&amp;4
-Group (2,2,2) has values [1,1,4] -&gt; 2 unique values 1&amp;4
-Group (3,3,3) has values [3,4,1] -&gt; 3 unique values
-Group (4) has values [4] -&gt; 1 unique value</p>
+<p>Group explanations:</p>
+<ul class="simple">
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1,</span> <span class="pre">1)</span></code> has values <code class="docutils literal notranslate"><span class="pre">[3,</span> <span class="pre">4,</span> <span class="pre">3]</span></code> → 2 unique values (3, 4)</p></li>
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2,</span> <span class="pre">2)</span></code> has values <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">1,</span> <span class="pre">4]</span></code> → 2 unique values (1, 4)</p></li>
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">3,</span> <span class="pre">3)</span></code> has values <code class="docutils literal notranslate"><span class="pre">[3,</span> <span class="pre">4,</span> <span class="pre">1]</span></code> → 3 unique values</p></li>
+<li><p>Group <code class="docutils literal notranslate"><span class="pre">(4)</span></code> has values <code class="docutils literal notranslate"><span class="pre">[4]</span></code> → 1 unique value</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1984,50 +1999,58 @@ normally distributed variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>segments</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – Offsets of the start of each row in the sparse matrix or grouped array.
-Must be sorted in ascending order.</p></li>
-<li><p><strong>values</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – The values to broadcast, one per row (or group)</p></li>
-<li><p><strong>size</strong> (<em>int</em>) – The total number of nonzeros in the matrix. If permutation is given, this
-argument is ignored and the size is inferred from the permutation array.</p></li>
-<li><p><strong>permutation</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.int64" title="arkouda.numpy.dtypes.int64"><em>int64</em></a>) – The permutation to go from the original ordering of nonzeros to the ordering
-grouped by row. To broadcast values back to the original ordering, this
-permutation will be inverted. If no permutation is supplied, it is assumed
-that the original nonzeros were already grouped by row. In this case, the
-size argument must be given.</p></li>
+<li><p><strong>segments</strong> (<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a>) – Offsets marking the start of each row in the sparse matrix or grouped
+array. Must be sorted in ascending order.</p></li>
+<li><p><strong>values</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a><em>]</em>) – Values to broadcast, one per row (or group).</p></li>
+<li><p><strong>size</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>int</em><em>, </em><em>np.int64</em><em>, </em><em>np.uint64</em><em>]</em><em>, </em><em>default=-1</em>) – Total number of nonzeros in the matrix. If <code class="docutils literal notranslate"><span class="pre">permutation</span></code> is given,
+this argument is ignored and the size is inferred from the
+permutation array.</p></li>
+<li><p><strong>permutation</strong> (<a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – <p>Permutation that maps the original ordering of nonzeros to the
+ordering grouped by row. To broadcast values back to the original
+ordering, this permutation will be inverted.</p>
+<p>If no permutation is supplied, it is assumed that the original
+nonzeros were already grouped by row. In that case, the <code class="docutils literal notranslate"><span class="pre">size</span></code>
+argument must be provided.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The broadcast values, one per nonzero</p>
+<dd class="field-even"><p>Broadcast values, one per nonzero element.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../../numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[<a class="reference internal" href="../../numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray">pdarray</a>, <a class="reference internal" href="../../numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a>]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – <ul class="simple">
-<li><p>If segments and values are different sizes</p></li>
-<li><p>If segments are empty</p></li>
-<li><p>If number of nonzeros (either user-specified or inferred from permutation)
-is less than one</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">segments</span></code> and <code class="docutils literal notranslate"><span class="pre">values</span></code> have different sizes.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">segments</span></code> is empty.</p></li>
+<li><p>If the number of nonzeros (either user-specified or inferred from
+<code class="docutils literal notranslate"><span class="pre">permutation</span></code>) is less than one.</p></li>
 </ul>
 </p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="go"># Define a sparse matrix with 3 rows and 7 nonzeros</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">row_starts</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Define a sparse matrix with 3 rows and 7 nonzeros:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">row_starts</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nnz</span> <span class="o">=</span> <span class="mi">7</span>
 </pre></div>
 </div>
-<p>Broadcast the row number to each nonzero element
-&gt;&gt;&gt; row_number = ak.arange(3)
-&gt;&gt;&gt; ak.broadcast(row_starts, row_number, nnz)
-array([0 0 1 1 1 2 2])</p>
-<p>If the original nonzeros were in reverse order…
-&gt;&gt;&gt; permutation = ak.arange(6, -1, -1)
-&gt;&gt;&gt; ak.broadcast(row_starts, row_number, permutation=permutation)
-array([2 2 1 1 1 0 0])</p>
+<p>Broadcast the row number to each nonzero element:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">row_number</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">row_starts</span><span class="p">,</span> <span class="n">row_number</span><span class="p">,</span> <span class="n">nnz</span><span class="p">)</span>
+<span class="go">array([0 0 1 1 1 2 2])</span>
+</pre></div>
+</div>
+<p>If the original nonzeros were in reverse order:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">permutation</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">row_starts</span><span class="p">,</span> <span class="n">row_number</span><span class="p">,</span> <span class="n">permutation</span><span class="o">=</span><span class="n">permutation</span><span class="p">)</span>
+<span class="go">array([2 2 1 1 1 0 0])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py data">

@@ -487,7 +487,7 @@ to Python users.</p>
 <td><p>Represents an array of values belonging to named categories.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrame</span></code></a></p></td>
-<td><p>A DataFrame structure based on arkouda arrays.</p></td>
+<td><p>A DataFrame structure based on Arkouda arrays.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.DataFrameGroupBy" title="arkouda.DataFrameGroupBy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFrameGroupBy</span></code></a></p></td>
 <td><p>A DataFrame that has been grouped by a subset of columns.</p></td>
@@ -3468,47 +3468,46 @@ automatic creation of a file without the inaccessible data.</p></li>
 <dt class="sig sig-object py" id="arkouda.DataFrame">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">collections.UserDict</span></code></p>
-<p>A DataFrame structure based on arkouda arrays.</p>
+<p>A DataFrame structure based on Arkouda arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>initialdata</strong> (<em>List</em><em> or </em><em>dictionary</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list/dictionary entry corresponds to one column of the data and
-should be a homogenous type. Different columns may have different
+<li><p><strong>initialdata</strong> (<em>list</em><em> or </em><em>dict</em><em> of </em><em>lists</em><em>, </em><em>tuples</em><em>, or </em><em>pdarrays</em>) – Each list or dictionary entry corresponds to one column of data and
+should be a homogeneous type. Different columns may have different
 types. If using a dictionary, keys should be strings.</p></li>
 <li><p><strong>index</strong> (<a class="reference internal" href="#arkouda.Index" title="arkouda.Index"><em>Index</em></a><em>, </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Index for the resulting frame. Defaults to an integer range.</p></li>
-<li><p><strong>columns</strong> (<em>List</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
-be strings. Defaults to an stringified integer range.</p></li>
+<li><p><strong>columns</strong> (<em>list</em><em>, </em><em>tuple</em><em>, </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, or </em><a class="reference internal" href="numpy/index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings"><em>Strings</em></a>) – Column labels to use if the data does not include them. Elements must
+be strings. Defaults to a stringified integer range.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
+<p>Create an empty <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> and add a column of data:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
+<span class="go">   a</span>
+<span class="go">0  1</span>
+<span class="go">1  2</span>
+<span class="go">2  3 (3 rows x 1 columns)</span>
 </pre></div>
 </div>
-<p>Create an empty DataFrame and add a column of data:
-&gt;&gt;&gt; import arkouda as ak
-&gt;&gt;&gt; df = ak.DataFrame()
-&gt;&gt;&gt; df[‘a’] = ak.array([1,2,3])
-&gt;&gt;&gt; df</p>
-<blockquote>
-<div><p>a</p>
-</div></blockquote>
-<p>0  1
-1  2
-2  3 (3 rows x 1 columns)</p>
-<p>Create a new DataFrame using a dictionary of data:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">userName</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">])</span>
+<p>Create a new <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> using a dictionary of data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">userName</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Carol&quot;</span><span class="p">,</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;Alice&quot;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">userID</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">111</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">item</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">day</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">amount</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">4.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-<span class="gp">... </span>    <span class="s1">&#39;userName&#39;</span><span class="p">:</span> <span class="n">userName</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;userID&#39;</span><span class="p">:</span> <span class="n">userID</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s1">&#39;amount&#39;</span><span class="p">:</span> <span class="n">amount</span>
-<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;userName&quot;</span><span class="p">:</span> <span class="n">userName</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;userID&quot;</span><span class="p">:</span> <span class="n">userID</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;day&quot;</span><span class="p">:</span> <span class="n">day</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s2">&quot;amount&quot;</span><span class="p">:</span> <span class="n">amount</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">  userName  userID  item  day  amount</span>
 <span class="go">0    Alice     111     0    5     0.5</span>
@@ -3519,40 +3518,42 @@ be strings. Defaults to an stringified integer range.</p></li>
 <span class="go">5    Alice     111     0    6     0.6 (6 rows x 5 columns)</span>
 </pre></div>
 </div>
-<p>Indexing works slightly differently than with pandas:
-&gt;&gt;&gt; df[0]
-{‘userName’: np.str_(‘Alice’), ‘userID’: np.int64(111), ‘item’: np.int64(0),
-‘day’: np.int64(5), ‘amount’: np.float64(0.5)}
-&gt;&gt;&gt; df[‘userID’]
-array([111 222 111 333 222 111])</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;userName&#39;</span><span class="p">]</span>
+<p>Indexing works slightly differently than with pandas:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">{&#39;userName&#39;: np.str_(&#39;Alice&#39;), &#39;userID&#39;: np.int64(111), &#39;item&#39;: np.int64(0),</span>
+<span class="go">&#39;day&#39;: np.int64(5), &#39;amount&#39;: np.float64(0.5)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;userID&quot;</span><span class="p">]</span>
+<span class="go">array([111 222 111 333 222 111])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;userName&quot;</span><span class="p">]</span>
 <span class="go">array([&#39;Alice&#39;, &#39;Bob&#39;, &#39;Alice&#39;, &#39;Carol&#39;, &#39;Bob&#39;, &#39;Alice&#39;])</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">])]</span>
+<p>Select rows by integer array:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">])]</span>
 <span class="go">  userName  userID  item  day  amount</span>
 <span class="go">1      Bob     222     0    5     0.6</span>
 <span class="go">3    Carol     333     1    5     1.2</span>
 <span class="go">5    Alice     111     0    6     0.6 (3 rows x 5 columns)</span>
 </pre></div>
 </div>
-<p>Compute the stride:
-&gt;&gt;&gt; df[1:5:1]</p>
-<blockquote>
-<div><p>userName  userID  item  day  amount</p>
-</div></blockquote>
-<p>1      Bob     222     0    5     0.6
-2    Alice     111     1    6     1.1
-3    Carol     333     1    5     1.2
-4      Bob     222     2    6     4.3 (4 rows x 5 columns)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])]</span>
+<p>Slice rows:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">  userName  userID  item  day  amount</span>
+<span class="go">1      Bob     222     0    5     0.6</span>
+<span class="go">2    Alice     111     1    6     1.1</span>
+<span class="go">3    Carol     333     1    5     1.2</span>
+<span class="go">4      Bob     222     2    6     4.3 (4 rows x 5 columns)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])]</span>
 <span class="go">  userName  userID  item  day  amount</span>
 <span class="go">1      Bob     222     0    5     0.6</span>
 <span class="go">2    Alice     111     1    6     1.1</span>
 <span class="go">3    Carol     333     1    5     1.2 (3 rows x 5 columns)</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;userID&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">]]</span>
+<p>Select columns by name:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">[[</span><span class="s2">&quot;userID&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">]]</span>
 <span class="go">   userID  day</span>
 <span class="go">0     111    5</span>
 <span class="go">1     222    5</span>
@@ -3824,58 +3825,65 @@ Otherwise, sort the key in descending order.</p></li>
 <dt class="sig sig-object py" id="arkouda.DataFrame.assign">
 <span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.assign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.assign" title="Link to this definition">¶</a></dt>
 <dd><p>Assign new columns to a DataFrame.</p>
-<p>Return a new object with all original columns in addition to new ones.
-Existing columns that are re-assigned will be overwritten.</p>
+<p>Return a new object with all original columns in addition to the
+newly assigned ones. Existing columns that are reassigned will
+be overwritten.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em><em> of </em><em>{str: callable</em><em> or </em><em>Series}</em>) – The column names are keywords. If the values are
-callable, they are computed on the DataFrame and
-assigned to the new columns. The callable must not
-change input DataFrame (though pandas doesn’t check it).
-If the values are not callable, (e.g. a Series, scalar, or array),
-they are simply assigned.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em><em> of </em><em>{str: callable</em><em> or </em><em>Series}</em>) – <p>The column names are the keyword arguments. If the values are
+callable, they are computed on the DataFrame and assigned to
+the new columns. The callable must not modify the input
+DataFrame.</p>
+<p>If the values are not callable (for example a <code class="docutils literal notranslate"><span class="pre">Series</span></code>,
+scalar, or array), they are directly assigned.</p>
+</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new DataFrame with the new columns in addition to
-all the existing columns.</p>
+<dd class="field-even"><p>A new <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> with the new columns added alongside the
+existing columns.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Assigning multiple columns within the same <code class="docutils literal notranslate"><span class="pre">assign</span></code> is possible.
-Later items in ‘**kwargs’ may refer to newly created or modified
-columns in ‘df’; items are computed and assigned into ‘df’ in order.</p>
+<p>Assigning multiple columns within the same <code class="docutils literal notranslate"><span class="pre">assign</span></code> call is
+supported. Later items in <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> may refer to newly created
+or modified columns in <code class="docutils literal notranslate"><span class="pre">df</span></code>. Items are computed and assigned
+to <code class="docutils literal notranslate"><span class="pre">df</span></code> in order.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;temp_c&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">17.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">]},</span>
-<span class="gp">... </span>                  <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Portland&#39;</span><span class="p">,</span> <span class="s1">&#39;Berkeley&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">&quot;temp_c&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">17.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">]},</span>
+<span class="gp">... </span>    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Portland&quot;</span><span class="p">,</span> <span class="s2">&quot;Berkeley&quot;</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">          temp_c</span>
 <span class="go">Portland    17.0</span>
 <span class="go">Berkeley    25.0 (2 rows x 1 columns)</span>
 </pre></div>
 </div>
-<p>Where the value is a callable, evaluated on <cite>df</cite>:
-&gt;&gt;&gt; df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32)</p>
-<blockquote>
-<div><p>temp_c  temp_f</p>
-</div></blockquote>
-<p>Portland    17.0    62.6
-Berkeley    25.0    77.0 (2 rows x 2 columns)</p>
-<p>Alternatively, the same behavior can be achieved by directly
-referencing an existing Series or sequence:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">temp_f</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;temp_c&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">/</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">32</span><span class="p">)</span>
+<p>When the value is a callable, it is evaluated on <code class="docutils literal notranslate"><span class="pre">df</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">temp_f</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">temp_c</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">/</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">32</span><span class="p">)</span>
 <span class="go">          temp_c  temp_f</span>
 <span class="go">Portland    17.0    62.6</span>
 <span class="go">Berkeley    25.0    77.0 (2 rows x 2 columns)</span>
 </pre></div>
 </div>
-<p>You can create multiple columns within the same assign where one
-of the columns depends on another one defined within the same assign:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">temp_f</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;temp_c&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">/</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">32</span><span class="p">,</span>
-<span class="gp">... </span>          <span class="n">temp_k</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;temp_f&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">459.67</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">/</span> <span class="mi">9</span><span class="p">)</span>
+<p>The same behavior can be achieved by referencing an existing
+column directly:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">temp_f</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;temp_c&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">/</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">32</span><span class="p">)</span>
+<span class="go">          temp_c  temp_f</span>
+<span class="go">Portland    17.0    62.6</span>
+<span class="go">Berkeley    25.0    77.0 (2 rows x 2 columns)</span>
+</pre></div>
+</div>
+<p>Multiple columns can be created in a single call where one depends
+on another defined within the same <code class="docutils literal notranslate"><span class="pre">assign</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">temp_f</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;temp_c&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">/</span> <span class="mi">5</span> <span class="o">+</span> <span class="mi">32</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">temp_k</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;temp_f&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">459.67</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">/</span> <span class="mi">9</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="go">          temp_c  temp_f  temp_k</span>
 <span class="go">Portland    17.0    62.6  290.15</span>
 <span class="go">Berkeley    25.0    77.0  298.15 (2 rows x 3 columns)</span>
@@ -4111,46 +4119,50 @@ If 1 or ‘columns’ counts are generated for each row.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.drop">
 <span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.drop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.drop" title="Link to this definition">¶</a></dt>
-<dd><p>Drop column/s or row/s from the dataframe.</p>
+<dd><p>Drop rows or columns from the DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>int</em><em> or </em><em>list</em>) – The labels to be dropped on the given axis.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The axis on which to drop from. 0/’index’ - drop rows, 1/’columns’ - drop columns.</p></li>
-<li><p><strong>inplace</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
-When False, return a new object.</p></li>
+<li><p><strong>keys</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>int</em><em>, </em><em>List</em><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>int</em><em>]</em><em>]</em><em>]</em>) – Label or list of labels to drop along the specified axis.</p></li>
+<li><p><strong>axis</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>int</em><em>]</em><em>, </em><em>default=0</em>) – <p>Axis along which to drop.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;index&quot;</span></code> — drop rows</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;columns&quot;</span></code> — drop columns</p></li>
+</ul>
+</p></li>
+<li><p><strong>inplace</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, perform the operation on the calling object.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, return a new object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DateFrame when <cite>inplace=False</cite>;
-None when <cite>inplace=True</cite></p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> when <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code>; otherwise <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a> or None</p>
+<dd class="field-odd"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union">Union</a>[None, <a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;col1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;col2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">   col1  col2</span>
 <span class="go">0     1     3</span>
 <span class="go">1     2     4 (2 rows x 2 columns)</span>
 </pre></div>
 </div>
-<p>Drop column
-&gt;&gt;&gt; df.drop(‘col1’, axis = 1)</p>
-<blockquote>
-<div><p>col2</p>
-</div></blockquote>
-<p>0     3
-1     4 (2 rows x 1 columns)</p>
-<p>Drop row
-&gt;&gt;&gt; df.drop(0, axis = 0)</p>
-<blockquote>
-<div><p>col1  col2</p>
-</div></blockquote>
-<p>1     2     4 (1 rows x 2 columns)</p>
+<p>Drop a column:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;col1&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">   col2</span>
+<span class="go">0     3</span>
+<span class="go">1     4 (2 rows x 1 columns)</span>
+</pre></div>
+</div>
+<p>Drop a row:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">   col1  col2</span>
+<span class="go">1     2     4 (1 rows x 2 columns)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -4652,14 +4664,15 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.isin">
 <span class="sig-name descname"><span class="pre">isin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="numpy/pdarrayclass/index.html#arkouda.numpy.pdarrayclass.pdarray" title="arkouda.numpy.pdarrayclass.pdarray"><span class="pre">arkouda.numpy.pdarrayclass.pdarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">arkouda.pandas.series.Series</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.isin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.isin" title="Link to this definition">¶</a></dt>
-<dd><p>Determine whether each element in the DataFrame is contained in values.</p>
+<dd><p>Determine whether each element in the DataFrame is contained in <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>dict</em><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, or </em><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><em>DataFrame</em></a>) – The values to check for in DataFrame. Series can only have a single index.</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>Dict</em><em>, </em><a class="reference internal" href="#arkouda.Series" title="arkouda.Series"><em>Series</em></a><em>, </em><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><em>DataFrame</em></a><em>]</em>) – The values to check for in the DataFrame. A <code class="docutils literal notranslate"><span class="pre">Series</span></code> must have a
+single index.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Arkouda DataFrame of booleans showing whether each element in the DataFrame is
-contained in values.</p>
+<dd class="field-even"><p>Arkouda <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> of booleans indicating whether each element in
+the DataFrame is contained in <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
@@ -4671,66 +4684,67 @@ contained in values.</p>
 </div>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li><p>Pandas supports values being an iterable type. In arkouda, we replace this with pdarray.</p></li>
-<li><p>Pandas supports ~ operations. Currently, ak.DataFrame does not support this.</p></li>
+<li><p>Pandas supports <code class="docutils literal notranslate"><span class="pre">values</span></code> being any iterable type. In Arkouda, this is
+replaced with <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>.</p></li>
+<li><p>Pandas supports <code class="docutils literal notranslate"><span class="pre">~</span></code> operations. Currently, <code class="docutils literal notranslate"><span class="pre">ak.DataFrame</span></code> does not.</p></li>
 </ul>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col_A&#39;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s1">&#39;col_B&#39;</span><span class="p">:</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">])})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;col_A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s2">&quot;col_B&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">])})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">   col_A  col_B</span>
 <span class="go">0      7      1</span>
 <span class="go">1      3      9 (2 rows x 2 columns)</span>
 </pre></div>
 </div>
-<p>When <cite>values</cite> is a pdarray, check every value in the DataFrame to determine if
-it exists in values.
-&gt;&gt;&gt; df.isin(ak.array([0, 1]))</p>
-<blockquote>
-<div><p>col_A  col_B</p>
-</div></blockquote>
-<p>0  False   True
-1  False  False (2 rows x 2 columns)</p>
-<p>When <cite>values</cite> is a dict, the values in the dict are passed to check the column
-indicated by the key.
-&gt;&gt;&gt; df.isin({‘col_A’: ak.array([0, 3])})</p>
-<blockquote>
-<div><p>col_A  col_B</p>
-</div></blockquote>
-<p>0  False  False
-1   True  False (2 rows x 2 columns)</p>
-<p>When <cite>values</cite> is a Series, each column is checked if values is present positionally.
-This means that for <cite>True</cite> to be returned, the indexes must be the same.
-&gt;&gt;&gt; i = ak.Index(ak.arange(2))
-&gt;&gt;&gt; s = ak.Series(data=[3, 9], index=i)
-&gt;&gt;&gt; df.isin(s)</p>
-<blockquote>
-<div><p>col_A  col_B</p>
-</div></blockquote>
-<p>0  False  False
-1  False   True (2 rows x 2 columns)</p>
-<p>When <cite>values</cite> is a DataFrame, the index and column must match.
-Note that 9 is not found because the column name does not match.
-&gt;&gt;&gt; other_df = ak.DataFrame({‘col_A’:ak.array([7, 3]), ‘col_C’:ak.array([0, 9])})
-&gt;&gt;&gt; df.isin(other_df)</p>
-<blockquote>
-<div><p>col_A  col_B</p>
-</div></blockquote>
-<p>0   True  False
-1   True  False (2 rows x 2 columns)</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">values</span></code> is a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, every value in the DataFrame is checked
+to determine whether it exists in <code class="docutils literal notranslate"><span class="pre">values</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+<span class="go">   col_A  col_B</span>
+<span class="go">0  False   True</span>
+<span class="go">1  False  False (2 rows x 2 columns)</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">values</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code>, the dictionary values are used to check
+the column indicated by each key.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">isin</span><span class="p">({</span><span class="s2">&quot;col_A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">])})</span>
+<span class="go">   col_A  col_B</span>
+<span class="go">0  False  False</span>
+<span class="go">1   True  False (2 rows x 2 columns)</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">values</span></code> is a <code class="docutils literal notranslate"><span class="pre">Series</span></code>, each column is checked positionally.
+For <code class="docutils literal notranslate"><span class="pre">True</span></code> to be returned, the indexes must match.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Index</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">   col_A  col_B</span>
+<span class="go">0  False  False</span>
+<span class="go">1  False   True (2 rows x 2 columns)</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">values</span></code> is a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>, the index and columns must match.
+Note that <code class="docutils literal notranslate"><span class="pre">9</span></code> is not found because the column name differs.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">other_df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;col_A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s2">&quot;col_C&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">])})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">other_df</span><span class="p">)</span>
+<span class="go">   col_A  col_B</span>
+<span class="go">0   True  False</span>
+<span class="go">1   True  False (2 rows x 2 columns)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.isna">
 <span class="sig-name descname"><span class="pre">isna</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.isna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.isna" title="Link to this definition">¶</a></dt>
 <dd><p>Detect missing values.</p>
-<p>Return a boolean same-sized object indicating if the values are NA.
-numpy.NaN values get mapped to True values.
-Everything else gets mapped to False values.</p>
+<p>Return a boolean object of the same size indicating whether each value
+is missing. <code class="docutils literal notranslate"><span class="pre">numpy.nan</span></code> values are mapped to <code class="docutils literal notranslate"><span class="pre">True</span></code>. All other values
+are mapped to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Mask of bool values for each element in DataFrame
-that indicates whether an element is an NA value.</p>
+<dd class="field-odd"><p>Boolean mask for each element in the <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> indicating
+whether the value is NA.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
@@ -4739,8 +4753,14 @@ that indicates whether an element is an NA value.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
-<span class="gp">... </span>         <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="s2">&quot;D&quot;</span><span class="p">:[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">,</span><span class="s2">&quot;d&quot;</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span>
+<span class="gp">... </span>        <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">     A    B    C  D</span>
 <span class="go">0  NaN  3.0  1.0  a</span>
@@ -4762,17 +4782,19 @@ that indicates whether an element is an NA value.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.load">
 <span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFER'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.load" title="Link to this definition">¶</a></dt>
-<dd><p>Load dataframe from file.</p>
-<p>file_format needed for consistency with other load functions.</p>
+<dd><p>Load a DataFrame from a file.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">file_format</span></code> parameter is included for consistency with other
+Arkouda <code class="docutils literal notranslate"><span class="pre">load</span></code> functions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prefix_path</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The prefix path for the data.</p></li>
-<li><p><strong>file_format</strong> (<em>string</em><em>, </em><em>default = &quot;INFER&quot;</em>)</p></li>
+<li><p><strong>prefix_path</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The prefix path for the stored data.</p></li>
+<li><p><strong>file_format</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;INFER&quot;</em>) – File format of the stored data. If <code class="docutils literal notranslate"><span class="pre">&quot;INFER&quot;</span></code>, the format will be
+inferred automatically.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dataframe loaded from the prefix_path.</p>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> loaded from <code class="docutils literal notranslate"><span class="pre">prefix_path</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
@@ -4780,16 +4802,20 @@ that indicates whether an element is an NA value.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 </pre></div>
 </div>
-<p>To store data in &lt;my_dir&gt;/my_data_LOCALE0000,
-use “&lt;my_dir&gt;/my_data” as the prefix.
-&gt;&gt;&gt; import os.path
-&gt;&gt;&gt; from pathlib import Path
-&gt;&gt;&gt; my_path = os.path.join(os.getcwd(), ‘hdf5_output’,’my_data’)
-&gt;&gt;&gt; Path(my_path).mkdir(parents=True, exist_ok=True)
-&gt;&gt;&gt; df = ak.DataFrame({“A”: ak.arange(5), “B”: -1 * ak.arange(5)})
-&gt;&gt;&gt; df.to_parquet(my_path + “/my_data”)</p>
+<p>To store data in <code class="docutils literal notranslate"><span class="pre">&lt;my_dir&gt;/my_data_LOCALE0000</span></code>, use
+<code class="docutils literal notranslate"><span class="pre">&quot;&lt;my_dir&gt;/my_data&quot;</span></code> as the prefix.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;hdf5_output&quot;</span><span class="p">,</span> <span class="s2">&quot;my_data&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="p">(</span><span class="n">my_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;/my_data&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">my_path</span> <span class="o">+</span> <span class="s2">&quot;/my_data&quot;</span><span class="p">)</span>
 <span class="go">   B  A</span>
 <span class="go">0  0  0</span>
@@ -4804,21 +4830,20 @@ use “&lt;my_dir&gt;/my_data” as the prefix.
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.memory_usage">
 <span class="sig-name descname"><span class="pre">memory_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'B'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pandas/series/index.html#arkouda.pandas.series.Series" title="arkouda.pandas.series.Series"><span class="pre">arkouda.pandas.series.Series</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.memory_usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.memory_usage" title="Link to this definition">¶</a></dt>
-<dd><p>Return the memory usage of each column in bytes.</p>
-<p>The memory usage can optionally include the contribution of
-the index.</p>
+<dd><p>Return the memory usage of each column.</p>
+<p>The memory usage can optionally include the contribution of the index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default True</em>) – Specifies whether to include the memory usage of the DataFrame’s
-index in returned Series. If <code class="docutils literal notranslate"><span class="pre">index=True</span></code>, the memory usage of
-the index is the first item in the output.</p></li>
-<li><p><strong>unit</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default = &quot;B&quot;</em>) – Unit to return. One of {‘B’, ‘KB’, ‘MB’, ‘GB’}.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=True</em>) – Whether to include the memory usage of the DataFrame’s index in the
+returned <code class="docutils literal notranslate"><span class="pre">Series</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the memory usage of the index appears
+as the first item in the output.</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;B&quot;</em>) – Unit to return. One of <code class="docutils literal notranslate"><span class="pre">{&quot;B&quot;,</span> <span class="pre">&quot;KB&quot;,</span> <span class="pre">&quot;MB&quot;,</span> <span class="pre">&quot;GB&quot;}</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A Series whose index is the original column names and whose values
-is the memory usage of each column in bytes.</p>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">Series</span></code> whose index contains the original column names and whose
+values represent the memory usage of each column in the specified unit.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.Series" title="arkouda.Series">Series</a></p>
@@ -4830,8 +4855,8 @@ is the memory usage of each column in bytes.</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;int64&quot;</span><span class="p">:</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">:</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>  <span class="s2">&quot;bool&quot;</span><span class="p">:</span><span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">t</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtypes</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;int64&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">bool_</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtypes</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 <span class="go">   int64  float64  bool</span>
@@ -4865,9 +4890,11 @@ is the memory usage of each column in bytes.</p>
 <span class="go">dtype: float64</span>
 </pre></div>
 </div>
-<p>To get the approximate total memory usage:
-&gt;&gt;&gt; df.memory_usage(index=True).sum()
-np.int64(125000)</p>
+<p>To get the approximate total memory usage:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">np.int64(125000)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -5165,37 +5192,35 @@ in attached copies.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mapper</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing values to new values.
-Nonexistent names will not raise an error.
-Uses the value of axis to determine if renaming column or index</p></li>
-<li><p><strong>index</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing index names to
-new index names. Nonexistent names will not raise an
-error.
-When this is set, axis is ignored.</p></li>
-<li><p><strong>column</strong> (<em>callable</em><em> or </em><em>dict-like</em><em>, </em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a>) – Function or dictionary mapping existing column names to
-new column names. Nonexistent names will not raise an
-error.
-When this is set, axis is ignored.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=0</em>) – Indicates which axis to perform the rename.
-0/”index” - Indexes
-1/”column” - Columns</p></li>
-<li><p><strong>inplace</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, perform the operation on the calling object.
-When False, return a new object.</p></li>
+<li><p><strong>mapper</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>Callable</em><em>, </em><em>Dict</em><em>]</em><em>]</em>) – Function or dictionary mapping existing values to new values.
+Nonexistent names will not raise an error. The value of <code class="docutils literal notranslate"><span class="pre">axis</span></code>
+determines whether the mapping is applied to the index or columns.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>Callable</em><em>, </em><em>Dict</em><em>]</em><em>]</em>) – Function or dictionary mapping existing index names to new index names.
+Nonexistent names will not raise an error. When this is set, <code class="docutils literal notranslate"><span class="pre">axis</span></code>
+is ignored.</p></li>
+<li><p><strong>column</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional"><em>Optional</em></a><em>[</em><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><em>Callable</em><em>, </em><em>Dict</em><em>]</em><em>]</em>) – Function or dictionary mapping existing column names to new column
+names. Nonexistent names will not raise an error. When this is set,
+<code class="docutils literal notranslate"><span class="pre">axis</span></code> is ignored.</p></li>
+<li><p><strong>axis</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Union" title="arkouda.numpy.dtypes.Union"><em>Union</em></a><em>[</em><a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>int</em><em>]</em><em>, </em><em>default=0</em>) – <p>Axis to perform the rename operation on.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;index&quot;</span></code> — rename index values</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;column&quot;</span></code> — rename column names</p></li>
+</ul>
+</p></li>
+<li><p><strong>inplace</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, perform the operation on the calling object.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, return a new object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DateFrame when <cite>inplace=False</cite>;
-None when <cite>inplace=True</cite>.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> when <code class="docutils literal notranslate"><span class="pre">inplace=False</span></code>; otherwise <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a> or None</p>
+<dd class="field-odd"><p><a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.Optional" title="arkouda.numpy.dtypes.Optional">Optional</a>[<a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">   A  B</span>
 <span class="go">0  1  4</span>
@@ -5203,30 +5228,30 @@ None when <cite>inplace=True</cite>.</p>
 <span class="go">2  3  6 (3 rows x 2 columns)</span>
 </pre></div>
 </div>
-<p>Rename columns using a mapping:
-&gt;&gt;&gt; df.rename(column={‘A’:’a’, ‘B’:’c’})</p>
-<blockquote>
-<div><p>a  c</p>
-</div></blockquote>
-<p>0  1  4
-1  2  5
-2  3  6 (3 rows x 2 columns)</p>
-<p>Rename indexes using a mapping:
-&gt;&gt;&gt; df.rename(index={0:99, 2:11})</p>
-<blockquote>
-<div><p>A  B</p>
-</div></blockquote>
-<p>99  1  4
-1   2  5
-11  3  6 (3 rows x 2 columns)</p>
-<p>Rename using an axis style parameter:
-&gt;&gt;&gt; df.rename(str.lower, axis=’column’)</p>
-<blockquote>
-<div><p>a  b</p>
-</div></blockquote>
-<p>0  1  4
-1  2  5
-2  3  6 (3 rows x 2 columns)</p>
+<p>Rename columns using a mapping:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;c&quot;</span><span class="p">})</span>
+<span class="go">   a  c</span>
+<span class="go">0  1  4</span>
+<span class="go">1  2  5</span>
+<span class="go">2  3  6 (3 rows x 2 columns)</span>
+</pre></div>
+</div>
+<p>Rename indexes using a mapping:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">99</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">11</span><span class="p">})</span>
+<span class="go">    A  B</span>
+<span class="go">99  1  4</span>
+<span class="go">1   2  5</span>
+<span class="go">11  3  6 (3 rows x 2 columns)</span>
+</pre></div>
+</div>
+<p>Rename using the axis-style parameter:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;column&quot;</span><span class="p">)</span>
+<span class="go">   a  b</span>
+<span class="go">0  1  4</span>
+<span class="go">1  2  5</span>
+<span class="go">2  3  6 (3 rows x 2 columns)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -5288,19 +5313,19 @@ support this behavior.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.sample">
 <span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame"><span class="pre">DataFrame</span></a></span></span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.sample" title="Link to this definition">¶</a></dt>
-<dd><p>Return a random sample of <cite>n</cite> rows.</p>
+<dd><p>Return a random sample of <code class="docutils literal notranslate"><span class="pre">n</span></code> rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>default=5</em>) – Number of rows to return.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The sampled <cite>n</cite> rows of the DataFrame.</p>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> containing <code class="docutils literal notranslate"><span class="pre">n</span></code> randomly sampled rows.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#arkouda.DataFrame" title="arkouda.DataFrame">DataFrame</a></p>
 </dd>
 </dl>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
@@ -5312,14 +5337,14 @@ support this behavior.</p>
 <span class="go">4  4 -4 (5 rows x 2 columns)</span>
 </pre></div>
 </div>
-<p>Random output of size 3:
-&gt;&gt;&gt; df.sample(n=3)  # doctest: +SKIP</p>
-<blockquote>
-<div><p>A  B</p>
-</div></blockquote>
-<p>4  4 -4
-3  3 -3
-1  1 -1 (3 rows x 2 columns)</p>
+<p>Random output of size 3:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">   A  B</span>
+<span class="go">4  4 -4</span>
+<span class="go">3  3 -3</span>
+<span class="go">1  1 -1 (3 rows x 2 columns)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -5621,29 +5646,28 @@ locale number.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.DataFrame.to_markdown">
 <span class="sig-name descname"><span class="pre">to_markdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tablefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storage_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrame.to_markdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrame.to_markdown" title="Link to this definition">¶</a></dt>
-<dd><p>Print DataFrame in Markdown-friendly format.</p>
+<dd><p>Print the DataFrame in a Markdown-friendly format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Mode in which file is opened, “wt” by default.</p></li>
-<li><p><strong>index</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default True</em>) – Add index (row) labels.</p></li>
-<li><p><strong>tablefmt</strong> (<em>str = &quot;grid&quot;</em>) – Table format to call from tablulate:
-<a class="reference external" href="https://pypi.org/project/tabulate/">https://pypi.org/project/tabulate/</a></p></li>
-<li><p><strong>storage_options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Extra options that make sense for a particular storage connection,
-e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,
-e.g., starting “s3://”, “gcs://”.
-An error will be raised if providing this argument with a non-fsspec URL.
-See the fsspec and backend storage implementation docs for the set
-of allowed keys and values.</p></li>
-<li><p><strong>**kwargs</strong> – These parameters will be passed to tabulate.</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>optional</em>) – Mode in which the file is opened, by default <code class="docutils literal notranslate"><span class="pre">&quot;wt&quot;</span></code>.</p></li>
+<li><p><strong>index</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>optional</em><em>, </em><em>default=True</em>) – Whether to include index (row) labels.</p></li>
+<li><p><strong>tablefmt</strong> (<a class="reference internal" href="#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a><em>, </em><em>default=&quot;grid&quot;</em>) – Table format passed to <code class="docutils literal notranslate"><span class="pre">tabulate</span></code>.
+See <a class="reference external" href="https://pypi.org/project/tabulate/">https://pypi.org/project/tabulate/</a> for available formats.</p></li>
+<li><p><strong>storage_options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Extra options for a particular storage connection (for example
+host, port, username, password) when using a URL handled by
+<code class="docutils literal notranslate"><span class="pre">fsspec</span></code> such as <code class="docutils literal notranslate"><span class="pre">&quot;s3://&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;gcs://&quot;</span></code>. An error will be
+raised if this argument is provided with a non-fsspec URL.
+See the fsspec and backend storage implementation documentation
+for the set of allowed keys and values.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">tabulate</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:
+<p class="rubric">Notes</p>
+<p>This function should only be used with small DataFrames because it
+calls <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame.to_markdown</span></code> internally:
 <a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html">https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html</a></p>
-</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;animal_1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;elk&quot;</span><span class="p">,</span> <span class="s2">&quot;pig&quot;</span><span class="p">],</span> <span class="s2">&quot;animal_2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;quetzal&quot;</span><span class="p">]})</span>
@@ -5657,15 +5681,17 @@ of allowed keys and values.</p></li>
 <span class="go">+----+------------+------------+</span>
 </pre></div>
 </div>
-<p>Suppress the index:
-&gt;&gt;&gt; print(df.to_markdown(index = False))
-+————+————+
-| animal_1   | animal_2   |
-+============+============+
-| elk        | dog        |
-+————+————+
-| pig        | quetzal    |
-+————+————+</p>
+<p>Suppress the index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="go">+------------+------------+</span>
+<span class="go">| animal_1   | animal_2   |</span>
+<span class="go">+============+============+</span>
+<span class="go">| elk        | dog        |</span>
+<span class="go">+------------+------------+</span>
+<span class="go">| pig        | quetzal    |</span>
+<span class="go">+------------+------------+</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -6201,27 +6227,27 @@ all the values from that group will be returned.</p></li>
 <dt class="sig sig-object py" id="arkouda.DataFrameGroupBy.sample">
 <span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/arkouda/pandas/dataframe.html#DataFrameGroupBy.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.DataFrameGroupBy.sample" title="Link to this definition">¶</a></dt>
 <dd><p>Return a random sample from each group.</p>
-<p>You can either specify the number of elements
-or the fraction of elements to be sampled. random_state can be used for reproducibility</p>
+<p>You can specify either the number of elements to sample or the fraction
+of elements to sample. <code class="docutils literal notranslate"><span class="pre">random_state</span></code> can be used for reproducibility.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of items to return for each group.
-Cannot be used with frac and must be no larger than
-the smallest group unless replace is True.
-Default is one if frac is None.</p></li>
-<li><p><strong>frac</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of items to return. Cannot be used with n.</p></li>
-<li><p><strong>replace</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default False</em>) – Allow or disallow sampling of the same row more than once.</p></li>
-<li><p><strong>weights</strong> (<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – Default None results in equal probability weighting.
-If passed a pdarray, then values must have the same length as the underlying DataFrame
-and will be used as sampling probabilities after normalization within each group.
-Weights must be non-negative with at least one positive element within each group.</p></li>
-<li><p><strong>random_state</strong> (<em>int</em><em> or </em><em>ak.random.Generator</em><em>, </em><em>optional</em>) – If int, seed for random number generator.
-If ak.random.Generator, use as given.</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of items to return for each group. Cannot be used with
+<code class="docutils literal notranslate"><span class="pre">frac</span></code> and must be no larger than the smallest group unless
+<code class="docutils literal notranslate"><span class="pre">replace</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code> if <code class="docutils literal notranslate"><span class="pre">frac</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>frac</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of items to return. Cannot be used with <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
+<li><p><strong>replace</strong> (<a class="reference internal" href="numpy/dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – Whether to allow sampling of the same row more than once.</p></li>
+<li><p><strong>weights</strong> (<a class="reference internal" href="numpy/index.html#arkouda.numpy.pdarray" title="arkouda.numpy.pdarray"><em>pdarray</em></a><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all rows are given equal probability. If a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> is
+provided, it must have the same length as the underlying <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>
+and will be used as sampling probabilities after normalization within
+each group. Weights must be non-negative, with at least one positive
+element in each group.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> or </em><em>ak.random.Generator</em><em>, </em><em>optional</em>) – If an <code class="docutils literal notranslate"><span class="pre">int</span></code>, it is used as the seed for the random number generator.
+If an <code class="docutils literal notranslate"><span class="pre">ak.random.Generator</span></code>, it is used directly.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new DataFrame containing items randomly sampled from each group
+<dd class="field-even"><p>A new <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> containing items randomly sampled from each group,
 sorted according to the grouped columns.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -6230,7 +6256,7 @@ sorted according to the grouped columns.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="s2">&quot;B&quot;</span><span class="p">:[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
 <span class="go">   A  B</span>
 <span class="go">0  3  3</span>
@@ -6241,6 +6267,7 @@ sorted according to the grouped columns.</p>
 <span class="go">5  3  8 (6 rows x 2 columns)</span>
 </pre></div>
 </div>
+<p>Sample one row per group:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 <span class="go">   A  B</span>
 <span class="go">3  1  6</span>
@@ -6248,14 +6275,24 @@ sorted according to the grouped columns.</p>
 <span class="go">5  3  8 (3 rows x 2 columns)</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<p>Sample a fraction of each group with weights:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">frac</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">weights</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="go">   A  B</span>
 <span class="go">1  1  4</span>
 <span class="go">2  2  5</span>
 <span class="go">0  3  3 (3 rows x 2 columns)</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
+<p>Sample with replacement:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">random_state</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="go">   A  B</span>
 <span class="go">1  1  4</span>
 <span class="go">3  1  6</span>

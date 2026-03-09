@@ -912,43 +912,39 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a random sample from each group.</span>
 
-<span class="sd">        You can either specify the number of elements</span>
-<span class="sd">        or the fraction of elements to be sampled. random_state can be used for reproducibility</span>
+<span class="sd">        You can specify either the number of elements to sample or the fraction</span>
+<span class="sd">        of elements to sample. ``random_state`` can be used for reproducibility.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        n: int, optional</span>
-<span class="sd">            Number of items to return for each group.</span>
-<span class="sd">            Cannot be used with frac and must be no larger than</span>
-<span class="sd">            the smallest group unless replace is True.</span>
-<span class="sd">            Default is one if frac is None.</span>
-
-<span class="sd">        frac: float, optional</span>
-<span class="sd">            Fraction of items to return. Cannot be used with n.</span>
-
-<span class="sd">        replace: bool, default False</span>
-<span class="sd">            Allow or disallow sampling of the same row more than once.</span>
-
-<span class="sd">        weights: pdarray, optional</span>
-<span class="sd">            Default None results in equal probability weighting.</span>
-<span class="sd">            If passed a pdarray, then values must have the same length as the underlying DataFrame</span>
-<span class="sd">            and will be used as sampling probabilities after normalization within each group.</span>
-<span class="sd">            Weights must be non-negative with at least one positive element within each group.</span>
-
-<span class="sd">        random_state: int or ak.random.Generator, optional</span>
-<span class="sd">            If int, seed for random number generator.</span>
-<span class="sd">            If ak.random.Generator, use as given.</span>
+<span class="sd">        n : int, optional</span>
+<span class="sd">            Number of items to return for each group. Cannot be used with</span>
+<span class="sd">            ``frac`` and must be no larger than the smallest group unless</span>
+<span class="sd">            ``replace`` is ``True``. Defaults to ``1`` if ``frac`` is ``None``.</span>
+<span class="sd">        frac : float, optional</span>
+<span class="sd">            Fraction of items to return. Cannot be used with ``n``.</span>
+<span class="sd">        replace : bool, default=False</span>
+<span class="sd">            Whether to allow sampling of the same row more than once.</span>
+<span class="sd">        weights : pdarray, optional</span>
+<span class="sd">            If ``None``, all rows are given equal probability. If a ``pdarray`` is</span>
+<span class="sd">            provided, it must have the same length as the underlying ``DataFrame``</span>
+<span class="sd">            and will be used as sampling probabilities after normalization within</span>
+<span class="sd">            each group. Weights must be non-negative, with at least one positive</span>
+<span class="sd">            element in each group.</span>
+<span class="sd">        random_state : int or ak.random.Generator, optional</span>
+<span class="sd">            If an ``int``, it is used as the seed for the random number generator.</span>
+<span class="sd">            If an ``ak.random.Generator``, it is used directly.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        DataFrame</span>
-<span class="sd">            A new DataFrame containing items randomly sampled from each group</span>
+<span class="sd">            A new ``DataFrame`` containing items randomly sampled from each group,</span>
 <span class="sd">            sorted according to the grouped columns.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;:[3,1,2,1,2,3],&quot;B&quot;:[3,4,5,6,7,8]})</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;: [3, 1, 2, 1, 2, 3], &quot;B&quot;: [3, 4, 5, 6, 7, 8]})</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
 <span class="sd">           A  B</span>
 <span class="sd">        0  3  3</span>
@@ -958,19 +954,33 @@
 <span class="sd">        4  2  7</span>
 <span class="sd">        5  3  8 (6 rows x 2 columns)</span>
 
+<span class="sd">        Sample one row per group:</span>
+
 <span class="sd">        &gt;&gt;&gt; df.groupby(&quot;A&quot;).sample(random_state=6)</span>
 <span class="sd">           A  B</span>
 <span class="sd">        3  1  6</span>
 <span class="sd">        4  2  7</span>
 <span class="sd">        5  3  8 (3 rows x 2 columns)</span>
 
-<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;A&quot;).sample(frac=0.5, random_state=3, weights=ak.array([1,1,1,0,0,0]))</span>
+<span class="sd">        Sample a fraction of each group with weights:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;A&quot;).sample(</span>
+<span class="sd">        ...     frac=0.5,</span>
+<span class="sd">        ...     random_state=3,</span>
+<span class="sd">        ...     weights=ak.array([1, 1, 1, 0, 0, 0]),</span>
+<span class="sd">        ... )</span>
 <span class="sd">           A  B</span>
 <span class="sd">        1  1  4</span>
 <span class="sd">        2  2  5</span>
 <span class="sd">        0  3  3 (3 rows x 2 columns)</span>
 
-<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;A&quot;).sample(n=3, replace=True, random_state=ak.random.default_rng(7))</span>
+<span class="sd">        Sample with replacement:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.groupby(&quot;A&quot;).sample(</span>
+<span class="sd">        ...     n=3,</span>
+<span class="sd">        ...     replace=True,</span>
+<span class="sd">        ...     random_state=ak.random.default_rng(7),</span>
+<span class="sd">        ... )</span>
 <span class="sd">           A  B</span>
 <span class="sd">        1  1  4</span>
 <span class="sd">        3  1  6</span>
@@ -981,7 +991,6 @@
 <span class="sd">        0  3  3</span>
 <span class="sd">        5  3  8</span>
 <span class="sd">        5  3  8 (9 rows x 2 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gb</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
@@ -1344,50 +1353,49 @@
 <a class="viewcode-back" href="../../../usage/dataframe.html#arkouda.DataFrame">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataFrame</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A DataFrame structure based on arkouda arrays.</span>
+<span class="sd">    A DataFrame structure based on Arkouda arrays.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    initialdata : List or dictionary of lists, tuples, or pdarrays</span>
-<span class="sd">        Each list/dictionary entry corresponds to one column of the data and</span>
-<span class="sd">        should be a homogenous type. Different columns may have different</span>
+<span class="sd">    initialdata : list or dict of lists, tuples, or pdarrays</span>
+<span class="sd">        Each list or dictionary entry corresponds to one column of data and</span>
+<span class="sd">        should be a homogeneous type. Different columns may have different</span>
 <span class="sd">        types. If using a dictionary, keys should be strings.</span>
-
 <span class="sd">    index : Index, pdarray, or Strings</span>
 <span class="sd">        Index for the resulting frame. Defaults to an integer range.</span>
-
-<span class="sd">    columns : List, tuple, pdarray, or Strings</span>
+<span class="sd">    columns : list, tuple, pdarray, or Strings</span>
 <span class="sd">        Column labels to use if the data does not include them. Elements must</span>
-<span class="sd">        be strings. Defaults to an stringified integer range.</span>
+<span class="sd">        be strings. Defaults to a stringified integer range.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    Create an empty ``DataFrame`` and add a column of data:</span>
 
-<span class="sd">    Create an empty DataFrame and add a column of data:</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; df = ak.DataFrame()</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;a&#39;] = ak.array([1,2,3])</span>
+<span class="sd">    &gt;&gt;&gt; df[&quot;a&quot;] = ak.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; df</span>
 <span class="sd">       a</span>
 <span class="sd">    0  1</span>
 <span class="sd">    1  2</span>
 <span class="sd">    2  3 (3 rows x 1 columns)</span>
 
-<span class="sd">    Create a new DataFrame using a dictionary of data:</span>
+<span class="sd">    Create a new ``DataFrame`` using a dictionary of data:</span>
 
-<span class="sd">    &gt;&gt;&gt; userName = ak.array([&#39;Alice&#39;, &#39;Bob&#39;, &#39;Alice&#39;, &#39;Carol&#39;, &#39;Bob&#39;, &#39;Alice&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; userName = ak.array([&quot;Alice&quot;, &quot;Bob&quot;, &quot;Alice&quot;, &quot;Carol&quot;, &quot;Bob&quot;, &quot;Alice&quot;])</span>
 <span class="sd">    &gt;&gt;&gt; userID = ak.array([111, 222, 111, 333, 222, 111])</span>
 <span class="sd">    &gt;&gt;&gt; item = ak.array([0, 0, 1, 1, 2, 0])</span>
 <span class="sd">    &gt;&gt;&gt; day = ak.array([5, 5, 6, 5, 6, 6])</span>
 <span class="sd">    &gt;&gt;&gt; amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])</span>
-<span class="sd">    &gt;&gt;&gt; df = ak.DataFrame({</span>
-<span class="sd">    ...     &#39;userName&#39;: userName,</span>
-<span class="sd">    ...     &#39;userID&#39;: userID,</span>
-<span class="sd">    ...     &#39;item&#39;: item,</span>
-<span class="sd">    ...     &#39;day&#39;: day,</span>
-<span class="sd">    ...     &#39;amount&#39;: amount</span>
-<span class="sd">    ... })</span>
+<span class="sd">    &gt;&gt;&gt; df = ak.DataFrame(</span>
+<span class="sd">    ...     {</span>
+<span class="sd">    ...         &quot;userName&quot;: userName,</span>
+<span class="sd">    ...         &quot;userID&quot;: userID,</span>
+<span class="sd">    ...         &quot;item&quot;: item,</span>
+<span class="sd">    ...         &quot;day&quot;: day,</span>
+<span class="sd">    ...         &quot;amount&quot;: amount,</span>
+<span class="sd">    ...     }</span>
+<span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; df</span>
 <span class="sd">      userName  userID  item  day  amount</span>
 <span class="sd">    0    Alice     111     0    5     0.5</span>
@@ -1398,22 +1406,25 @@
 <span class="sd">    5    Alice     111     0    6     0.6 (6 rows x 5 columns)</span>
 
 <span class="sd">    Indexing works slightly differently than with pandas:</span>
+
 <span class="sd">    &gt;&gt;&gt; df[0]</span>
 <span class="sd">    {&#39;userName&#39;: np.str_(&#39;Alice&#39;), &#39;userID&#39;: np.int64(111), &#39;item&#39;: np.int64(0),</span>
 <span class="sd">    &#39;day&#39;: np.int64(5), &#39;amount&#39;: np.float64(0.5)}</span>
-<span class="sd">    &gt;&gt;&gt; df[&#39;userID&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; df[&quot;userID&quot;]</span>
 <span class="sd">    array([111 222 111 333 222 111])</span>
-
-<span class="sd">    &gt;&gt;&gt; df[&#39;userName&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; df[&quot;userName&quot;]</span>
 <span class="sd">    array([&#39;Alice&#39;, &#39;Bob&#39;, &#39;Alice&#39;, &#39;Carol&#39;, &#39;Bob&#39;, &#39;Alice&#39;])</span>
 
-<span class="sd">    &gt;&gt;&gt; df[ak.array([1,3,5])]</span>
+<span class="sd">    Select rows by integer array:</span>
+
+<span class="sd">    &gt;&gt;&gt; df[ak.array([1, 3, 5])]</span>
 <span class="sd">      userName  userID  item  day  amount</span>
 <span class="sd">    1      Bob     222     0    5     0.6</span>
 <span class="sd">    3    Carol     333     1    5     1.2</span>
 <span class="sd">    5    Alice     111     0    6     0.6 (3 rows x 5 columns)</span>
 
-<span class="sd">    Compute the stride:</span>
+<span class="sd">    Slice rows:</span>
+
 <span class="sd">    &gt;&gt;&gt; df[1:5:1]</span>
 <span class="sd">      userName  userID  item  day  amount</span>
 <span class="sd">    1      Bob     222     0    5     0.6</span>
@@ -1421,13 +1432,15 @@
 <span class="sd">    3    Carol     333     1    5     1.2</span>
 <span class="sd">    4      Bob     222     2    6     4.3 (4 rows x 5 columns)</span>
 
-<span class="sd">    &gt;&gt;&gt; df[ak.array([1,2,3])]</span>
+<span class="sd">    &gt;&gt;&gt; df[ak.array([1, 2, 3])]</span>
 <span class="sd">      userName  userID  item  day  amount</span>
 <span class="sd">    1      Bob     222     0    5     0.6</span>
 <span class="sd">    2    Alice     111     1    6     1.1</span>
 <span class="sd">    3    Carol     333     1    5     1.2 (3 rows x 5 columns)</span>
 
-<span class="sd">    &gt;&gt;&gt; df[[&#39;userID&#39;, &#39;day&#39;]]</span>
+<span class="sd">    Select columns by name:</span>
+
+<span class="sd">    &gt;&gt;&gt; df[[&quot;userID&quot;, &quot;day&quot;]]</span>
 <span class="sd">       userID  day</span>
 <span class="sd">    0     111    5</span>
 <span class="sd">    1     222    5</span>
@@ -1435,7 +1448,6 @@
 <span class="sd">    3     333    5</span>
 <span class="sd">    4     222    6</span>
 <span class="sd">    5     111    6 (6 rows x 2 columns)</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">objType</span> <span class="o">=</span> <span class="s2">&quot;DataFrame&quot;</span>
@@ -2136,44 +2148,47 @@
         <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Drop column/s or row/s from the dataframe.</span>
+<span class="sd">        Drop rows or columns from the DataFrame.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        keys : str, int or list</span>
-<span class="sd">            The labels to be dropped on the given axis.</span>
-<span class="sd">        axis : int or str</span>
-<span class="sd">            The axis on which to drop from. 0/&#39;index&#39; - drop rows, 1/&#39;columns&#39; - drop columns.</span>
-<span class="sd">        inplace: bool, default=False</span>
-<span class="sd">            When True, perform the operation on the calling object.</span>
-<span class="sd">            When False, return a new object.</span>
+<span class="sd">        keys : Union[str, int, List[Union[str, int]]]</span>
+<span class="sd">            Label or list of labels to drop along the specified axis.</span>
+<span class="sd">        axis : Union[str, int], default=0</span>
+<span class="sd">            Axis along which to drop.</span>
+
+<span class="sd">            - ``0`` or ``&quot;index&quot;`` — drop rows</span>
+<span class="sd">            - ``1`` or ``&quot;columns&quot;`` — drop columns</span>
+<span class="sd">        inplace : bool, default=False</span>
+<span class="sd">            If ``True``, perform the operation on the calling object.</span>
+<span class="sd">            If ``False``, return a new object.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        DataFrame or None</span>
-<span class="sd">            DateFrame when `inplace=False`;</span>
-<span class="sd">            None when `inplace=True`</span>
+<span class="sd">        Union[None, DataFrame]</span>
+<span class="sd">            ``DataFrame`` when ``inplace=False``; otherwise ``None``.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&#39;col1&#39;: [1, 2], &#39;col2&#39;: [3, 4]})</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;col1&quot;: [1, 2], &quot;col2&quot;: [3, 4]})</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
 <span class="sd">           col1  col2</span>
 <span class="sd">        0     1     3</span>
 <span class="sd">        1     2     4 (2 rows x 2 columns)</span>
 
-<span class="sd">        Drop column</span>
-<span class="sd">        &gt;&gt;&gt; df.drop(&#39;col1&#39;, axis = 1)</span>
+<span class="sd">        Drop a column:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.drop(&quot;col1&quot;, axis=1)</span>
 <span class="sd">           col2</span>
 <span class="sd">        0     3</span>
 <span class="sd">        1     4 (2 rows x 1 columns)</span>
 
-<span class="sd">        Drop row</span>
-<span class="sd">        &gt;&gt;&gt; df.drop(0, axis = 0)</span>
+<span class="sd">        Drop a row:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.drop(0, axis=0)</span>
 <span class="sd">           col1  col2</span>
 <span class="sd">        1     2     4 (1 rows x 2 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span>
@@ -2720,38 +2735,35 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        mapper : callable or dict-like, Optional</span>
+<span class="sd">        mapper : Optional[Union[Callable, Dict]]</span>
 <span class="sd">            Function or dictionary mapping existing values to new values.</span>
-<span class="sd">            Nonexistent names will not raise an error.</span>
-<span class="sd">            Uses the value of axis to determine if renaming column or index</span>
-<span class="sd">        index : callable or dict-like, Optional</span>
-<span class="sd">            Function or dictionary mapping existing index names to</span>
-<span class="sd">            new index names. Nonexistent names will not raise an</span>
-<span class="sd">            error.</span>
-<span class="sd">            When this is set, axis is ignored.</span>
-<span class="sd">        column : callable or dict-like, Optional</span>
-<span class="sd">            Function or dictionary mapping existing column names to</span>
-<span class="sd">            new column names. Nonexistent names will not raise an</span>
-<span class="sd">            error.</span>
-<span class="sd">            When this is set, axis is ignored.</span>
-<span class="sd">        axis: int or str, default=0</span>
-<span class="sd">            Indicates which axis to perform the rename.</span>
-<span class="sd">            0/&quot;index&quot; - Indexes</span>
-<span class="sd">            1/&quot;column&quot; - Columns</span>
-<span class="sd">        inplace: bool, default=False</span>
-<span class="sd">            When True, perform the operation on the calling object.</span>
-<span class="sd">            When False, return a new object.</span>
+<span class="sd">            Nonexistent names will not raise an error. The value of ``axis``</span>
+<span class="sd">            determines whether the mapping is applied to the index or columns.</span>
+<span class="sd">        index : Optional[Union[Callable, Dict]]</span>
+<span class="sd">            Function or dictionary mapping existing index names to new index names.</span>
+<span class="sd">            Nonexistent names will not raise an error. When this is set, ``axis``</span>
+<span class="sd">            is ignored.</span>
+<span class="sd">        column : Optional[Union[Callable, Dict]]</span>
+<span class="sd">            Function or dictionary mapping existing column names to new column</span>
+<span class="sd">            names. Nonexistent names will not raise an error. When this is set,</span>
+<span class="sd">            ``axis`` is ignored.</span>
+<span class="sd">        axis : Union[str, int], default=0</span>
+<span class="sd">            Axis to perform the rename operation on.</span>
+
+<span class="sd">            - ``0`` or ``&quot;index&quot;`` — rename index values</span>
+<span class="sd">            - ``1`` or ``&quot;column&quot;`` — rename column names</span>
+<span class="sd">        inplace : bool, default=False</span>
+<span class="sd">            If ``True``, perform the operation on the calling object.</span>
+<span class="sd">            If ``False``, return a new object.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        DataFrame or None</span>
-<span class="sd">            DateFrame when `inplace=False`;</span>
-<span class="sd">            None when `inplace=True`.</span>
+<span class="sd">        Optional[DataFrame]</span>
+<span class="sd">            ``DataFrame`` when ``inplace=False``; otherwise ``None``.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-
 <span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;: ak.array([1, 2, 3]), &quot;B&quot;: ak.array([4, 5, 6])})</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
 <span class="sd">           A  B</span>
@@ -2760,26 +2772,28 @@
 <span class="sd">        2  3  6 (3 rows x 2 columns)</span>
 
 <span class="sd">        Rename columns using a mapping:</span>
-<span class="sd">        &gt;&gt;&gt; df.rename(column={&#39;A&#39;:&#39;a&#39;, &#39;B&#39;:&#39;c&#39;})</span>
+
+<span class="sd">        &gt;&gt;&gt; df.rename(column={&quot;A&quot;: &quot;a&quot;, &quot;B&quot;: &quot;c&quot;})</span>
 <span class="sd">           a  c</span>
 <span class="sd">        0  1  4</span>
 <span class="sd">        1  2  5</span>
 <span class="sd">        2  3  6 (3 rows x 2 columns)</span>
 
 <span class="sd">        Rename indexes using a mapping:</span>
-<span class="sd">        &gt;&gt;&gt; df.rename(index={0:99, 2:11})</span>
+
+<span class="sd">        &gt;&gt;&gt; df.rename(index={0: 99, 2: 11})</span>
 <span class="sd">            A  B</span>
 <span class="sd">        99  1  4</span>
 <span class="sd">        1   2  5</span>
 <span class="sd">        11  3  6 (3 rows x 2 columns)</span>
 
-<span class="sd">        Rename using an axis style parameter:</span>
-<span class="sd">        &gt;&gt;&gt; df.rename(str.lower, axis=&#39;column&#39;)</span>
+<span class="sd">        Rename using the axis-style parameter:</span>
+
+<span class="sd">        &gt;&gt;&gt; df.rename(str.lower, axis=&quot;column&quot;)</span>
 <span class="sd">           a  b</span>
 <span class="sd">        0  1  4</span>
 <span class="sd">        1  2  5</span>
 <span class="sd">        2  3  6 (3 rows x 2 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Only column or index can be renamed, cannot rename both at once&quot;</span><span class="p">)</span>
@@ -3053,7 +3067,7 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a random sample of `n` rows.</span>
+<span class="sd">        Return a random sample of ``n`` rows.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -3063,10 +3077,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        DataFrame</span>
-<span class="sd">            The sampled `n` rows of the DataFrame.</span>
+<span class="sd">            A ``DataFrame`` containing ``n`` randomly sampled rows.</span>
 
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;: ak.arange(5), &quot;B&quot;: -1 * ak.arange(5)})</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
@@ -3078,12 +3092,12 @@
 <span class="sd">        4  4 -4 (5 rows x 2 columns)</span>
 
 <span class="sd">        Random output of size 3:</span>
+
 <span class="sd">        &gt;&gt;&gt; df.sample(n=3)  # doctest: +SKIP</span>
 <span class="sd">           A  B</span>
 <span class="sd">        4  4 -4</span>
 <span class="sd">        3  3 -3</span>
 <span class="sd">        1  1 -1 (3 rows x 2 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_nrows</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
@@ -3191,25 +3205,24 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.memory_usage">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the memory usage of each column in bytes.</span>
+<span class="sd">        Return the memory usage of each column.</span>
 
-<span class="sd">        The memory usage can optionally include the contribution of</span>
-<span class="sd">        the index.</span>
+<span class="sd">        The memory usage can optionally include the contribution of the index.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        index : bool, default True</span>
-<span class="sd">            Specifies whether to include the memory usage of the DataFrame&#39;s</span>
-<span class="sd">            index in returned Series. If ``index=True``, the memory usage of</span>
-<span class="sd">            the index is the first item in the output.</span>
-<span class="sd">        unit : str, default = &quot;B&quot;</span>
-<span class="sd">            Unit to return. One of {&#39;B&#39;, &#39;KB&#39;, &#39;MB&#39;, &#39;GB&#39;}.</span>
+<span class="sd">        index : bool, default=True</span>
+<span class="sd">            Whether to include the memory usage of the DataFrame&#39;s index in the</span>
+<span class="sd">            returned ``Series``. If ``True``, the memory usage of the index appears</span>
+<span class="sd">            as the first item in the output.</span>
+<span class="sd">        unit : str, default=&quot;B&quot;</span>
+<span class="sd">            Unit to return. One of ``{&quot;B&quot;, &quot;KB&quot;, &quot;MB&quot;, &quot;GB&quot;}``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Series</span>
-<span class="sd">            A Series whose index is the original column names and whose values</span>
-<span class="sd">            is the memory usage of each column in bytes.</span>
+<span class="sd">            A ``Series`` whose index contains the original column names and whose</span>
+<span class="sd">            values represent the memory usage of each column in the specified unit.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -3221,8 +3234,8 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; dtypes = {&quot;int64&quot;:ak.int64, &quot;float64&quot;:ak.float64,  &quot;bool&quot;:ak.bool_}</span>
-<span class="sd">        &gt;&gt;&gt; data = dict([(t, ak.ones(5000, dtype=dtypes[t])) for t in dtypes.keys()])</span>
+<span class="sd">        &gt;&gt;&gt; dtypes = {&quot;int64&quot;: ak.int64, &quot;float64&quot;: ak.float64, &quot;bool&quot;: ak.bool_}</span>
+<span class="sd">        &gt;&gt;&gt; data = {t: ak.ones(5000, dtype=dtypes[t]) for t in dtypes}</span>
 <span class="sd">        &gt;&gt;&gt; df = ak.DataFrame(data)</span>
 <span class="sd">        &gt;&gt;&gt; df.head()</span>
 <span class="sd">           int64  float64  bool</span>
@@ -3253,9 +3266,9 @@
 <span class="sd">        dtype: float64</span>
 
 <span class="sd">        To get the approximate total memory usage:</span>
+
 <span class="sd">        &gt;&gt;&gt; df.memory_usage(index=True).sum()</span>
 <span class="sd">        np.int64(125000)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_bytes</span>
@@ -3418,30 +3431,31 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/dataframe/index.html#arkouda.DataFrame.to_markdown">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">storage_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print DataFrame in Markdown-friendly format.</span>
+<span class="sd">        Print the DataFrame in a Markdown-friendly format.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        mode : str, optional</span>
-<span class="sd">            Mode in which file is opened, &quot;wt&quot; by default.</span>
-<span class="sd">        index : bool, optional, default True</span>
-<span class="sd">            Add index (row) labels.</span>
-<span class="sd">        tablefmt: str = &quot;grid&quot;</span>
-<span class="sd">            Table format to call from tablulate:</span>
-<span class="sd">            https://pypi.org/project/tabulate/</span>
-<span class="sd">        storage_options: dict, optional</span>
-<span class="sd">            Extra options that make sense for a particular storage connection,</span>
-<span class="sd">            e.g. host, port, username, password, etc., if using a URL that will be parsed by fsspec,</span>
-<span class="sd">            e.g., starting “s3://”, “gcs://”.</span>
-<span class="sd">            An error will be raised if providing this argument with a non-fsspec URL.</span>
-<span class="sd">            See the fsspec and backend storage implementation docs for the set</span>
-<span class="sd">            of allowed keys and values.</span>
+<span class="sd">            Mode in which the file is opened, by default ``&quot;wt&quot;``.</span>
+<span class="sd">        index : bool, optional, default=True</span>
+<span class="sd">            Whether to include index (row) labels.</span>
+<span class="sd">        tablefmt : str, default=&quot;grid&quot;</span>
+<span class="sd">            Table format passed to ``tabulate``.</span>
+<span class="sd">            See https://pypi.org/project/tabulate/ for available formats.</span>
+<span class="sd">        storage_options : dict, optional</span>
+<span class="sd">            Extra options for a particular storage connection (for example</span>
+<span class="sd">            host, port, username, password) when using a URL handled by</span>
+<span class="sd">            ``fsspec`` such as ``&quot;s3://&quot;``, ``&quot;gcs://&quot;``. An error will be</span>
+<span class="sd">            raised if this argument is provided with a non-fsspec URL.</span>
+<span class="sd">            See the fsspec and backend storage implementation documentation</span>
+<span class="sd">            for the set of allowed keys and values.</span>
 <span class="sd">        **kwargs</span>
-<span class="sd">            These parameters will be passed to tabulate.</span>
+<span class="sd">            Additional keyword arguments passed to ``tabulate``.</span>
 
-<span class="sd">        Note</span>
-<span class="sd">        ----</span>
-<span class="sd">        This function should only be called on small DataFrames as it calls pandas.DataFrame.to_markdown:</span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This function should only be used with small DataFrames because it</span>
+<span class="sd">        calls ``pandas.DataFrame.to_markdown`` internally:</span>
 <span class="sd">        https://pandas.pydata.org/pandas-docs/version/1.2.4/reference/api/pandas.DataFrame.to_markdown.html</span>
 
 <span class="sd">        Examples</span>
@@ -3458,7 +3472,8 @@
 <span class="sd">        +----+------------+------------+</span>
 
 <span class="sd">        Suppress the index:</span>
-<span class="sd">        &gt;&gt;&gt; print(df.to_markdown(index = False))</span>
+
+<span class="sd">        &gt;&gt;&gt; print(df.to_markdown(index=False))</span>
 <span class="sd">        +------------+------------+</span>
 <span class="sd">        | animal_1   | animal_2   |</span>
 <span class="sd">        +============+============+</span>
@@ -3466,7 +3481,6 @@
 <span class="sd">        +------------+------------+</span>
 <span class="sd">        | pig        | quetzal    |</span>
 <span class="sd">        +------------+------------+</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span>
             <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
@@ -3936,32 +3950,36 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prefix_path</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;INFER&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load dataframe from file.</span>
+<span class="sd">        Load a DataFrame from a file.</span>
 
-<span class="sd">        file_format needed for consistency with other load functions.</span>
+<span class="sd">        The ``file_format`` parameter is included for consistency with other</span>
+<span class="sd">        Arkouda ``load`` functions.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        prefix_path : str</span>
-<span class="sd">            The prefix path for the data.</span>
-
-<span class="sd">        file_format : string, default = &quot;INFER&quot;</span>
+<span class="sd">            The prefix path for the stored data.</span>
+<span class="sd">        file_format : str, default=&quot;INFER&quot;</span>
+<span class="sd">            File format of the stored data. If ``&quot;INFER&quot;``, the format will be</span>
+<span class="sd">            inferred automatically.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        DataFrame</span>
-<span class="sd">            A dataframe loaded from the prefix_path.</span>
+<span class="sd">            A ``DataFrame`` loaded from ``prefix_path``.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-
-<span class="sd">        To store data in &lt;my_dir&gt;/my_data_LOCALE0000,</span>
-<span class="sd">        use &quot;&lt;my_dir&gt;/my_data&quot; as the prefix.</span>
 <span class="sd">        &gt;&gt;&gt; import os.path</span>
 <span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
-<span class="sd">        &gt;&gt;&gt; my_path = os.path.join(os.getcwd(), &#39;hdf5_output&#39;,&#39;my_data&#39;)</span>
+
+<span class="sd">        To store data in ``&lt;my_dir&gt;/my_data_LOCALE0000``, use</span>
+<span class="sd">        ``&quot;&lt;my_dir&gt;/my_data&quot;`` as the prefix.</span>
+
+<span class="sd">        &gt;&gt;&gt; my_path = os.path.join(os.getcwd(), &quot;hdf5_output&quot;, &quot;my_data&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; Path(my_path).mkdir(parents=True, exist_ok=True)</span>
+
 <span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;: ak.arange(5), &quot;B&quot;: -1 * ak.arange(5)})</span>
 <span class="sd">        &gt;&gt;&gt; df.to_parquet(my_path + &quot;/my_data&quot;)</span>
 
@@ -3972,7 +3990,6 @@
 <span class="sd">        2 -2  2</span>
 <span class="sd">        3 -3  3</span>
 <span class="sd">        4 -4  4 (5 rows x 2 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.io</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">_dict_recombine_segarrays_categoricals</span><span class="p">,</span>
@@ -4476,18 +4493,19 @@
     <span class="nd">@typechecked</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pdarray</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Series</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Determine whether each element in the DataFrame is contained in values.</span>
+<span class="sd">        Determine whether each element in the DataFrame is contained in ``values``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        values : pdarray, dict, Series, or DataFrame</span>
-<span class="sd">            The values to check for in DataFrame. Series can only have a single index.</span>
+<span class="sd">        values : Union[pdarray, Dict, Series, DataFrame]</span>
+<span class="sd">            The values to check for in the DataFrame. A ``Series`` must have a</span>
+<span class="sd">            single index.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        DataFrame</span>
-<span class="sd">            Arkouda DataFrame of booleans showing whether each element in the DataFrame is</span>
-<span class="sd">            contained in values.</span>
+<span class="sd">            Arkouda ``DataFrame`` of booleans indicating whether each element in</span>
+<span class="sd">            the DataFrame is contained in ``values``.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -4495,34 +4513,38 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        - Pandas supports values being an iterable type. In arkouda, we replace this with pdarray.</span>
-<span class="sd">        - Pandas supports ~ operations. Currently, ak.DataFrame does not support this.</span>
+<span class="sd">        - Pandas supports ``values`` being any iterable type. In Arkouda, this is</span>
+<span class="sd">          replaced with ``pdarray``.</span>
+<span class="sd">        - Pandas supports ``~`` operations. Currently, ``ak.DataFrame`` does not.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&#39;col_A&#39;: ak.array([7, 3]), &#39;col_B&#39;:ak.array([1, 9])})</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;col_A&quot;: ak.array([7, 3]), &quot;col_B&quot;: ak.array([1, 9])})</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
 <span class="sd">           col_A  col_B</span>
 <span class="sd">        0      7      1</span>
 <span class="sd">        1      3      9 (2 rows x 2 columns)</span>
 
-<span class="sd">        When `values` is a pdarray, check every value in the DataFrame to determine if</span>
-<span class="sd">        it exists in values.</span>
+<span class="sd">        When ``values`` is a ``pdarray``, every value in the DataFrame is checked</span>
+<span class="sd">        to determine whether it exists in ``values``.</span>
+
 <span class="sd">        &gt;&gt;&gt; df.isin(ak.array([0, 1]))</span>
 <span class="sd">           col_A  col_B</span>
 <span class="sd">        0  False   True</span>
 <span class="sd">        1  False  False (2 rows x 2 columns)</span>
 
-<span class="sd">        When `values` is a dict, the values in the dict are passed to check the column</span>
-<span class="sd">        indicated by the key.</span>
-<span class="sd">        &gt;&gt;&gt; df.isin({&#39;col_A&#39;: ak.array([0, 3])})</span>
+<span class="sd">        When ``values`` is a ``dict``, the dictionary values are used to check</span>
+<span class="sd">        the column indicated by each key.</span>
+
+<span class="sd">        &gt;&gt;&gt; df.isin({&quot;col_A&quot;: ak.array([0, 3])})</span>
 <span class="sd">           col_A  col_B</span>
 <span class="sd">        0  False  False</span>
 <span class="sd">        1   True  False (2 rows x 2 columns)</span>
 
-<span class="sd">        When `values` is a Series, each column is checked if values is present positionally.</span>
-<span class="sd">        This means that for `True` to be returned, the indexes must be the same.</span>
+<span class="sd">        When ``values`` is a ``Series``, each column is checked positionally.</span>
+<span class="sd">        For ``True`` to be returned, the indexes must match.</span>
+
 <span class="sd">        &gt;&gt;&gt; i = ak.Index(ak.arange(2))</span>
 <span class="sd">        &gt;&gt;&gt; s = ak.Series(data=[3, 9], index=i)</span>
 <span class="sd">        &gt;&gt;&gt; df.isin(s)</span>
@@ -4530,14 +4552,14 @@
 <span class="sd">        0  False  False</span>
 <span class="sd">        1  False   True (2 rows x 2 columns)</span>
 
-<span class="sd">        When `values` is a DataFrame, the index and column must match.</span>
-<span class="sd">        Note that 9 is not found because the column name does not match.</span>
-<span class="sd">        &gt;&gt;&gt; other_df = ak.DataFrame({&#39;col_A&#39;:ak.array([7, 3]), &#39;col_C&#39;:ak.array([0, 9])})</span>
+<span class="sd">        When ``values`` is a ``DataFrame``, the index and columns must match.</span>
+<span class="sd">        Note that ``9`` is not found because the column name differs.</span>
+
+<span class="sd">        &gt;&gt;&gt; other_df = ak.DataFrame({&quot;col_A&quot;: ak.array([7, 3]), &quot;col_C&quot;: ak.array([0, 9])})</span>
 <span class="sd">        &gt;&gt;&gt; df.isin(other_df)</span>
 <span class="sd">           col_A  col_B</span>
 <span class="sd">        0   True  False</span>
 <span class="sd">        1   True  False (2 rows x 2 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">cumsum</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">zeros</span>
@@ -4899,22 +4921,28 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detect missing values.</span>
 
-<span class="sd">        Return a boolean same-sized object indicating if the values are NA.</span>
-<span class="sd">        numpy.NaN values get mapped to True values.</span>
-<span class="sd">        Everything else gets mapped to False values.</span>
+<span class="sd">        Return a boolean object of the same size indicating whether each value</span>
+<span class="sd">        is missing. ``numpy.nan`` values are mapped to ``True``. All other values</span>
+<span class="sd">        are mapped to ``False``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        DataFrame</span>
-<span class="sd">            Mask of bool values for each element in DataFrame</span>
-<span class="sd">            that indicates whether an element is an NA value.</span>
+<span class="sd">            Boolean mask for each element in the ``DataFrame`` indicating</span>
+<span class="sd">            whether the value is NA.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&quot;A&quot;: [np.nan, 2, 2, 3], &quot;B&quot;: [3, np.nan, 5, 6],</span>
-<span class="sd">        ...          &quot;C&quot;: [1, np.nan, 2, np.nan], &quot;D&quot;:[&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;]})</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame(</span>
+<span class="sd">        ...     {</span>
+<span class="sd">        ...         &quot;A&quot;: [np.nan, 2, 2, 3],</span>
+<span class="sd">        ...         &quot;B&quot;: [3, np.nan, 5, 6],</span>
+<span class="sd">        ...         &quot;C&quot;: [1, np.nan, 2, np.nan],</span>
+<span class="sd">        ...         &quot;D&quot;: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;],</span>
+<span class="sd">        ...     }</span>
+<span class="sd">        ... )</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
 <span class="sd">             A    B    C  D</span>
 <span class="sd">        0  NaN  3.0  1.0  a</span>
@@ -4928,7 +4956,6 @@
 <span class="sd">        1  False   True   True  False</span>
 <span class="sd">        2  False  False  False  False</span>
 <span class="sd">        3  False  False   True  False (4 rows x 4 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="kn">import</span> <span class="n">full</span><span class="p">,</span> <span class="n">isnan</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_numeric</span>
@@ -5636,64 +5663,71 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign new columns to a DataFrame.</span>
 
-<span class="sd">        Return a new object with all original columns in addition to new ones.</span>
-<span class="sd">        Existing columns that are re-assigned will be overwritten.</span>
+<span class="sd">        Return a new object with all original columns in addition to the</span>
+<span class="sd">        newly assigned ones. Existing columns that are reassigned will</span>
+<span class="sd">        be overwritten.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        **kwargs : dict of {str: callable or Series}</span>
-<span class="sd">            The column names are keywords. If the values are</span>
-<span class="sd">            callable, they are computed on the DataFrame and</span>
-<span class="sd">            assigned to the new columns. The callable must not</span>
-<span class="sd">            change input DataFrame (though pandas doesn&#39;t check it).</span>
-<span class="sd">            If the values are not callable, (e.g. a Series, scalar, or array),</span>
-<span class="sd">            they are simply assigned.</span>
+<span class="sd">            The column names are the keyword arguments. If the values are</span>
+<span class="sd">            callable, they are computed on the DataFrame and assigned to</span>
+<span class="sd">            the new columns. The callable must not modify the input</span>
+<span class="sd">            DataFrame.</span>
+
+<span class="sd">            If the values are not callable (for example a ``Series``,</span>
+<span class="sd">            scalar, or array), they are directly assigned.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        DataFrame</span>
-<span class="sd">            A new DataFrame with the new columns in addition to</span>
-<span class="sd">            all the existing columns.</span>
+<span class="sd">            A new ``DataFrame`` with the new columns added alongside the</span>
+<span class="sd">            existing columns.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        Assigning multiple columns within the same ``assign`` is possible.</span>
-<span class="sd">        Later items in &#39;\*\*kwargs&#39; may refer to newly created or modified</span>
-<span class="sd">        columns in &#39;df&#39;; items are computed and assigned into &#39;df&#39; in order.</span>
+<span class="sd">        Assigning multiple columns within the same ``assign`` call is</span>
+<span class="sd">        supported. Later items in ``**kwargs`` may refer to newly created</span>
+<span class="sd">        or modified columns in ``df``. Items are computed and assigned</span>
+<span class="sd">        to ``df`` in order.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame({&#39;temp_c&#39;: [17.0, 25.0]},</span>
-<span class="sd">        ...                   index=[&#39;Portland&#39;, &#39;Berkeley&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; df = ak.DataFrame(</span>
+<span class="sd">        ...     {&quot;temp_c&quot;: [17.0, 25.0]},</span>
+<span class="sd">        ...     index=[&quot;Portland&quot;, &quot;Berkeley&quot;],</span>
+<span class="sd">        ... )</span>
 <span class="sd">        &gt;&gt;&gt; df</span>
 <span class="sd">                  temp_c</span>
 <span class="sd">        Portland    17.0</span>
 <span class="sd">        Berkeley    25.0 (2 rows x 1 columns)</span>
 
-<span class="sd">        Where the value is a callable, evaluated on `df`:</span>
+<span class="sd">        When the value is a callable, it is evaluated on ``df``:</span>
+
 <span class="sd">        &gt;&gt;&gt; df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32)</span>
 <span class="sd">                  temp_c  temp_f</span>
 <span class="sd">        Portland    17.0    62.6</span>
 <span class="sd">        Berkeley    25.0    77.0 (2 rows x 2 columns)</span>
 
-<span class="sd">        Alternatively, the same behavior can be achieved by directly</span>
-<span class="sd">        referencing an existing Series or sequence:</span>
+<span class="sd">        The same behavior can be achieved by referencing an existing</span>
+<span class="sd">        column directly:</span>
 
-<span class="sd">        &gt;&gt;&gt; df.assign(temp_f=df[&#39;temp_c&#39;] * 9 / 5 + 32)</span>
+<span class="sd">        &gt;&gt;&gt; df.assign(temp_f=df[&quot;temp_c&quot;] * 9 / 5 + 32)</span>
 <span class="sd">                  temp_c  temp_f</span>
 <span class="sd">        Portland    17.0    62.6</span>
 <span class="sd">        Berkeley    25.0    77.0 (2 rows x 2 columns)</span>
 
-<span class="sd">        You can create multiple columns within the same assign where one</span>
-<span class="sd">        of the columns depends on another one defined within the same assign:</span>
+<span class="sd">        Multiple columns can be created in a single call where one depends</span>
+<span class="sd">        on another defined within the same ``assign``:</span>
 
-<span class="sd">        &gt;&gt;&gt; df.assign(temp_f=lambda x: x[&#39;temp_c&#39;] * 9 / 5 + 32,</span>
-<span class="sd">        ...           temp_k=lambda x: (x[&#39;temp_f&#39;] + 459.67) * 5 / 9)</span>
+<span class="sd">        &gt;&gt;&gt; df.assign(</span>
+<span class="sd">        ...     temp_f=lambda x: x[&quot;temp_c&quot;] * 9 / 5 + 32,</span>
+<span class="sd">        ...     temp_k=lambda x: (x[&quot;temp_f&quot;] + 459.67) * 5 / 9,</span>
+<span class="sd">        ... )</span>
 <span class="sd">                  temp_c  temp_f  temp_k</span>
 <span class="sd">        Portland    17.0    62.6  290.15</span>
 <span class="sd">        Berkeley    25.0    77.0  298.15 (2 rows x 3 columns)</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 

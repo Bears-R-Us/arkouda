@@ -1864,31 +1864,31 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Group another array of values and return the number of unique values in each group.</span>
 
-<span class="sd">        Group using the permutation stored in the GroupBy instance.</span>
+<span class="sd">        Grouping uses the permutation stored in the ``GroupBy`` instance.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        values : pdarray, int64</span>
-<span class="sd">            The values to group and find unique values</span>
+<span class="sd">        values : groupable</span>
+<span class="sd">            Values to group and compute the number of unique values for each group.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[groupable, pdarray]</span>
 <span class="sd">            unique_keys : groupable</span>
-<span class="sd">                The unique keys, in grouped order</span>
-<span class="sd">            group_nunique : groupable</span>
-<span class="sd">                Number of unique values per unique key in the GroupBy instance</span>
+<span class="sd">                The unique keys in grouped order.</span>
+<span class="sd">            group_nunique : pdarray</span>
+<span class="sd">                Number of unique values for each key in the ``GroupBy`` instance.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
-<span class="sd">            Raised if the dtype(s) of values array(s) does/do not support</span>
-<span class="sd">            the nunique method</span>
+<span class="sd">            Raised if the dtype(s) of the ``values`` array(s) do not support</span>
+<span class="sd">            the ``nunique`` operation.</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            Raised if the key array size does not match the values size or</span>
-<span class="sd">            if the operator is not in the GroupBy.Reductions array</span>
+<span class="sd">            Raised if the key array size does not match the ``values`` size or</span>
+<span class="sd">            if the operator is not present in ``GroupBy.Reductions``.</span>
 <span class="sd">        RuntimeError</span>
-<span class="sd">            Raised if nunique is not supported for the values dtype</span>
+<span class="sd">            Raised if ``nunique`` is not supported for the ``values`` dtype.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1896,20 +1896,24 @@
 <span class="sd">        &gt;&gt;&gt; data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])</span>
 <span class="sd">        &gt;&gt;&gt; data</span>
 <span class="sd">        array([3 4 3 1 1 4 3 4 1 4])</span>
+
 <span class="sd">        &gt;&gt;&gt; labels = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])</span>
 <span class="sd">        &gt;&gt;&gt; labels</span>
 <span class="sd">        array([1 1 1 2 2 2 3 3 3 4])</span>
+
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(labels)</span>
 <span class="sd">        &gt;&gt;&gt; g.keys</span>
 <span class="sd">        array([1 1 1 2 2 2 3 3 3 4])</span>
+
 <span class="sd">        &gt;&gt;&gt; g.nunique(data)</span>
 <span class="sd">        (array([1 2 3 4]), array([2 2 3 1]))</span>
 
-<span class="sd">        Group (1,1,1) has values [3,4,3] -&gt; there are 2 unique values 3&amp;4</span>
-<span class="sd">        Group (2,2,2) has values [1,1,4] -&gt; 2 unique values 1&amp;4</span>
-<span class="sd">        Group (3,3,3) has values [3,4,1] -&gt; 3 unique values</span>
-<span class="sd">        Group (4) has values [4] -&gt; 1 unique value</span>
+<span class="sd">        Group explanations:</span>
 
+<span class="sd">        - Group ``(1, 1, 1)`` has values ``[3, 4, 3]`` → 2 unique values (3, 4)</span>
+<span class="sd">        - Group ``(2, 2, 2)`` has values ``[1, 1, 4]`` → 2 unique values (1, 4)</span>
+<span class="sd">        - Group ``(3, 3, 3)`` has values ``[3, 4, 1]`` → 3 unique values</span>
+<span class="sd">        - Group ``(4)`` has values ``[4]`` → 1 unique value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TO DO: defer to self.aggregate once logic is ported over to Chapel</span>
         <span class="c1"># return self.aggregate(values, &quot;nunique&quot;)</span>
@@ -2624,32 +2628,32 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        values : pdarray, Strings</span>
-<span class="sd">            The values to put in each group&#39;s segment</span>
-<span class="sd">        permute : bool</span>
-<span class="sd">            If True (default), permute broadcast values back to the ordering</span>
-<span class="sd">            of the original array on which GroupBy was called. If False, the</span>
-<span class="sd">            broadcast values are grouped by value.</span>
+<span class="sd">        values : Union[pdarray, Strings]</span>
+<span class="sd">            Values to place in each group&#39;s segment.</span>
+<span class="sd">        permute : bool, default=True</span>
+<span class="sd">            If ``True``, permute broadcast values back to the ordering of the</span>
+<span class="sd">            original array on which ``GroupBy`` was called. If ``False``, the</span>
+<span class="sd">            broadcast values are returned in grouped order.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        pdarray, Strings</span>
-<span class="sd">            The broadcasted values</span>
+<span class="sd">        Union[pdarray, Strings]</span>
+<span class="sd">            The broadcasted values.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
-<span class="sd">            Raised if value is not a pdarray object</span>
+<span class="sd">            Raised if ``values`` is not a ``pdarray`` or ``Strings`` object.</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            Raised if the values array does not have one</span>
-<span class="sd">            value per segment</span>
+<span class="sd">            Raised if the ``values`` array does not contain exactly one value</span>
+<span class="sd">            per segment.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        This function is a sparse analog of ``np.broadcast``. If a</span>
-<span class="sd">        GroupBy object represents a sparse matrix (tensor), then</span>
-<span class="sd">        this function takes a (dense) column vector and replicates</span>
-<span class="sd">        each value to the non-zero elements in the corresponding row.</span>
+<span class="sd">        This function is a sparse analog of ``np.broadcast``. If a ``GroupBy``</span>
+<span class="sd">        object represents a sparse matrix (tensor), this function takes a</span>
+<span class="sd">        dense column vector and replicates each value to the non-zero elements</span>
+<span class="sd">        in the corresponding row.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -2658,25 +2662,27 @@
 <span class="sd">        &gt;&gt;&gt; values = ak.array([3, 5])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
 
-<span class="sd">        By default, result is in original order</span>
+<span class="sd">        By default, the result is in the original order:</span>
+
 <span class="sd">        &gt;&gt;&gt; g.broadcast(values)</span>
 <span class="sd">        array([3 5 3 5 3])</span>
 
-<span class="sd">        With permute=False, result is in grouped order</span>
+<span class="sd">        With ``permute=False``, the result is returned in grouped order:</span>
+
 <span class="sd">        &gt;&gt;&gt; g.broadcast(values, permute=False)</span>
 <span class="sd">        array([3 3 3 5 5])</span>
+
 <span class="sd">        &gt;&gt;&gt; a = ak.randint(1, 5, 10, seed=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
 <span class="sd">        array([2 4 4 2 1 4 1 2 4 3])</span>
 <span class="sd">        &gt;&gt;&gt; g = ak.GroupBy(a)</span>
-<span class="sd">        &gt;&gt;&gt; keys,counts = g.size()</span>
+<span class="sd">        &gt;&gt;&gt; keys, counts = g.size()</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(counts &gt; 2)</span>
 <span class="sd">        array([True True True True False True False True True False])</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(counts == 3)</span>
 <span class="sd">        array([True False False True False False False True False False])</span>
 <span class="sd">        &gt;&gt;&gt; g.broadcast(counts &lt; 4)</span>
 <span class="sd">        array([True False False True True False True True False True])</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
@@ -2960,52 +2966,57 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    segments : pdarray, int64</span>
-<span class="sd">        Offsets of the start of each row in the sparse matrix or grouped array.</span>
-<span class="sd">        Must be sorted in ascending order.</span>
-<span class="sd">    values : pdarray, Strings</span>
-<span class="sd">        The values to broadcast, one per row (or group)</span>
-<span class="sd">    size : int</span>
-<span class="sd">        The total number of nonzeros in the matrix. If permutation is given, this</span>
-<span class="sd">        argument is ignored and the size is inferred from the permutation array.</span>
-<span class="sd">    permutation : pdarray, int64</span>
-<span class="sd">        The permutation to go from the original ordering of nonzeros to the ordering</span>
-<span class="sd">        grouped by row. To broadcast values back to the original ordering, this</span>
-<span class="sd">        permutation will be inverted. If no permutation is supplied, it is assumed</span>
-<span class="sd">        that the original nonzeros were already grouped by row. In this case, the</span>
-<span class="sd">        size argument must be given.</span>
+<span class="sd">    segments : pdarray</span>
+<span class="sd">        Offsets marking the start of each row in the sparse matrix or grouped</span>
+<span class="sd">        array. Must be sorted in ascending order.</span>
+<span class="sd">    values : Union[pdarray, Strings]</span>
+<span class="sd">        Values to broadcast, one per row (or group).</span>
+<span class="sd">    size : Union[int, np.int64, np.uint64], default=-1</span>
+<span class="sd">        Total number of nonzeros in the matrix. If ``permutation`` is given,</span>
+<span class="sd">        this argument is ignored and the size is inferred from the</span>
+<span class="sd">        permutation array.</span>
+<span class="sd">    permutation : Union[pdarray, None], optional</span>
+<span class="sd">        Permutation that maps the original ordering of nonzeros to the</span>
+<span class="sd">        ordering grouped by row. To broadcast values back to the original</span>
+<span class="sd">        ordering, this permutation will be inverted.</span>
+
+<span class="sd">        If no permutation is supplied, it is assumed that the original</span>
+<span class="sd">        nonzeros were already grouped by row. In that case, the ``size``</span>
+<span class="sd">        argument must be provided.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    pdarray, Strings</span>
-<span class="sd">        The broadcast values, one per nonzero</span>
+<span class="sd">    Union[pdarray, Strings]</span>
+<span class="sd">        Broadcast values, one per nonzero element.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        - If segments and values are different sizes</span>
-<span class="sd">        - If segments are empty</span>
-<span class="sd">        - If number of nonzeros (either user-specified or inferred from permutation)</span>
-<span class="sd">          is less than one</span>
+<span class="sd">        - If ``segments`` and ``values`` have different sizes.</span>
+<span class="sd">        - If ``segments`` is empty.</span>
+<span class="sd">        - If the number of nonzeros (either user-specified or inferred from</span>
+<span class="sd">          ``permutation``) is less than one.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    # Define a sparse matrix with 3 rows and 7 nonzeros</span>
+
+<span class="sd">    Define a sparse matrix with 3 rows and 7 nonzeros:</span>
+
 <span class="sd">    &gt;&gt;&gt; row_starts = ak.array([0, 2, 5])</span>
 <span class="sd">    &gt;&gt;&gt; nnz = 7</span>
 
-<span class="sd">    Broadcast the row number to each nonzero element</span>
+<span class="sd">    Broadcast the row number to each nonzero element:</span>
+
 <span class="sd">    &gt;&gt;&gt; row_number = ak.arange(3)</span>
 <span class="sd">    &gt;&gt;&gt; ak.broadcast(row_starts, row_number, nnz)</span>
 <span class="sd">    array([0 0 1 1 1 2 2])</span>
 
-<span class="sd">    If the original nonzeros were in reverse order...</span>
+<span class="sd">    If the original nonzeros were in reverse order:</span>
+
 <span class="sd">    &gt;&gt;&gt; permutation = ak.arange(6, -1, -1)</span>
 <span class="sd">    &gt;&gt;&gt; ak.broadcast(row_starts, row_number, permutation=permutation)</span>
 <span class="sd">    array([2 2 1 1 1 0 0])</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.core.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_msg</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">arange</span>
