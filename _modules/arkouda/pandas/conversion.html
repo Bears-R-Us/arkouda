@@ -402,35 +402,36 @@
 <span class="sd">    Convert a pandas ``Series`` to an Arkouda ``pdarray`` or ``Strings``.</span>
 
 <span class="sd">    If ``dtype`` is not provided, the dtype is inferred from the pandas</span>
-<span class="sd">    ``Series`` (using pandas&#39; dtype metadata). If ``dtype`` is provided, it</span>
+<span class="sd">    ``Series`` (using pandas dtype metadata). If ``dtype`` is provided, it</span>
 <span class="sd">    is used as an override and normalized via Arkouda&#39;s dtype resolution rules.</span>
 
-<span class="sd">    In addition to the core numeric/bool types, this function supports</span>
-<span class="sd">    datetime and timedelta Series of **any** resolution (``ns``, ``us``, ``ms``,</span>
-<span class="sd">    etc.) by converting them to an ``int64`` pdarray of nanoseconds.</span>
+<span class="sd">    In addition to the core numeric and boolean types, this function supports</span>
+<span class="sd">    datetime and timedelta ``Series`` of any resolution (``ns``, ``us``, ``ms``,</span>
+<span class="sd">    etc.) by converting them to an ``int64`` ``pdarray`` of nanoseconds.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    series : pd.Series</span>
-<span class="sd">        The pandas Series to convert.</span>
+<span class="sd">        The pandas ``Series`` to convert.</span>
 <span class="sd">    dtype : Optional[Union[type, str]], optional</span>
 <span class="sd">        Optional dtype override. This may be a Python type (e.g. ``bool``),</span>
 <span class="sd">        a NumPy scalar type (e.g. ``np.int64``), or a dtype string.</span>
 
-<span class="sd">        String-like spellings are normalized to Arkouda string dtype, including:</span>
-<span class="sd">        ``&quot;object&quot;``, ``&quot;str&quot;``, ``&quot;string&quot;``, ``&quot;string[python]&quot;``,</span>
-<span class="sd">        and ``&quot;string[pyarrow]&quot;``.</span>
+<span class="sd">        String-like spellings are normalized to Arkouda string dtype, including</span>
+<span class="sd">        ``&quot;object&quot;``, ``&quot;str&quot;``, ``&quot;string&quot;``, ``&quot;string[python]&quot;``, and</span>
+<span class="sd">        ``&quot;string[pyarrow]&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    Union[pdarray, Strings]</span>
-<span class="sd">        An Arkouda ``pdarray`` for numeric/bool/datetime/timedelta inputs, or an</span>
-<span class="sd">        Arkouda ``Strings`` for string inputs.</span>
+<span class="sd">        An Arkouda ``pdarray`` for numeric, boolean, datetime, or timedelta</span>
+<span class="sd">        inputs, or an Arkouda ``Strings`` for string inputs.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        Raised if the dtype cannot be interpreted or is unsupported for conversion.</span>
+<span class="sd">        Raised if the dtype cannot be interpreted or is unsupported for</span>
+<span class="sd">        conversion.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -438,7 +439,8 @@
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
 <span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
 
-<span class="sd">    # ints</span>
+<span class="sd">    Integers:</span>
+
 <span class="sd">    &gt;&gt;&gt; np.random.seed(1701)</span>
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(np.random.randint(0, 10, 5)))</span>
 <span class="sd">    array([4 3 3 5 0])</span>
@@ -446,32 +448,37 @@
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;]), dtype=np.int64)</span>
 <span class="sd">    array([1 2 3 4 5])</span>
 
-<span class="sd">    # floats</span>
+<span class="sd">    Floats:</span>
+
 <span class="sd">    &gt;&gt;&gt; np.random.seed(1701)</span>
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(np.random.uniform(low=0.0, high=1.0, size=3)))</span>
 <span class="sd">    array([0.089433234324597599 0.1153776854774361 0.51874393620990389])</span>
 
-<span class="sd">    # bools</span>
+<span class="sd">    Booleans:</span>
+
 <span class="sd">    &gt;&gt;&gt; np.random.seed(1864)</span>
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(np.random.choice([True, False], size=5)))</span>
 <span class="sd">    array([True True True False False])</span>
 
-<span class="sd">    # strings: pandas dtype spellings normalized to Arkouda Strings</span>
+<span class="sd">    Strings (pandas dtype spellings normalized to Arkouda ``Strings``):</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;], dtype=&quot;string&quot;))</span>
 <span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;])</span>
 
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], dtype=&quot;string[pyarrow]&quot;))</span>
 <span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
 
-<span class="sd">    # datetime: any resolution is accepted, returned as int64 nanoseconds</span>
+<span class="sd">    Datetime (any resolution is accepted and returned as ``int64`` nanoseconds):</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.from_series(pd.Series(pd.to_datetime([&#39;1/1/2018&#39;, np.datetime64(&#39;2018-01-01&#39;)])))</span>
 <span class="sd">    array([1514764800000000000 1514764800000000000])</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    - Datetime and timedelta Series are converted to ``int64`` nanoseconds.</span>
-<span class="sd">    - String-like pandas dtypes (including ``object``) are treated as string and</span>
-<span class="sd">      converted to Arkouda ``Strings``.</span>
+<span class="sd">    Datetime and timedelta ``Series`` are converted to ``int64`` nanoseconds.</span>
+
+<span class="sd">    String-like pandas dtypes (including ``object``) are treated as string</span>
+<span class="sd">    and converted to Arkouda ``Strings``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.numpy.pdarraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span>
 

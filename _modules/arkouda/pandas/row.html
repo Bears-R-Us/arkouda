@@ -389,10 +389,10 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/pandas/row/index.html#arkouda.Row">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Row</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A dictionary‐like representation of a single row in an Arkouda DataFrame.</span>
+<span class="sd">    Dictionary-like representation of a single row in an Arkouda ``DataFrame``.</span>
 
-<span class="sd">    Wraps the column→value mapping for one row and provides convenient ASCII</span>
-<span class="sd">    and HTML formatting for display.</span>
+<span class="sd">    Wraps the column-to-value mapping for one row and provides convenient</span>
+<span class="sd">    ASCII and HTML formatting for display.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -403,16 +403,16 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; from arkouda.pandas.row import Row</span>
-<span class="sd">    &gt;&gt;&gt; df = ak.DataFrame({&#39;x&#39;: ak.array([10, 20]), &#39;y&#39;: ak.array([&#39;a&#39;, &#39;b&#39;])})</span>
+<span class="sd">    &gt;&gt;&gt; df = ak.DataFrame({&quot;x&quot;: ak.array([10, 20]), &quot;y&quot;: ak.array([&quot;a&quot;, &quot;b&quot;])})</span>
 
-<span class="sd">    Suppose df[0] returns {&#39;x&#39;: 10, &#39;y&#39;: &#39;a&#39;}</span>
-<span class="sd">    &gt;&gt;&gt; row = Row({&#39;x&#39;: 10, &#39;y&#39;: &#39;a&#39;})</span>
+<span class="sd">    Suppose ``df[0]`` returns ``{&quot;x&quot;: 10, &quot;y&quot;: &quot;a}``:</span>
+
+<span class="sd">    &gt;&gt;&gt; row = Row({&quot;x&quot;: 10, &quot;y&quot;: &quot;a&quot;})</span>
 <span class="sd">    &gt;&gt;&gt; print(row)</span>
 <span class="sd">    keys    values</span>
 <span class="sd">    ------  --------</span>
 <span class="sd">    x       10</span>
 <span class="sd">    y       a</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

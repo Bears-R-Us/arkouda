@@ -385,7 +385,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pandas.row.Row" title="arkouda.pandas.row.Row"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Row</span></code></a></p></td>
-<td><p>A dictionary‐like representation of a single row in an Arkouda DataFrame.</p></td>
+<td><p>Dictionary-like representation of a single row in an Arkouda <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -397,9 +397,9 @@
 <dt class="sig sig-object py" id="arkouda.pandas.row.Row">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">arkouda.pandas.row.</span></span><span class="sig-name descname"><span class="pre">Row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/pandas/row.html#Row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.pandas.row.Row" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">collections.UserDict</span></code></p>
-<p>A dictionary‐like representation of a single row in an Arkouda DataFrame.</p>
-<p>Wraps the column→value mapping for one row and provides convenient ASCII
-and HTML formatting for display.</p>
+<p>Dictionary-like representation of a single row in an Arkouda <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>.</p>
+<p>Wraps the column-to-value mapping for one row and provides convenient
+ASCII and HTML formatting for display.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – Mapping of column names to their corresponding values for this row.</p>
@@ -408,16 +408,18 @@ and HTML formatting for display.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">arkouda.pandas.row</span><span class="w"> </span><span class="kn">import</span> <span class="n">Row</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]),</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">])})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]),</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">])})</span>
 </pre></div>
 </div>
-<p>Suppose df[0] returns {‘x’: 10, ‘y’: ‘a’}
-&gt;&gt;&gt; row = Row({‘x’: 10, ‘y’: ‘a’})
-&gt;&gt;&gt; print(row)
-keys    values
-——  ——–
-x       10
-y       a</p>
+<p>Suppose <code class="docutils literal notranslate"><span class="pre">df[0]</span></code> returns <code class="docutils literal notranslate"><span class="pre">{&quot;x&quot;:</span> <span class="pre">10,</span> <span class="pre">&quot;y&quot;:</span> <span class="pre">&quot;a}</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="n">Row</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="go">keys    values</span>
+<span class="go">------  --------</span>
+<span class="go">x       10</span>
+<span class="go">y       a</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
