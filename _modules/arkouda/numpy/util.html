@@ -546,33 +546,35 @@
 <a class="viewcode-back" href="../../../autoapi/arkouda/numpy/util/index.html#arkouda.numpy.convert_if_categorical">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_if_categorical</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert a Categorical array to a Strings array for display purposes.</span>
+<span class="sd">    Convert a ``Categorical`` array to a ``Strings`` array for display purposes.</span>
 
-<span class="sd">    If the input is a Categorical, it is converted to its string labels</span>
-<span class="sd">    based on its codes. If not, the input is returned unchanged.</span>
+<span class="sd">    If the input is a ``Categorical``, it is converted to its string labels</span>
+<span class="sd">    based on its codes. Otherwise, the input is returned unchanged.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    values : Categorical or any</span>
-<span class="sd">        The input array, which may be a Categorical.</span>
+<span class="sd">        The input array, which may be a ``Categorical``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Strings or original type</span>
-<span class="sd">        The string labels if `values` is a Categorical, otherwise the original input.</span>
+<span class="sd">    Strings or any</span>
+<span class="sd">        The string labels if ``values`` is a ``Categorical``; otherwise the</span>
+<span class="sd">        original input.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    Convert a ``Categorical`` to its string labels:</span>
 
-<span class="sd">    Example with a Categorical</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; categories = ak.array([&quot;apple&quot;, &quot;banana&quot;, &quot;cherry&quot;])</span>
 <span class="sd">    &gt;&gt;&gt; cat = ak.Categorical(categories)</span>
 <span class="sd">    &gt;&gt;&gt; result = convert_if_categorical(cat)</span>
 <span class="sd">    &gt;&gt;&gt; print(result)</span>
 <span class="sd">    [&#39;apple&#39;, &#39;banana&#39;, &#39;cherry&#39;]</span>
 
-<span class="sd">    Example with a non-Categorical input</span>
+<span class="sd">    Non-``Categorical`` inputs are returned unchanged:</span>
+
 <span class="sd">    &gt;&gt;&gt; values = ak.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; result = convert_if_categorical(values)</span>
 <span class="sd">    &gt;&gt;&gt; print(result)</span>
@@ -592,9 +594,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register an Arkouda object with a user-specified name.</span>
 
-<span class="sd">    This function registers the provided Arkouda object (`obj`) under a</span>
-<span class="sd">    given name (`name`). It is backwards compatible with earlier versions</span>
-<span class="sd">    of Arkouda.</span>
+<span class="sd">    This function registers the provided Arkouda object (``obj``) under a</span>
+<span class="sd">    given name (``name``). It is maintained for backwards compatibility</span>
+<span class="sd">    with earlier versions of Arkouda.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -605,13 +607,13 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Registered object</span>
+<span class="sd">    object</span>
 <span class="sd">        The input object, now registered with the specified name.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    AttributeError</span>
-<span class="sd">        If `obj` does not have a `register` method.</span>
+<span class="sd">        Raised if ``obj`` does not have a ``register`` method.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -623,13 +625,13 @@
 <span class="sd">    [1 2 3]</span>
 <span class="sd">    &gt;&gt;&gt; registered_obj.unregister()</span>
 
-<span class="sd">    Example of registering a different Arkouda object</span>
+<span class="sd">    Register a different Arkouda object:</span>
+
 <span class="sd">    &gt;&gt;&gt; categories = ak.array([&quot;apple&quot;, &quot;banana&quot;, &quot;cherry&quot;])</span>
 <span class="sd">    &gt;&gt;&gt; cat = ak.Categorical(categories)</span>
 <span class="sd">    &gt;&gt;&gt; registered_cat = register(cat, &quot;my_cat&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; print(registered_cat)</span>
 <span class="sd">    [&#39;apple&#39;, &#39;banana&#39;, &#39;cherry&#39;]</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
@@ -642,9 +644,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attach a previously created Arkouda object by its registered name.</span>
 
-<span class="sd">    This function retrieves an Arkouda object (e.g., `pdarray`, `DataFrame`,</span>
-<span class="sd">    `Series`, etc.) associated with a given `name`. It returns the corresponding</span>
-<span class="sd">    object based on the type of object stored under that name.</span>
+<span class="sd">    This function retrieves an Arkouda object (e.g., ``pdarray``, ``DataFrame``,</span>
+<span class="sd">    ``Series``) associated with a given ``name``. The returned object type</span>
+<span class="sd">    depends on the object stored under that name.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -654,20 +656,21 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    object</span>
-<span class="sd">        The Arkouda object associated with the given `name`. The returned object</span>
-<span class="sd">        could be of any supported type, such as `pdarray`, `DataFrame`, `Series`,</span>
-<span class="sd">        etc.</span>
+<span class="sd">        The Arkouda object associated with the given ``name``. The returned</span>
+<span class="sd">        object could be any supported type, such as ``pdarray``, ``DataFrame``,</span>
+<span class="sd">        or ``Series``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        If the object type in the response message does not match any known types.</span>
+<span class="sd">        Raised if the object type in the response message does not match any</span>
+<span class="sd">        known Arkouda types.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    Attach an existing ``pdarray``:</span>
 
-<span class="sd">    Attach an existing pdarray</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; obj = ak.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; registered_obj = obj.register(&quot;my_array&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; arr = ak.attach(&quot;my_array&quot;)</span>
@@ -784,34 +787,35 @@
 <span class="nd">@typechecked</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_registered</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">as_component</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determine if the provided name is associated with a registered Arkouda object.</span>
+<span class="sd">    Determine whether the provided name is associated with a registered Arkouda object.</span>
 
-<span class="sd">    This function checks if the `name` is found in the registry of objects,</span>
-<span class="sd">    and optionally checks if it is registered as a component of a registered object.</span>
+<span class="sd">    This function checks whether ``name`` is found in the registry of objects and</span>
+<span class="sd">    optionally checks whether it is registered as a component of a registered object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
-<span class="sd">        The name to check for in the registry.</span>
+<span class="sd">        The name to check in the registry.</span>
 <span class="sd">    as_component : bool, default=False</span>
-<span class="sd">        When True, the function checks if the name is registered as a component</span>
-<span class="sd">        of a registered object (rather than as a standalone object).</span>
+<span class="sd">        When ``True``, the function checks whether the name is registered as a</span>
+<span class="sd">        component of a registered object rather than as a standalone object.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bool</span>
-<span class="sd">        `True` if the name is found in the registry, `False` otherwise.</span>
+<span class="sd">        ``True`` if the name is found in the registry, ``False`` otherwise.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    KeyError</span>
-<span class="sd">        If the registry query encounters an issue (e.g., invalid registry data or access issues).</span>
+<span class="sd">        Raised if the registry query encounters an issue (e.g., invalid registry</span>
+<span class="sd">        data or access problems).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
+<span class="sd">    Check whether a name is registered as an object:</span>
 
-<span class="sd">    Check if a name is registered as an object</span>
+<span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
 <span class="sd">    &gt;&gt;&gt; obj = ak.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; registered_obj = obj.register(&quot;my_array&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; result = ak.is_registered(&quot;my_array&quot;)</span>
@@ -819,7 +823,8 @@
 <span class="sd">    True</span>
 <span class="sd">    &gt;&gt;&gt; registered_obj.unregister()</span>
 
-<span class="sd">    Check if a name is registered as a component</span>
+<span class="sd">    Check whether a name is registered as a component:</span>
+
 <span class="sd">    &gt;&gt;&gt; result = ak.is_registered(&quot;my_component&quot;, as_component=True)</span>
 <span class="sd">    &gt;&gt;&gt; print(result)</span>
 <span class="sd">    False</span>
@@ -834,26 +839,26 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Register all objects in the provided dictionary.</span>
 
-<span class="sd">    This function iterates through the dictionary `data`, registering each object</span>
-<span class="sd">    with its corresponding name. It is useful for batch registering multiple</span>
-<span class="sd">    objects in Arkouda.</span>
+<span class="sd">    This function iterates through the dictionary ``data``, registering each</span>
+<span class="sd">    object with its corresponding name. It is useful for batch-registering</span>
+<span class="sd">    multiple objects in Arkouda.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    data : dict</span>
-<span class="sd">        A dictionary that maps the name to register the object to the object itself.</span>
-<span class="sd">        For example, {&quot;MyArray&quot;: ak.array([0, 1, 2])}.</span>
+<span class="sd">        A dictionary mapping the name used to register the object to the object</span>
+<span class="sd">        itself. For example, ``{&quot;MyArray&quot;: ak.array([0, 1, 2])}``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; data = { &quot;array1&quot;: ak.array([0, 1, 2]), &quot;array2&quot;: ak.array([3, 4, 5]) }</span>
+<span class="sd">    &gt;&gt;&gt; data = {&quot;array1&quot;: ak.array([0, 1, 2]), &quot;array2&quot;: ak.array([3, 4, 5])}</span>
 <span class="sd">    &gt;&gt;&gt; ak.register_all(data)</span>
 
-<span class="sd">    After calling this function, &quot;array1&quot; and &quot;array2&quot; are registered</span>
-<span class="sd">    in Arkouda, and can be accessed by their names.</span>
-<span class="sd">    &gt;&gt;&gt; ak.unregister_all([&quot;array1&quot;, &quot;array2&quot;])</span>
+<span class="sd">    After calling this function, ``&quot;array1&quot;`` and ``&quot;array2&quot;`` are registered</span>
+<span class="sd">    in Arkouda and can be accessed by their names.</span>
 
+<span class="sd">    &gt;&gt;&gt; ak.unregister_all([&quot;array1&quot;, &quot;array2&quot;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">reg_name</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">register</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">reg_name</span><span class="p">)</span></div>
@@ -866,27 +871,27 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unregister all Arkouda objects associated with the provided names.</span>
 
-<span class="sd">    This function iterates through the list of `names`, unregistering each</span>
+<span class="sd">    This function iterates through the list of ``names``, unregistering each</span>
 <span class="sd">    corresponding object from the Arkouda server.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    names : List of str</span>
-<span class="sd">        A list of registered names corresponding to Arkouda objects</span>
-<span class="sd">        that should be unregistered.</span>
+<span class="sd">    names : list of str</span>
+<span class="sd">        A list of registered names corresponding to Arkouda objects that</span>
+<span class="sd">        should be unregistered.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; data = { &quot;array1&quot;: ak.array([0, 1, 2]), &quot;array2&quot;: ak.array([3, 4, 5]) }</span>
+<span class="sd">    &gt;&gt;&gt; data = {&quot;array1&quot;: ak.array([0, 1, 2]), &quot;array2&quot;: ak.array([3, 4, 5])}</span>
 <span class="sd">    &gt;&gt;&gt; ak.register_all(data)</span>
 
-<span class="sd">    After calling this function, &quot;array1&quot; and &quot;array2&quot; are registered</span>
-<span class="sd">    in Arkouda, and can be accessed by their names.</span>
+<span class="sd">    After calling this function, ``&quot;array1&quot;`` and ``&quot;array2&quot;`` are registered</span>
+<span class="sd">    in Arkouda and can be accessed by their names.</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.unregister_all([&quot;array1&quot;, &quot;array2&quot;])</span>
 
-<span class="sd">    &quot;arr1&quot; and &quot;arr2&quot; are now unregistered</span>
-
+<span class="sd">    The objects are now unregistered.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
         <span class="n">unregister</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></div>
@@ -900,11 +905,11 @@
 <span class="sd">    Attach to all objects registered with the provided names.</span>
 
 <span class="sd">    This function returns a dictionary mapping each name in the input list</span>
-<span class="sd">    to the corresponding Arkouda object retrieved using `attach`.</span>
+<span class="sd">    to the corresponding Arkouda object retrieved using ``attach``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    names : List of str</span>
+<span class="sd">    names : list of str</span>
 <span class="sd">        A list of names corresponding to registered Arkouda objects.</span>
 
 <span class="sd">    Returns</span>
@@ -915,15 +920,17 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import arkouda as ak</span>
-<span class="sd">    &gt;&gt;&gt; data = { &quot;arr1&quot;: ak.array([0, 1, 2]), &quot;arr2&quot;: ak.array([3, 4, 5]) }</span>
+<span class="sd">    &gt;&gt;&gt; data = {&quot;arr1&quot;: ak.array([0, 1, 2]), &quot;arr2&quot;: ak.array([3, 4, 5])}</span>
 <span class="sd">    &gt;&gt;&gt; ak.register_all(data)</span>
 
-<span class="sd">    Assuming &quot;arr1&quot; and &quot;arr2&quot; were previously registered</span>
+<span class="sd">    Assuming ``&quot;arr1&quot;`` and ``&quot;arr2&quot;`` were previously registered:</span>
+
 <span class="sd">    &gt;&gt;&gt; attached_objs = ak.attach_all([&quot;arr1&quot;, &quot;arr2&quot;])</span>
 <span class="sd">    &gt;&gt;&gt; print(attached_objs[&quot;arr1&quot;])</span>
 <span class="sd">    [0 1 2]</span>
 <span class="sd">    &gt;&gt;&gt; print(type(attached_objs[&quot;arr2&quot;]))</span>
 <span class="sd">    &lt;class &#39;arkouda.numpy.pdarrayclass.pdarray&#39;&gt;</span>
+
 <span class="sd">    &gt;&gt;&gt; ak.unregister_all([&quot;arr1&quot;, &quot;arr2&quot;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">attach</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span><span class="p">}</span></div>

@@ -5017,25 +5017,26 @@ Package Contents
 
    Attach a previously created Arkouda object by its registered name.
 
-   This function retrieves an Arkouda object (e.g., `pdarray`, `DataFrame`,
-   `Series`, etc.) associated with a given `name`. It returns the corresponding
-   object based on the type of object stored under that name.
+   This function retrieves an Arkouda object (e.g., ``pdarray``, ``DataFrame``,
+   ``Series``) associated with a given ``name``. The returned object type
+   depends on the object stored under that name.
 
    :param name: The name of the object to attach.
    :type name: str
 
-   :returns: The Arkouda object associated with the given `name`. The returned object
-             could be of any supported type, such as `pdarray`, `DataFrame`, `Series`,
-             etc.
+   :returns: The Arkouda object associated with the given ``name``. The returned
+             object could be any supported type, such as ``pdarray``, ``DataFrame``,
+             or ``Series``.
    :rtype: object
 
-   :raises ValueError: If the object type in the response message does not match any known types.
+   :raises ValueError: Raised if the object type in the response message does not match any
+       known Arkouda types.
 
    .. rubric:: Examples
 
-   >>> import arkouda as ak
+   Attach an existing ``pdarray``:
 
-   Attach an existing pdarray
+   >>> import arkouda as ak
    >>> obj = ak.array([1, 2, 3])
    >>> registered_obj = obj.register("my_array")
    >>> arr = ak.attach("my_array")
@@ -5049,10 +5050,10 @@ Package Contents
    Attach to all objects registered with the provided names.
 
    This function returns a dictionary mapping each name in the input list
-   to the corresponding Arkouda object retrieved using `attach`.
+   to the corresponding Arkouda object retrieved using ``attach``.
 
    :param names: A list of names corresponding to registered Arkouda objects.
-   :type names: List of str
+   :type names: list of str
 
    :returns: A dictionary mapping each name to the attached Arkouda object.
    :rtype: dict
@@ -5060,15 +5061,17 @@ Package Contents
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> data = { "arr1": ak.array([0, 1, 2]), "arr2": ak.array([3, 4, 5]) }
+   >>> data = {"arr1": ak.array([0, 1, 2]), "arr2": ak.array([3, 4, 5])}
    >>> ak.register_all(data)
 
-   Assuming "arr1" and "arr2" were previously registered
+   Assuming ``"arr1"`` and ``"arr2"`` were previously registered:
+
    >>> attached_objs = ak.attach_all(["arr1", "arr2"])
    >>> print(attached_objs["arr1"])
    [0 1 2]
    >>> print(type(attached_objs["arr2"]))
    <class 'arkouda.numpy.pdarrayclass.pdarray'>
+
    >>> ak.unregister_all(["arr1", "arr2"])
 
 
@@ -8837,27 +8840,28 @@ Package Contents
 
 .. py:function:: is_registered(name: str, as_component: bool = False) -> bool
 
-   Determine if the provided name is associated with a registered Arkouda object.
+   Determine whether the provided name is associated with a registered Arkouda object.
 
-   This function checks if the `name` is found in the registry of objects,
-   and optionally checks if it is registered as a component of a registered object.
+   This function checks whether ``name`` is found in the registry of objects and
+   optionally checks whether it is registered as a component of a registered object.
 
-   :param name: The name to check for in the registry.
+   :param name: The name to check in the registry.
    :type name: str
-   :param as_component: When True, the function checks if the name is registered as a component
-                        of a registered object (rather than as a standalone object).
+   :param as_component: When ``True``, the function checks whether the name is registered as a
+                        component of a registered object rather than as a standalone object.
    :type as_component: bool, default=False
 
-   :returns: `True` if the name is found in the registry, `False` otherwise.
+   :returns: ``True`` if the name is found in the registry, ``False`` otherwise.
    :rtype: bool
 
-   :raises KeyError: If the registry query encounters an issue (e.g., invalid registry data or access issues).
+   :raises KeyError: Raised if the registry query encounters an issue (e.g., invalid registry
+       data or access problems).
 
    .. rubric:: Examples
 
-   >>> import arkouda as ak
+   Check whether a name is registered as an object:
 
-   Check if a name is registered as an object
+   >>> import arkouda as ak
    >>> obj = ak.array([1, 2, 3])
    >>> registered_obj = obj.register("my_array")
    >>> result = ak.is_registered("my_array")
@@ -8865,7 +8869,8 @@ Package Contents
    True
    >>> registered_obj.unregister()
 
-   Check if a name is registered as a component
+   Check whether a name is registered as a component:
+
    >>> result = ak.is_registered("my_component", as_component=True)
    >>> print(result)
    False
@@ -11759,22 +11764,23 @@ Package Contents
 
    Register all objects in the provided dictionary.
 
-   This function iterates through the dictionary `data`, registering each object
-   with its corresponding name. It is useful for batch registering multiple
-   objects in Arkouda.
+   This function iterates through the dictionary ``data``, registering each
+   object with its corresponding name. It is useful for batch-registering
+   multiple objects in Arkouda.
 
-   :param data: A dictionary that maps the name to register the object to the object itself.
-                For example, {"MyArray": ak.array([0, 1, 2])}.
+   :param data: A dictionary mapping the name used to register the object to the object
+                itself. For example, ``{"MyArray": ak.array([0, 1, 2])}``.
    :type data: dict
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> data = { "array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5]) }
+   >>> data = {"array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5])}
    >>> ak.register_all(data)
 
-   After calling this function, "array1" and "array2" are registered
-   in Arkouda, and can be accessed by their names.
+   After calling this function, ``"array1"`` and ``"array2"`` are registered
+   in Arkouda and can be accessed by their names.
+
    >>> ak.unregister_all(["array1", "array2"])
 
 
@@ -13799,24 +13805,25 @@ Package Contents
 
    Unregister all Arkouda objects associated with the provided names.
 
-   This function iterates through the list of `names`, unregistering each
+   This function iterates through the list of ``names``, unregistering each
    corresponding object from the Arkouda server.
 
-   :param names: A list of registered names corresponding to Arkouda objects
-                 that should be unregistered.
-   :type names: List of str
+   :param names: A list of registered names corresponding to Arkouda objects that
+                 should be unregistered.
+   :type names: list of str
 
    .. rubric:: Examples
 
    >>> import arkouda as ak
-   >>> data = { "array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5]) }
+   >>> data = {"array1": ak.array([0, 1, 2]), "array2": ak.array([3, 4, 5])}
    >>> ak.register_all(data)
 
-   After calling this function, "array1" and "array2" are registered
-   in Arkouda, and can be accessed by their names.
+   After calling this function, ``"array1"`` and ``"array2"`` are registered
+   in Arkouda and can be accessed by their names.
+
    >>> ak.unregister_all(["array1", "array2"])
 
-   "arr1" and "arr2" are now unregistered
+   The objects are now unregistered.
 
 
 .. py:class:: unsignedinteger

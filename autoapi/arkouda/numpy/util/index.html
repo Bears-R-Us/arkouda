@@ -403,7 +403,7 @@
 <td><p>Convert a number of bytes to a larger unit: KB, MB, or GB.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.util.convert_if_categorical" title="arkouda.numpy.util.convert_if_categorical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_if_categorical</span></code></a>(values)</p></td>
-<td><p>Convert a Categorical array to a Strings array for display purposes.</p></td>
+<td><p>Convert a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> array to a <code class="docutils literal notranslate"><span class="pre">Strings</span></code> array for display purposes.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.util.copy" title="arkouda.numpy.util.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(→ Union[arkouda.numpy.strings.Strings, ...)</p></td>
 <td><p>Return a deep copy of the given Arkouda object.</p></td>
@@ -430,7 +430,7 @@
 <td><p>Check if the dtype of the given array-like object is numeric.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numpy.util.is_registered" title="arkouda.numpy.util.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>(→ bool)</p></td>
-<td><p>Determine if the provided name is associated with a registered Arkouda object.</p></td>
+<td><p>Determine whether the provided name is associated with a registered Arkouda object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numpy.util.map" title="arkouda.numpy.util.map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map</span></code></a>(→ Union[arkouda.numpy.pdarrayclass.pdarray, ...)</p></td>
 <td><p>Map the values of an array according to an input mapping.</p></td>
@@ -469,36 +469,37 @@
 <dt class="sig sig-object py" id="arkouda.numpy.util.attach">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#attach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.attach" title="Link to this definition">¶</a></dt>
 <dd><p>Attach a previously created Arkouda object by its registered name.</p>
-<p>This function retrieves an Arkouda object (e.g., <cite>pdarray</cite>, <cite>DataFrame</cite>,
-<cite>Series</cite>, etc.) associated with a given <cite>name</cite>. It returns the corresponding
-object based on the type of object stored under that name.</p>
+<p>This function retrieves an Arkouda object (e.g., <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Series</span></code>) associated with a given <code class="docutils literal notranslate"><span class="pre">name</span></code>. The returned object type
+depends on the object stored under that name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name of the object to attach.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Arkouda object associated with the given <cite>name</cite>. The returned object
-could be of any supported type, such as <cite>pdarray</cite>, <cite>DataFrame</cite>, <cite>Series</cite>,
-etc.</p>
+<dd class="field-even"><p>The Arkouda object associated with the given <code class="docutils literal notranslate"><span class="pre">name</span></code>. The returned
+object could be any supported type, such as <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">Series</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>object</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the object type in the response message does not match any known types.</p>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if the object type in the response message does not match any
+known Arkouda types.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
+<p>Attach an existing <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+<span class="go">[1 2 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Attach an existing pdarray
-&gt;&gt;&gt; obj = ak.array([1, 2, 3])
-&gt;&gt;&gt; registered_obj = obj.register(“my_array”)
-&gt;&gt;&gt; arr = ak.attach(“my_array”)
-&gt;&gt;&gt; print(arr)
-[1 2 3]
-&gt;&gt;&gt; registered_obj.unregister()</p>
 </dd></dl>
 
 <dl class="py function">
@@ -506,10 +507,10 @@ etc.</p>
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">attach_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#attach_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.attach_all" title="Link to this definition">¶</a></dt>
 <dd><p>Attach to all objects registered with the provided names.</p>
 <p>This function returns a dictionary mapping each name in the input list
-to the corresponding Arkouda object retrieved using <cite>attach</cite>.</p>
+to the corresponding Arkouda object retrieved using <code class="docutils literal notranslate"><span class="pre">attach</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – A list of names corresponding to registered Arkouda objects.</p>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – A list of names corresponding to registered Arkouda objects.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary mapping each name to the attached Arkouda object.</p>
@@ -520,17 +521,21 @@ to the corresponding Arkouda object retrieved using <cite>attach</cite>.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;arr1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;arr2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;arr1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;arr2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Assuming “arr1” and “arr2” were previously registered
-&gt;&gt;&gt; attached_objs = ak.attach_all([“arr1”, “arr2”])
-&gt;&gt;&gt; print(attached_objs[“arr1”])
-[0 1 2]
-&gt;&gt;&gt; print(type(attached_objs[“arr2”]))
-&lt;class ‘arkouda.numpy.pdarrayclass.pdarray’&gt;
-&gt;&gt;&gt; ak.unregister_all([“arr1”, “arr2”])</p>
+<p>Assuming <code class="docutils literal notranslate"><span class="pre">&quot;arr1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;arr2&quot;</span></code> were previously registered:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">attached_objs</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach_all</span><span class="p">([</span><span class="s2">&quot;arr1&quot;</span><span class="p">,</span> <span class="s2">&quot;arr2&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">attached_objs</span><span class="p">[</span><span class="s2">&quot;arr1&quot;</span><span class="p">])</span>
+<span class="go">[0 1 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">attached_objs</span><span class="p">[</span><span class="s2">&quot;arr2&quot;</span><span class="p">]))</span>
+<span class="go">&lt;class &#39;arkouda.numpy.pdarrayclass.pdarray&#39;&gt;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">&quot;arr1&quot;</span><span class="p">,</span> <span class="s2">&quot;arr2&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -671,35 +676,38 @@ to compute the shape resulting from broadcasting two arrays together.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.util.convert_if_categorical">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">convert_if_categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#convert_if_categorical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.convert_if_categorical" title="Link to this definition">¶</a></dt>
-<dd><p>Convert a Categorical array to a Strings array for display purposes.</p>
-<p>If the input is a Categorical, it is converted to its string labels
-based on its codes. If not, the input is returned unchanged.</p>
+<dd><p>Convert a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> array to a <code class="docutils literal notranslate"><span class="pre">Strings</span></code> array for display purposes.</p>
+<p>If the input is a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>, it is converted to its string labels
+based on its codes. Otherwise, the input is returned unchanged.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em> or </em><em>any</em>) – The input array, which may be a Categorical.</p>
+<dd class="field-odd"><p><strong>values</strong> (<a class="reference internal" href="../../index.html#arkouda.Categorical" title="arkouda.Categorical"><em>Categorical</em></a><em> or </em><em>any</em>) – The input array, which may be a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The string labels if <cite>values</cite> is a Categorical, otherwise the original input.</p>
+<dd class="field-even"><p>The string labels if <code class="docutils literal notranslate"><span class="pre">values</span></code> is a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code>; otherwise the
+original input.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a> or original type</p>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.numpy.Strings" title="arkouda.numpy.Strings">Strings</a> or any</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
+<p>Convert a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> to its string labels:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">categories</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;cherry&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">convert_if_categorical</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">[&#39;apple&#39;, &#39;banana&#39;, &#39;cherry&#39;]</span>
 </pre></div>
 </div>
-<p>Example with a Categorical
-&gt;&gt;&gt; categories = ak.array([“apple”, “banana”, “cherry”])
-&gt;&gt;&gt; cat = ak.Categorical(categories)
-&gt;&gt;&gt; result = convert_if_categorical(cat)
-&gt;&gt;&gt; print(result)
-[‘apple’, ‘banana’, ‘cherry’]</p>
-<p>Example with a non-Categorical input
-&gt;&gt;&gt; values = ak.array([1, 2, 3])
-&gt;&gt;&gt; result = convert_if_categorical(values)
-&gt;&gt;&gt; print(result)
-[1 2 3]</p>
+<p>Non-<code class="docutils literal notranslate"><span class="pre">Categorical</span></code> inputs are returned unchanged:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">convert_if_categorical</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">[1 2 3]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -876,42 +884,45 @@ containing duplicates or missing values.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.util.is_registered">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#is_registered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.is_registered" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the provided name is associated with a registered Arkouda object.</p>
-<p>This function checks if the <cite>name</cite> is found in the registry of objects,
-and optionally checks if it is registered as a component of a registered object.</p>
+<dd><p>Determine whether the provided name is associated with a registered Arkouda object.</p>
+<p>This function checks whether <code class="docutils literal notranslate"><span class="pre">name</span></code> is found in the registry of objects and
+optionally checks whether it is registered as a component of a registered object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name to check for in the registry.</p></li>
-<li><p><strong>as_component</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When True, the function checks if the name is registered as a component
-of a registered object (rather than as a standalone object).</p></li>
+<li><p><strong>name</strong> (<a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – The name to check in the registry.</p></li>
+<li><p><strong>as_component</strong> (<a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool"><em>bool</em></a><em>, </em><em>default=False</em>) – When <code class="docutils literal notranslate"><span class="pre">True</span></code>, the function checks whether the name is registered as a
+component of a registered object rather than as a standalone object.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><cite>True</cite> if the name is found in the registry, <cite>False</cite> otherwise.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the name is found in the registry, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../dtypes/index.html#arkouda.numpy.dtypes.bool" title="arkouda.numpy.dtypes.bool">bool</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>KeyError</strong> – If the registry query encounters an issue (e.g., invalid registry data or access issues).</p>
+<dd class="field-even"><p><strong>KeyError</strong> – Raised if the registry query encounters an issue (e.g., invalid registry
+data or access problems).</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
+<p>Check whether a name is registered as an object:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="s2">&quot;my_array&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Check if a name is registered as an object
-&gt;&gt;&gt; obj = ak.array([1, 2, 3])
-&gt;&gt;&gt; registered_obj = obj.register(“my_array”)
-&gt;&gt;&gt; result = ak.is_registered(“my_array”)
-&gt;&gt;&gt; print(result)
-True
-&gt;&gt;&gt; registered_obj.unregister()</p>
-<p>Check if a name is registered as a component
-&gt;&gt;&gt; result = ak.is_registered(“my_component”, as_component=True)
-&gt;&gt;&gt; print(result)
-False</p>
+<p>Check whether a name is registered as a component:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">is_registered</span><span class="p">(</span><span class="s2">&quot;my_component&quot;</span><span class="p">,</span> <span class="n">as_component</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -970,9 +981,9 @@ mapping has a different number of levels than the GroupBy keys.</p></li>
 <dt class="sig sig-object py" id="arkouda.numpy.util.register">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.register" title="Link to this definition">¶</a></dt>
 <dd><p>Register an Arkouda object with a user-specified name.</p>
-<p>This function registers the provided Arkouda object (<cite>obj</cite>) under a
-given name (<cite>name</cite>). It is backwards compatible with earlier versions
-of Arkouda.</p>
+<p>This function registers the provided Arkouda object (<code class="docutils literal notranslate"><span class="pre">obj</span></code>) under a
+given name (<code class="docutils literal notranslate"><span class="pre">name</span></code>). It is maintained for backwards compatibility
+with earlier versions of Arkouda.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -984,10 +995,10 @@ of Arkouda.</p>
 <dd class="field-even"><p>The input object, now registered with the specified name.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Registered object</p>
+<dd class="field-odd"><p>object</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AttributeError</strong> – If <cite>obj</cite> does not have a <cite>register</cite> method.</p>
+<dd class="field-even"><p><strong>AttributeError</strong> – Raised if <code class="docutils literal notranslate"><span class="pre">obj</span></code> does not have a <code class="docutils literal notranslate"><span class="pre">register</span></code> method.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -1000,36 +1011,40 @@ of Arkouda.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">registered_obj</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Example of registering a different Arkouda object
-&gt;&gt;&gt; categories = ak.array([“apple”, “banana”, “cherry”])
-&gt;&gt;&gt; cat = ak.Categorical(categories)
-&gt;&gt;&gt; registered_cat = register(cat, “my_cat”)
-&gt;&gt;&gt; print(registered_cat)
-[‘apple’, ‘banana’, ‘cherry’]</p>
+<p>Register a different Arkouda object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">categories</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="s2">&quot;banana&quot;</span><span class="p">,</span> <span class="s2">&quot;cherry&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">registered_cat</span> <span class="o">=</span> <span class="n">register</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="s2">&quot;my_cat&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">registered_cat</span><span class="p">)</span>
+<span class="go">[&#39;apple&#39;, &#39;banana&#39;, &#39;cherry&#39;]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.numpy.util.register_all">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">register_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#register_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.register_all" title="Link to this definition">¶</a></dt>
 <dd><p>Register all objects in the provided dictionary.</p>
-<p>This function iterates through the dictionary <cite>data</cite>, registering each object
-with its corresponding name. It is useful for batch registering multiple
-objects in Arkouda.</p>
+<p>This function iterates through the dictionary <code class="docutils literal notranslate"><span class="pre">data</span></code>, registering each
+object with its corresponding name. It is useful for batch-registering
+multiple objects in Arkouda.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – A dictionary that maps the name to register the object to the object itself.
-For example, {“MyArray”: ak.array([0, 1, 2])}.</p>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – A dictionary mapping the name used to register the object to the object
+itself. For example, <code class="docutils literal notranslate"><span class="pre">{&quot;MyArray&quot;:</span> <span class="pre">ak.array([0,</span> <span class="pre">1,</span> <span class="pre">2])}</span></code>.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;array1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;array2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;array1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;array2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>After calling this function, “array1” and “array2” are registered
-in Arkouda, and can be accessed by their names.
-&gt;&gt;&gt; ak.unregister_all([“array1”, “array2”])</p>
+<p>After calling this function, <code class="docutils literal notranslate"><span class="pre">&quot;array1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;array2&quot;</span></code> are registered
+in Arkouda and can be accessed by their names.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">&quot;array1&quot;</span><span class="p">,</span> <span class="s2">&quot;array2&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1141,24 +1156,26 @@ Unregistered PDARRAY my_array</p>
 <dt class="sig sig-object py" id="arkouda.numpy.util.unregister_all">
 <span class="sig-prename descclassname"><span class="pre">arkouda.numpy.util.</span></span><span class="sig-name descname"><span class="pre">unregister_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/arkouda/numpy/util.html#unregister_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arkouda.numpy.util.unregister_all" title="Link to this definition">¶</a></dt>
 <dd><p>Unregister all Arkouda objects associated with the provided names.</p>
-<p>This function iterates through the list of <cite>names</cite>, unregistering each
+<p>This function iterates through the list of <code class="docutils literal notranslate"><span class="pre">names</span></code>, unregistering each
 corresponding object from the Arkouda server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>names</strong> (<em>List</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – A list of registered names corresponding to Arkouda objects
-that should be unregistered.</p>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em><em> of </em><a class="reference internal" href="../../index.html#arkouda.Series.str" title="arkouda.Series.str"><em>str</em></a>) – A list of registered names corresponding to Arkouda objects that
+should be unregistered.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">arkouda</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ak</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;array1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;array2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;array1&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="s2">&quot;array2&quot;</span><span class="p">:</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">register_all</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>After calling this function, “array1” and “array2” are registered
-in Arkouda, and can be accessed by their names.
-&gt;&gt;&gt; ak.unregister_all([“array1”, “array2”])</p>
-<p>“arr1” and “arr2” are now unregistered</p>
+<p>After calling this function, <code class="docutils literal notranslate"><span class="pre">&quot;array1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;array2&quot;</span></code> are registered
+in Arkouda and can be accessed by their names.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_all</span><span class="p">([</span><span class="s2">&quot;array1&quot;</span><span class="p">,</span> <span class="s2">&quot;array2&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The objects are now unregistered.</p>
 </dd></dl>
 
 </section>
